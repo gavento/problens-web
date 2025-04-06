@@ -1,0 +1,14 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "typescript.format.indentSize": "explicit"
+  },
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "git.ignoreLimitWarning": true,
+  "prettier.htmlWhitespaceSensitivity": "strict",
+  "[mdx]": {
+    "editor.defaultFormatter": "unifiedjs.vscode-mdx"
+  }
+}

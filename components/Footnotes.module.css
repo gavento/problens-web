@@ -1,0 +1,122 @@
+.footnote {
+  position: relative;
+  top: -0.5em;
+  font-size: 0.75em;
+  white-space: nowrap;
+  color: #525252;
+  display: inline-flex;
+  margin-left: 0.15em;
+  scroll-margin-top: 100px;
+}
+
+:global(.prose) .footnote-link,
+.footnote-link {
+  color: #1d4ed8;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+:global(.prose) .footnote-link:hover,
+.footnote-link:hover {
+  color: #1e3a8a;
+  text-decoration: none;
+}
+
+.footnotes {
+  margin-top: 2.5em;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1.5em;
+  scroll-margin-top: 100px;
+}
+
+.footnotes h2 {
+  /* font-size: 1.5rem;
+  font-weight: 500; */
+  margin-bottom: 1.5rem;
+}
+
+.footnote-list {
+  font-size: 0.925rem;
+  line-height: 1.5;
+  color: #262626;
+}
+
+.footnote-item {
+  margin-bottom: 0.5rem;
+  padding-left: 3rem;
+  text-indent: -3rem;
+  text-align: left;
+  word-wrap: break-word;
+  scroll-margin-top: 100px;
+  position: relative;
+}
+
+.footnote-item::before {
+  content: attr(data-mark);
+  font-weight: 500;
+  color: #4b5563;
+  margin-right: 1rem;
+  display: inline-block;
+  min-width: 2rem;
+  text-align: right;
+}
+
+.footnote-tooltip {
+  z-index: 1000;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  padding: 0.75rem 1rem;
+  width: max-content;
+  max-width: min(32rem, calc(100vw - 2rem));
+  font-size: var(--content-font-size);
+  font-family: var(--content-font);
+  line-height: var(--content-line-height);
+  color: #1f2937;
+  text-align: left;
+  white-space: normal;
+  animation-duration: 400ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.footnote-tooltip[data-side="top"] {
+  animation-name: slideDownAndFade;
+}
+
+.footnote-tooltip[data-side="bottom"] {
+  animation-name: slideUpAndFade;
+}
+
+.footnote-tooltip-arrow {
+  fill: white;
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.1));
+}
+
+@keyframes slideUpAndFade {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDownAndFade {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.backlink {
+  display: inline-block;
+  margin: 0 0.1em;
+}

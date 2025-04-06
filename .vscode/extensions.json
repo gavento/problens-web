@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "ms-vscode.vscode-typescript-next",
+    "christian-kohler.npm-intellisense",
+    "christian-kohler.path-intellisense",
+    // "github.copilot",
+    "Prisma.prisma",
+    "bradlc.vscode-tailwindcss",
+    "github.vscode-github-actions"
+  ]
+}
