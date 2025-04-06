@@ -1,0 +1,72 @@
+# Resources
+
+This page collects supplementary materials for the course.
+
+## Glossary
+
+_(A list of key terms defined briefly, linking back to main text where possible)_
+
+- **Entropy:** Measure of uncertainty / average surprisal / minimum avg code length.
+- **KL Divergence (Relative Entropy):** Directed measure of difference between distributions p || q; expected evidence; coding inefficiency.
+- **Cross-Entropy:** Expected surprisal using model q when reality is p.
+- **Mutual Information:** Measure of statistical dependence between variables; reduction in uncertainty.
+- **Maximum Entropy Principle (MEP):** Principle to choose the least informative distribution satisfying given constraints.
+- **Maximum Likelihood Estimation (MLE):** Principle to choose model parameters that make observed data most probable.
+- **Bayes' Theorem:** Rule for updating beliefs given evidence.
+- **Likelihood:** Probability of observing data given model parameters P(Data|theta).
+- **Prior:** Initial belief distribution P(theta).
+- **Posterior:** Updated belief distribution P(theta|Data).
+- **Logit:** Log-odds, often used as input to sigmoid/softmax.
+- **Softmax:** Function converting scores/logits into a probability distribution (MaxEnt for fixed mean score).
+- **Sigmoid/Logistic:** Function converting a score into a probability (0,1) (MaxEnt limit).
+- **Exponential Family:** A class of distributions arising from MEP, general form \(p(x) \propto h(x) \exp(\eta \cdot T(x) - A(\eta))\).
+- **Kolmogorov Complexity:** Minimum description length of an object.
+- **ELBO (Evidence Lower Bound):** Objective function maximized in variational inference (e.g., VAEs).
+- ... (add more as needed)
+
+## Math Primer
+
+_(Brief refreshers on prerequisite math)_
+
+### Logarithms
+
+- Definition: \(y = \log_b x \iff b^y = x\)
+- Properties: \(\log(ab) = \log a + \log b\), \(\log(a/b) = \log a - \log b\), \(\log(a^k) = k \log a\)
+- Change of Base: \(\log_b a = \frac{\log_c a}{\log_c b}\). (Common bases: e (ln), 2 (bits), 10)
+
+### Basic Probability
+
+- Sample Space, Events
+- Axioms: \(P(A) \ge 0\), \(P(\text{Sample Space}) = 1\), \(P(A \cup B) = P(A) + P(B)\) if disjoint.
+- Conditional Probability: \(P(A|B) = P(A \cap B) / P(B)\)
+- Independence: \(P(A \cap B) = P(A)P(B)\)
+- Bayes' Theorem: \(P(A|B) = P(B|A)P(A)/P(B)\)
+- Expected Value: \(\mathbb{E}[X] = \sum x p(x)\) or \(\int x p(x) dx\). Linearity: \(\mathbb{E}[aX+bY] = a\mathbb{E}[X]+b\mathbb{E}[Y]\).
+
+### Basic Calculus
+
+- Derivatives (rates of change), common rules (power, exp, log)
+- Integrals (area under curve)
+- Optimization: Finding max/min by setting derivative to zero.
+- Partial Derivatives and Gradients (for multi-variable functions).
+- Lagrange Multipliers (for constrained optimization).
+
+## Further Reading
+
+_(Curated list of books, articles, websites)_
+
+**Books:**
+
+- Cover, T. M., & Thomas, J. A. (2006). _Elements of Information Theory_. Wiley. <Cite>CoverThomas2006</Cite> (The classic textbook).
+- MacKay, D. J. C. (2003). _Information Theory, Inference, and Learning Algorithms_. Cambridge University Press. <Cite>MacKay2003</Cite> (Excellent, broad, Bayesian perspective, freely available online).
+- Jaynes, E. T. (2003). _Probability Theory: The Logic of Science_. Cambridge University Press. <Cite>Jaynes2003</Cite> (Deep dive into Bayesian reasoning and MaxEnt).
+- Bishop, C. M. (2006). _Pattern Recognition and Machine Learning_. Springer. (Comprehensive ML textbook).
+
+**Online Resources:**
+
+- LessWrong: [https://www.lesswrong.com/](https://www.lesswrong.com/) (Discussions on rationality, AI, epistemology).
+- Distill.pub: [https://distill.pub/](https://distill.pub/) (High-quality articles explaining ML concepts).
+- ArXiv Sanity Preserver: [http://www.arxiv-sanity.com/](http://www.arxiv-sanity.com/) (For finding relevant papers).
+- Relevant Wikipedia pages (Entropy, KL Divergence, MLE, MEP, etc.)
+
+_(Add specific papers mentioned like Shannon1948, Hinton2015Distilling, Hutter2004UID, AroraHazanKale2012MWU, SohlDickstein2015DeepUnsupervised, Ho2020DenoisingDiffusion etc. if using real citations)_
