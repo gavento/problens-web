@@ -9,50 +9,51 @@
 
 From Part 2, recall the two perspectives on minimizing KL divergence:
 
-1.  **Given Data \(p\), Find Model \(q \in Q\):** Minimize \(D_{\mathrm{KL}}(p \| q)\) w.r.t \(q\). Leads to **Maximum Likelihood Estimation (MLE)**.
-2.  **Given Prior \(q\), Find Constrained \(p \in P\):** Minimize \(D_{\mathrm{KL}}(p \| q)\) w.r.t \(p\). Leads to **Maximum Entropy Principle (MEP)** (when \(q\) is uniform/reference).
+1.  **Given Data $p$, Find Model $q \in Q$:** Minimize $D_{\mathrm{KL}}(p \| q)$ w.r.t $q$. Leads to **Maximum Likelihood Estimation (MLE)**.
+2.  **Given Prior $q$, Find Constrained $p \in P$:** Minimize $D_{\mathrm{KL}}(p \| q)$ w.r.t $p$. Leads to **Maximum Entropy Principle (MEP)** (when $q$ is uniform/reference).
 
-These are complementary ways information theory guides model building. MEP helps choose the *family* of models based on structural assumptions (e.g., fixing mean/variance suggests Gaussians). MLE helps pick the *specific parameters* within that family that best fit the observed data.
+These are complementary ways information theory guides model building. MEP helps choose the _family_ of models based on structural assumptions (e.g., fixing mean/variance suggests Gaussians). MLE helps pick the _specific parameters_ within that family that best fit the observed data.
 
 ---
 
 <a id="maximum-likelihood-estimation"></a>
 ## Maximum Likelihood Estimation (MLE)
 
-> **Riddle:** Polling suggests we need about \(1/\epsilon^2\) samples for error \(\epsilon\). Why this dependence?
-> **Riddle:** Statistics textbooks say estimate variance using \( \frac{1}{n-1} \sum (X_i - \bar{X})^2 \), but ML often uses \(1/n\). Why the difference?
+> **Riddle:** Polling suggests we need about $1/\epsilon^2$ samples for error $\epsilon$. Why this dependence?
+> **Riddle:** Statistics textbooks say estimate variance using $\frac{1}{n-1} \sum (X_i - \bar{X})^2$, but ML often uses $1/n$. Why the difference?
 
-Suppose we have data \(D = \{x_1, ..., x_n\}\), assumed to be drawn independently from some underlying distribution \(p(x|\theta)\) belonging to a family parameterized by \(\theta\) (e.g., Gaussians parameterized by \(\theta = (\mu, \sigma^2)\)).
+Suppose we have data $D = \{x_1, ..., x_n\}$, assumed to be drawn independently from some underlying distribution $p(x|\theta)$ belonging to a family parameterized by $\theta$ (e.g., Gaussians parameterized by $\theta = (\mu, \sigma^2)$).
 
 **Principle: Maximum Likelihood**
-> Choose the parameter \(\theta\) that maximizes the likelihood of observing the data D:
-> $$ \theta_{MLE} = \mathrm{argmax}_{\theta} P(D|\theta) = \mathrm{argmax}_{\theta} \prod_{i=1}^n p(x_i|\theta) $$
+
+> Choose the parameter $\theta$ that maximizes the likelihood of observing the data D:
+> $$ \theta*{MLE} = \mathrm{argmax}*{\theta} P(D|\theta) = \mathrm{argmax}_{\theta} \prod_{i=1}^n p(x*i|\theta) $$
 Since log is monotonic, this is equivalent to maximizing the log-likelihood:
-$$ \theta_{MLE} = \mathrm{argmax}_{\theta} \mathcal{L}(\theta) = \mathrm{argmax}_{\theta} \sum_{i=1}^n \log p(x_i|\theta) $$
+$$ \theta*{MLE} = \mathrm{argmax}_{\theta} \mathcal{L}(\theta) = \mathrm{argmax}_{\theta} \sum\_{i=1}^n \log p(x_i|\theta) $$
 
 **Connection to KL Divergence:**
-Let \(p_{emp}(x)\) be the empirical distribution of the data (assigns probability \(1/n\) to each observed \(x_i\), or \(k/n\) if \(x\) appears \(k\) times).
-Consider the KL divergence between the empirical distribution and the model \(p(x|\theta)\):
-$$ D_{\mathrm{KL}}(p_{emp} \| p_\theta) = \sum_{x} p_{emp}(x) \log \frac{p_{emp}(x)}{p(x|\theta)} $$
-$$ = \sum_{x} p_{emp}(x) \log p_{emp}(x) - \sum_{x} p_{emp}(x) \log p(x|\theta) $$
-$$ = -H(p_{emp}) - \mathbb{E}_{x \sim p_{emp}}[\log p(x|\theta)] $$
-$$ = -H(p_{emp}) - \frac{1}{n} \sum_{i=1}^n \log p(x_i|\theta) $$
-$$ = -H(p_{emp}) - \frac{1}{n} \mathcal{L}(\theta) $$
-Since \(H(p_{emp})\) is constant with respect to \(\theta\), minimizing \(D_{\mathrm{KL}}(p_{emp} \| p_\theta)\) is equivalent to maximizing the log-likelihood \(\mathcal{L}(\theta)\).
+Let $p_{emp}(x)$ be the empirical distribution of the data (assigns probability $1/n$ to each observed $x_i$, or $k/n$ if $x$ appears $k$ times).
+Consider the KL divergence between the empirical distribution and the model $p(x|\theta)$:
+$$ D*{\mathrm{KL}}(p*{emp} \| p*\theta) = \sum*{x} p*{emp}(x) \log \frac{p*{emp}(x)}{p(x|\theta)} $$
+$$ = \sum*{x} p*{emp}(x) \log p*{emp}(x) - \sum*{x} p*{emp}(x) \log p(x|\theta) $$
+$$ = -H(p*{emp}) - \mathbb{E}_{x \sim p_{emp}}[\log p(x|\theta)] $$
+$$ = -H(p*{emp}) - \frac{1}{n} \sum*{i=1}^n \log p(x*i|\theta) $$
+$$ = -H(p*{emp}) - \frac{1}{n} \mathcal{L}(\theta) $$
+Since $H(p_{emp})$ is constant with respect to $\theta$, minimizing $D_{\mathrm{KL}}(p_{emp} \| p_\theta)$ is equivalent to maximizing the log-likelihood $\mathcal{L}(\theta)$.
 
-> **MLE finds the model distribution \(p_\theta\) within the chosen family that is closest (in KL divergence) to the empirical distribution of the data.**
+> **MLE finds the model distribution $p_\theta$ within the chosen family that is closest (in KL divergence) to the empirical distribution of the data.**
 
 **Example: Gaussian MLE**
-Assume data \(x_1, ..., x_n\) comes from \(N(\mu, \sigma^2)\).
+Assume data $x_1, ..., x_n$ comes from $N(\mu, \sigma^2)$.
 Log-likelihood:
-$$ \mathcal{L}(\mu, \sigma^2) = \sum_{i=1}^n \log \left( \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x_i-\mu)^2}{2\sigma^2}} \right) $$
-$$ = \sum_{i=1}^n \left( -\frac{1}{2}\log(2\pi) - \frac{1}{2}\log(\sigma^2) - \frac{(x_i-\mu)^2}{2\sigma^2} \right) $$
-$$ = -\frac{n}{2}\log(2\pi) - \frac{n}{2}\log(\sigma^2) - \frac{1}{2\sigma^2} \sum_{i=1}^n (x_i-\mu)^2 $$
-Taking derivatives w.r.t. \(\mu\) and \(\sigma^2\) and setting to zero yields:
-$$ \hat{\mu}_{MLE} = \frac{1}{n} \sum x_i = \bar{X} $$
-$$ \hat{\sigma}^2_{MLE} = \frac{1}{n} \sum (x_i - \hat{\mu}_{MLE})^2 $$
+$$ \mathcal{L}(\mu, \sigma^2) = \sum*{i=1}^n \log \left( \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x_i-\mu)^2}{2\sigma^2}} \right) $$
+$$ = \sum*{i=1}^n \left( -\frac{1}{2}\log(2\pi) - \frac{1}{2}\log(\sigma^2) - \frac{(x*i-\mu)^2}{2\sigma^2} \right) $$
+$$ = -\frac{n}{2}\log(2\pi) - \frac{n}{2}\log(\sigma^2) - \frac{1}{2\sigma^2} \sum*{i=1}^n (x*i-\mu)^2 $$
+Taking derivatives w.r.t. $\mu$ and $\sigma^2$ and setting to zero yields:
+$$ \hat{\mu}*{MLE} = \frac{1}{n} \sum x*i = \bar{X} $$
+$$ \hat{\sigma}^2*{MLE} = \frac{1}{n} \sum (x*i - \hat{\mu}*{MLE})^2 $$
 
-*Answer to Riddle:* The MLE for variance uses \(1/n\). The \(1/(n-1)\) version (Bessel's correction) is used to get an *unbiased* estimator, which is a different criterion from maximizing likelihood.<Footnote>Unbiasedness means the expected value of the estimator equals the true parameter value. MLE estimators are often biased but have other desirable properties like consistency and asymptotic efficiency.</Footnote> The \(1/\epsilon^2\) sample size dependence in polling comes from the variance of the sample mean for a Bernoulli/Binomial distribution, which scales as \(p(1-p)/n\). To get the error (standard deviation) down to \(\epsilon\), you need \(n \propto 1/\epsilon^2\).
+_Answer to Riddle:_ The MLE for variance uses $1/n$. The $1/(n-1)$ version (Bessel's correction) is used to get an _unbiased_ estimator, which is a different criterion from maximizing likelihood.<Footnote>Unbiasedness means the expected value of the estimator equals the true parameter value. MLE estimators are often biased but have other desirable properties like consistency and asymptotic efficiency.</Footnote> The $1/\epsilon^2$ sample size dependence in polling comes from the variance of the sample mean for a Bernoulli/Binomial distribution, which scales as $p(1-p)/n$. To get the error (standard deviation) down to $\epsilon$, you need $n \propto 1/\epsilon^2$.
 
 ---
 
@@ -64,27 +65,27 @@ The MLE principle (find model closest to empirical data in KL sense) combined wi
 <a id="linear-regression"></a>
 ### Linear Regression (Squared Error Loss)
 
-* **Problem:** Predict \(y\) from \(x\) using a linear model \(y = ax + b + \text{noise}\).
-* **Assumption (MEP Connection):** Assume the noise \(\epsilon = y - (ax+b)\) has mean 0 and finite variance, but otherwise make minimal assumptions. The MaxEnt distribution for fixed mean (0) and variance is Gaussian. So, assume \(\epsilon \sim N(0, \sigma^2)\), which means \(p(y|x, a, b, \sigma^2) = N(ax+b, \sigma^2)\).
-* **MLE Step:** Maximize the log-likelihood of observing data \((x_i, y_i)\):
-    $$ \mathcal{L}(a, b, \sigma^2) = \sum_{i=1}^n \log p(y_i|x_i, a, b, \sigma^2) $$
-    $$ = C - \frac{n}{2}\log(\sigma^2) - \frac{1}{2\sigma^2} \sum_{i=1}^n (y_i - (ax_i+b))^2 $$
-    Maximizing this w.r.t \(a, b\) (for fixed \(\sigma^2\)) is equivalent to **minimizing the sum of squared errors (MSE)**:
-    $$ \min_{a,b} \sum_{i=1}^n (y_i - (ax_i+b))^2 $$
+- **Problem:** Predict $y$ from $x$ using a linear model $y = ax + b + \text{noise}$.
+- **Assumption (MEP Connection):** Assume the noise $\epsilon = y - (ax+b)$ has mean 0 and finite variance, but otherwise make minimal assumptions. The MaxEnt distribution for fixed mean (0) and variance is Gaussian. So, assume $\epsilon \sim N(0, \sigma^2)$, which means $p(y|x, a, b, \sigma^2) = N(ax+b, \sigma^2)$.
+- **MLE Step:** Maximize the log-likelihood of observing data $(x_i, y_i)$:
+  $$ \mathcal{L}(a, b, \sigma^2) = \sum*{i=1}^n \log p(y_i|x_i, a, b, \sigma^2) $$
+    $$ = C - \frac{n}{2}\log(\sigma^2) - \frac{1}{2\sigma^2} \sum*{i=1}^n (y*i - (ax_i+b))^2 $$
+    Maximizing this w.r.t $a, b$ (for fixed $\sigma^2$) is equivalent to **minimizing the sum of squared errors (MSE)**:
+  $$ \min*{a,b} \sum\_{i=1}^n (y_i - (ax_i+b))^2 $$
 
 > **Key Insight:** Assuming Gaussian noise (justified by MaxEnt for fixed mean/variance) + applying MLE naturally leads to the standard Least Squares / MSE loss function. If noise was assumed Laplacian (MaxEnt for fixed mean absolute deviation), MLE would lead to minimizing sum of absolute errors (L1 loss).
 
 <a id="logistic-regression"></a>
 ### Logistic Regression (Cross-Entropy Loss)
 
-* **Problem:** Classify data points \(x_i\) into two classes (0 or 1, denoted by \(y_i\)). Assume probability depends on a linear function of features \(\theta \cdot x_i\).
-* **Assumption (MEP Connection):** We want a probability \(P(y=1|x) = p(x)\) between 0 and 1. What's the MaxEnt way to map the linear score \(s = \theta \cdot x \in \mathbb{R}\) to a probability? If we constrain the expected score associated with the probability, MEP leads to the **logistic (sigmoid) function**: \(p(x) = \sigma(s) = \frac{1}{1+e^{-s}}\). So, assume \(P(y=1|x, \theta) = \sigma(\theta \cdot x)\). This defines a Bernoulli distribution for \(y_i\).
-* **MLE Step:** Maximize the log-likelihood (for Bernoulli):
-    $$ \mathcal{L}(\theta) = \sum_{i=1}^n \log P(y_i|x_i, \theta) $$
-    $$ = \sum_{i=1}^n [ y_i \log P(y=1|x_i, \theta) + (1-y_i) \log P(y=0|x_i, \theta) ] $$
-    $$ = \sum_{i=1}^n [ y_i \log \sigma(\theta \cdot x_i) + (1-y_i) \log (1-\sigma(\theta \cdot x_i)) ] $$
+- **Problem:** Classify data points $x_i$ into two classes (0 or 1, denoted by $y_i$). Assume probability depends on a linear function of features $\theta \cdot x_i$.
+- **Assumption (MEP Connection):** We want a probability $P(y=1|x) = p(x)$ between 0 and 1. What's the MaxEnt way to map the linear score $s = \theta \cdot x \in \mathbb{R}$ to a probability? If we constrain the expected score associated with the probability, MEP leads to the **logistic (sigmoid) function**: $p(x) = \sigma(s) = \frac{1}{1+e^{-s}}$. So, assume $P(y=1|x, \theta) = \sigma(\theta \cdot x)$. This defines a Bernoulli distribution for $y_i$.
+- **MLE Step:** Maximize the log-likelihood (for Bernoulli):
+  $$ \mathcal{L}(\theta) = \sum*{i=1}^n \log P(y_i|x_i, \theta) $$
+    $$ = \sum*{i=1}^n [ y_i \log P(y=1|x_i, \theta) + (1-y_i) \log P(y=0|x_i, \theta) ] $$
+    $$ = \sum*{i=1}^n [ y_i \log \sigma(\theta \cdot x_i) + (1-y_i) \log (1-\sigma(\theta \cdot x_i)) ] $$
     Maximizing this is equivalent to **minimizing the negative log-likelihood**, which is precisely the **Binary Cross-Entropy Loss**:
-    $$ \text{Loss} = -\sum_{i=1}^n [ y_i \log p_i + (1-y_i) \log (1-p_i) ] \quad \text{where } p_i = \sigma(\theta \cdot x_i) $$
+    $$ \text{Loss} = -\sum*{i=1}^n [ y_i \log p_i + (1-y_i) \log (1-p_i) ] \quad \text{where } p_i = \sigma(\theta \cdot x_i) $$
 
 > **Key Insight:** Assuming a Bernoulli outcome where probability is linked to a linear score via the logistic function (justified by MaxEnt) + applying MLE naturally leads to the standard Binary Cross-Entropy loss used in logistic regression and neural network classification.
 
@@ -96,39 +97,40 @@ The MLE principle (find model closest to empirical data in KL sense) combined wi
 <a id="basic-training-loss"></a>
 ### Basic Training & Softmax
 
-* **Problem:** Train a neural network for multi-class classification (e.g., ImageNet). The network outputs scores (logits) \(z_k\) for each class \(k\). We need to convert these to probabilities \(q_k\) and compare to the true class (one-hot encoded vector \(p\), e.g., \(p=(0,0,1,0,...)\)).
-* **Assumption (MEP):** Given scores \(z_k\), the MaxEnt distribution is the **Softmax** function (derived in Part 2):
-    $$ q_k = \frac{e^{z_k}}{\sum_j e^{z_j}} $$
-* **MLE/Loss:** We want the predicted distribution \(q\) to match the true distribution \(p\). Using MLE is equivalent to minimizing \(D_{\mathrm{KL}}(p \| q)\), which is equivalent to minimizing the cross-entropy \(H(p, q)\) since \(p\) is fixed (the true label).
-    $$ H(p, q) = -\sum_k p_k \log q_k $$
-    Since \(p\) is one-hot (say \(p_c=1\) for the true class c, and 0 otherwise), this simplifies to:
-    $$ H(p, q) = -\log q_c = -\log \left( \frac{e^{z_c}}{\sum_j e^{z_j}} \right) $$
-    This is the standard **Cross-Entropy Loss** used for training deep classifiers.
+- **Problem:** Train a neural network for multi-class classification (e.g., ImageNet). The network outputs scores (logits) $z_k$ for each class $k$. We need to convert these to probabilities $q_k$ and compare to the true class (one-hot encoded vector $p$, e.g., $p=(0,0,1,0,...)$).
+- **Assumption (MEP):** Given scores $z_k$, the MaxEnt distribution is the **Softmax** function (derived in Part 2):
+  $$ q_k = \frac{e^{z_k}}{\sum_j e^{z_j}} $$
+- **MLE/Loss:** We want the predicted distribution $q$ to match the true distribution $p$. Using MLE is equivalent to minimizing $D_{\mathrm{KL}}(p \| q)$, which is equivalent to minimizing the cross-entropy $H(p, q)$ since $p$ is fixed (the true label).
+  $$ H(p, q) = -\sum_k p_k \log q_k $$
+    Since $p$ is one-hot (say $p_c=1$ for the true class c, and 0 otherwise), this simplifies to:
+  $$ H(p, q) = -\log q_c = -\log \left( \frac{e^{z_c}}{\sum_j e^{z_j}} \right) $$
+  This is the standard **Cross-Entropy Loss** used for training deep classifiers.
 
 <a id="knowledge-distillation"></a>
 ### Knowledge Distillation (Training Smaller Models)
 
-* **Problem:** Train a smaller "student" model to mimic a larger "teacher" model.
-* **Method:** Instead of training the student on hard labels (one-hot \(p\)), train it to match the *probability distribution* \(q_{teacher}\) produced by the teacher model (using softmax on teacher's logits, possibly with a "temperature" scaling).
-* **Loss Function:** Minimize the KL divergence between the teacher's distribution and the student's distribution \(q_{student}\):
-    $$ \text{Loss} = D_{\mathrm{KL}}(q_{teacher} \| q_{student}) $$
-    This encourages the student to learn the nuanced similarities between classes that the teacher captured, often leading to better performance than training on hard labels alone.<Cite>Hinton2015Distilling</Cite>
+- **Problem:** Train a smaller "student" model to mimic a larger "teacher" model.
+- **Method:** Instead of training the student on hard labels (one-hot $p$), train it to match the _probability distribution_ $q_{teacher}$ produced by the teacher model (using softmax on teacher's logits, possibly with a "temperature" scaling).
+- **Loss Function:** Minimize the KL divergence between the teacher's distribution and the student's distribution $q_{student}$:
+  $$ \text{Loss} = D*{\mathrm{KL}}(q*{teacher} \| q\_{student}) $$
+  This encourages the student to learn the nuanced similarities between classes that the teacher captured, often leading to better performance than training on hard labels alone.<Cite>Hinton2015Distilling</Cite>
 
 <a id="variational-autoencoders"></a>
 ### Variational Autoencoders (VAEs)
 
-* **Problem:** Learn a generative model of data (e.g., images) using latent variables \(z\). We want to learn an encoder \(q(z|x)\) mapping data \(x\) to latent codes \(z\), and a decoder \(p(x|z)\) mapping codes back to data. We want to maximize the data likelihood \(p(x) = \int p(x|z)p(z)dz\).
-* **Method:** Maximizing \(p(x)\) directly is hard. VAEs maximize a lower bound called the Evidence Lower Bound (ELBO):
-    $$ \log p(x) \ge \text{ELBO} = \mathbb{E}_{z \sim q(z|x)}[\log p(x|z)] - D_{\mathrm{KL}}(q(z|x) \| p(z)) $$
-* **Interpretation:**
-    * The first term \(\mathbb{E}[\log p(x|z)]\) is the **reconstruction likelihood**: How well can we reconstruct \(x\) from latent codes \(z\) sampled from the encoder's approximation of the posterior? (Often uses MSE or Cross-Entropy loss depending on data type).
-    * The second term \(D_{\mathrm{KL}}(q(z|x) \| p(z))\) is a **regularizer**: It forces the learned approximate posterior \(q(z|x)\) from the encoder to stay close to a prior distribution \(p(z)\) (usually a standard Gaussian \(N(0, I)\)). This encourages a well-structured latent space.
+- **Problem:** Learn a generative model of data (e.g., images) using latent variables $z$. We want to learn an encoder $q(z|x)$ mapping data $x$ to latent codes $z$, and a decoder $p(x|z)$ mapping codes back to data. We want to maximize the data likelihood $p(x) = \int p(x|z)p(z)dz$.
+- **Method:** Maximizing $p(x)$ directly is hard. VAEs maximize a lower bound called the Evidence Lower Bound (ELBO):
+  $$ \log p(x) \ge \text{ELBO} = \mathbb{E}_{z \sim q(z|x)}[\log p(x|z)] - D_{\mathrm{KL}}(q(z|x) \| p(z)) $$
+- **Interpretation:**
+  - The first term $\mathbb{E}[\log p(x|z)]$ is the **reconstruction likelihood**: How well can we reconstruct $x$ from latent codes $z$ sampled from the encoder's approximation of the posterior? (Often uses MSE or Cross-Entropy loss depending on data type).
+  - The second term $D_{\mathrm{KL}}(q(z|x) \| p(z))$ is a **regularizer**: It forces the learned approximate posterior $q(z|x)$ from the encoder to stay close to a prior distribution $p(z)$ (usually a standard Gaussian $N(0, I)$). This encourages a well-structured latent space.
 
 > **Key Insight:** VAE training explicitly involves minimizing a KL divergence term to regularize the latent space, fitting perfectly into the information-theoretic framework. The beastly loss function arises naturally from maximizing the ELBO.
+
+![VAE Architecture and KL Components](/03-modeling/vae-diagram.png)
 
 ---
 
 > **Summary of Part 3:** Maximum Likelihood Estimation (MLE) provides a powerful principle for fitting models, equivalent to minimizing KL divergence from the empirical distribution. Combined with Maximum Entropy assumptions about noise or mappings, it justifies standard loss functions like MSE and Cross-Entropy. Information-theoretic ideas like KL also appear directly in advanced ML techniques like knowledge distillation and VAEs.
 
-> **Next:** [Link to 04-part-advanced.mdx] Part 4: Advanced Connections
-
+> **Next:** [Link to 04-advanced.mdx] Part 4: Advanced Connections

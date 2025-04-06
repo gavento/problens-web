@@ -8,16 +8,19 @@
 ## The Philosophy: Minimizing KL Divergence
 
 > **TLDR:** Minimizing KL divergence is a really good guide for finding distributions that model data or incorporate constraints.
-> * If you have empirical data $p$ and want a simpler model $q$ from family $Q$, solve $\min_{q \in Q} D_{\mathrm{KL}}(p\| q)$. (Leads to Max Likelihood - Part 3).
-> * If you start with a prior/reference model $q$ (e.g., uniform) and learn constraints defining a set $P$, find the updated model $p$ by solving $\min_{p \in P} D_{\mathrm{KL}}(p\| q)$. (Leads to Max Entropy).
+>
+> - If you have empirical data $p$ and want a simpler model $q$ from family $Q$, solve $\min_{q \in Q} D_{\mathrm{KL}}(p\| q)$. (Leads to Max Likelihood - Part 3).
+> - If you start with a prior/reference model $q$ (e.g., uniform) and learn constraints defining a set $P$, find the updated model $p$ by solving $\min_{p \in P} D_{\mathrm{KL}}(p\| q)$. (Leads to Max Entropy).
 
 We've seen KL measures the difference or "cost" between a true/reference distribution $p$ and a model $q$. A core theme in information-theoretic modeling is to **choose distributions by minimizing KL divergence** subject to relevant constraints.
 
 There are two main perspectives:
-1.  **Given Data/Truth \(p\), Find Best Model \(q\):** We have empirical data (giving $p_{emp}$) or a complex true distribution $p$. We want to approximate it with a simpler model $q$ from some family $Q$ (e.g., Gaussians, exponentials). The goal is find the $q \in Q$ that is *closest* to $p$. Minimizing $D_{\mathrm{KL}}(p \| q)$ w.r.t $q$ achieves this. As we'll see in Part 3, this is equivalent to Maximum Likelihood Estimation.
-2.  **Given Prior Model \(q\), Incorporate Constraints on \(p\):** We start with a prior belief or reference distribution $q$ (often uniform, representing ignorance). We then learn some constraints that the true distribution $p$ must satisfy (e.g., $\mathbb{E}_p[X] = \mu$). These constraints define a set $P$ of possible distributions. We want to find the distribution $p \in P$ that is *closest* to our prior $q$, incorporating the new information minimally. This involves minimizing $D_{\mathrm{KL}}(p \| q)$ w.r.t $p$ over the set $P$. This leads to the Maximum Entropy Principle.
+
+1.  **Given Data/Truth \(p\), Find Best Model \(q\):** We have empirical data (giving $p_{emp}$) or a complex true distribution $p$. We want to approximate it with a simpler model $q$ from some family $Q$ (e.g., Gaussians, exponentials). The goal is find the $q \in Q$ that is _closest_ to $p$. Minimizing $D_{\mathrm{KL}}(p \| q)$ w.r.t $q$ achieves this. As we'll see in Part 3, this is equivalent to Maximum Likelihood Estimation.
+2.  **Given Prior Model \(q\), Incorporate Constraints on \(p\):** We start with a prior belief or reference distribution $q$ (often uniform, representing ignorance). We then learn some constraints that the true distribution $p$ must satisfy (e.g., $\mathbb{E}_p[X] = \mu$). These constraints define a set $P$ of possible distributions. We want to find the distribution $p \in P$ that is _closest_ to our prior $q$, incorporating the new information minimally. This involves minimizing $D_{\mathrm{KL}}(p \| q)$ w.r.t $p$ over the set $P$. This leads to the Maximum Entropy Principle.
 
 ---
+
 <a id="bayes-theorem"></a>
 ## Bayes' Theorem as a Foundation
 
@@ -30,7 +33,7 @@ $$ \frac{P(H|E)}{P(\neg H|E)} = \frac{P(E|H)}{P(E|\neg H)} \times \frac{P(H)}{P(
 $$ \text{Posterior Odds} = \text{Likelihood Ratio} \times \text{Prior Odds} $$
 Taking logs:
 $$ \log(\text{Posterior Odds}) = \log(\text{Likelihood Ratio}) + \log(\text{Prior Odds}) $$
-The log-likelihood ratio, $\log \frac{P(E|H)}{P(E|\neg H)}$, is the *evidence* provided by E differentiating H from ¬H. As we saw in Part 1, KL divergence is the *expected* evidence per sample when comparing two distributions.
+The log-likelihood ratio, $\log \frac{P(E|H)}{P(E|\neg H)}$, is the _evidence_ provided by E differentiating H from ¬H. As we saw in Part 1, KL divergence is the _expected_ evidence per sample when comparing two distributions.
 
 <a id="bayes-from-min-kl"></a>
 ### Bayes' Theorem from Minimum KL
@@ -45,7 +48,7 @@ This is exactly the standard Bayesian update rule for conditioning on an event S
 <a id="more-on-kl-minimization"></a>
 ### More on KL Minimization and Bayes
 
-*(Placeholder: This section can contain the "postmodern rant" about truth vs models and the connection between minimizing KL and solving problems using Bayes theorem, potentially using the Wallis derivation idea briefly)*
+_(Placeholder: This section can contain the "postmodern rant" about truth vs models and the connection between minimizing KL and solving problems using Bayes theorem, potentially using the Wallis derivation idea briefly)_
 
 The principle of minimizing KL divergence provides a unifying framework. Both updating beliefs based on new constraints (MEP) and fitting models to data (MLE) can be seen as finding a distribution that is "closest" in the KL sense to some reference, subject to the available information. One can argue that solving problems using Bayes' theorem is fundamentally about minimizing information loss or surprise, which is what minimizing KL achieves.
 
@@ -56,21 +59,28 @@ The principle of minimizing KL divergence provides a unifying framework. Both up
 
 > **TLDR:** If you only know certain average properties (constraints) of a distribution, the most unbiased / least presumptive choice is the distribution that maximizes entropy subject to those constraints. It's equivalent to finding the distribution satisfying the constraints that is closest (in KL divergence) to the uniform distribution.
 
-*(Content migrated and adapted from the MEP section in the previous outline: Puzzle (Die/Restaurant), Problem statement, MEP definition, Justifications (Least Info, Combinatorics, KL Minimization), General Form (Exponential Family))*
+**Puzzle (Restaurant):** When I'm at my favorite restaurant, I tend to order depending on how hungry I am. If I'm very hungry, I might order the giant pasta bowl. If I'm not so hungry, I might go for a salad. Given only my average hunger level, what's the probability distribution over how hungry I'll be on any given visit?
 
 **Principle: Maximum Entropy**
+
 > Given constraints $\mathbb{E}_p[f_i(X)] = c_i$, choose $p(x)$ to maximize $H(p)$ subject to these constraints.
 
 **Justifications:**
+
 1.  **Least Informative:** Maximizes uncertainty given constraints.
 2.  **Combinatorics:** Most microstates compatible with macro-constraints correspond to the max-entropy distribution.
 3.  **KL Minimization:** Equivalent to $\min_{p \in P} D_{\mathrm{KL}}(p \| q_{\text{uniform}})$, where P is the set of distributions satisfying constraints.
 
 **The Solution Form (Exponential Family):**
 The solution has the form:
-`$$ p(x) = \frac{1}{Z(\lambda)} \exp\left( \sum_{i=1}^k \lambda_i f_i(x) \right) $$`
+$$ p(x) = \frac{1}{Z(\lambda)} \exp\left( \sum\_{i=1}^k \lambda_i f_i(x) \right) $$
+
+Where $Z(\lambda) = \sum_x \exp\left( \sum_{i=1}^k \lambda_i f_i(x) \right)$ is the partition function ensuring $p(x)$ sums to 1, and the $\lambda_i$ parameters are chosen to satisfy the given constraints.
+
+![MEP Visualization](/02-updating/mep-visualization.png)
 
 ---
+
 <a id="maxent-distributions"></a>
 ## Maximum Entropy Distributions
 
@@ -126,11 +136,11 @@ Let's see what distributions arise from MEP with common constraints:
 > Why might Normal distribution fit S&P daily returns (many small independent effects -> Central Limit Theorem -> Gaussian ≈ MaxEnt for mean/variance) while Laplace fits Bitcoin better?
 
 Laplace distribution \(p(x) \propto e^{-\lambda|x-\mu|}\) is MaxEnt if constraint is fixed mean absolute deviation \(\mathbb{E}[|X-\mu|]\).
-Alternatively, Laplace arises as a *scale mixture* of Gaussians: Sample variance \(\sigma^2\) from an Exponential distribution, then sample \(X\) from \(N(\mu, \sigma^2)\).
+Alternatively, Laplace arises as a _scale mixture_ of Gaussians: Sample variance \(\sigma^2\) from an Exponential distribution, then sample \(X\) from \(N(\mu, \sigma^2)\).
 This matches the story for volatile assets like Bitcoin: the underlying "Gaussian fluctuation" process might have a variance that itself changes significantly over time (modeled by the exponential prior on \(\sigma^2\)). Normal distribution assumes fixed variance.
 If S&P data includes high-volatility periods (like crises), it might also look more Laplace-like or Student-t-like (Student-t comes from a different prior on variance, Inverse Gamma, which is MaxEnt for \(\mathbb{E}[\log X]\) and \(\mathbb{E}[1/X]\)).
 
-![Placeholder: Financial data graph showing Normal vs Laplace fits](placeholder.png)
+![Financial data graph showing Normal vs Laplace fits](/02-updating/financial-returns.png)
 
 <a id="independence-as-maxent"></a>
 ### Independence as MaxEnt
@@ -141,5 +151,4 @@ If we want a joint distribution \(p(x,y)\) and only constrain the marginals \(p(
 
 > **Summary of Part 2:** We explored Bayesian updating as KL minimization and delved into the Maximum Entropy Principle. MEP provides a powerful justification for using common probability distributions, linking them directly to underlying assumptions about known average quantities via the exponential family form.
 
-> **Next:** [Link to 03-part-modeling.mdx] Part 3: Building & Comparing Models
-
+> **Next:** [Link to 03-modeling.mdx] Part 3: Building & Comparing Models

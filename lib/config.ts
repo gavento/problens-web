@@ -6,10 +6,10 @@ export const TITLE_SHORT = "Applied Information Theory";
 export const TITLE_ABBR = "Applied Information Theory";
 export const CHAPTERS = [
   ["Introduction", "index"],
-  ["Quantifying", "01-quantifying"],
-  ["Updating", "02-updating"],
+  ["Quantifying Information, Belief, and Surprise", "01-quantifying"],
+  ["Updating Beliefs & Learning from Constraints", "02-updating"],
   ["Modeling", "03-modeling"],
-  ["Advanced", "04-advanced"],
+  ["Advanced Topics", "04-advanced"],
   ["Resources", "resources"],
   ["About", "about"],
 ];
