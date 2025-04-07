@@ -2,26 +2,24 @@ import Page from "@/components/Page";
 import { DESCRIPTION, GTM_ID, TITLE } from "@/lib/config";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata } from "next";
-import { Fira_Code, Lora } from "next/font/google";
+import { JetBrains_Mono, Source_Serif_4 } from "next/font/google";
 import { StrictMode } from "react";
 import "./globals.css";
 
-// Define Lora font configuration
-const lora = Lora({
-  variable: "--font-lora", // CSS variable name for Lora
+// Define Source Serif Pro font configuration
+const sourceSerif = Source_Serif_4({
+  variable: "--font-serif", // CSS variable name for main font
   subsets: ["latin"],
-  // Include weights you'll likely use (e.g., Regular, Medium, SemiBold, Bold)
+  // Include a range of weights for flexibility in mathematical content
   weight: ["400", "500", "600", "700"],
 });
 
-// Define Fira Code font configuration
-const firaCode = Fira_Code({
-  variable: "--font-fira-code", // CSS variable name for Fira Code
+// Define JetBrains Mono font configuration
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono", // CSS variable name for monospace font
   subsets: ["latin"],
-  // Usually only need Regular weight for code, but include others if needed
+  // Include multiple weights for better typography control
   weight: ["400", "500", "600", "700"],
-  // Optional: Disable ligatures if you prefer
-  // variable: '--font-fira-code-nl', // Example if using no-ligature version
 });
 
 export const metadata: Metadata = {
@@ -35,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${lora.variable} ${firaCode.variable}`}>
+    <html lang="en" className={`${sourceSerif.variable} ${jetbrainsMono.variable}`}>
       <StrictMode>
         <body className="antialiased">
           <Page>{children}</Page>

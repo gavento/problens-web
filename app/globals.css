@@ -10,15 +10,15 @@
 :root {
   /* Radix UI font overrides (or similar global styles) */
   --font-default: var(--content-font);
-  --font-mono: var(--font-fira-code), monospace; /* Use Fira Code variable */
+  --font-mono: var(--font-mono), ui-monospace, "Cascadia Code", "SF Mono", monospace;
 
   /* Your custom variables */
   --background: #ffffff;
   --foreground: #1a1a1a;
-  /* Use Lora variable and update fallbacks */
-  --content-font: var(--font-lora), Georgia, Cambria, "Times New Roman", serif;
-  --content-font-size: 1rem;
-  --content-line-height: 1.6;
+  /* Use Source Serif 4 variable and update fallbacks */
+  --content-font: var(--font-serif), "Charter", "Bitstream Charter", "PT Serif", Georgia, serif;
+  --content-font-size: 1.125rem;
+  --content-line-height: 1.75;
 
   /* Radix UI theme overrides */
   --color-page-background: var(--background);
@@ -37,12 +37,29 @@
   /* --max-width: 800px; */
   --menu-text: #666666;
   /* --sidebar-width: 240px; */
-  --content-width: 40rem;
+  --content-width: 42rem;
 
   /* Sidebar typography */
   --sidebar-font: var(--content-font);
   --sidebar-font-size: 1rem;
   --sidebar-line-height: 1.5;
+}
+
+/* Math-specific styles */
+.katex {
+  font-size: 1.1em;
+  line-height: 1.4;
+}
+
+.katex-display {
+  margin: 1.5em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Improved spacing for inline math */
+.katex-inline {
+  padding: 0 0.1em;
 }
 
 /* Footnotes spacing */
@@ -169,8 +186,9 @@ nav > ul > li > a {
 
 /* Code blocks */
 code {
-  font-family: var(--font-geist-mono), Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  font-size: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  letter-spacing: -0.025em;
 }
 
 pre {
@@ -184,8 +202,8 @@ pre {
 /* Prose styles */
 .prose {
   width: 100%;
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: var(--content-font-size);
+  line-height: var(--content-line-height);
 }
 
 .prose > * {
@@ -193,22 +211,24 @@ pre {
 }
 
 .prose h1 {
-  font-weight: normal;
+  font-weight: 500;
   margin-top: 0;
   line-height: 1.2;
-  font-size: 1.52rem;
+  font-size: 1.75rem;
 }
 
 .prose h2 {
-  font-weight: normal;
-  font-size: 1.3rem;
-  margin-top: 2rem;
+  font-weight: 500;
+  font-size: 1.5rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .prose h3 {
-  font-weight: normal;
+  font-weight: 500;
   font-size: 1.25rem;
-  margin-top: 1.5rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
 }
 
 .prose p {
