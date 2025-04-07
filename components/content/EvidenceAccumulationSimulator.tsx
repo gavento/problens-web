@@ -111,45 +111,7 @@ const EvidenceAccumulationSimulator = () => {
         </p>
 
         <div className="">
-          <p className="font-medium mb-1">Current Distributions:</p>
-          <div className="mb-2">
-            <span className="font-medium">
-              True distribution (<InlineMath math="p" />
-              ):
-            </span>{" "}
-            [Heads: {trueHeadsProb.toFixed(2)}, Tails: {(1 - trueHeadsProb).toFixed(2)}]
-          </div>
-          <div className="mb-2">
-            <span className="font-medium">
-              Model distribution (<InlineMath math="q" />
-              ):
-            </span>{" "}
-            [Heads: {modelHeadsProb.toFixed(2)}, Tails: {(1 - modelHeadsProb).toFixed(2)}]
-          </div>
-          <div>
-            {/* <span className="font-medium">KL Divergence:</span> */}
-            <div className="">
-              <BlockMath
-                math={
-                  "D(p||q) = p(H)\\log_2\\left(\\frac{p(H)}{q(H)}\\right) + p(T)\\log_2\\left(\\frac{p(T)}{q(T)}\\right)"
-                }
-              />
-              <BlockMath
-                math={`= ${trueHeadsProb.toFixed(2)}\\log_2\\left(\\frac{${trueHeadsProb.toFixed(
-                  2
-                )}}{${modelHeadsProb.toFixed(2)}}\\right) + ${(1 - trueHeadsProb).toFixed(2)}\\log_2\\left(\\frac{${(
-                  1 - trueHeadsProb
-                ).toFixed(2)}}{${(1 - modelHeadsProb).toFixed(2)}}\\right)`}
-              />
-              <BlockMath math={`= ${klDivergence.toFixed(4)}\\text{ bits per flip}`} />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div>
-          <h3 className="font-semibold mb-2">Model Parameters</h3>
+          <div className="font-semibold mb-2">Model Parameters</div>
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -183,10 +145,44 @@ const EvidenceAccumulationSimulator = () => {
               />
             </div>
           </div>
-        </div>
 
+          {/* <p className="font-medium mb-1">Current Distributions:</p> */}
+          <div className="mb-2">
+            <span className="font-medium">
+              True distribution (<InlineMath math="p" />
+              ):
+            </span>{" "}
+            [Heads: {trueHeadsProb.toFixed(2)}, Tails: {(1 - trueHeadsProb).toFixed(2)}]
+          </div>
+          <div className="mb-2">
+            <span className="font-medium">
+              Model distribution (<InlineMath math="q" />
+              ):
+            </span>{" "}
+            [Heads: {modelHeadsProb.toFixed(2)}, Tails: {(1 - modelHeadsProb).toFixed(2)}]
+          </div>
+          <div>
+            {/* <span className="font-medium">KL Divergence:</span> */}
+            <div className="">
+              <BlockMath
+                math={`\\begin{align*}
+                  D(p||q) &= p(H)\\log_2\\left(\\frac{p(H)}{q(H)}\\right) + p(T)\\log_2\\left(\\frac{p(T)}{q(T)}\\right) \\\\
+                  &= ${trueHeadsProb.toFixed(2)}\\log_2\\left(\\frac{${trueHeadsProb.toFixed(
+                  2
+                )}}{${modelHeadsProb.toFixed(2)}}\\right) + ${(1 - trueHeadsProb).toFixed(2)}\\log_2\\left(\\frac{${(
+                  1 - trueHeadsProb
+                ).toFixed(2)}}{${(1 - modelHeadsProb).toFixed(2)}}\\right) \\\\
+                  &= ${klDivergence.toFixed(4)}\\text{ bits per flip}
+                \\end{align*}`}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mb-6">
         <div>
-          <h3 className="font-semibold mb-2">Simulation Controls</h3>
+          <div className="font-semibold mb-2">Simulation Controls</div>
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Number of Flips: {numFlips}</label>
@@ -217,7 +213,7 @@ const EvidenceAccumulationSimulator = () => {
               />
             </div>
 
-            <div className="flex justify-between items-center">
+            <div className="flex justify-start items-center">
               <button
                 onClick={toggleSimulation}
                 className={`px-4 py-2 rounded-md font-medium ${
@@ -255,7 +251,7 @@ const EvidenceAccumulationSimulator = () => {
       <div className="bg-gray-50 p-4 rounded-lg mb-6">
         <div className="flex justify-between mb-4">
           <div>
-            <p className="font-medium">
+            <p className="">
               Current Flip: {currentFlip} / {numFlips}
             </p>
             <p>
@@ -265,8 +261,8 @@ const EvidenceAccumulationSimulator = () => {
             </p>
           </div>
           <div>
-            <p className="font-medium">
-              KL Divergence: {klDivergence.toFixed(4)} <InlineMath math="\text{bits/flip}" />
+            <p className="">
+              Expected KL Divergence: {klDivergence.toFixed(4)} <InlineMath math="\text{bits/flip}" />
             </p>
             <p>
               Expected after {numFlips} flips: {(klDivergence * numFlips).toFixed(2)} <InlineMath math="\text{bits}" />
@@ -278,14 +274,8 @@ const EvidenceAccumulationSimulator = () => {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={simulationData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="flip"
-                label={{ value: "Number of Coin Flips", position: "insideBottomRight", offset: -10 }}
-                domain={[0, numFlips]}
-              />
-              <YAxis
-                label={{ value: <InlineMath math="\\text{Evidence (bits)}" />, angle: -90, position: "insideLeft" }}
-              />
+              <XAxis dataKey="flip" label={{ value: "Number of Coin Flips" }} domain={[0, numFlips]} />
+              <YAxis label={{ value: "Evidence (bits)", angle: -90 }} />
               <Tooltip
                 formatter={(value: number) =>
                   `${value.toFixed(2)} ${React.createElement(InlineMath, { math: "\\text{bits}" })}`
