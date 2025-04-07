@@ -55,11 +55,13 @@ The question is: why $1/\epsilon^2$? We'll explore this in later sections.
 
 ### Financial Mathematics <a id="financial-mathematics"></a>
 
-Consider data showing how the price of Bitcoin and the S&P index changed each day over the last year. As you might have guessed, the average change is slightly positive, but there is also large variance. For example, the average daily S&P change is about $0.5, but the standard deviation is $3, meaning that a typical daily change is between approximately -$2.5 and +$3.5 per share.
+Consider data showing how the price of Bitcoin and the S&P index changed each day over the last year. As you might have guessed, the average change is slightly positive, but there is also large variance. For example, the average daily S&P change is about \$0.5, but the standard deviation is \$3, meaning that a typical daily change is between approximately -\$2.5 and +\$3.5 per share.
 
 But how should we model these changes in more detail? One way is using the normal distribution with shape $e^{-x^2}$; another possibility is the Laplace distribution, with shape $e^{-|x|}$.
 
 Eyeballing the data, it seems that the normal distribution is a better fit for the S&P index, while the Laplace distribution is a better fit for Bitcoin. KL divergence can measure how well a true distribution (the histogram from last year) is fitted by a model (normal or Laplace). It equals zero if the two distributions are identical, and the more different they are, the larger the divergence.
+
+![Financial Data Distribution](00-introduction/financial.png)
 
 But... do we have a story explaining why this is? And why did we even try the normal and Laplace distributions as potential fits rather than some other distributions?
 
@@ -70,6 +72,8 @@ In the old days (and in some countries even today), people measured lengths in f
 It's a bit better to ask 16 random people and compute their mean foot length as
 $$\bar X = \frac{1}{16} (X_1 + \dots + X_{16})$$
 which will be a fairly stable estimate that will hopefully remain similar the next time you perform this experiment.
+
+![Determining the length of the foot in 1522](00-introduction/rod.png)
 
 How good is this estimate? Typically, one would gauge it by estimating the standard deviation using the formula
 $$\bar \sigma^2 = \frac{1}{16} \sum_{i=1}^{16} (X_i - \bar X)^2$$

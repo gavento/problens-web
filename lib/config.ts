@@ -5,8 +5,7 @@ export const DESCRIPTION = "Probabilistic Lenses";
 export const TITLE_SHORT = "Probabilistic Lenses";
 export const TITLE_ABBR = "Probabilistic Lenses";
 export const CHAPTERS = [
-  ["Introduction", "index"],
-  ["A few riddles", "00-introduction"],
+  ["Introduction", "00-introduction"],
   ["Quantifying Information, Belief, and Surprise", "01-quantifying"],
   ["Updating Beliefs & Learning from Constraints", "02-updating"],
   ["Building & Comparing Models", "03-modeling"],

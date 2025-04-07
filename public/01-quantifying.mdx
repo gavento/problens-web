@@ -6,7 +6,9 @@ In the introduction, we presented several puzzles across different domains. Now,
 
 KL divergence measures how well a "true distribution" or empirical data $p$ is fitted by a model distribution $q$. The formula is:
 
-$$D(p|q) = \sum p_i \log \frac{p_i}{q_i}$$
+$$
+D(p|q) = \sum p_i \log \frac{p_i}{q_i}
+$$
 
 The meaning behind this formula is that if you keep sampling from the true distribution $p$ and applying Bayes' theorem, KL tells you how quickly you are able to distinguish whether you are sampling from $p$ or $q$.
 
@@ -14,7 +16,9 @@ KL divergence is a measure that takes two distributions as input: the true distr
 
 KL divergence is defined as:
 
-$$KL(p, q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}$$
+$$
+KL(p, q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}
+$$
 
 What is the intuition behind this formula? Let's explore a few perspectives to build a deeper understanding.
 
@@ -43,13 +47,17 @@ Assume that the coin is actually biased (i.e., hypothesis 1 is true). However, i
 
 Now, note that under hypothesis 1 (biased), the probability of heads is 0.4, while under hypothesis 2 (fair) it is 0.5. The ratio of these probabilities is $0.4:0.5$, or equivalently $4:5$. Bayes' theorem tells us to update your odds by multiplying the prior odds by this likelihood ratio:
 
-$$1:2 \quad \times \quad 4:5 \quad = \quad 4:10 \quad = \quad 2:5$$
+$$
+1:2 \quad \times \quad 4:5 \quad = \quad 4:10 \quad = \quad 2:5
+$$
 
 This corresponds to a posterior probability of about 29% that the coin is biased.
 
 You can gather more evidence by flipping the coin a few more times. Suppose you flip the coin twice more and get more tails. Using Bayes' theorem, you multiply the likelihood ratios for each flip:
 
-$$1:2,\quad 40:50,\quad 60:50,\quad 60:50 \quad \Longrightarrow \quad 144:250$$
+$$
+1:2,\quad 40:50,\quad 60:50,\quad 60:50 \quad \Longrightarrow \quad 144:250
+$$
 
 which corresponds to about a 37% probability that the coin is biased.
 
@@ -61,7 +69,9 @@ Since $\log_2(1/2) = -1$, we can describe our three-flip experiment as follows: 
 
 In general, since the coin is biased, each flip yields $0.26$ bits of evidence with probability 0.6 and $-0.32$ bits with probability 0.4. The average evidence per flip is:
 
-$$0.6\cdot 0.26 - 0.4\cdot 0.32 \approx 0.03\text{ bits}$$
+$$
+0.6\cdot 0.26 - 0.4\cdot 0.32 \approx 0.03\text{ bits}
+$$
 
 Notice that this expression is exactly the KL divergence computed for the true distribution $(0.6,0.4)$ and the model $(0.5,0.5)$.
 
@@ -83,7 +93,9 @@ Such a distribution can be represented as a table with six numbers (which we can
 
 Generalizing these thought experiments, it seems natural to require that if we can decompose two distributions $p$ and $q$ as joint distributions $(p_1,p_2)$ and $(q_1,q_2)$, then:
 
-$$f((p_1, p_2), (q_1, q_2)) = f(p_1, q_1) + \sum_i p_i\cdot f\Bigl(p_2(\cdot|i), q_2(\cdot|i)\Bigr)$$
+$$
+f((p_1, p_2), (q_1, q_2)) = f(p_1, q_1) + \sum_i p_i\cdot f\Bigl(p_2(\cdot|i), q_2(\cdot|i)\Bigr)
+$$
 
 A priori, it is not clear whether any function $f$ satisfies this property, since there are many ways to represent a joint distribution using different trees. Remarkably, this constraint almost uniquely characterizes KL divergence.
 
@@ -136,7 +148,9 @@ Cross entropy between distributions $p$ and $q$ is measuring how surprised you a
 
 It is sometimes helpful to rewrite the formula for KL divergence as a difference of two expressions:
 
-$$\sum_i p_i \log \frac{p_i}{q_i} = \sum_i p_i \log \frac{1}{q_i} - \sum_i p_i \log \frac{1}{p_i}$$
+$$
+\sum_i p_i \log \frac{p_i}{q_i} = \sum_i p_i \log \frac{1}{q_i} - \sum_i p_i \log \frac{1}{p_i}
+$$
 
 where we used the identity $\log p_i = -\log(1/p_i)$.
 
@@ -160,15 +174,21 @@ As the next application of KL divergence and cross-entropy, let's solve the pred
 
 To grade an expert's predictions, let $p$ denote the true probabilities of events and $q$ denote the expert's predicted probabilities. We define the expert's score as:
 
-$$KL(p,q)$$
+$$
+KL(p,q)
+$$
 
 For example, if an expert's predictions are 30% and 40%, then $q$ is represented as the product distribution of $(0.3,0.7)$ and $(0.4,0.6)$. That is, we think of the expert's prediction as two distributions rather than two numbers. In this case, the formula for $KL(p,q)$ can be written as:
 
-$$KL(p,q) = \sum_i \left[p_i\log\frac{p_i}{q_i} + (1-p_i)\log\frac{1-p_i}{1-q_i}\right]$$
+$$
+KL(p,q) = \sum_i \left[p_i\log\frac{p_i}{q_i} + (1-p_i)\log\frac{1-p_i}{1-q_i}\right]
+$$
 
 However, there is a problem with this formulation—in reality, we do not know $p$! Instead, we can set up a grading scheme such that, in the long run, the expert's average score converges to the cross-entropy. Specifically, we charge the expert $\log(1/q_i)$ whenever an event occurs and $\log(1/(1-q_i))$ whenever it does not. This scoring rule, known as the log score, yields an expected score of:
 
-$$\sum_i \left[p_i\log\frac{1}{q_i} + (1-p_i)\log\frac{1}{1-q_i}\right]$$
+$$
+\sum_i \left[p_i\log\frac{1}{q_i} + (1-p_i)\log\frac{1}{1-q_i}\right]
+$$
 
 which is exactly the cross-entropy between the true distribution and the expert's model.
 
@@ -176,7 +196,9 @@ Note that we can only ensure correct grading in the long run. For instance, if y
 
 As a further remark, we can rewrite our KL formula as:
 
-$$\text{cross-entropy}(p,q)=\text{entropy}(p)+KL(p,q)$$
+$$
+\text{cross-entropy}(p,q)=\text{entropy}(p)+KL(p,q)
+$$
 
 This shows that the log score consists of two parts: the inherent randomness (entropy) of the questions and the divergence $KL(p,q)$ that reflects how far the expert's prediction is from the truth. For example, if an expert always predicts 50/50 for fair coin tosses (so that $KL(p,q)=0$), her score will still be high because of the underlying entropy. On the other hand, if an expert predicts 50/50 for questions with a deterministic answer (e.g., 1+1=2), then $KL(p,q)$ will be large, indicating poor performance.
 
