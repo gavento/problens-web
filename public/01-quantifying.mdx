@@ -67,6 +67,10 @@ How quickly are we gathering evidence in favor of the coin being biased? To anal
 
 Since $\log_2(1/2) = -1$, we can describe our three-flip experiment as follows: We started with $-1$ bit of prior evidence favoring the coin being biased. After the first flip, the evidence becomes $-1-0.32 = -1.32$ bits; after the second flip, $-1.32+0.26 = -1.06$ bits; and after the third, $-1.06+0.26 = -0.8$ bits.
 
+You can explore this concept of evidence accumulation interactively with the simulator below:
+
+<EvidenceAccumulationSimulator />
+
 In general, since the coin is biased, each flip yields $0.26$ bits of evidence with probability 0.6 and $-0.32$ bits with probability 0.4. The average evidence per flip is:
 
 $$

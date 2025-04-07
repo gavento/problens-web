@@ -9,6 +9,7 @@ import rehypeHighlight from "rehype-highlight";
 import { Cite, References } from "@/components/Citations";
 import { Footnote } from "@/components/Footnotes";
 import { Footnotes } from "@/components/Footnotes";
+import EvidenceAccumulationSimulator from "@/components/content/EvidenceAccumulationSimulator";
 
 export async function getMdxContent(path: string) {
   const fullPath = join(contentDirectory, `${path}.mdx`);
@@ -21,6 +22,7 @@ export async function getMdxContent(path: string) {
       References: References,
       Footnotes: Footnotes,
       Footnote: Footnote,
+      EvidenceAccumulationSimulator: EvidenceAccumulationSimulator,
     },
     options: {
       parseFrontmatter: true,
