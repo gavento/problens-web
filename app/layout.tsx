@@ -2,16 +2,16 @@ import Page from "@/components/Page";
 import { DESCRIPTION, GTM_ID, TITLE } from "@/lib/config";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata } from "next";
-import { JetBrains_Mono, Source_Serif_4 } from "next/font/google";
+import { JetBrains_Mono, Merriweather } from "next/font/google";
 import { StrictMode } from "react";
 import "./globals.css";
 
-// Define Source Serif Pro font configuration
-const sourceSerif = Source_Serif_4({
+// Define Merriweather font configuration
+const merriweather = Merriweather({
   variable: "--font-serif", // CSS variable name for main font
   subsets: ["latin"],
-  // Include a range of weights for flexibility in mathematical content
-  weight: ["400", "500", "600", "700"],
+  // Include weights needed for mathematical content
+  weight: ["300", "400", "700", "900"],
 });
 
 // Define JetBrains Mono font configuration
@@ -33,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${sourceSerif.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`${merriweather.variable} ${jetbrainsMono.variable}`}>
       <StrictMode>
         <body className="antialiased">
           <Page>{children}</Page>
