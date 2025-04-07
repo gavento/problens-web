@@ -1,154 +1,193 @@
-# Part 2: Updating Beliefs & Learning from Constraints
+# Updating Beliefs <a id="updating-beliefs"></a>
 
-> How do we rationally change our minds when faced with new evidence? If we only know certain average properties of a system, what's the most reasonable probability distribution to assume? This part explores Bayesian updating and the powerful Maximum Entropy Principle, both deeply connected to KL divergence.
+In the previous section, we introduced KL divergence and related concepts as tools for measuring the difference between probability distributions. Now, we'll explore how these concepts connect to the process of updating beliefs in light of new evidence.
 
----
+## Min KL and the Maximum Entropy Principle <a id="min-kl-and-max-entropy"></a>
 
-<a id="min-kl-and-mep-intro"></a>
-## The Philosophy: Minimizing KL Divergence
+Minimizing KL divergence is a powerful guiding principle for finding distributions that model data.
 
-> **TLDR:** Minimizing KL divergence is a really good guide for finding distributions that model data or incorporate constraints.
->
-> - If you have empirical data $p$ and want a simpler model $q$ from family $Q$, solve $\min_{q \in Q} D_{\mathrm{KL}}(p\| q)$. (Leads to Max Likelihood - Part 3).
-> - If you start with a prior/reference model $q$ (e.g., uniform) and learn constraints defining a set $P$, find the updated model $p$ by solving $\min_{p \in P} D_{\mathrm{KL}}(p\| q)$. (Leads to Max Entropy).
+There are two important scenarios to consider:
 
-We've seen KL measures the difference or "cost" between a true/reference distribution $p$ and a model $q$. A core theme in information-theoretic modeling is to **choose distributions by minimizing KL divergence** subject to relevant constraints.
+1. If you start with a good model or empirical data $p$, find a simpler model by solving $\min_q D(p, q)$. A special case of this is the maximum likelihood principle.
 
-There are two main perspectives:
+2. If you start with a basic reference model $q$, find a better model by solving $\min_p D(p, q)$. A special case of this is the maximum entropy principle.
 
-1.  **Given Data/Truth \(p\), Find Best Model \(q\):** We have empirical data (giving $p_{emp}$) or a complex true distribution $p$. We want to approximate it with a simpler model $q$ from some family $Q$ (e.g., Gaussians, exponentials). The goal is find the $q \in Q$ that is _closest_ to $p$. Minimizing $D_{\mathrm{KL}}(p \| q)$ w.r.t $q$ achieves this. As we'll see in Part 3, this is equivalent to Maximum Likelihood Estimation.
-2.  **Given Prior Model \(q\), Incorporate Constraints on \(p\):** We start with a prior belief or reference distribution $q$ (often uniform, representing ignorance). We then learn some constraints that the true distribution $p$ must satisfy (e.g., $\mathbb{E}_p[X] = \mu$). These constraints define a set $P$ of possible distributions. We want to find the distribution $p \in P$ that is _closest_ to our prior $q$, incorporating the new information minimally. This involves minimizing $D_{\mathrm{KL}}(p \| q)$ w.r.t $p$ over the set $P$. This leads to the Maximum Entropy Principle.
+Let's explore these two approaches in more detail.
 
----
+### Finding the Best Model for Data <a id="finding-best-model"></a>
 
-<a id="bayes-theorem"></a>
-## Bayes' Theorem as a Foundation
+In one typical application of KL divergence, we want to use it as a guide towards finding a good model. For example, let's say we have some set of numbers $X_1, \dots, X_n$ and we want to fit them by a Gaussian distribution. What does KL suggest?
 
-Before diving into MEP, let's recall the fundamental rule for updating beliefs: Bayes' Theorem.
+Well, we can first think about the so-called empirical distribution over $X_1, \dots, X_n$, let's call it $p$.
+We can also think about the space of possible models for the data -- this time it would be the set of all possible $N(\mu, \sigma^2)$ for all $\mu \in \mathbb{R}$ and $\sigma^2 \in \mathbb{R}^+$. Let's call this set $Q$.
 
-Consider a hypothesis H and evidence E.
-$$ P(H|E) = \frac{P(E|H) P(H)}{P(E)} $$
-In odds form:
-$$ \frac{P(H|E)}{P(\neg H|E)} = \frac{P(E|H)}{P(E|\neg H)} \times \frac{P(H)}{P(\neg H)} $$
-$$ \text{Posterior Odds} = \text{Likelihood Ratio} \times \text{Prior Odds} $$
-Taking logs:
-$$ \log(\text{Posterior Odds}) = \log(\text{Likelihood Ratio}) + \log(\text{Prior Odds}) $$
-The log-likelihood ratio, $\log \frac{P(E|H)}{P(E|\neg H)}$, is the _evidence_ provided by E differentiating H from ¬H. As we saw in Part 1, KL divergence is the _expected_ evidence per sample when comparing two distributions.
+How do we find the best $q \in Q$? It seems reasonable to look for the $q$ that minimizes:
 
-<a id="bayes-from-min-kl"></a>
-### Bayes' Theorem from Minimum KL
+$$\arg\min_{q\in Q} D(p, q)$$
 
-Bayesian updating can be viewed as a special case of minimizing KL divergence. Suppose our prior belief is represented by distribution $q(x)$. We then receive information that restricts the possibilities to a subset $S$ (i.e., we learn that $p(x)=0$ for $x \notin S$). What should our posterior distribution $p(x)$ be?
+This approach is equivalent to what is commonly known as the maximum likelihood principle.
 
-We seek $p(x)$ such that $p(x)=0$ for $x \notin S$, $\int_S p(x) dx = 1$, and $p(x)$ minimizes $D_{\mathrm{KL}}(p \| q)$.
-The solution turns out to be the conditional distribution:
-$$ p(x) = q(x | x \in S) = \frac{q(x)}{\int_S q(z) dz} \quad \text{for } x \in S $$
-This is exactly the standard Bayesian update rule for conditioning on an event S.<Footnote>This principle, known as Minimum Information Update or Minimum Relative Entropy (MRE), provides a powerful generalization of Bayesian conditioning. See <Cite>citation_needed</Cite>.</Footnote>
+### Finding a Better Model with Constraints <a id="finding-better-model"></a>
 
-<a id="more-on-kl-minimization"></a>
-### More on KL Minimization and Bayes
+Here's a second typical application of KL divergence. Let's say that we start with some basic probabilistic model. Maybe I want a probability distribution for how long it takes me to eat lunch. Let's say that I have a guess that the average length is about 15 minutes. What kind of distribution should I choose to model this?
 
-_(Placeholder: This section can contain the "postmodern rant" about truth vs models and the connection between minimizing KL and solving problems using Bayes theorem, potentially using the Wallis derivation idea briefly)_
+What does KL suggest?
 
-The principle of minimizing KL divergence provides a unifying framework. Both updating beliefs based on new constraints (MEP) and fitting models to data (MLE) can be seen as finding a distribution that is "closest" in the KL sense to some reference, subject to the available information. One can argue that solving problems using Bayes' theorem is fundamentally about minimizing information loss or surprise, which is what minimizing KL achieves.
+Let's pick some really broad and simple model $q$, like the uniform distribution between $0$ and $24$ hours.
+Then, we can think about the space of all possible distributions with mean equal to 0.25 (hours). Let's call this set $P$. As our best guess $p$ for the true distribution, it seems reasonable to pick $p$ that minimizes:
 
----
+$$\arg\min_{p \in P} D(p,q)$$
 
-<a id="maximum-entropy-principle"></a>
-## The Maximum Entropy Principle (MEP)
+Doing this is closely related to what people call the maximum entropy principle.
 
-> **TLDR:** If you only know certain average properties (constraints) of a distribution, the most unbiased / least presumptive choice is the distribution that maximizes entropy subject to those constraints. It's equivalent to finding the distribution satisfying the constraints that is closest (in KL divergence) to the uniform distribution.
+## Maximum Likelihood Estimation (MLE) <a id="maximum-likelihood-estimation"></a>
 
-**Puzzle (Restaurant):** When I'm at my favorite restaurant, I tend to order depending on how hungry I am. If I'm very hungry, I might order the giant pasta bowl. If I'm not so hungry, I might go for a salad. Given only my average hunger level, what's the probability distribution over how hungry I'll be on any given visit?
+Suppose we are given data—say, the 16 foot length measurements $X_1, \dots, X_{16}$ from our statistics riddle. Assuming the order of the data is irrelevant, we can represent them as an empirical distribution $p$ that assigns each outcome a probability of $1/16$. Now, suppose we believe that a normal distribution is a good model for these data. How do we choose the best parameters $\mu$ and $\sigma^2$ to match the empirical distribution?
 
-**Principle: Maximum Entropy**
+KL divergence offers a natural answer: Choose $\mu$ and $\sigma$ to minimize $KL(p, N(\mu,\sigma^2))$. More generally, if we have a set of candidate distributions $Q$ (e.g., all Gaussians), select the $q\in Q$ that minimizes $KL(p,q)$.
 
-> Given constraints $\mathbb{E}_p[f_i(X)] = c_i$, choose $p(x)$ to maximize $H(p)$ subject to these constraints.
+In fact, we can rewrite KL divergence as:
 
-**Justifications:**
+$$KL(p,q) = \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1/n}{q(X_i)}$$
 
-1.  **Least Informative:** Maximizes uncertainty given constraints.
-2.  **Combinatorics:** Most microstates compatible with macro-constraints correspond to the max-entropy distribution.
-3.  **KL Minimization:** Equivalent to $\min_{p \in P} D_{\mathrm{KL}}(p \| q_{\text{uniform}})$, where P is the set of distributions satisfying constraints.
+Splitting this into entropy and cross-entropy:
 
-**The Solution Form (Exponential Family):**
-The solution has the form:
-$$ p(x) = \frac{1}{Z(\lambda)} \exp\left( \sum\_{i=1}^k \lambda_i f_i(x) \right) $$
+$$KL(p,q) = \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1}{q(X_i)} - \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1}{n}$$
 
-Where $Z(\lambda) = \sum_x \exp\left( \sum_{i=1}^k \lambda_i f_i(x) \right)$ is the partition function ensuring $p(x)$ sums to 1, and the $\lambda_i$ parameters are chosen to satisfy the given constraints.
+Note that the entropy term (the second sum) is $\sum \frac{1}{n}\log n = \log n$, which is constant with respect to $q$.<Footnote>It could happen that we measured the same length twice. Then, $\mathcal{X}$ has to be regarded as a multiset and the corresponding frequencies are not necessarily $1/n$. In that case, the entropy happens to be smaller than $\log n$. But it doesn't matter, the only important fact is that this term is constant, independent of $q$.</Footnote> Thus, minimizing KL divergence is equivalent to minimizing the cross-entropy:
 
-![MEP Visualization](/02-updating/mep-visualization.png)
+$$\sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1}{q(X_i)}$$
 
----
+Here, $q(X_i)$ is the probability (or probability density) that the model assigns to the data point $X_i$. Dropping the constant factor $1/n$ and using the identity $\log(1/x)=-\log x$, this is equivalent to maximizing the product:
 
-<a id="maxent-distributions"></a>
-## Maximum Entropy Distributions
+$$\prod_{X_i} q(X_i)$$
 
-> **TLDR:** Applying MEP with different common constraints derives many famous probability distributions. The type of constraint determines the shape of the distribution (often via the exponential family form).
+This expression has very clear meaning: it is the conditional probability of seeing the data $X_i$, provided that they have been sampled independently from the model distribution $q$. This kind of conditional probability is also called the "likelihood of $X$ under $q$".
 
-Let's see what distributions arise from MEP with common constraints:
+So, we conclude that we should go for $q$ that maximizes the likelihood of our data, which is exactly what's called the maximum likelihood estimation (MLE) approach.
 
-<a id="constraint-none-finite-set"></a>
-### Constraint: None (on a finite set {1,...,k})
-* \(f_i(x)\) = none.
-* Maximize \(H(p)\). Solution: \(p(x) = 1/k\). **Uniform Distribution**.
+### Application to the Statistics Riddle <a id="application-to-statistics-riddle"></a>
 
-<a id="constraint-mean-positive-reals"></a>
-### Constraint: Fixed Mean \(\mathbb{E}[X] = \mu\) (on \(\mathbb{R}^+\))
-* \(f_1(x) = x\). Constraint: \(\int_0^\infty x p(x) dx = \mu\).
-* MaxEnt form: \(p(x) \propto \exp(\lambda_1 x)\). To be normalizable on \(\mathbb{R}^+\), we need \(\lambda_1 < 0\). Let \(\lambda = -\lambda_1 > 0\).
-* \(p(x) = \lambda e^{-\lambda x}\) for \(x \ge 0\). Parameter \(\lambda = 1/\mu\). **Exponential Distribution**.
+Let's return to our statistics riddle. When estimating the variance of a distribution from samples, we had three candidate formulas:
 
-<a id="constraint-mean-nonnegative-integers"></a>
-### Constraint: Fixed Mean \(\mathbb{E}[X] = \mu\) (on \(\mathbb{N}_0 = \{0, 1, 2, ...\}\))
-* \(f_1(k) = k\). Constraint: \(\sum_{k=0}^\infty k p(k) = \mu\).
-* MaxEnt form: \(p(k) \propto \exp(\lambda_1 k) = (e^{\lambda_1})^k = r^k\), where \(r = e^{\lambda_1}\). For normalizability, need \(0 < r < 1\).
-* \(p(k) = (1-r) r^k\). Parameter \(r = \mu / (1+\mu)\). **Geometric Distribution**.
+$$\sigma^2 = \frac{1}{n-1} \sum_{i=1}^{n} (X_i - \bar{X})^2$$
+$$\sigma^2 = \frac{1}{n} \sum_{i=1}^{n} (X_i - \bar{X})^2$$
+$$\sigma^2 = \frac{1}{n+1} \sum_{i=1}^{n} (X_i - \bar{X})^2$$
 
-<a id="constraint-mean-finite-set-scores"></a>
-### Constraint: Fixed Mean Score \(\mathbb{E}[a_X] = \bar{a}\) (on finite set \(\{1, ..., n\}\) with scores \(a_1, ..., a_n\))
-* \(f_1(i) = a_i\). Constraint: \(\sum p_i a_i = \bar{a}\).
-* MaxEnt form: \(p_i \propto \exp(\lambda_1 a_i)\).
-* \(p_i = \frac{e^{\lambda a_i}}{\sum_j e^{\lambda a_j}}\). This is the **Softmax** or **Boltzmann Distribution**. Parameter \(\lambda\) (often related to inverse temperature \(1/T\)) is determined by \(\bar{a}\). Solves the Restaurant Riddle.
+Using the MLE approach derived above, we would choose $\frac{1}{n}$ as our coefficient, yielding the maximum likelihood estimate. This is one valid approach, though as mentioned, the unbiased estimate uses $\frac{1}{n-1}$ and the minimum mean squared error uses $\frac{1}{n+1}$. Each of these options is defensible depending on your criteria.
 
-<a id="constraint-mean-variance-reals"></a>
-### Constraint: Fixed Mean \(\mathbb{E}[X] = \mu\) and Variance \(\mathbb{E}[(X-\mu)^2] = \sigma^2\) (on \(\mathbb{R}\))
-* Equivalent to fixing \(\mathbb{E}[X] = \mu\) and \(\mathbb{E}[X^2] = \sigma^2 + \mu^2\).
-* \(f_1(x) = x\), \(f_2(x) = x^2\).
-* MaxEnt form: \(p(x) \propto \exp(\lambda_1 x + \lambda_2 x^2)\). For normalizability, need \(\lambda_2 < 0\).
-* Completing the square in the exponent leads to:
-* \(p(x) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)\). **Gaussian (Normal) Distribution**.
+## The Maximum Entropy Principle <a id="maximum-entropy-principle"></a>
 
-<a id="constraint-mean-log"></a>
-### Constraint: Fixed Mean Logarithm \(\mathbb{E}[\log X] = c\) (on \(\mathbb{R}^+\))
-* \(f_1(x) = \log x\).
-* MaxEnt form: \(p(x) \propto \exp(\lambda_1 \log x) = x^{\lambda_1}\).
-* With appropriate reference measure and range, this leads to **Power Law / Pareto Distributions**.
+Let's recall the second example. I want to have a distribution modeling how long it takes me to eat a lunch. Maybe it's rounded to minutes and it never took more than 10 hours, so let's say the domain of my distribution is $\{1, \dots, 600\}$.
 
-<a id="constraint-mean-log-x-and-log-1-x"></a>
-### Constraint: Fixed \(\mathbb{E}[\log X]\) and \(\mathbb{E}[\log(1-X)]\) (on [0, 1])
-* MaxEnt form: \(p(x) \propto \exp(\lambda_1 \log x + \lambda_2 \log(1-x)) = x^{\lambda_1} (1-x)^{\lambda_2}\).
-* This is the form of the **Beta Distribution**: \(p(x) \propto x^{\alpha-1} (1-x)^{\beta-1}\). Relevant in Bayesian statistics for modeling probabilities.
+As a first, probably very basic model, we can just take the uniform distribution as a prior guess $q_{unif}$. That is, we assign $1/600$ probability to each option. This principle of using uniform distribution when we don't know anything makes sense since uniform distribution is literally the only distribution that gives the same weight to each outcome. (The fancy name for this is the principle of indifference.)
 
-<a id="application-financial-data"></a>
-### Application: Financial Data Revisited
+Now let's say that we know a bit more, maybe that we want a distribution with average 15 minutes. In that case, for $P$ being the set of all distributions with average 15, KL divergence suggests finding $p \in P$ minimizing:
 
-> Why might Normal distribution fit S&P daily returns (many small independent effects -> Central Limit Theorem -> Gaussian ≈ MaxEnt for mean/variance) while Laplace fits Bitcoin better?
+$$KL(p,q_\text{uniform})$$
 
-Laplace distribution \(p(x) \propto e^{-\lambda|x-\mu|}\) is MaxEnt if constraint is fixed mean absolute deviation \(\mathbb{E}[|X-\mu|]\).
-Alternatively, Laplace arises as a _scale mixture_ of Gaussians: Sample variance \(\sigma^2\) from an Exponential distribution, then sample \(X\) from \(N(\mu, \sigma^2)\).
-This matches the story for volatile assets like Bitcoin: the underlying "Gaussian fluctuation" process might have a variance that itself changes significantly over time (modeled by the exponential prior on \(\sigma^2\)). Normal distribution assumes fixed variance.
-If S&P data includes high-volatility periods (like crises), it might also look more Laplace-like or Student-t-like (Student-t comes from a different prior on variance, Inverse Gamma, which is MaxEnt for \(\mathbb{E}[\log X]\) and \(\mathbb{E}[1/X]\)).
+Using our splitting of KL divergence:
 
-![Financial data graph showing Normal vs Laplace fits](/02-updating/financial-returns.png)
+$$KL(p,q_\text{uniform}) = \sum_i p_i\log p_i - \sum_i p_i\log (1/600)$$
 
-<a id="independence-as-maxent"></a>
-### Independence as MaxEnt
+Since the second term is a constant $\log (1/600) = \log(600)$, minimizing KL divergence is equivalent to maximizing the negative of the first term, which is the entropy of $p$:
 
-If we want a joint distribution \(p(x,y)\) and only constrain the marginals \(p(x)\) and \(p(y)\), maximizing the joint entropy \(H(X,Y)\) subject to these marginal constraints leads to the product distribution \(p(x,y) = p(x)p(y)\). Assuming independence is the maximum entropy choice when only marginals are known.
+$$H(p) = -\sum_i p_i\log p_i$$
 
----
+This is the maximum entropy principle: given a set $P$ of distributions subject to certain constraints, choose the $p\in P$ that maximizes the entropy $H(p)$.
 
-> **Summary of Part 2:** We explored Bayesian updating as KL minimization and delved into the Maximum Entropy Principle. MEP provides a powerful justification for using common probability distributions, linking them directly to underlying assumptions about known average quantities via the exponential family form.
+### The Principle of Indifference as a Prior <a id="principle-of-indifference"></a>
 
-> **Next:** [Link to 03-modeling.mdx] Part 3: Building & Comparing Models
+The maximum entropy principle can be seen as a natural extension of the principle of indifference. When we have no information, we use a uniform distribution (the distribution with maximum entropy). When we gain some information in the form of constraints (like knowing the mean), we choose the distribution that is as "uniform" as possible while satisfying those constraints.
+
+In other words, the maximum entropy principle tells us to assume as little as possible beyond what we know. It's a formalization of Occam's razor for probability distributions.
+
+## Max Entropy Distributions <a id="max-entropy-distributions"></a>
+
+Maximum entropy principle helps you find the most generic distribution for your data. You just need to specify the constraints you care about, and the principle determines the "least biased" distribution that satisfies those constraints.
+
+The form of the maximum entropy distributions is very simple -- for example, if you work with numbers and care about their mean $E[X] = \mu$ and variance $\sigma^2 = E[(X-\mu)^2]$, the maximum entropy distribution is going to look like $P(X=x)\propto e^{\lambda_1 x + \lambda_2 x^2}$, i.e., it will be the normal distribution.
+
+We can derive this by using the method of Lagrange multipliers. Without going through the full derivation, the key insight is that the maximum entropy distribution subject to constraints always takes the form of an exponential family:
+
+$$p(x) \propto e^{\sum_i \lambda_i f_i(x)}$$
+
+where $f_i(x)$ are the functions whose expectations $E[f_i(X)]$ we're constraining, and $\lambda_i$ are Lagrange multipliers determined by the specific constraint values.
+
+### Examples of Maximum Entropy Distributions <a id="examples-of-max-entropy-distributions"></a>
+
+Here are some examples of maximum entropy distributions given different constraints:
+
+1. **No constraints**: The maximum entropy distribution is the uniform distribution.
+
+2. **Fixed mean $E[X] = \mu$**:
+
+   - On a finite set $\{a, b\}$: Logistic distribution
+   - On $\{0, 1, 2, \ldots\}$: Geometric distribution $P(x) \propto e^{-\lambda x}$
+   - On $\mathbb{R}^+$: Exponential distribution $P(x) \propto e^{-\lambda x}$
+
+3. **Fixed mean $E[X] = \mu$ and variance $E[(X-\mu)^2] = \sigma^2$**:
+
+   - On $\mathbb{R}$: Normal (Gaussian) distribution $P(x) \propto e^{-(x-\mu)^2/2\sigma^2}$
+
+4. **Fixed $E[\log X]$**:
+
+   - On $\mathbb{R}^+$: Power-law distribution $P(x) \propto x^{-\alpha}$
+
+5. **Fixed $E[X]$ and $E[X^2]$**:
+   - On $\mathbb{R}^+$: Gamma distribution
+
+### Application to the Modeling Riddle <a id="application-to-modeling-riddle"></a>
+
+Let's return to our restaurant modeling riddle. We wanted to find a family of distributions that interpolates between random choice (uniform distribution) and always picking the tastiest item.
+
+The maximum entropy principle provides us with a beautiful answer. If we represent the tastiness of each item as $a_i$, then the maximum entropy distribution subject to a constraint on the average tastiness $E[a_X] = c$ is:
+
+$$P(X=i) = \frac{e^{\lambda a_i}}{\sum_j e^{\lambda a_j}}$$
+
+This is known as the softmax distribution. The parameter $\lambda$ controls how strongly we prefer tastier options:
+
+- When $\lambda = 0$, we get the uniform distribution (completely random choice)
+- As $\lambda \to \infty$, the probability concentrates on the item with maximum tastiness
+
+This distribution is exactly what we were looking for in our modeling riddle. It naturally emerges from the maximum entropy principle when we constrain the expected tastiness. It's also commonly used in machine learning, particularly for the output layer of neural networks in classification tasks.
+
+## Connecting KL and Bayes' Theorem <a id="connecting-kl-and-bayes-theorem"></a>
+
+One fascinating aspect of KL divergence is its deep connection to Bayesian reasoning. In fact, Bayes' theorem itself can be derived as a special case of the principle of minimizing KL divergence.
+
+When deriving the minimum KL principle, we relied on an analogy with Bayes' theorem, essentially starting with $q$ and conditioning on new information. One can show that Bayesian updating is a special case of the minimum KL principle.
+
+For example, consider a joint distribution (such as the table for weather and commuting). Upon learning that it is sunny, Bayesian updating dictates that we set $P(\text{sunny})=1$ while keeping the conditional distribution $P(\cdot|\text{sunny})$ unchanged (i.e., zeroing out the other rows and normalizing the sunny row).
+
+According to the minimum KL principle, given the original distribution $q$ and the new data (that outcomes outside the sunny row have probability zero), the updated distribution $p$ is the one that minimizes $KL(p,q)$ while satisfying the constraint. In fact, choosing $p=q(\cdot|\text{sunny})$ achieves $KL(p,q)=0$ (the minimal possible value). Thus, the minimum KL principle endorses Bayesian updating.
+
+In some sense, we can even say that the principle of "minimize KL whenever you can" and the principle of "use Bayes' theorem whenever you can" are kind of equivalent.
+
+## Summary <a id="summary"></a>
+
+In this section, we've explored how KL divergence provides a framework for updating beliefs and choosing probability distributions:
+
+1. **Minimizing KL Divergence** - Two key approaches:
+
+   - $\min_q D(p, q)$: Finding the best model for given data (leads to MLE)
+   - $\min_p D(p, q)$: Finding the best distribution subject to constraints (leads to MaxEnt)
+
+2. **Maximum Likelihood Estimation** - Choosing parameters that maximize the probability of observed data
+
+   - Applied to our statistics riddle about estimating variance
+
+3. **Maximum Entropy Principle** - Choosing the least biased distribution subject to constraints
+
+   - Applied to our modeling riddle about customer choice
+   - Leads to well-known distributions like Gaussian, exponential, and softmax
+
+4. **Connection to Bayes' Theorem** - Bayesian updating as minimizing KL divergence
+
+These principles provide a unified framework for inference and modeling. By understanding the connections between KL divergence, maximum likelihood, and maximum entropy, we gain deeper insights into why certain distributions and methods are commonly used in statistics and machine learning.
+
+## Next Steps <a id="next-steps"></a>
+
+In the next part, we'll explore more concrete modeling applications of these principles. We'll see how they apply to various fields like machine learning, statistical modeling, and information theory.
+
+Continue to [Modeling Reality](/03-modeling).

@@ -1,0 +1,148 @@
+# Introduction <a id="introduction"></a>
+
+Welcome to "Reasoning and Acting Under Uncertainty: A Computational Toolkit" - a course that explores how information theory provides powerful tools for understanding probability, making decisions, and developing machine learning models.
+
+This course introduces and explains key concepts in information theory, with a particular focus on the Kullback-Leibler (KL) divergence - sometimes also known as relative entropy. KL divergence is a function that takes two probability distributions as input—one being the "true" distribution and the other our model for it—and outputs a measure of how well the model fits the true distribution.
+
+Surprisingly, understanding this single function explains numerous concepts in probability, statistics, machine learning, and deep learning. This course came about when the authors were discussing their favorite topics in probability and realized that some powerful aspects of probability theory aren't typically covered in standard university courses. We hope to fill this gap by focusing on KL divergence and its applications across different disciplines.
+
+## What This Course Covers <a id="what-this-course-covers"></a>
+
+This course takes a problem-driven approach. Rather than starting with abstract mathematical concepts, we begin with real-world puzzles and challenges, introducing the theoretical tools only as they become necessary for solving these problems.
+
+Throughout the course, you'll see how concepts like entropy, KL divergence, cross-entropy, mutual information, and the maximum entropy principle connect seemingly disparate fields like:
+
+- Election polling and statistical sampling
+- Financial modeling and market predictions
+- Machine learning algorithms and loss functions
+- Deep learning architectures
+- Information theory and coding
+- Algorithmic complexity and prediction
+
+By the end of this course, you'll understand not just how to apply these tools, but why they work and how they connect to fundamental principles of reasoning under uncertainty.
+
+## How to Use This Course <a id="how-to-use-this-course"></a>
+
+This course is organized into several main parts:
+
+1. **Introduction** - Where we are now, introducing the course and presenting puzzles from various domains
+2. **Quantifying Information** - Exploring entropy, KL divergence, and related measures
+3. **Updating Beliefs** - Connecting KL divergence to Bayesian reasoning and belief updates
+4. **Modeling Reality** - How to choose distributions and develop models
+5. **Advanced Applications** - Applying these concepts to more complex domains
+
+Each part builds on previous concepts, but we've tried to make sections as self-contained as possible. Feel free to jump to topics that interest you most, though we recommend at least scanning earlier sections to understand the foundations.
+
+## A Few Riddles <a id="a-few-riddles"></a>
+
+Before diving into theory, let's start with some puzzles from different domains. These seemingly unrelated questions will help motivate our exploration of information theory and KL divergence.
+
+### Polling <a id="polling"></a>
+
+The next US elections are coming and you want to estimate which of the two parties is going to win the popular vote. Here's how: You will sample a few random US citizens and ask them who they vote for, hoping that the estimate you compute from this sample is a good approximation of reality.
+
+If we assume a simplified model where every citizen votes for one party, they are truthful, and won't change their opinions in the future<Footnote>Of course, those assumptions are very unrealistic but bear with us.</Footnote>, you can compute that asking 1000 people is enough to get an estimate that is probably within one percent of the right answer. This is astonishing! Regardless of how many people live in the country, 1000 random citizens are enough to get the answer within one percent.
+
+But in reality, all US elections are incredibly close; we already know that both Democrats and Republicans are going to get around 50%. So we should perhaps get a bigger sample sufficient to estimate within $0.1\%$. The question is, how many people should we sample this time?
+
+1. about 3000
+2. about 10000
+3. about 100000
+
+The correct answer is about 100000. In fact, if we want to be close up to an error of $\epsilon$, we need about $1/\epsilon^2$ samples. This means that getting better estimates becomes much more expensive! This is one reason why most polling estimates don't bother asking more than about 1000 people - even in the most idealistic scenarios, you have to ask 4 times more people to get a twice-as-good estimate.
+
+The question is: why $1/\epsilon^2$? We'll explore this in later sections.
+
+### Financial Mathematics <a id="financial-mathematics"></a>
+
+Consider data showing how the price of Bitcoin and the S&P index changed each day over the last year. As you might have guessed, the average change is slightly positive, but there is also large variance. For example, the average daily S&P change is about $0.5, but the standard deviation is $3, meaning that a typical daily change is between approximately -$2.5 and +$3.5 per share.
+
+But how should we model these changes in more detail? One way is using the normal distribution with shape $e^{-x^2}$; another possibility is the Laplace distribution, with shape $e^{-|x|}$.
+
+Eyeballing the data, it seems that the normal distribution is a better fit for the S&P index, while the Laplace distribution is a better fit for Bitcoin. KL divergence can measure how well a true distribution (the histogram from last year) is fitted by a model (normal or Laplace). It equals zero if the two distributions are identical, and the more different they are, the larger the divergence.
+
+But... do we have a story explaining why this is? And why did we even try the normal and Laplace distributions as potential fits rather than some other distributions?
+
+### Statistics <a id="statistics"></a>
+
+In the old days (and in some countries even today), people measured lengths in feet. But how do you determine the length of a foot? You could measure the foot of the local warlord, but then you would have to change it once the warlord is replaced.
+
+It's a bit better to ask 16 random people and compute their mean foot length as
+$$\bar X = \frac{1}{16} (X_1 + \dots + X_{16})$$
+which will be a fairly stable estimate that will hopefully remain similar the next time you perform this experiment.
+
+How good is this estimate? Typically, one would gauge it by estimating the standard deviation using the formula
+$$\bar \sigma^2 = \frac{1}{16} \sum_{i=1}^{16} (X_i - \bar X)^2$$
+But is this formula correct? Should we divide by 15 instead? Or maybe 17?
+
+The issue with choosing the right coefficient is not that one of the options (dividing by $n-1$, $n$, or $n+1$) is uniquely correct—they are all defensible in (frequentist) statistics.
+
+The coefficient $1/(n-1)$ corresponds to the so-called unbiased estimate, $1/n$ gives the maximum likelihood estimate, and $1/(n+1)$ minimizes the mean squared error.
+
+### Predictions <a id="predictions"></a>
+
+It would be great to know what the future holds—or at least to know someone who does. To this end, you have gathered a bunch of experts and asked them to assign probabilities to a list of events for the coming year. Each expert provides an estimate for each event.
+
+When the year ends, you know for each event whether it occurred or not. The question is, how do we score the experts so that we can pick the best ones? Which scoring system would be most appropriate?
+
+### Information Theory <a id="information-theory"></a>
+
+Suppose you are interested in two things. First, whether a day is rainy or sunny—say, with probabilities 30% and 70%, respectively. Second, how you commute to work (e.g., walk, bike, or take the bus with probabilities 20%, 30%, and 50% respectively).
+
+Knowing these two marginal distributions does not give you the full picture. You can form a 2$\times$3 table representing the joint distribution of these outcomes.
+
+If the two distributions were independent, the probability in each cell would be the product of the marginal probabilities. For example, modeling the distributions as independent, we would guess that the probability of rain and walking is $0.3\times0.2=0.06$ (i.e., 6%). But in fact, it is much lower (since most people don't want to walk in the rain).
+
+The question is: Is there a good measure of how far the joint distribution is from being independent? For example, given two tables, how would you determine which one is closer to independence?
+
+As a potential, though not entirely satisfactory, answer, if the two variables were numerical, we might use correlation. Correlation is 0 if the variables are independent and 1 if they are perfectly correlated. (For example, in people, height and weight might correlate with some value between 0 and 1.) But this approach does not work in our example since we can't assign numbers to categories like walk/bike/bus. Also, two variables can be far from independent yet have zero correlation. Can we intuitively understand when using correlation makes sense and when it does not?
+
+### Deep Learning <a id="deep-learning"></a>
+
+Think of a large language model (LLM) like GPT-4. This model is given some text, does some computation, and outputs the next token<Footnote>A token is just a small group of letters, so feel free to think of it as outputting the next letter, syllable, or word.</Footnote> in the text. In fact, it always outputs a distribution $p$ over all possible tokens (usually numbering in the tens of thousands). This is why it's simple to make LLMs output different answers on the same text.
+
+Your task is to train a new, smaller model that's as good as the base GPT-4 model. You have already prepared a lot of texts from the internet. For each text, you will first run GPT-4 to output its distribution $p$ over the next token. Then, you run your small model to obtain a different distribution $q$. You would like to make sure that $q$ is as close to $p$ as possible, but to do so, we first have to come up with a good function $f(p,q)$ that can tell us how far $p$ and $q$ are from each other. So, what would be a good choice of this function $f$?
+
+### Machine Learning <a id="machine-learning"></a>
+
+Have you noticed that certain functions appear frequently in machine learning?
+
+For example, consider $x^2$: The most basic clustering algorithm, $k$-means, minimizes the sum of squared distances, and the same holds for linear regression. Why use $x^2$? What would it mean to use $|x|$ or $x^4$ instead?
+
+Or consider the logarithmic function. Standard machine learning tools like logistic regression involve logarithms, and neural nets are often optimized using the so-called cross-entropy loss—which takes logarithms of probabilities.
+
+Some formulas in machine learning are true beasts. For example, the loss function for logistic regression or the complex expressions behind variational autoencoders (the architecture behind early image generation models like DALL-E). Where do these seemingly complex expressions come from? What's their meaning?
+
+### Modeling <a id="modeling"></a>
+
+A customer comes to a restaurant. Each meal on the menu has a specific tastiness value, which we conveniently assume is known. If the customer spends enough time considering all the meals, she will pick the one with the highest tastiness. But if she is extremely hungry, she might simply choose a random meal. The question is: How should we model the situation in between—when the customer spends some time looking at the menu but not enough to always pick the tastiest item?
+
+More mathematically speaking, given $n$ numbers $a_1, \dots, a_n$, can we find a parameter $\lambda$ and a natural family of probability distributions such that $\lambda=0$ corresponds to the uniform distribution and $\lambda=+\infty$ corresponds to picking the maximum value (i.e., $\argmax_{i} a_i$)?
+
+You sometimes encounter this type of question when constructing a probabilistic model. There are many degrees of freedom in constructing a probability distribution, so how do we pick the "most natural" one that interpolates between complete order and total randomness?
+
+This quandary is typically resolved by what's known as the maximum entropy principle. In this case, the principle dictates that we should choose the so-called softmax distribution. How does this principle work, and where does it come from?
+
+### Random Pi Program <a id="random-pi-program"></a>
+
+Here's a riddle: Consider the set of all C programs of length 1000 characters (i.e., the file has 1000 bytes if saved in ASCII) that print the first million digits of $\pi$. Let's sample one such program uniformly at random. How would it probably look?
+
+## Preview: The Power of KL Divergence <a id="preview-the-power-of-kl-divergence"></a>
+
+Each of the puzzles above might seem disconnected, but they share a common thread: they can all be approached, understood, or solved using KL divergence and related concepts from information theory.
+
+KL divergence is a fundamental measure that quantifies how one probability distribution differs from another. Its formal definition is:
+
+$$KL(p, q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}$$
+
+Where $p$ represents the "true" distribution and $q$ represents our model or approximation.
+
+In the upcoming sections, we'll explore this measure in depth, develop intuitions for why it works, and see how it connects to fundamental principles of reasoning under uncertainty. We'll also examine how this single measure provides a unifying perspective on diverse problems across statistics, machine learning, information theory, and more.
+
+As we progress through the course, we'll revisit these puzzles and show how they can be solved or better understood through the lens of information theory and KL divergence.
+
+## Next Steps <a id="next-steps"></a>
+
+In the next part, we'll begin our exploration of information theory by learning how to quantify information. We'll define entropy, cross-entropy, and KL divergence, and develop intuitions for what these measures tell us about probability distributions.
+
+Ready to begin? Let's start with [Quantifying Information](/01-quantifying).

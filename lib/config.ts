@@ -1,15 +1,16 @@
 import { join } from "path";
 
-export const TITLE = "Applied Information Theory: A Computational Toolkit";
-export const DESCRIPTION = "A computational toolkit for applied information theory";
-export const TITLE_SHORT = "Applied Information Theory";
-export const TITLE_ABBR = "Applied Information Theory";
+export const TITLE = "Probabilistic Lenses";
+export const DESCRIPTION = "Probabilistic Lenses";
+export const TITLE_SHORT = "Probabilistic Lenses";
+export const TITLE_ABBR = "Probabilistic Lenses";
 export const CHAPTERS = [
   ["Introduction", "index"],
+  ["A few riddles", "00-introduction"],
   ["Quantifying Information, Belief, and Surprise", "01-quantifying"],
   ["Updating Beliefs & Learning from Constraints", "02-updating"],
-  ["Modeling", "03-modeling"],
-  ["Advanced Topics", "04-advanced"],
+  ["Building & Comparing Models", "03-modeling"],
+  ["Advanced Connections and Perspectives", "04-advanced"],
   ["Resources", "resources"],
   ["About", "about"],
 ];

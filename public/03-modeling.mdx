@@ -1,136 +1,157 @@
-# Part 3: Building & Comparing Models
+# Modeling Reality <a id="modeling-reality"></a>
 
-> How do we use the principles of information theory to fit models to data? Why do standard machine learning techniques use loss functions like squared error or cross-entropy? How do we choose between different models? This part connects KL divergence, MEP, and MLE to practical statistical modeling and machine learning.
+In the previous sections, we introduced KL divergence and showed how it relates to belief updating, maximum likelihood estimation, and the maximum entropy principle. Now, we'll explore how these concepts apply to practical modeling problems, particularly in machine learning.
 
----
+## Good Old Machine Learning <a id="good-old-machine-learning"></a>
 
-<a id="recap-mle-mep-duality"></a>
-## Recap: The Duality of MLE and MEP
+In the previous sections, we've seen how, when we have a distribution and want a different one, it's really useful to find it by minimizing KL divergence. There were two important cases of that:
 
-From Part 2, recall the two perspectives on minimizing KL divergence:
+1. When we have a distribution $p$ and want to find a less precise $q$ from some family $Q$ that approximates it well, we choose it by minimizing $\min_{q \in Q} D(p,q)$. A special case of this is the maximum likelihood estimation (see previous section) where we derived that if we measured some data $D$, that we want to fit by some distribution $q \in Q$, we should choose $q$ that maximizes the likelihood $P_q(D)$.
 
-1.  **Given Data $p$, Find Model $q \in Q$:** Minimize $D_{\mathrm{KL}}(p \| q)$ w.r.t $q$. Leads to **Maximum Likelihood Estimation (MLE)**.
-2.  **Given Prior $q$, Find Constrained $p \in P$:** Minimize $D_{\mathrm{KL}}(p \| q)$ w.r.t $p$. Leads to **Maximum Entropy Principle (MEP)** (when $q$ is uniform/reference).
+2. When we have a model distribution $q$ and learn some new information about the truth, like that the true distribution is from some family $P$, we should choose our new model by minimizing $\min_{p \in P} D(p,q)$. A special case of this is the maximum entropy principle where we started with the most general -- uniform -- $q$ and $P$ corresponded to learning the value of some parameter of the distribution, like its mean or variance.
 
-These are complementary ways information theory guides model building. MEP helps choose the _family_ of models based on structural assumptions (e.g., fixing mean/variance suggests Gaussians). MLE helps pick the _specific parameters_ within that family that best fit the observed data.
+Combining these two principles, we can derive many basic approaches in statistics and classical machine learning. Let's see some examples.
 
----
+### Mean and Variance Estimation <a id="mean-and-variance-estimation"></a>
 
-<a id="maximum-likelihood-estimation"></a>
-## Maximum Likelihood Estimation (MLE)
+Suppose we are given a list of numbers $\{X_1, \dots, X_n\}$. We care about their mean and variance. Let's use the combo of max entropy + max likelihood to derive the formulas for that.
 
-> **Riddle:** Polling suggests we need about $1/\epsilon^2$ samples for error $\epsilon$. Why this dependence?
-> **Riddle:** Statistics textbooks say estimate variance using $\frac{1}{n-1} \sum (X_i - \bar{X})^2$, but ML often uses $1/n$. Why the difference?
+First, the maximum entropy principle suggests that once we fix the mean of a distribution to be $\mu$ and variance to be $\sigma^2$, and consider all the distributions with that mean and that variance, there is a single distribution that stands out -- the maximum entropy distribution after fixing the mean and variance -- the normal distribution.<Footnote>The principle also suggests an even more basic thing -- to assume that the numbers have been drawn independently from some distribution, which allows us to represent the sequence $X_1, \dots, X_n$ as a set, or equivalently an empirical distribution.</Footnote>
 
-Suppose we have data $D = \{x_1, ..., x_n\}$, assumed to be drawn independently from some underlying distribution $p(x|\theta)$ belonging to a family parameterized by $\theta$ (e.g., Gaussians parameterized by $\theta = (\mu, \sigma^2)$).
+Now that we have fixed a set of relevant distributions $Q$, we will find a particular $q \in Q$ approximating the empirical distribution of $X$s as well as possible. This is done by the maximum likelihood method. Concretely, we should pick $\hat\mu, \hat\sigma^2$ maximizing:
 
-**Principle: Maximum Likelihood**
+$$\prod_{i=1}^n \frac{1}{\sqrt{2\pi\hat\sigma^2}} \cdot e^{-(X_i - \hat\mu)^2/2\hat\sigma^2}$$
 
-> Choose the parameter $\theta$ that maximizes the likelihood of observing the data D:
-> $$ \theta*{MLE} = \mathrm{argmax}*{\theta} P(D|\theta) = \mathrm{argmax}_{\theta} \prod_{i=1}^n p(x*i|\theta) $$
-Since log is monotonic, this is equivalent to maximizing the log-likelihood:
-$$ \theta*{MLE} = \mathrm{argmax}_{\theta} \mathcal{L}(\theta) = \mathrm{argmax}_{\theta} \sum\_{i=1}^n \log p(x_i|\theta) $$
+If we rewrite this as the log-likelihood and crunch the numbers, we derive the formula:
 
-**Connection to KL Divergence:**
-Let $p_{emp}(x)$ be the empirical distribution of the data (assigns probability $1/n$ to each observed $x_i$, or $k/n$ if $x$ appears $k$ times).
-Consider the KL divergence between the empirical distribution and the model $p(x|\theta)$:
-$$ D*{\mathrm{KL}}(p*{emp} \| p*\theta) = \sum*{x} p*{emp}(x) \log \frac{p*{emp}(x)}{p(x|\theta)} $$
-$$ = \sum*{x} p*{emp}(x) \log p*{emp}(x) - \sum*{x} p*{emp}(x) \log p(x|\theta) $$
-$$ = -H(p*{emp}) - \mathbb{E}_{x \sim p_{emp}}[\log p(x|\theta)] $$
-$$ = -H(p*{emp}) - \frac{1}{n} \sum*{i=1}^n \log p(x*i|\theta) $$
-$$ = -H(p*{emp}) - \frac{1}{n} \mathcal{L}(\theta) $$
-Since $H(p_{emp})$ is constant with respect to $\theta$, minimizing $D_{\mathrm{KL}}(p_{emp} \| p_\theta)$ is equivalent to maximizing the log-likelihood $\mathcal{L}(\theta)$.
+$$\hat\mu = \frac{1}{n} \sum X_i$$
 
-> **MLE finds the model distribution $p_\theta$ within the chosen family that is closest (in KL divergence) to the empirical distribution of the data.**
+and
 
-**Example: Gaussian MLE**
-Assume data $x_1, ..., x_n$ comes from $N(\mu, \sigma^2)$.
-Log-likelihood:
-$$ \mathcal{L}(\mu, \sigma^2) = \sum*{i=1}^n \log \left( \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x_i-\mu)^2}{2\sigma^2}} \right) $$
-$$ = \sum*{i=1}^n \left( -\frac{1}{2}\log(2\pi) - \frac{1}{2}\log(\sigma^2) - \frac{(x*i-\mu)^2}{2\sigma^2} \right) $$
-$$ = -\frac{n}{2}\log(2\pi) - \frac{n}{2}\log(\sigma^2) - \frac{1}{2\sigma^2} \sum*{i=1}^n (x*i-\mu)^2 $$
-Taking derivatives w.r.t. $\mu$ and $\sigma^2$ and setting to zero yields:
-$$ \hat{\mu}*{MLE} = \frac{1}{n} \sum x*i = \bar{X} $$
-$$ \hat{\sigma}^2*{MLE} = \frac{1}{n} \sum (x*i - \hat{\mu}*{MLE})^2 $$
+$$\hat\sigma^2 = \frac{1}{n} \sum (X_i - \hat\mu)^2$$
 
-_Answer to Riddle:_ The MLE for variance uses $1/n$. The $1/(n-1)$ version (Bessel's correction) is used to get an _unbiased_ estimator, which is a different criterion from maximizing likelihood.<Footnote>Unbiasedness means the expected value of the estimator equals the true parameter value. MLE estimators are often biased but have other desirable properties like consistency and asymptotic efficiency.</Footnote> The $1/\epsilon^2$ sample size dependence in polling comes from the variance of the sample mean for a Bernoulli/Binomial distribution, which scales as $p(1-p)/n$. To get the error (standard deviation) down to $\epsilon$, you need $n \propto 1/\epsilon^2$.
+What I want to stress is how the only assumption we made was at the beginning, where we said "we have a bunch of numbers, we care about their mean and variance", the rest flowed from our understanding of KL divergence. First, we used the max entropy principle to turn the knowledge of the important parameters (mean, variance) into a concrete probabilistic model of our data. Then, maximum likelihood tells us how to turn this model into a concrete loss function to optimize.
 
----
+In particular, we didn't really argue that Gaussian is the right fit because of some kind of central limit theorem, we instead used it as the max entropy distribution.
 
-<a id="applications-ml-stats"></a>
-## Applications in ML & Stats: Deriving Loss Functions
+### Linear Regression <a id="linear-regression"></a>
 
-The MLE principle (find model closest to empirical data in KL sense) combined with MEP (choose model family based on assumptions) explains many standard techniques.
+Suppose we are given a list of pairs $(x_1, y_1), \dots, (x_n, y_n)$; we think that the data are roughly linearly dependent, meaning that there are some $a,b$ such that $y_i \approx a\cdot x_i + b$. Let's see how we can find $a,b$.
 
-<a id="linear-regression"></a>
-### Linear Regression (Squared Error Loss)
+We model the data as $y_i$ coming from the distribution $a\cdot x_i + b + \text{noise}$. The noise is generated from a distribution on real numbers. The natural choice is Gaussian $N(\mu, \sigma^2)$, though it's a bit awkward since we now added two parameters $\mu, \sigma^2$ that we don't really care about; we care about $a$ and $b$.
 
-- **Problem:** Predict $y$ from $x$ using a linear model $y = ax + b + \text{noise}$.
-- **Assumption (MEP Connection):** Assume the noise $\epsilon = y - (ax+b)$ has mean 0 and finite variance, but otherwise make minimal assumptions. The MaxEnt distribution for fixed mean (0) and variance is Gaussian. So, assume $\epsilon \sim N(0, \sigma^2)$, which means $p(y|x, a, b, \sigma^2) = N(ax+b, \sigma^2)$.
-- **MLE Step:** Maximize the log-likelihood of observing data $(x_i, y_i)$:
-  $$ \mathcal{L}(a, b, \sigma^2) = \sum*{i=1}^n \log p(y_i|x_i, a, b, \sigma^2) $$
-    $$ = C - \frac{n}{2}\log(\sigma^2) - \frac{1}{2\sigma^2} \sum*{i=1}^n (y*i - (ax_i+b))^2 $$
-    Maximizing this w.r.t $a, b$ (for fixed $\sigma^2$) is equivalent to **minimizing the sum of squared errors (MSE)**:
-  $$ \min*{a,b} \sum\_{i=1}^n (y_i - (ax_i+b))^2 $$
+But that's ok. First, we can assume that $\mu = 0$, since otherwise we can replace $N(\mu, \sigma^2)$ by $N(0, \sigma^2)$ and $b$ by $b + \mu$ and get the same, but more reasonable model of the data. Second, if we now use the max likelihood principle and write down the log-likelihood:
 
-> **Key Insight:** Assuming Gaussian noise (justified by MaxEnt for fixed mean/variance) + applying MLE naturally leads to the standard Least Squares / MSE loss function. If noise was assumed Laplacian (MaxEnt for fixed mean absolute deviation), MLE would lead to minimizing sum of absolute errors (L1 loss).
+$$\log P(\text{data} | a, b, \sigma^2) = -\frac{n}{2}\log(2\pi\sigma^2) - \frac{1}{2\sigma^2} \sum_{i=1}^n (a\cdot x_i + b - y_i)^2$$
 
-<a id="logistic-regression"></a>
-### Logistic Regression (Cross-Entropy Loss)
+we notice that whatever value $\sigma$ we fix<Footnote>Statistical software like R or Python's statsmodels also outputs $\sigma^2$. This can be helpful if you also, given some new point $x_{n+1}$, want to predict not just $y_{n+1}$, but also some kind of interval in which you expect $y_{n+1}$ to lie.</Footnote>, the optimization problem becomes to minimize:
 
-- **Problem:** Classify data points $x_i$ into two classes (0 or 1, denoted by $y_i$). Assume probability depends on a linear function of features $\theta \cdot x_i$.
-- **Assumption (MEP Connection):** We want a probability $P(y=1|x) = p(x)$ between 0 and 1. What's the MaxEnt way to map the linear score $s = \theta \cdot x \in \mathbb{R}$ to a probability? If we constrain the expected score associated with the probability, MEP leads to the **logistic (sigmoid) function**: $p(x) = \sigma(s) = \frac{1}{1+e^{-s}}$. So, assume $P(y=1|x, \theta) = \sigma(\theta \cdot x)$. This defines a Bernoulli distribution for $y_i$.
-- **MLE Step:** Maximize the log-likelihood (for Bernoulli):
-  $$ \mathcal{L}(\theta) = \sum*{i=1}^n \log P(y_i|x_i, \theta) $$
-    $$ = \sum*{i=1}^n [ y_i \log P(y=1|x_i, \theta) + (1-y_i) \log P(y=0|x_i, \theta) ] $$
-    $$ = \sum*{i=1}^n [ y_i \log \sigma(\theta \cdot x_i) + (1-y_i) \log (1-\sigma(\theta \cdot x_i)) ] $$
-    Maximizing this is equivalent to **minimizing the negative log-likelihood**, which is precisely the **Binary Cross-Entropy Loss**:
-    $$ \text{Loss} = -\sum*{i=1}^n [ y_i \log p_i + (1-y_i) \log (1-p_i) ] \quad \text{where } p_i = \sigma(\theta \cdot x_i) $$
+$$\sum_{i=1}^n (a\cdot x_i + b - y_i)^2$$
 
-> **Key Insight:** Assuming a Bernoulli outcome where probability is linked to a linear score via the logistic function (justified by MaxEnt) + applying MLE naturally leads to the standard Binary Cross-Entropy loss used in logistic regression and neural network classification.
+We arrive at the classical linear regression loss function (usually there are more variables $x^1, \dots, x^k$ that we use to predict $y$ which leads to more complicated formulas, but the derivation stays the same). Notice how the square in the loss function came from our max entropy assumption of Gaussian noise.
 
----
+Notice how this approach is pretty flexible so that if you have additional information, you can add it to the model.
 
-<a id="applications-deep-learning"></a>
-## Applications in Deep Learning
+For example, maybe you think that the parameters $a$ and $b$ are small and you want to add this information to the model. Our framework tells you to add that $a,b \sim N(0, w^2)$ to the model, for some number $w$ that you have to supply by either guessing or using some other machine learning trick like cross-validation. This leads to optimizing $\sum_{i=1}^n (a\cdot x_i + b - y_i)^2 + \frac{1}{w^2}(a^2 + b^2)$, known as Ridge regression.
 
-<a id="basic-training-loss"></a>
-### Basic Training & Softmax
+As another example, consider the more general case where you have many predictors $x^1, \dots, x^k$, but you believe that only a small fraction, let's say $p$ fraction of them are actually useful. For the rest, the corresponding coefficient $a_i$ that we try to find is equal to zero. Our framework suggests that you should optimize:
 
-- **Problem:** Train a neural network for multi-class classification (e.g., ImageNet). The network outputs scores (logits) $z_k$ for each class $k$. We need to convert these to probabilities $q_k$ and compare to the true class (one-hot encoded vector $p$, e.g., $p=(0,0,1,0,...)$).
-- **Assumption (MEP):** Given scores $z_k$, the MaxEnt distribution is the **Softmax** function (derived in Part 2):
-  $$ q_k = \frac{e^{z_k}}{\sum_j e^{z_j}} $$
-- **MLE/Loss:** We want the predicted distribution $q$ to match the true distribution $p$. Using MLE is equivalent to minimizing $D_{\mathrm{KL}}(p \| q)$, which is equivalent to minimizing the cross-entropy $H(p, q)$ since $p$ is fixed (the true label).
-  $$ H(p, q) = -\sum_k p_k \log q_k $$
-    Since $p$ is one-hot (say $p_c=1$ for the true class c, and 0 otherwise), this simplifies to:
-  $$ H(p, q) = -\log q_c = -\log \left( \frac{e^{z_c}}{\sum_j e^{z_j}} \right) $$
-  This is the standard **Cross-Entropy Loss** used for training deep classifiers.
+$$\min_{S \subseteq \{1, \dots, k\}, |S|=pk} \sum_{i=1}^n \|a\cdot x_i - y_i\|^2$$
 
-<a id="knowledge-distillation"></a>
-### Knowledge Distillation (Training Smaller Models)
+The only problem is that optimizing this function is hard, as we would have to essentially try all possible subsets of nonzero coefficients and fit each one of them. Some more complicated math shows though, that optimizing a different objective, called Lasso, often solves this, in general complicated, problem. So, you should think of Lasso as an attempt to solve this problem.
 
-- **Problem:** Train a smaller "student" model to mimic a larger "teacher" model.
-- **Method:** Instead of training the student on hard labels (one-hot $p$), train it to match the _probability distribution_ $q_{teacher}$ produced by the teacher model (using softmax on teacher's logits, possibly with a "temperature" scaling).
-- **Loss Function:** Minimize the KL divergence between the teacher's distribution and the student's distribution $q_{student}$:
-  $$ \text{Loss} = D*{\mathrm{KL}}(q*{teacher} \| q\_{student}) $$
-  This encourages the student to learn the nuanced similarities between classes that the teacher captured, often leading to better performance than training on hard labels alone.<Cite>Hinton2015Distilling</Cite>
+### Logistic Regression <a id="logistic-regression"></a>
 
-<a id="variational-autoencoders"></a>
-### Variational Autoencoders (VAEs)
+This time, we get red and blue points in a plane and we want to find the best line separating them. Ideally, we would like all the red points on one side and all the blue ones on the other, but that's not always possible. Let's use our combo of max entropy + max likelihood to approach the general case.
 
-- **Problem:** Learn a generative model of data (e.g., images) using latent variables $z$. We want to learn an encoder $q(z|x)$ mapping data $x$ to latent codes $z$, and a decoder $p(x|z)$ mapping codes back to data. We want to maximize the data likelihood $p(x) = \int p(x|z)p(z)dz$.
-- **Method:** Maximizing $p(x)$ directly is hard. VAEs maximize a lower bound called the Evidence Lower Bound (ELBO):
-  $$ \log p(x) \ge \text{ELBO} = \mathbb{E}_{z \sim q(z|x)}[\log p(x|z)] - D_{\mathrm{KL}}(q(z|x) \| p(z)) $$
-- **Interpretation:**
-  - The first term $\mathbb{E}[\log p(x|z)]$ is the **reconstruction likelihood**: How well can we reconstruct $x$ from latent codes $z$ sampled from the encoder's approximation of the posterior? (Often uses MSE or Cross-Entropy loss depending on data type).
-  - The second term $D_{\mathrm{KL}}(q(z|x) \| p(z))$ is a **regularizer**: It forces the learned approximate posterior $q(z|x)$ from the encoder to stay close to a prior distribution $p(z)$ (usually a standard Gaussian $N(0, I)$). This encourages a well-structured latent space.
+As in the previous case of linear regression, we want to find a line $y = ax + b$; this time, we will make our life a bit simpler and assume the line has to pass through the origin, so $y = ax$ -- that's just to make the math simpler. We will represent the line using the normal vector $\theta = (a, -1)$ orthogonal to that line, to avoid the edge case of a vertical line. It seems that given a point $p = (x_i, y_i)$, the relevant quantity is the dot product $\theta \cdot p = ax_i - y_i$. This quantity is related to the distance of $p$ from the line; the important detail though is that the same line can be represented by $\theta_1 = (1,-1)$ and $\theta_2=(100,-100)$; the dot product is proportional both to the distance of $p$ from the line and the scale of $\theta$.
 
-> **Key Insight:** VAE training explicitly involves minimizing a KL divergence term to regularize the latent space, fitting perfectly into the information-theoretic framework. The beastly loss function arises naturally from maximizing the ELBO.
+Now, using the max entropy principle, it makes sense to use the model where, given the line with normal vector $\theta$, the probability that a point $x$ is red or blue is the max entropy distribution if we care about $\theta \cdot x$, which is the logistic distribution with $P(\text{red}) = \sigma(\theta\cdot x)$ and $P(\text{blue}) = 1 - \sigma(\theta \cdot x)$<Footnote>We should use the general max entropy distribution that has form $\sigma(\lambda\theta\cdot x)$ for a parameter $\lambda$, but we can set it to $1$ since $\theta$ already can have different scales; but this shows that the scale is a relevant factor, even if we started without it.</Footnote>, where $\sigma(z) = \frac{1}{1+e^{-z}}$ is the sigmoid function.
 
-![VAE Architecture and KL Components](/03-modeling/vae-diagram.png)
+Now when we know the family of distributions we care about, we can use the max likelihood principle to conclude that we should optimize this expression:
 
----
+$$\sum_i y_i \log \sigma(\theta\cdot x_i) + (1-y_i)\log (1-\sigma(\theta\cdot x_i))$$
 
-> **Summary of Part 3:** Maximum Likelihood Estimation (MLE) provides a powerful principle for fitting models, equivalent to minimizing KL divergence from the empirical distribution. Combined with Maximum Entropy assumptions about noise or mappings, it justifies standard loss functions like MSE and Cross-Entropy. Information-theoretic ideas like KL also appear directly in advanced ML techniques like knowledge distillation and VAEs.
+where $y_i$ is the indicator ($y_i \in \{0,1\}$) for whether $x_i$ is red. This is hard to solve exactly, but gradient descent usually works pretty well. At the end, we get to know $\theta$ which hides not only the direction of the line, but also a scale which is larger the more confident we are about the classification. In the end, we can use $\theta$ to not just predict the more likely color of each new point $x_{n+1}$, but also our confidence that it has that color.
 
-> **Next:** [Link to 04-advanced.mdx] Part 4: Advanced Connections
+### K-means Clustering <a id="k-means-clustering"></a>
+
+Another classic machine learning algorithm is k-means clustering. In this problem, we have a set of points $x_1, \dots, x_n$ in a space, and we want to group them into $k$ clusters. The algorithm iteratively assigns points to the nearest cluster center and then updates the centers to be the means of the assigned points.
+
+How does this relate to KL divergence? We can view k-means as minimizing the KL divergence between the empirical distribution of the data and a mixture of $k$ Gaussians with identical spherical covariance matrices. In the limit as the covariance approaches zero, this becomes equivalent to the standard k-means algorithm.
+
+More specifically, if we have a mixture model with $k$ components, each with mean $\mu_j$ and the same covariance matrix $\sigma^2 I$, the likelihood of a data point $x_i$ is:
+
+$$p(x_i) = \sum_{j=1}^k \pi_j \mathcal{N}(x_i | \mu_j, \sigma^2 I)$$
+
+where $\pi_j$ is the weight of the $j$-th component. As $\sigma^2 \to 0$, the negative log-likelihood (which we want to minimize) becomes proportional to the sum of squared distances from each point to its nearest center:
+
+$$-\log p(x_i) \propto \min_j \|x_i - \mu_j\|^2$$
+
+This is exactly the objective that k-means seeks to minimize. So, k-means can be seen as a special case of maximum likelihood estimation for a specific probabilistic model.
+
+## Four Viewpoints on Machine Learning Models <a id="four-viewpoints"></a>
+
+Given some machine learning model, there are four viewpoints that one can have:
+
+1. **What is important about the data?** - Identifying the key features or aspects of the data that we care about.
+2. **What is a good probabilistic model?** - Determining a suitable family of probability distributions based on the identified features.
+3. **What loss function should we optimize?** - Deriving an objective function from the probabilistic model.
+4. **What algorithm efficiently optimizes this loss?** - Finding efficient ways to minimize or maximize the objective.
+
+The point of our discussion has been explaining how understanding KL divergence brings us from the first column to the second one (max entropy) and then from the second one to the third one (max likelihood). Sometimes, like in the mean estimation example, loss function implies exact simple formulas, so there's not much more we can say. Sometimes, the optimization simply means running gradient descent on the loss. And sometimes, it's a bit more tricky though and understanding KL is helpful.
+
+## Application: Understanding Financial Data <a id="application-understanding-financial-data"></a>
+
+Let's return to our financial mathematics riddle. We observed that the normal distribution is a better fit for the S&P index, while the Laplace distribution better models Bitcoin price changes.
+
+A related distribution is the Laplace distribution $e^{-|x-\mu|}$. You could think of it as the max entropy distribution if you fix mean and the value of $E[|X-\mu|]$, but there's another illuminating way to understand it. The Laplace distribution can be viewed as the result of the following process:
+
+1. Sample a variance $\sigma^2$ from the exponential distribution
+2. Output a sample from $N(\mu, \sigma^2)$
+
+To understand how this helps explain our financial data, consider the story for price fluctuations:
+
+For the S&P index, which represents an average of many large companies, the value slowly goes up (mean is positive) but there is some variance in the daily increase, since many trades happen, each making its value slightly higher or lower. Because these trades are largely independent, we can use the central limit theorem to predict that the data is going to be approximately Gaussian.
+
+However, Bitcoin is much more volatile than the S&P (which itself is an average of 500 companies). There are periods where not much happens, but also periods with large volatility (e.g., around elections or when laws related to Bitcoin are passed). The two-step model above starts making more sense for Bitcoin. We can think of each day as having a different variance, drawn from some distribution. Indeed, we saw that the Laplace distribution fits the Bitcoin data much better than the normal distribution.
+
+That is, Gaussian is saying "I am pretty sure what today's fluctuation is going to be" and Laplace is saying "I know what the average fluctuation was in the past, but the volatility itself varies significantly."
+
+The story we are making actually suggests that we should also see Laplace-like behavior even in the S&P data, provided that we look at a large enough time scale that ranges through times of both large and small volatility. This is indeed what we might observe if we analyzed data over 5 or 10 years that capture periods like the 2008 financial crisis or COVID-19.
+
+In practice, researchers often model financial data not by the Laplace distribution, but by the Student-t distribution. It is the distribution that you get from the process above but instead of sampling $\sigma^2$ from the exponential distribution, you sample it from the so-called inverse gamma distribution. The Student-t distribution looks similar to normal distribution if you plot it, but its tails have power-law decay, making it better suited for modeling data with extreme events.
+
+## Connecting Machine Learning to Information Theory <a id="connecting-ml-to-information-theory"></a>
+
+In our exploration of the machine learning riddle, we asked why certain functions like $x^2$ and logarithms appear so frequently in machine learning algorithms. Now we can provide a satisfying answer.
+
+The ubiquity of squared terms ($x^2$) in loss functions like linear regression and k-means comes from the assumption of Gaussian noise or Gaussian distributions. As we've seen, the Gaussian is the maximum entropy distribution when we fix the mean and variance, and its density involves an $e^{-x^2}$ term, which leads to squared terms in the log-likelihood.
+
+Similarly, logarithms appear because we're often dealing with likelihoods and probabilities, and the log-likelihood is what we optimize in maximum likelihood estimation. Cross-entropy loss, which is common in classification tasks, directly involves logarithms because it measures the average surprise when using one distribution to model another.
+
+More complex loss functions, like those in variational autoencoders, are derived from KL divergence between specific distributions. For example, the loss function for variational autoencoders includes a reconstruction term (related to likelihood) and a KL term that ensures the latent distribution stays close to a prior.
+
+## Summary <a id="summary"></a>
+
+In this section, we've seen how KL divergence and information-theoretic principles lead to many standard machine learning algorithms:
+
+1. **Linear Regression** - Derived from maximum likelihood estimation with Gaussian noise
+2. **Logistic Regression** - Derived from maximizing the likelihood of logistic distributions
+3. **K-means Clustering** - Connected to maximum likelihood in Gaussian mixture models
+4. **Financial Modeling** - Explaining why different distributions fit different types of data
+
+By understanding these connections, we gain insight into why these methods work and when they might fail. We also develop a unified framework for approaching modeling problems:
+
+1. Identify what's important about the data
+2. Use maximum entropy to find a suitable probabilistic model
+3. Use maximum likelihood to derive a loss function
+4. Find efficient algorithms to optimize the loss
+
+In the next section, we'll explore more advanced applications of these principles in areas like deep learning, coding theory, and reinforcement learning.
+
+## Next Steps <a id="next-steps"></a>
+
+In the next part, we'll delve into advanced applications of KL divergence and information theory, including deep learning, variational methods, and connections to algorithmic complexity.
+
+Continue to [Advanced Applications](/04-advanced).

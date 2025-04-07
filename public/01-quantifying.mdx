@@ -1,222 +1,240 @@
-# Part 1: Quantifying Information, Belief, and Surprise
+# Quantifying Information <a id="quantifying-information"></a>
 
-> This part introduces the fundamental tools for measuring information, uncertainty, and the relationships between probability distributions. We define Entropy, KL Divergence, Cross-Entropy, and Mutual Information, exploring their interpretations and properties.
+In the introduction, we presented several puzzles across different domains. Now, we'll begin to develop the conceptual toolkit needed to address these challenges. We'll focus on how to quantify the "information content" of probability distributions and measure the distance between them.
 
----
+## Definition of KL Divergence <a id="definition-of-kl-divergence"></a>
 
-<a id="introduction-motivation"></a>
-## Introduction & Motivation
+KL divergence measures how well a "true distribution" or empirical data $p$ is fitted by a model distribution $q$. The formula is:
 
-_(Initial motivating text from the LaTeX intro, discussing the goal and LessWrong inspiration, can be adapted here)_
+$$D(p|q) = \sum p_i \log \frac{p_i}{q_i}$$
 
-This text introduces and explains core concepts from information theory, particularly the so-called KL divergence, sometimes also known as relative entropy. It is a function that takes two distributions as input—one being the ``true'' distribution and the other our model for it—and outputs a measure of how well the model fits the true distribution.
-
-Surprisingly, understanding this function and related concepts like entropy explains many ideas in probability, statistics, machine learning, and deep learning. This text aims to present takes on probability theory that are not typically covered in standard university courses, focusing on intuitive understanding and connections.<Footnote>Inspired by many conversations, internet explorations, LessWrong blog posts, and hidden gems in technical books.</Footnote>
-
----
-
-<a id="riddle-predictions"></a>
-## Riddle: Scoring Predictions
-
-> It would be great to know what the future holds—or at least to know someone who does. To this end, you have gathered a bunch of experts and asked them to assign probabilities to a list of events for the coming year. Each expert provides an estimate for each event. When the year ends, you know for each event whether it occurred or not. How do we score the experts so that we can pick the best ones?
-
-| Expert | Event A | Event B | Event C | Score |
-| ------ | ------- | ------- | ------- | ----- |
-| Alice  | 0.8     | 0.4     | 0.2     | ?     |
-| Bob    | 0.6     | 0.3     | 0.9     | ?     |
-| Carol  | 0.7     | 0.5     | 0.4     | ?     |
-
-_(We will revisit this riddle later in this Part)_
-
----
-
-<a id="riddle-information-theory"></a>
-## Riddle: Measuring Dependence
-
-> Suppose you are interested in two things. First, whether a day is rainy or sunny—say, with probabilities 30% and 70%, respectively. Second, how you commute to work (e.g., walk, bike, or take the bus with probabilities 20%, 30%, and 50% respectively). Knowing these two marginal distributions does not give you the full picture. You can form a 2x3 table representing the joint distribution of these outcomes.
-
-> If the two distributions were independent, the probability in each cell would be the product of the marginal probabilities. For example, modeling the distributions as independent, we would guess that the probability of rain and walking is $0.3 \times 0.2=0.06$ (i.e., 6%). But in fact, it is much lower (since I don't want to walk in the rain).
-
-> Is there a good measure of how far the joint distribution is from being independent? For example, given two tables, how would you determine which one is closer to independence? Correlation doesn't work well for categorical data or non-linear dependencies. Can we do better?
-
-_(We will answer this using Mutual Information later in this Part)_
-
----
-
-<a id="definition-of-kl-divergence"></a>
-## Definition of KL Divergence
-
-> **TLDR:** KL divergence measures how well a ``true distribution'' or empirical data $p$ is fitted by a model distribution $q$. The formula is $D(p\|q) = \sum p_i \log p_i / q_i$. The meaning behind this formula is that if you keep sampling from the true distribution $p$ and applying Bayes theorem, KL tells you how quickly you are able to distinguish whether you are sampling from $p$ or $q$.
+The meaning behind this formula is that if you keep sampling from the true distribution $p$ and applying Bayes' theorem, KL tells you how quickly you are able to distinguish whether you are sampling from $p$ or $q$.
 
 KL divergence is a measure that takes two distributions as input: the true distribution $p$ (represented by $p_1, \dots, p_n$) and the model distribution $q$ (represented by $q_1, \dots, q_n$), with both summing to one.
 
-KL divergence is defined as
-$$ D*{\mathrm{KL}}(p\| q) = \sum*{i = 1}^n p_i \log \frac{p_i}{q_i} $$
+KL divergence is defined as:
 
-![KL Divergence Calculator Widget](/01-quantifying/kl-calculator.png)
+$$KL(p, q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}$$
 
-Notice the asymmetry between $p$ and $q$. If you push the value $q_i$ to zero for some $i$ where $p_i > 0$, the KL divergence becomes infinite. This reflects the fact that if your model predicts an event is impossible ($q_i=0$) and it occurs ($p_i>0$), your model is infinitely bad. On the other hand, if $p_i=0$ and $q_i>0$, nothing dramatic happens—being prepared for an event that never occurs only slightly detracts from your performance.
+What is the intuition behind this formula? Let's explore a few perspectives to build a deeper understanding.
 
-Sometimes, KL divergence is introduced as ``something like a distance,'' but it is not symmetric, so it is not a true distance metric. The asymmetry is important because the two distributions play different roles: $p$ is the true distribution (or reference), and $q$ is our model for it.
+### Asymmetry in KL Divergence <a id="asymmetry-in-kl-divergence"></a>
 
-We now discuss two mathematical intuitions for the formula.
+First, notice that there is a certain asymmetry between $p$ and $q$. If you push the value $q_i$ to zero for some $i$ where $p_i > 0$, the KL divergence becomes infinite. This reflects the fact that if your model predicts an event is impossible and it occurs, your model is infinitely bad. On the other hand, if $p_i=0$ and $q_i>0$, nothing dramatic happens—being prepared for an event that never occurs only slightly detracts from your performance.
 
-<a id="expected-distinguishing-evidence"></a>
-### Expected Distinguishing Evidence
+Sometimes, KL divergence is introduced as "something like a distance," but unfortunately it is not symmetric, so it is not a true distance metric. In fact, the asymmetry is important because the two distributions play different roles: $p$ is the true distribution, and $q$ is our model for it.
 
-First, a quick recap of Bayes' theorem in terms of log-odds. Suppose you have a coin and consider two hypotheses:
+Let's now discuss two mathematical intuitions for the formula.
 
-1.  The coin is biased (p): heads prob 0.4, tails prob 0.6.
-2.  The coin is fair (q): heads prob 0.5, tails prob 0.5.
+## Expected Distinguishing Evidence <a id="expected-distinguishing-evidence"></a>
 
-Assume hypothesis 1 (biased) is true. Initially you believe it's probably fair, maybe prior odds $1:2$ for biased vs fair (Prob(biased)=1/3).
+One way to understand KL divergence is through the lens of Bayesian inference. When we observe data, we can use it to distinguish between competing hypotheses. KL divergence quantifies how much evidence we gain, on average, from each observation.
 
-If you observe Heads (H), the likelihood ratio is $p(H)/q(H) = 0.4/0.5 = 4/5$. Bayes' theorem says update odds by multiplying:
-Prior Odds $\times$ Likelihood Ratio = Posterior Odds
-$1:2 \times 4:5 = 4:10 = 2:5$.
+### Bayes' Theorem Review <a id="bayes-theorem-review"></a>
 
-If you observe Tails (T), the likelihood ratio is $p(T)/q(T) = 0.6/0.5 = 6/5$.
-$1:2 \times 6:5 = 6:10 = 3:5$.
+First, a quick recap of Bayes' theorem.
 
-It's often easier to work with logarithms (log-odds and log-likelihood ratios, often called _evidence_ in bits or nats). Let's use $\log_2$.
-Initial log-odds: $\log_2(1/2) = -1$ bit.
-Evidence from H: $\log_2(4/5) \approx -0.32$ bits. New log-odds = -1 - 0.32 = -1.32 bits.
-Evidence from T: $\log_2(6/5) \approx 0.26$ bits. New log-odds = -1 + 0.26 = -0.74 bits.
+Suppose you have a coin and you consider two hypotheses:
 
-Since the coin is truly biased (hypothesis p is true), we will see Heads with probability 0.4 and Tails with probability 0.6. The _expected_ evidence per flip in favor of the true hypothesis p over the model q is:
-$$ \mathbb{E}_{x \sim p}[\text{Evidence for p vs q}] = p(H) \log_2 \frac{p(H)}{q(H)} + p(T) \log_2 \frac{p(T)}{q(T)} $$
-$$ = 0.4 \times \log_2(0.4/0.5) + 0.6 \times \log_2(0.6/0.5) $$
-$$ = 0.4 \times (-0.32) + 0.6 \times (0.26) \approx -0.128 + 0.156 \approx 0.028 \text{ bits} $$
-Notice this expression is exactly the KL divergence $D_{\mathrm{KL}}(p\|q)$ (using $\log_2$).
+1. The coin is biased: it shows heads with probability 0.4 and tails with probability 0.6.
+2. The coin is fair: it shows heads with probability 0.5 and tails with probability 0.5.
 
-The positive average evidence indicates that, on average, each flip provides evidence _in favor of the true hypothesis_ p against the alternative q. By the law of large numbers, after $n$ flips, you expect to accumulate about $n \times D_{\mathrm{KL}}(p\|q)$ bits of evidence.
+Assume that the coin is actually biased (i.e., hypothesis 1 is true). However, initially you believe the coin is probably fair, assigning probabilities $2/3$ to it being fair and $1/3$ to it being biased (or odds $1:2$ for biased to fair).
 
-<a id="natural-measure-axioms"></a>
-### Natural Measure Axioms
+Now, note that under hypothesis 1 (biased), the probability of heads is 0.4, while under hypothesis 2 (fair) it is 0.5. The ratio of these probabilities is $0.4:0.5$, or equivalently $4:5$. Bayes' theorem tells us to update your odds by multiplying the prior odds by this likelihood ratio:
 
-_(Placeholder: This section can discuss the axiomatic derivation, focusing on the chain rule property:_)
-It seems natural to require that a measure of divergence $f(p,q)$ satisfies an additivity property for composite experiments. If we have a joint distribution $p(x,y)$ and model $q(x,y)$, we can decompose them using conditionals: $p(x,y) = p(x) p(y|x)$ and $q(x,y) = q(x) q(y|x)$. A natural requirement is:
-$$ f(p(x,y), q(x,y)) = f(p(x), q(x)) + \sum_x p(x) f(p(y|x), q(y|x)) $$
-This property, along with non-negativity and continuity, essentially characterizes KL divergence up to a constant factor.<Footnote>This relates to the axiomatic foundations of information theory, see works by Shannon, Aczél, Csiszár. <Cite>citation_needed</Cite></Footnote>
+$$1:2 \quad \times \quad 4:5 \quad = \quad 4:10 \quad = \quad 2:5$$
 
-<a id="kl-properties-nonnegativity"></a>
-### Non-negativity of KL Divergence
+This corresponds to a posterior probability of about 29% that the coin is biased.
 
-KL divergence is always non-negative, $D_{\mathrm{KL}}(p \| q) \ge 0$, with equality holding if and only if $p = q$. This can be proven using Jensen's inequality for the convex function $f(t) = t \log t$ or by using the inequality $\ln x \le x - 1$. See, for example, [this discussion](https://stats.stackexchange.com/questions/335197/why-kl-divergence-is-non-negative) for a proof.
+You can gather more evidence by flipping the coin a few more times. Suppose you flip the coin twice more and get more tails. Using Bayes' theorem, you multiply the likelihood ratios for each flip:
 
----
+$$1:2,\quad 40:50,\quad 60:50,\quad 60:50 \quad \Longrightarrow \quad 144:250$$
 
-<a id="entropy-cross-entropy-relative-entropy"></a>
-## Entropy, Cross-Entropy, and Relative Entropy
+which corresponds to about a 37% probability that the coin is biased.
 
-> **TLDR:** You can split the formula for KL divergence as a difference between cross entropy $H(p,q)$ and entropy $H(p)$. Cross entropy measures how surprised you are on average when sampling from $p$ but using $q$ as your model. If $p=q$, it's called entropy.
+### Measuring Evidence in Bits <a id="measuring-evidence-in-bits"></a>
+
+How quickly are we gathering evidence in favor of the coin being biased? To analyze this, it is simpler to take logarithms of the ratios so that we add rather than multiply. Instead of multiplying by the ratio $40/50$, we add $\log_2(40/50) \approx -0.32$ and for $60/50$ we add $\log_2(60/50) \approx 0.26$.
+
+Since $\log_2(1/2) = -1$, we can describe our three-flip experiment as follows: We started with $-1$ bit of prior evidence favoring the coin being biased. After the first flip, the evidence becomes $-1-0.32 = -1.32$ bits; after the second flip, $-1.32+0.26 = -1.06$ bits; and after the third, $-1.06+0.26 = -0.8$ bits.
+
+In general, since the coin is biased, each flip yields $0.26$ bits of evidence with probability 0.6 and $-0.32$ bits with probability 0.4. The average evidence per flip is:
+
+$$0.6\cdot 0.26 - 0.4\cdot 0.32 \approx 0.03\text{ bits}$$
+
+Notice that this expression is exactly the KL divergence computed for the true distribution $(0.6,0.4)$ and the model $(0.5,0.5)$.
+
+The positive average evidence indicates that, on average, each flip provides approximately 0.03 bits of evidence in favor of the true (biased) hypothesis. By the law of large numbers, if you flip the coin $n$ times, you would expect to accumulate about $0.03\cdot n$ bits of evidence.
+
+### Zooming Out: KL as Expected Evidence <a id="zooming-out-kl-as-expected-evidence"></a>
+
+Zooming out, we can view KL divergence as the expected evidence obtained per observation in favor of the true hypothesis $p$ when comparing it against an incorrect model $q$. Here, $p_i$ in the KL formula represents the probability of the $i$th outcome under the true distribution, and the term $\log(p_i/q_i)$ represents the evidence for the true hypothesis when outcome $i$ occurs. The overall KL divergence is the expected evidence per trial, with the logarithm ensuring that evidence accumulates additively.
+
+KL divergence is thus about the evidence, not the prior. This is why it is relevant in both classical (frequentist) and Bayesian statistics.
+
+## KL Divergence as a Natural Measure <a id="kl-divergence-as-a-natural-measure"></a>
+
+Here is another thought experiment leading to KL divergence. Suppose we want to find a reasonable function $f(p,q)$ that measures how well the true distribution $p$ is approximated by a model distribution $q$.
+
+Instead of proposing concrete formulas immediately, we can ask what properties such a function should satisfy. Consider joint distributions—say, the joint distribution over weather (sunny/rainy) and commuting methods (walk/bike/bus) from a previous example.
+
+Such a distribution can be represented as a table with six numbers (which we can input into $f$), or equivalently using conditional probabilities as a "decision tree" where you first learn whether it rains and then, given that, decide on walking, biking, or taking the bus.
+
+Generalizing these thought experiments, it seems natural to require that if we can decompose two distributions $p$ and $q$ as joint distributions $(p_1,p_2)$ and $(q_1,q_2)$, then:
+
+$$f((p_1, p_2), (q_1, q_2)) = f(p_1, q_1) + \sum_i p_i\cdot f\Bigl(p_2(\cdot|i), q_2(\cdot|i)\Bigr)$$
+
+A priori, it is not clear whether any function $f$ satisfies this property, since there are many ways to represent a joint distribution using different trees. Remarkably, this constraint almost uniquely characterizes KL divergence.
+
+### KL Divergence is Uniquely Characterized <a id="kl-divergence-is-uniquely-characterized"></a>
+
+The following theorem formalizes this intuition:
+
+**Theorem**: Let $f$ be a function on pairs of probability distributions on an $n$-element set. Suppose $f$ satisfies the following constraints:
+
+1. $$f((p_1, p_2), (q_1, q_2)) = f(p_1, q_1) + \sum_i p_i\cdot f\Bigl(p_2(\cdot|i), q_2(\cdot|i)\Bigr)$$
+2. $f(p,q)$ is nonnegative, with $f(p,q)=0$ if and only if $p=q$.
+3. $f(p,q)$ is continuous.
+
+Then, $$f(p,q) = c\, KL(p,q)$$ for some positive constant $c$, and conversely.
+
+For example, we require nonnegativity because working with $f(p,q) = -KL(p,q)$ would be counterintuitive. Continuity is required for technical reasons. Note that $f$ is defined only up to a constant factor, which is equivalent to the choice of logarithm base in the definition of $KL$. We use base 2 because we like to think in bits (physicists might choose $\mathrm{e}$); it doesn't really matter.
+
+We will not prove that KL divergence is the only function satisfying the above constraints, but we will verify that it does satisfy them.
+
+## Application: Training Smaller Models <a id="application-training-smaller-models"></a>
+
+Let's solve one of our riddles from the introduction.
+
+In the deep learning riddle, we asked about how to train a smaller language model to mimic a larger one like GPT-4. You may not be surprised to learn that for this task, people typically optimize the KL divergence $D(p,q)$ between the two distributions.
+
+What about other options, like minimizing the $\ell_1$ norm, i.e., $\sum |p_i - q_i|$? or $\ell_2$ norm, i.e., $\sum (p_i - q_i)^2$? Doing that would perhaps also work reasonably well, but there is something very uneasy about those approaches. Consider these two scenarios:
+
+1. $p_i = 0.5, q_i = 0.49$
+2. $p_i = 0.01, q_i = 0.0$
+
+The standard geometrical norms ($\ell_1, \ell_2$) treat both of these situations as having similar magnitude of error. KL, though, understands that while in the first situation, the difference is pretty negligible, in the second situation, the model failed utterly and miserably!
+
+## Application: Distance from Independence <a id="application-distance-from-independence"></a>
+
+We can now solve another of our earlier riddles: Given a joint distribution $r = (p,q)$, how far is it from being independent?
+
+Let's try to fit the problem into using KL divergence. We want the answer to be KL between two distributions, one of them "the true one", the other "a model for it".
+
+So, what should be the "true distribution"? Here it's pretty natural, we have the true joint distribution $r$ between $p$ and $q$. Next, what should the model be? Since we are trying to measure the "distance from independence", let's choose the model the joint distribution _as if $p$ and $q$ were independent_. That is, let's choose the distribution $s = p \times q$ which is the product distribution between $p$ and $q$.
+
+$$I(p;q) = KL\bigl((p,q), (p\times q)\bigr)$$
+
+This measure is known as the mutual information. It's one of those formulas that pop up at all kinds of places, especially in information and coding theory. For example, when you analyze the problem of sending some data over a wire that can flip each sent bit with some probability, the mutual information between the original data on one end of the wire and the noisy data on the other end of the wire is a key quantity to understanding how much the unreliability of the wire slows down the transmission. Mutual information is also used in practice to assess how far variables are from being independent, especially when correlation is not applicable (e.g., when the data are categorical).
+
+## Entropy, Cross-Entropy, and Relative Entropy <a id="entropy-cross-entropy-and-relative-entropy"></a>
+
+You can split the formula for KL divergence as a difference between cross entropy $H(p,q)$ and entropy $H(p)$.
+
+Cross entropy between distributions $p$ and $q$ is measuring how surprised you are when you keep sampling from $p$ and using $q$ as your model of the data. If $p = q$, it's called entropy.
 
 It is sometimes helpful to rewrite the formula for KL divergence as a difference of two expressions:
-$$ D*{\mathrm{KL}}(p\| q) = \sum_i p_i \log \frac{p_i}{q_i} = \sum_i p_i (\log p_i - \log q_i) $$
-$$ = \sum_i p_i \log \frac{1}{q_i} - \sum_i p_i \log \frac{1}{p_i} $$
-Using the identity $\log x = -\log(1/x)$:
-$$ D*{\mathrm{KL}}(p\| q) = \underbrace{\left(-\sum*i p_i \log q_i\right)}*{\text{Cross-Entropy } H(p, q)} - \underbrace{\left(-\sum*i p_i \log p_i\right)}*{\text{Entropy } H(p)} $$
 
-So, $D_{\mathrm{KL}}(p\| q) = H(p, q) - H(p)$.
+$$\sum_i p_i \log \frac{p_i}{q_i} = \sum_i p_i \log \frac{1}{q_i} - \sum_i p_i \log \frac{1}{p_i}$$
 
-**Interpretation via Surprise:**
+where we used the identity $\log p_i = -\log(1/p_i)$.
 
-- **Entropy $H(p)$:** The expected surprise when outcomes are generated by $p$ and evaluated using the _true_ model $p$. It's the irreducible average uncertainty/information content. Minimum average coding length required.
-- **Cross-Entropy $H(p, q)$:** The expected surprise when outcomes are generated by $p$ but evaluated using the _model_ $q$. Average coding length if using an optimal code for $q$ to encode data from $p$.
-- **KL Divergence $D_{\mathrm{KL}}(p\| q)$:** The _extra_ expected surprise (or extra coding bits) incurred by using model $q$ instead of the true model $p$.
+The left-hand side is the KL divergence (also called relative entropy). The term $\sum_i p_i \log \frac{1}{q_i}$ is called the cross-entropy, and $\sum_i p_i \log \frac{1}{p_i}$ is the entropy.
 
-Since $D_{\mathrm{KL}}(p\| q) \ge 0$, we always have $H(p, q) \ge H(p)$. The cross-entropy is minimized (and equals the entropy) when the model $q$ matches reality $p$.
+How do we interpret this equation? One way is to return to our initial example of coin flips.
 
-<a id="additivity"></a>
-### Additivity
+Imagine a balance sheet with two columns: the left column lists the surprise (in bits) based on the true distribution $p$, and the right column lists the surprise based on the model $q$. For instance, if the model assigns a probability of 1% to heads, then whenever heads occurs the surprise is $\log(1/0.01) \approx 6.6$ bits—a significant surprise!
 
-Just like KL divergence, entropy and cross-entropy are additive for independent distributions. If $Z=(X,Y)$ where X and Y are independent, then $H(Z) = H(X) + H(Y)$ and $H(p_Z, q_Z) = H(p_X, q_X) + H(p_Y, q_Y)$.
+The KL divergence is the difference between these two surprises. Alternatively, we can consider the surprises separately. The first column, which gives the average surprise when data are generated by $p$ and modeled by $p$, is the entropy of $p$. It quantifies the inherent uncertainty in the distribution. For example, if $p$ is degenerate (100% heads), the surprise is $\log(1)=0$. In contrast, for a uniform distribution over 16 outcomes, each outcome gives 4 bits of surprise.
 
-<a id="application-predictions"></a>
-### Application: Scoring Predictions
+The second column represents the average surprise when data are generated by $p$ but modeled by $q$, which is the cross-entropy.
 
-Let's revisit the riddle about scoring experts. Let $p_i$ be the true probability of event $i$ occurring (we assume this exists for now<Footnote>Philosophically, the existence of "true" objective probabilities for single future events is debatable. Often, we evaluate based on the observed _outcomes_ (0 or 1) rather than an unknown true p.</Footnote>) and $q_i$ be the expert's prediction. A good scoring rule should incentivize the expert to report their true belief.
+### Additivity <a id="additivity"></a>
 
-The **Logarithmic Scoring Rule** (Log Score) assigns a score based on the probability the expert assigned to the outcome _that actually occurred_.
+Just like KL, the cross-entropy and entropy are additive for independent distributions.
 
-- If event $i$ occurs (outcome $y_i=1$), score is $\log q_i$.
-- If event $i$ does not occur (outcome $y_i=0$), score is $\log (1-q_i)$.
+## Application: Evaluating Predictions <a id="application-evaluating-predictions"></a>
 
-The goal is usually to _maximize_ the score (or minimize the negative score/loss). Let's consider the _expected_ score under the true distribution $p$:
-$$ \mathbb{E}[\text{Score}] = \sum_i \left[ p_i \log q_i + (1-p_i) \log(1-q_i) \right] $$
-Maximizing this is equivalent to minimizing its negative:
-$$ -\sum_i \left[ p_i \log q_i + (1-p_i) \log(1-q_i) \right] $$
-This expression is precisely the **Cross-Entropy** between the true Bernoulli distributions (parameter $p_i$) and the expert's predictions (parameter $q_i$), summed over all events. Let $p^{(i)}$ denote the true Bernoulli dist for event $i$ and $q^{(i)}$ the expert's prediction. We are minimizing $\sum_i H(p^{(i)}, q^{(i)})$.
+As the next application of KL divergence and cross-entropy, let's solve the prediction riddle. Recall we asked about grading experts who predict future events.
 
-Since $H(p, q) = H(p) + D_{\mathrm{KL}}(p\|q)$, and $H(p)$ is fixed by reality, minimizing the cross-entropy $H(p,q)$ is equivalent to minimizing the KL divergence $D_{\mathrm{KL}}(p\|q)$ between the expert's forecast and reality. The best score is achieved when $q=p$.
+To grade an expert's predictions, let $p$ denote the true probabilities of events and $q$ denote the expert's predicted probabilities. We define the expert's score as:
 
-In practice, we don't know $p$, we only see the outcomes $y_i$. We calculate the expert's _actual_ score (loss) as:
-$$ \text{Log Loss} = -\sum_i [ y_i \log q_i + (1-y_i) \log(1-q_i) ] $$
-By the law of large numbers, over many independent events, minimizing this empirical log loss approximates minimizing the true cross-entropy / KL divergence. This justifies using cross-entropy loss for training classifiers in machine learning.
+$$KL(p,q)$$
 
-<a id="coding-theory-intuitions"></a>
-### Coding Theory Intuitions
+For example, if an expert's predictions are 30% and 40%, then $q$ is represented as the product distribution of $(0.3,0.7)$ and $(0.4,0.6)$. That is, we think of the expert's prediction as two distributions rather than two numbers. In this case, the formula for $KL(p,q)$ can be written as:
 
-One powerful intuition comes from data compression <Cite>Shannon1948</Cite>. Imagine encoding messages drawn from a distribution $p$.
+$$KL(p,q) = \sum_i \left[p_i\log\frac{p_i}{q_i} + (1-p_i)\log\frac{1-p_i}{1-q_i}\right]$$
 
-- **Shannon's Source Coding Theorem:** The minimum average number of bits/nats required per symbol is the entropy $H(p)$.
-- **Optimal Codes (e.g., Huffman, Arithmetic):** Assign shorter codewords to more probable symbols. An ideal code would assign a codeword of length $l_i \approx -\log p_i$ to symbol $i$. The expected length is then $\sum p_i l_i \approx \sum p_i (-\log p_i) = H(p)$.
+However, there is a problem with this formulation—in reality, we do not know $p$! Instead, we can set up a grading scheme such that, in the long run, the expert's average score converges to the cross-entropy. Specifically, we charge the expert $\log(1/q_i)$ whenever an event occurs and $\log(1/(1-q_i))$ whenever it does not. This scoring rule, known as the log score, yields an expected score of:
 
-Now, what if you design an optimal code based on a _wrong_ distribution $q$ (codeword lengths $l'_i \approx -\log q_i$) but the data actually comes from $p$? The average length you achieve is:
-$$ \mathbb{E}[\text{Length using q-code}] = \sum*i p_i l'\_i \approx \sum_i p_i (-\log q_i) = H(p, q) $$
-The *extra* average length you pay due to using the wrong code is:
-$$ H(p, q) - H(p) = D*{\mathrm{KL}}(p \| q) $$
-KL divergence quantifies the average coding inefficiency penalty.
+$$\sum_i \left[p_i\log\frac{1}{q_i} + (1-p_i)\log\frac{1}{1-q_i}\right]$$
 
-_Example:_ Alphabet {a, b, c, d}.
-True dist $p = (1/2, 1/4, 1/8, 1/8)$. $H(p) = 1/2(1) + 1/4(2) + 2 \times 1/8(3) = 0.5 + 0.5 + 0.75 = 1.75$ bits (using $\log_2$). Optimal code: a=0, b=10, c=110, d=111. Avg length = 1.75 bits.
-Model dist $q = (1/4, 1/4, 1/4, 1/4)$. $H(q) = \log_2 4 = 2$ bits. Optimal code for q: a=00, b=01, c=10, d=11 (length 2 for all).
-If we use q's code for p's data: Avg length = $p_a(2) + p_b(2) + p_c(2) + p_d(2) = 1/2(2) + 1/4(2) + 1/8(2) + 1/8(2) = 1 + 0.5 + 0.25 + 0.25 = 2$ bits. This is the cross-entropy $H(p, q)$.
-The extra length is $H(p, q) - H(p) = 2 - 1.75 = 0.25$ bits.
-Let's check KL: $D_{\mathrm{KL}}(p\|q) = \sum p_i \log_2(p_i/q_i)$
-$= 1/2 \log_2(\frac{1/2}{1/4}) + 1/4 \log_2(\frac{1/4}{1/4}) + 1/8 \log_2(\frac{1/8}{1/4}) + 1/8 \log_2(\frac{1/8}{1/4})$
-$= 1/2 \log_2(2) + 1/4 \log_2(1) + 1/8 \log_2(1/2) + 1/8 \log_2(1/2)$
-$= 1/2(1) + 1/4(0) + 1/8(-1) + 1/8(-1) = 0.5 - 0.125 - 0.125 = 0.25$ bits. Matches!
+which is exactly the cross-entropy between the true distribution and the expert's model.
 
----
+Note that we can only ensure correct grading in the long run. For instance, if you ask an expert about a single event—say, whether a random card from a deck is the ace of hearts (with true probability $1/52$) and the expert answers $1/52$—the best possible score would be 0. But since we do not have direct access to the true probabilities, we must rely on repeated experiments. Occasionally, an unlikely event (like drawing the ace of hearts) might occur, leading to a poor score for the expert. This is why it is important to ask many questions so that, by the law of large numbers, the computed score approximates the true cross-entropy.
 
-<a id="application-distance-from-independence"></a>
-### Application: Distance from Independence (Mutual Information)
+As a further remark, we can rewrite our KL formula as:
 
-Let's solve the earlier riddle: Given a joint distribution $p(x,y)$, how far is it from independence? The independent version would have the joint distribution $q(x,y) = p(x)p(y)$, where $p(x) = \sum_y p(x,y)$ and $p(y) = \sum_x p(x,y)$ are the marginal distributions.
+$$\text{cross-entropy}(p,q)=\text{entropy}(p)+KL(p,q)$$
 
-We can measure the "distance" from the actual joint $p(x,y)$ to the hypothetical independent joint $q(x,y) = p(x)p(y)$ using KL divergence:
+This shows that the log score consists of two parts: the inherent randomness (entropy) of the questions and the divergence $KL(p,q)$ that reflects how far the expert's prediction is from the truth. For example, if an expert always predicts 50/50 for fair coin tosses (so that $KL(p,q)=0$), her score will still be high because of the underlying entropy. On the other hand, if an expert predicts 50/50 for questions with a deterministic answer (e.g., 1+1=2), then $KL(p,q)$ will be large, indicating poor performance.
 
-**Definition: Mutual Information**
-$$ I(X; Y) = D*{\mathrm{KL}}( p(x,y) \,\|\, p(x)p(y) ) $$
-$$ I(X; Y) = \sum*{x,y} p(x,y) \log \frac{p(x,y)}{p(x)p(y)} $$
+## Coding Theory Intuitions <a id="coding-theory-intuitions"></a>
 
-**Interpretations:**
+One of the most powerful intuition pumps about entropy and related concepts comes from information theory, in particular coding theory. Let's explain it here very briefly.
 
-- Measures the inefficiency (in nats/bits) of assuming X and Y are independent when they are not.
-- Equals 0 if and only if X and Y are independent ($p(x,y) = p(x)p(y)$).
-- Quantifies the reduction in uncertainty about X given Y (or vice versa): $I(X;Y) = H(X) - H(X|Y) = H(Y) - H(Y|X)$.
-- Measures the "shared information" between X and Y: $I(X;Y) = H(X) + H(Y) - H(X,Y)$.
+If you look at Morse code, you might notice how the code for certain frequent letters like e or t are much shorter than the codes for rare letters like h or q.
 
-Mutual information provides a general way to measure dependence between variables, applicable to categorical data and non-linear relationships where correlation might fail.
+To build the theory behind building codes like Morse's, let's imagine the following task. Consider the distribution over the English alphabet a,b,...,z where the probability of each letter is its approximate frequency in English text.
 
-**Example: Weather and Commuting**
+Our task is as follows. We should come up with some kind of binary encoding scheme so that if we get a long English text, represented as a large amount $n$ of independent samples from the above distribution, the number of bits we use is the least possible.
 
-| Weather\Commute | Walk | Bike | Bus  | Total |
-| --------------- | ---- | ---- | ---- | ----- |
-| Rainy (30%)     | 0.01 | 0.05 | 0.24 | 0.30  |
-| Sunny (70%)     | 0.19 | 0.25 | 0.26 | 0.70  |
-| Total           | 0.20 | 0.30 | 0.50 | 1.00  |
+It turns out that the best possible solution to this problem satisfies that the average amount of bits we spend per letter -- called the rate of the code -- is $\sum p_i \log \frac{1}{p_i}$, the entropy of the distribution. For example, if the entropy of the distribution is about 4.17 bits, there is a code spending that many bits per letter on average, and there is no better code.
 
-Calculating the mutual information:
-$$ I(Weather; Commute) = \sum\_{w,c} p(w,c) \log \frac{p(w,c)}{p(w)p(c)} $$
+Instead of proving why the entropy is the answer to our question, let's see examples of (suboptimal) codes that suggest why the answer is entropy.
 
-For example, the term for (Rainy, Walk): $0.01 \log \frac{0.01}{0.30 \times 0.20} = 0.01 \log \frac{0.01}{0.06} \approx -0.0078$ bits
+First, we could encode each letter using 5 bits -- a becomes 00000, b becomes 00001 and so on. The rate of this scheme is 5 bits per letter, and it can be improved quite a bit.
 
-Adding all terms gives $I(Weather; Commute) \approx 0.046$ bits, indicating a small but meaningful dependence.
+One way to improve it is to assign codes of different lengths to different letters, based on their frequency. The following turns out to be a good rule for the lengths: if a letter $i$ has frequency $p_i$, its code length should be about $\log \frac{1}{p_i}$.
 
----
+As a specific example, if the alphabet were just a-d and the letter frequencies were $1/2, 1/4, 1/8, 1/8$, the best code is:
 
-> **Summary of Part 1:** We've defined key measures: Entropy $H(p)$ for uncertainty, KL Divergence $D_{\mathrm{KL}}(p\|q)$ for directed difference between distributions (interpreted as evidence or coding cost), and Mutual Information $I(X;Y)$ for statistical dependence. These form the building blocks for the rest of the course.
+- a - 0
+- b - 10
+- c - 110
+- d - 111
 
-> **Next:** [Link to 02-updating.mdx] Part 2: Updating Beliefs & Learning from Constraints
+That is, "baba" is encoded as "100100".
+
+You might notice how the letter with frequency $1/2^i$ has a code of length $i$; that is, frequency $p_i$ leads to a code of length $\log \frac{1}{p_i}$.
+
+If all the probabilities in the distribution are $1/2^k$ for some number $k$, the generalization of the above code -- having $1/2^k$ probability letters have lengths $k$ -- is always possible.
+
+If the probabilities in the distribution are not "round", you can't quite achieve a code mapping letters to binary strings as good as the entropy $H(p)$ of the distribution due to the rounding issues. You can only achieve a code of rate at most $1 + H(p)$. For example, the entropy of our English letter distribution is about $4.17$, but the best code mapping letters to bits (so-called Huffman code) has slightly worse rate of about $4.25$.
+
+But that's not a big deal. If you allow codes that don't necessarily map single letters to bit strings, but that can also map pairs of letters and so on, then you can get codes with rate arbitrarily close to the entropy.
+
+## Summary <a id="summary"></a>
+
+In this section, we've introduced KL divergence and related concepts:
+
+1. **KL Divergence** - A measure of how well a model distribution fits a true distribution
+2. **Entropy** - The inherent uncertainty in a distribution
+3. **Cross-Entropy** - The average surprise when using one distribution to model another
+4. **Mutual Information** - A measure of dependence between two variables
+
+We've also seen several applications:
+
+- Training smaller models to mimic larger ones
+- Measuring the distance from independence
+- Evaluating predictions and experts
+- Designing optimal coding schemes
+
+These concepts form the foundation of information theory and provide powerful tools for understanding probability distributions. In the next section, we'll explore how KL divergence connects to belief updating and Bayesian reasoning.
+
+## Next Steps <a id="next-steps"></a>
+
+In the next part, we'll discuss how KL divergence relates to the process of updating beliefs in light of new evidence. We'll explore the connections between KL divergence, Bayes' theorem, and the Maximum Entropy principle.
+
+Continue to [Updating Beliefs](/02-updating).
