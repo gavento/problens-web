@@ -42,7 +42,9 @@ jobs:
         run: pnpm check
 
       - name: Build
-        run: pnpm build
+        run: |
+          pnpm build
+          ls -la
 
       # - name: Install Cypress
       #   run: pnpm cypress install
