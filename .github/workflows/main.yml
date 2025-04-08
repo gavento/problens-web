@@ -62,9 +62,10 @@ jobs:
       #     wait-on: "http://localhost:3000"
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
           path: "./out"
+          retention-days: 7
 
   deploy:
     needs: test_and_build
@@ -79,4 +80,4 @@ jobs:
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main'
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
