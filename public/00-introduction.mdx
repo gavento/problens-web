@@ -69,7 +69,7 @@ But out of all these philosophies of how to estimate values, only one of them --
 So you want to train a good large language model (LLM) like GPT/Gemini/Claude. Such a model is given some text as input, does some computation inside, and outputs the next letter<Footnote>In fact, it outputs the next token. But a token is just a small group of letters -- think of it as a syllable or a short word. </Footnote> in the text.
 LLMs are in fact designed so that they don't output a single letter, but try to predict the distribution $p$ of the next letter. This is why it's simple to make LLMs output different answers on the same text.
 
-<!--We want to train a new model that is at least as good as, say, GPT-4. In practice, this would involve collecting a lot of text and running both GPT-4 and our LLM on them -- for each predicted letter, we would look at the distribution outputted by GPT-4 and try to nudge our model to make its distribution look similar. -->
+{/* We want to train a new model that is at least as good as, say, GPT-4. In practice, this would involve collecting a lot of text and running both GPT-4 and our LLM on them -- for each predicted letter, we would look at the distribution outputted by GPT-4 and try to nudge our model to make its distribution look similar. */}
 
 There are many complicated things going on in training of LLMs, but one particularly important one is the choice of the so-called _loss function_. To understand this, let's say that for some text that appears all over the place on the internet, like "My name is A", we know the distribution of the next letter. Perhaps "l" is frequent because of Alex, but "a" not so much. Let's call this ground-truth distribution $p$.
 
