@@ -1,0 +1,102 @@
+## Max Entropy Distributions <a id="max-entropy-distributions"></a>
+
+Maximum entropy principle helps you find the most generic distribution for your data. You just need to specify the constraints you care about, and the principle determines the "least biased" distribution that satisfies those constraints.
+
+The form of the maximum entropy distributions is very simple -- for example, if you work with numbers and care about their mean $E[X] = \mu$ and variance $\sigma^2 = E[(X-\mu)^2]$, the maximum entropy distribution is going to look like $P(X=x)\propto e^{\lambda_1 x + \lambda_2 x^2}$, i.e., it will be the normal distribution.
+
+We can derive this by using the method of Lagrange multipliers. Without going through the full derivation, the key insight is that the maximum entropy distribution subject to constraints always takes the form of an exponential family:
+
+$$p(x) \propto e^{\sum_i \lambda_i f_i(x)}$$
+
+where $f_i(x)$ are the functions whose expectations $E[f_i(X)]$ we're constraining, and $\lambda_i$ are Lagrange multipliers determined by the specific constraint values.
+
+### Examples of Maximum Entropy Distributions <a id="examples-of-max-entropy-distributions"></a>
+
+Here are some examples of maximum entropy distributions given different constraints:
+
+1. **No constraints**: The maximum entropy distribution is the uniform distribution.
+
+2. **Fixed mean $E[X] = \mu$**:
+
+   - On a finite set $\{a, b\}$: Logistic distribution
+   - On $\{0, 1, 2, \ldots\}$: Geometric distribution $P(x) \propto e^{-\lambda x}$
+   - On $\mathbb{R}^+$: Exponential distribution $P(x) \propto e^{-\lambda x}$
+
+3. **Fixed mean $E[X] = \mu$ and variance $E[(X-\mu)^2] = \sigma^2$**:
+
+   - On $\mathbb{R}$: Normal (Gaussian) distribution $P(x) \propto e^{-(x-\mu)^2/2\sigma^2}$
+
+4. **Fixed $E[\log X]$**:
+
+   - On $\mathbb{R}^+$: Power-law distribution $P(x) \propto x^{-\alpha}$
+
+5. **Fixed $E[X]$ and $E[X^2]$**:
+   - On $\mathbb{R}^+$: Gamma distribution
+
+### Application to the Modeling Riddle <a id="application-to-modeling-riddle"></a>
+
+Let's return to our restaurant modeling riddle. We wanted to find a family of distributions that interpolates between random choice (uniform distribution) and always picking the tastiest item.
+
+The maximum entropy principle provides us with a beautiful answer. If we represent the tastiness of each item as $a_i$, then the maximum entropy distribution subject to a constraint on the average tastiness $E[a_X] = c$ is:
+
+$$P(X=i) = \frac{e^{\lambda a_i}}{\sum_j e^{\lambda a_j}}$$
+
+This is known as the softmax distribution. The parameter $\lambda$ controls how strongly we prefer tastier options:
+
+- When $\lambda = 0$, we get the uniform distribution (completely random choice)
+- As $\lambda \to \infty$, the probability concentrates on the item with maximum tastiness
+
+This distribution is exactly what we were looking for in our modeling riddle. It naturally emerges from the maximum entropy principle when we constrain the expected tastiness. It's also commonly used in machine learning, particularly for the output layer of neural networks in classification tasks.
+
+## Application: Understanding Financial Data <a id="application-understanding-financial-data"></a>
+
+Let's return to our financial mathematics riddle. We observed that the normal distribution is a better fit for the S&P index, while the Laplace distribution better models Bitcoin price changes.
+
+A related distribution is the Laplace distribution $e^{-|x-\mu|}$. You could think of it as the max entropy distribution if you fix mean and the value of $E[|X-\mu|]$, but there's another illuminating way to understand it. The Laplace distribution can be viewed as the result of the following process:
+
+1. Sample a variance $\sigma^2$ from the exponential distribution
+2. Output a sample from $N(\mu, \sigma^2)$
+
+To understand how this helps explain our financial data, consider the story for price fluctuations:
+
+For the S&P index, which represents an average of many large companies, the value slowly goes up (mean is positive) but there is some variance in the daily increase, since many trades happen, each making its value slightly higher or lower. Because these trades are largely independent, we can use the central limit theorem to predict that the data is going to be approximately Gaussian.
+
+However, Bitcoin is much more volatile than the S&P (which itself is an average of 500 companies). There are periods where not much happens, but also periods with large volatility (e.g., around elections or when laws related to Bitcoin are passed). The two-step model above starts making more sense for Bitcoin. We can think of each day as having a different variance, drawn from some distribution. Indeed, we saw that the Laplace distribution fits the Bitcoin data much better than the normal distribution.
+
+That is, Gaussian is saying "I am pretty sure what today's fluctuation is going to be" and Laplace is saying "I know what the average fluctuation was in the past, but the volatility itself varies significantly."
+
+The story we are making actually suggests that we should also see Laplace-like behavior even in the S&P data, provided that we look at a large enough time scale that ranges through times of both large and small volatility. This is indeed what we might observe if we analyzed data over 5 or 10 years that capture periods like the 2008 financial crisis or COVID-19.
+
+In practice, researchers often model financial data not by the Laplace distribution, but by the Student-t distribution. It is the distribution that you get from the process above but instead of sampling $\sigma^2$ from the exponential distribution, you sample it from the so-called inverse gamma distribution. The Student-t distribution looks similar to normal distribution if you plot it, but its tails have power-law decay, making it better suited for modeling data with extreme events.
+
+## Connecting Machine Learning to Information Theory <a id="connecting-ml-to-information-theory"></a>
+
+In our exploration of the machine learning riddle, we asked why certain functions like $x^2$ and logarithms appear so frequently in machine learning algorithms. Now we can provide a satisfying answer.
+
+The ubiquity of squared terms ($x^2$) in loss functions like linear regression and k-means comes from the assumption of Gaussian noise or Gaussian distributions. As we've seen, the Gaussian is the maximum entropy distribution when we fix the mean and variance, and its density involves an $e^{-x^2}$ term, which leads to squared terms in the log-likelihood.
+
+Similarly, logarithms appear because we're often dealing with likelihoods and probabilities, and the log-likelihood is what we optimize in maximum likelihood estimation. Cross-entropy loss, which is common in classification tasks, directly involves logarithms because it measures the average surprise when using one distribution to model another.
+
+More complex loss functions, like those in variational autoencoders, are derived from KL divergence between specific distributions. For example, the loss function for variational autoencoders includes a reconstruction term (related to likelihood) and a KL term that ensures the latent distribution stays close to a prior.
+
+## Summary <a id="summary"></a>
+
+In this section, we've seen how KL divergence and information-theoretic principles lead to many standard machine learning algorithms:
+
+1. **Linear Regression** - Derived from maximum likelihood estimation with Gaussian noise
+2. **Logistic Regression** - Derived from maximizing the likelihood of logistic distributions
+3. **K-means Clustering** - Connected to maximum likelihood in Gaussian mixture models
+4. **Financial Modeling** - Explaining why different distributions fit different types of data
+
+By understanding these connections, we gain insight into why these methods work and when they might fail. We also develop a unified framework for approaching modeling problems:
+
+1. Identify what's important about the data
+2. Use maximum entropy to find a suitable probabilistic model
+3. Use maximum likelihood to derive a loss function
+4. Find efficient algorithms to optimize the loss
+
+In the next section, we'll explore more advanced applications of these principles in areas like deep learning, coding theory, and reinforcement learning.
+
+## Next Steps <a id="next-steps"></a>
+
+In the next part, we'll delve into advanced applications of KL divergence and information theory, including deep learning, variational methods, and connections to algorithmic complexity.

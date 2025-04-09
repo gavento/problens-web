@@ -1,6 +1,6 @@
 # Resources <a id="resources"></a>
 
-This page compiles high-quality resources for further exploring KL divergence, information theory, and their applications. Resources are organized by difficulty level from introductory to advanced.
+We compile our favorite resources for further exploring KL divergence and related topics. Resources are organized roughly by difficulty level from introductory to advanced.
 
 ## Introductory Resources <a id="introductory-resources"></a>
 
@@ -10,31 +10,19 @@ These resources focus on building intuition and providing accessible explanation
 
 [**"Kullback-Leibler Divergence Explained" – _Count Bayesie blog_ (Will Kurt, 2017)**](https://www.countbayesie.com/blog/2017/5/9/kullback-leibler-divergence-explained)
 
-This blog post introduces KL divergence in an accessible way, framing it as a measure of how much **information is lost** when using one distribution to approximate another. It starts with a fun "space worms" example, comparing empirical data to simple models, and defines KL divergence with the basic formula.
-
-The author explains entropy as the "information" in a distribution and shows KL divergence as the extra surprise or inefficiency when using the wrong model. He also demonstrates KL divergence calculations for two model distributions and emphasizes that KL is **not symmetric** (so not a true distance).
-
-The post provides an intuitive feel for KL divergence and even shows that choosing model parameters by **maximum likelihood corresponds to minimizing KL divergence** (the blog's example finds the best-fit Binomial model by minimizing KL).
+A nice intro to KL. Try to check it out if the first few chapters of our mini-course didn't make sense.
 
 ### Intuitive Explanation of the Kullback-Leibler Divergence <a id="intuitive-explanation-kl"></a>
 
 [**"Intuitive Explanation of the Kullback-Leibler Divergence" – _Johannes Schusterbauer's blog_ (2021)**](https://johfischer.com/2021/12/31/intuitive-explanation-of-the-kullback-leibler-divergence/)
 
-This article builds KL divergence from the ground up using basic information theory concepts. It introduces **self-information** (surprisal) and **entropy** before KL, using a biased coin toss example to illustrate why unlikely events carry more information.
-
-KL divergence is then presented as the extra number of bits needed to encode samples from a true distribution $P$ when using a code optimized for an alternative distribution $Q$. In simple terms, if you assume the wrong distribution, your descriptions of data will be longer – KL divergence quantifies that penalty, and it's zero only if $P=Q$ (no extra bits needed).
-
-The blog provides a step-by-step derivation with a coin-toss sequence example, helping the reader develop an **intuitive grasp** of the KL formula by comparing the likelihood of data under two distributions. This resource is very accessible, focusing on **intuition and examples** rather than heavy math.
+As before, look at this to complement the first few chapters in our mini-course.
 
 ### Six (and a Half) Intuitions for KL Divergence <a id="six-intuitions-kl"></a>
 
 [**"Six (and a Half) Intuitions for KL Divergence" – _LessWrong post_ (Callum McDougall, 2022)**](https://uli.rocks/p/kl-divergence/)
 
-This essay offers multiple complementary intuitions for KL divergence, making it a great bridge between basic understanding and deeper insight. For example, one intuition is that **KL divergence measures the "expected additional surprise"** when using an incorrect model ("map") for the true distribution ("territory").
-
-It relates KL to the difference in code lengths (cross-entropy minus entropy) – essentially the extra unpredictability introduced by a wrong assumption. The post also discusses how KL behaves like a "metric" on probability distributions (even though it's not symmetric): it can be seen as a kind of squared distance in the limit of small differences (relating to Fisher information geometry).
-
-Moreover, it explains the practical difference between $D_{KL}(P\|Q)$ and $D_{KL}(Q\|P)$, echoing the ideas of "inclusive" vs "exclusive" KL in an intuitive way. Overall, this resource compiles **several viewpoints** – from seeing KL as information gain to a tool for updating beliefs – in a reader-friendly manner.
+This is a pretty cool essay that gives as many intuitions to KL as possible. We really focused mostly on (what we think is) the most important one -- expected distinguishing evidence using Bayes' rule. But there are more of them and this essay covers them, including some that we did not encounter in the mini-course (Kelly betting one).
 
 ## Intermediate Resources <a id="intermediate-resources"></a>
 
@@ -152,4 +140,4 @@ In effect, KL divergence in RL acts as an **information-theoretic trust measure*
 
 ## Next Steps <a id="next-steps"></a>
 
-These resources provide a wealth of information for deepening your understanding of KL divergence and its applications. We recommend starting with the introductory resources if you're new to the topic, or diving into the advanced resources if you're ready to explore the theoretical foundations more deeply.
+There are no more next steps! But if you have read all of it, please leave us a comment!

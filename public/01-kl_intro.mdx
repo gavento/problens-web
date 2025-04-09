@@ -1,0 +1,88 @@
+# KL divergence & Bayes rule <a id="quantifying-information"></a>
+
+In the introduction, we presented several puzzles across different domains. Now, we'll begin to develop the conceptual toolkit needed to address these challenges. We'll focus on how to quantify the "information content" of probability distributions and measure the distance between them.
+
+## Definition of KL Divergence <a id="definition-of-kl-divergence"></a>
+
+KL divergence measures how well a "true distribution" or empirical data $p$ is fitted by a model distribution $q$. The formula is:
+
+$$
+D(p|q) = \sum p_i \log \frac{p_i}{q_i}
+$$
+
+The meaning behind this formula is that if you keep sampling from the true distribution $p$ and applying Bayes' theorem, KL tells you how quickly you are able to distinguish whether you are sampling from $p$ or $q$.
+
+KL divergence is a measure that takes two distributions as input: the true distribution $p$ (represented by $p_1, \dots, p_n$) and the model distribution $q$ (represented by $q_1, \dots, q_n$), with both summing to one.
+
+KL divergence is defined as:
+
+$$
+KL(p, q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}
+$$
+
+What is the intuition behind this formula? Let's explore a few perspectives to build a deeper understanding.
+
+### Asymmetry in KL Divergence <a id="asymmetry-in-kl-divergence"></a>
+
+First, notice that there is a certain asymmetry between $p$ and $q$. If you push the value $q_i$ to zero for some $i$ where $p_i > 0$, the KL divergence becomes infinite. This reflects the fact that if your model predicts an event is impossible and it occurs, your model is infinitely bad. On the other hand, if $p_i=0$ and $q_i>0$, nothing dramatic happens—being prepared for an event that never occurs only slightly detracts from your performance.
+
+Sometimes, KL divergence is introduced as "something like a distance," but unfortunately it is not symmetric, so it is not a true distance metric. In fact, the asymmetry is important because the two distributions play different roles: $p$ is the true distribution, and $q$ is our model for it.
+
+Let's now discuss two mathematical intuitions for the formula.
+
+## Expected Distinguishing Evidence <a id="expected-distinguishing-evidence"></a>
+
+One way to understand KL divergence is through the lens of Bayesian inference. When we observe data, we can use it to distinguish between competing hypotheses. KL divergence quantifies how much evidence we gain, on average, from each observation.
+
+### Bayes' Theorem Review <a id="bayes-theorem-review"></a>
+
+First, a quick recap of Bayes' theorem.
+
+Suppose you have a coin and you consider two hypotheses:
+
+1. The coin is biased: it shows heads with probability 0.4 and tails with probability 0.6.
+2. The coin is fair: it shows heads with probability 0.5 and tails with probability 0.5.
+
+Assume that the coin is actually biased (i.e., hypothesis 1 is true). However, initially you believe the coin is probably fair, assigning probabilities $2/3$ to it being fair and $1/3$ to it being biased (or odds $1:2$ for biased to fair).
+
+Now, note that under hypothesis 1 (biased), the probability of heads is 0.4, while under hypothesis 2 (fair) it is 0.5. The ratio of these probabilities is $0.4:0.5$, or equivalently $4:5$. Bayes' theorem tells us to update your odds by multiplying the prior odds by this likelihood ratio:
+
+$$
+1:2 \quad \times \quad 4:5 \quad = \quad 4:10 \quad = \quad 2:5
+$$
+
+This corresponds to a posterior probability of about 29% that the coin is biased.
+
+You can gather more evidence by flipping the coin a few more times. Suppose you flip the coin twice more and get more tails. Using Bayes' theorem, you multiply the likelihood ratios for each flip:
+
+$$
+1:2,\quad 40:50,\quad 60:50,\quad 60:50 \quad \Longrightarrow \quad 144:250
+$$
+
+which corresponds to about a 37% probability that the coin is biased.
+
+### Measuring Evidence in Bits <a id="measuring-evidence-in-bits"></a>
+
+How quickly are we gathering evidence in favor of the coin being biased? To analyze this, it is simpler to take logarithms of the ratios so that we add rather than multiply. Instead of multiplying by the ratio $40/50$, we add $\log_2(40/50) \approx -0.32$ and for $60/50$ we add $\log_2(60/50) \approx 0.26$.
+
+Since $\log_2(1/2) = -1$, we can describe our three-flip experiment as follows: We started with $-1$ bit of prior evidence favoring the coin being biased. After the first flip, the evidence becomes $-1-0.32 = -1.32$ bits; after the second flip, $-1.32+0.26 = -1.06$ bits; and after the third, $-1.06+0.26 = -0.8$ bits.
+
+You can explore this concept of evidence accumulation interactively with the simulator below:
+
+<EvidenceAccumulationSimulator />
+
+In general, since the coin is biased, each flip yields $0.26$ bits of evidence with probability 0.6 and $-0.32$ bits with probability 0.4. The average evidence per flip is:
+
+$$
+0.6\cdot 0.26 - 0.4\cdot 0.32 \approx 0.03\text{ bits}
+$$
+
+Notice that this expression is exactly the KL divergence computed for the true distribution $(0.6,0.4)$ and the model $(0.5,0.5)$.
+
+The positive average evidence indicates that, on average, each flip provides approximately 0.03 bits of evidence in favor of the true (biased) hypothesis. By the law of large numbers, if you flip the coin $n$ times, you would expect to accumulate about $0.03\cdot n$ bits of evidence.
+
+### Zooming Out: KL as Expected Evidence <a id="zooming-out-kl-as-expected-evidence"></a>
+
+Zooming out, we can view KL divergence as the expected evidence obtained per observation in favor of the true hypothesis $p$ when comparing it against an incorrect model $q$. Here, $p_i$ in the KL formula represents the probability of the $i$th outcome under the true distribution, and the term $\log(p_i/q_i)$ represents the evidence for the true hypothesis when outcome $i$ occurs. The overall KL divergence is the expected evidence per trial, with the logarithm ensuring that evidence accumulates additively.
+
+KL divergence is thus about the evidence, not the prior. This is why it is relevant in both classical (frequentist) and Bayesian statistics.

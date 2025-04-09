@@ -26,36 +26,6 @@ $$q_i = \frac{e^{z_i}}{\sum_j e^{z_j}}$$
 
 where $z_i$ are the raw outputs (logits) of the network. Recall from our previous discussion that the softmax distribution is the maximum entropy distribution when we constrain the expected value. Here, it emerges naturally when we seek to maximize likelihood while maintaining a valid probability distribution.
 
-### Variational Autoencoders <a id="variational-autoencoders"></a>
-
-One of our riddles mentioned the "beastly" loss function of variational autoencoders (VAEs), which are a class of generative models. Let's demystify this loss function using our understanding of KL divergence.
-
-A VAE consists of two parts:
-
-1. An encoder network that maps an input $x$ to a distribution over latent variables $z$
-2. A decoder network that maps a latent variable $z$ back to a distribution over possible inputs $x$
-
-The goal is to find a good latent representation that captures the important features of the data while allowing for efficient generation of new samples.
-
-The loss function for a VAE can be written as:
-
-$$\mathcal{L}(\theta, \phi; x) = -\mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] + D_{KL}(q_\phi(z|x) \| p(z))$$
-
-Let's break this down:
-
-- The first term is the reconstruction loss, measuring how well we can reconstruct $x$ after encoding it to $z$ and then decoding it back.
-- The second term is the KL divergence between the encoder's distribution $q_\phi(z|x)$ and a prior distribution $p(z)$ (usually a standard normal distribution).
-
-This loss function can be derived from the principle of maximizing the evidence lower bound (ELBO) on the log-likelihood of the data. The ELBO is:
-
-$$\log p_\theta(x) \geq \mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] - D_{KL}(q_\phi(z|x) \| p(z))$$
-
-Maximizing this lower bound is equivalent to minimizing the negative of the right-hand side, which gives us the VAE loss function.
-
-What's interesting here is that the KL term acts as a regularizer, encouraging the encoder's distribution to be similar to the prior. This enables sampling from the model by simply sampling from the prior and passing it through the decoder. It also ensures that the latent space has nice properties like continuity and completeness.
-
-The "beastly" appearance of this loss function is simply due to the combination of reconstruction and regularization terms, both of which have clear interpretations in terms of our information-theoretic toolkit.
-
 ### Diffusion Models <a id="diffusion-models"></a>
 
 More recent advances in generative modeling include diffusion models, which have achieved state-of-the-art results in image generation. These models involve a forward process that gradually adds noise to data, and a reverse process that removes noise to generate samples.

@@ -102,56 +102,6 @@ The maximum entropy principle can be seen as a natural extension of the principl
 
 In other words, the maximum entropy principle tells us to assume as little as possible beyond what we know. It's a formalization of Occam's razor for probability distributions.
 
-## Max Entropy Distributions <a id="max-entropy-distributions"></a>
-
-Maximum entropy principle helps you find the most generic distribution for your data. You just need to specify the constraints you care about, and the principle determines the "least biased" distribution that satisfies those constraints.
-
-The form of the maximum entropy distributions is very simple -- for example, if you work with numbers and care about their mean $E[X] = \mu$ and variance $\sigma^2 = E[(X-\mu)^2]$, the maximum entropy distribution is going to look like $P(X=x)\propto e^{\lambda_1 x + \lambda_2 x^2}$, i.e., it will be the normal distribution.
-
-We can derive this by using the method of Lagrange multipliers. Without going through the full derivation, the key insight is that the maximum entropy distribution subject to constraints always takes the form of an exponential family:
-
-$$p(x) \propto e^{\sum_i \lambda_i f_i(x)}$$
-
-where $f_i(x)$ are the functions whose expectations $E[f_i(X)]$ we're constraining, and $\lambda_i$ are Lagrange multipliers determined by the specific constraint values.
-
-### Examples of Maximum Entropy Distributions <a id="examples-of-max-entropy-distributions"></a>
-
-Here are some examples of maximum entropy distributions given different constraints:
-
-1. **No constraints**: The maximum entropy distribution is the uniform distribution.
-
-2. **Fixed mean $E[X] = \mu$**:
-
-   - On a finite set $\{a, b\}$: Logistic distribution
-   - On $\{0, 1, 2, \ldots\}$: Geometric distribution $P(x) \propto e^{-\lambda x}$
-   - On $\mathbb{R}^+$: Exponential distribution $P(x) \propto e^{-\lambda x}$
-
-3. **Fixed mean $E[X] = \mu$ and variance $E[(X-\mu)^2] = \sigma^2$**:
-
-   - On $\mathbb{R}$: Normal (Gaussian) distribution $P(x) \propto e^{-(x-\mu)^2/2\sigma^2}$
-
-4. **Fixed $E[\log X]$**:
-
-   - On $\mathbb{R}^+$: Power-law distribution $P(x) \propto x^{-\alpha}$
-
-5. **Fixed $E[X]$ and $E[X^2]$**:
-   - On $\mathbb{R}^+$: Gamma distribution
-
-### Application to the Modeling Riddle <a id="application-to-modeling-riddle"></a>
-
-Let's return to our restaurant modeling riddle. We wanted to find a family of distributions that interpolates between random choice (uniform distribution) and always picking the tastiest item.
-
-The maximum entropy principle provides us with a beautiful answer. If we represent the tastiness of each item as $a_i$, then the maximum entropy distribution subject to a constraint on the average tastiness $E[a_X] = c$ is:
-
-$$P(X=i) = \frac{e^{\lambda a_i}}{\sum_j e^{\lambda a_j}}$$
-
-This is known as the softmax distribution. The parameter $\lambda$ controls how strongly we prefer tastier options:
-
-- When $\lambda = 0$, we get the uniform distribution (completely random choice)
-- As $\lambda \to \infty$, the probability concentrates on the item with maximum tastiness
-
-This distribution is exactly what we were looking for in our modeling riddle. It naturally emerges from the maximum entropy principle when we constrain the expected tastiness. It's also commonly used in machine learning, particularly for the output layer of neural networks in classification tasks.
-
 ## Connecting KL and Bayes' Theorem <a id="connecting-kl-and-bayes-theorem"></a>
 
 One fascinating aspect of KL divergence is its deep connection to Bayesian reasoning. In fact, Bayes' theorem itself can be derived as a special case of the principle of minimizing KL divergence.
@@ -189,5 +139,3 @@ These principles provide a unified framework for inference and modeling. By unde
 ## Next Steps <a id="next-steps"></a>
 
 In the next part, we'll explore more concrete modeling applications of these principles. We'll see how they apply to various fields like machine learning, statistical modeling, and information theory.
-
-Continue to [Modeling Reality](/03-modeling).

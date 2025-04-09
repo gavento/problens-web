@@ -1,5 +1,3 @@
-Vasek can edit too!
-
 # Modeling Reality <a id="modeling-reality"></a>
 
 In the previous sections, we introduced KL divergence and showed how it relates to belief updating, maximum likelihood estimation, and the maximum entropy principle. Now, we'll explore how these concepts apply to practical modeling problems, particularly in machine learning.
@@ -103,57 +101,38 @@ Given some machine learning model, there are four viewpoints that one can have:
 
 The point of our discussion has been explaining how understanding KL divergence brings us from the first column to the second one (max entropy) and then from the second one to the third one (max likelihood). Sometimes, like in the mean estimation example, loss function implies exact simple formulas, so there's not much more we can say. Sometimes, the optimization simply means running gradient descent on the loss. And sometimes, it's a bit more tricky though and understanding KL is helpful.
 
-## Application: Understanding Financial Data <a id="application-understanding-financial-data"></a>
+### Variational Autoencoders <a id="variational-autoencoders"></a>
 
-Let's return to our financial mathematics riddle. We observed that the normal distribution is a better fit for the S&P index, while the Laplace distribution better models Bitcoin price changes.
+One of our riddles mentioned the "beastly" loss function of variational autoencoders (VAEs), which are a class of generative models. Let's demystify this loss function using our understanding of KL divergence.
 
-A related distribution is the Laplace distribution $e^{-|x-\mu|}$. You could think of it as the max entropy distribution if you fix mean and the value of $E[|X-\mu|]$, but there's another illuminating way to understand it. The Laplace distribution can be viewed as the result of the following process:
+A VAE consists of two parts:
 
-1. Sample a variance $\sigma^2$ from the exponential distribution
-2. Output a sample from $N(\mu, \sigma^2)$
+1. An encoder network that maps an input $x$ to a distribution over latent variables $z$
+2. A decoder network that maps a latent variable $z$ back to a distribution over possible inputs $x$
 
-To understand how this helps explain our financial data, consider the story for price fluctuations:
+The goal is to find a good latent representation that captures the important features of the data while allowing for efficient generation of new samples.
 
-For the S&P index, which represents an average of many large companies, the value slowly goes up (mean is positive) but there is some variance in the daily increase, since many trades happen, each making its value slightly higher or lower. Because these trades are largely independent, we can use the central limit theorem to predict that the data is going to be approximately Gaussian.
+The loss function for a VAE can be written as:
 
-However, Bitcoin is much more volatile than the S&P (which itself is an average of 500 companies). There are periods where not much happens, but also periods with large volatility (e.g., around elections or when laws related to Bitcoin are passed). The two-step model above starts making more sense for Bitcoin. We can think of each day as having a different variance, drawn from some distribution. Indeed, we saw that the Laplace distribution fits the Bitcoin data much better than the normal distribution.
+$$\mathcal{L}(\theta, \phi; x) = -\mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] + D_{KL}(q_\phi(z|x) \| p(z))$$
 
-That is, Gaussian is saying "I am pretty sure what today's fluctuation is going to be" and Laplace is saying "I know what the average fluctuation was in the past, but the volatility itself varies significantly."
+Let's break this down:
 
-The story we are making actually suggests that we should also see Laplace-like behavior even in the S&P data, provided that we look at a large enough time scale that ranges through times of both large and small volatility. This is indeed what we might observe if we analyzed data over 5 or 10 years that capture periods like the 2008 financial crisis or COVID-19.
+- The first term is the reconstruction loss, measuring how well we can reconstruct $x$ after encoding it to $z$ and then decoding it back.
+- The second term is the KL divergence between the encoder's distribution $q_\phi(z|x)$ and a prior distribution $p(z)$ (usually a standard normal distribution).
 
-In practice, researchers often model financial data not by the Laplace distribution, but by the Student-t distribution. It is the distribution that you get from the process above but instead of sampling $\sigma^2$ from the exponential distribution, you sample it from the so-called inverse gamma distribution. The Student-t distribution looks similar to normal distribution if you plot it, but its tails have power-law decay, making it better suited for modeling data with extreme events.
+This loss function can be derived from the principle of maximizing the evidence lower bound (ELBO) on the log-likelihood of the data. The ELBO is:
 
-## Connecting Machine Learning to Information Theory <a id="connecting-ml-to-information-theory"></a>
+$$\log p_\theta(x) \geq \mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] - D_{KL}(q_\phi(z|x) \| p(z))$$
 
-In our exploration of the machine learning riddle, we asked why certain functions like $x^2$ and logarithms appear so frequently in machine learning algorithms. Now we can provide a satisfying answer.
+Maximizing this lower bound is equivalent to minimizing the negative of the right-hand side, which gives us the VAE loss function.
 
-The ubiquity of squared terms ($x^2$) in loss functions like linear regression and k-means comes from the assumption of Gaussian noise or Gaussian distributions. As we've seen, the Gaussian is the maximum entropy distribution when we fix the mean and variance, and its density involves an $e^{-x^2}$ term, which leads to squared terms in the log-likelihood.
+What's interesting here is that the KL term acts as a regularizer, encouraging the encoder's distribution to be similar to the prior. This enables sampling from the model by simply sampling from the prior and passing it through the decoder. It also ensures that the latent space has nice properties like continuity and completeness.
 
-Similarly, logarithms appear because we're often dealing with likelihoods and probabilities, and the log-likelihood is what we optimize in maximum likelihood estimation. Cross-entropy loss, which is common in classification tasks, directly involves logarithms because it measures the average surprise when using one distribution to model another.
+The "beastly" appearance of this loss function is simply due to the combination of reconstruction and regularization terms, both of which have clear interpretations in terms of our information-theoretic toolkit.
 
-More complex loss functions, like those in variational autoencoders, are derived from KL divergence between specific distributions. For example, the loss function for variational autoencoders includes a reconstruction term (related to likelihood) and a KL term that ensures the latent distribution stays close to a prior.
+## What's next
 
-## Summary <a id="summary"></a>
+Deriving the loss function for variational autoencoder was meant to be the culmination of this minicourse. We have used all the intuition, understanding, and technology developed thus far!
 
-In this section, we've seen how KL divergence and information-theoretic principles lead to many standard machine learning algorithms:
-
-1. **Linear Regression** - Derived from maximum likelihood estimation with Gaussian noise
-2. **Logistic Regression** - Derived from maximizing the likelihood of logistic distributions
-3. **K-means Clustering** - Connected to maximum likelihood in Gaussian mixture models
-4. **Financial Modeling** - Explaining why different distributions fit different types of data
-
-By understanding these connections, we gain insight into why these methods work and when they might fail. We also develop a unified framework for approaching modeling problems:
-
-1. Identify what's important about the data
-2. Use maximum entropy to find a suitable probabilistic model
-3. Use maximum likelihood to derive a loss function
-4. Find efficient algorithms to optimize the loss
-
-In the next section, we'll explore more advanced applications of these principles in areas like deep learning, coding theory, and reinforcement learning.
-
-## Next Steps <a id="next-steps"></a>
-
-In the next part, we'll delve into advanced applications of KL divergence and information theory, including deep learning, variational methods, and connections to algorithmic complexity.
-
-Continue to [Advanced Applications](/04-advanced).
+But if you want to continue, feel free to! We cover a few more bits and pieces next.
