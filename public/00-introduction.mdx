@@ -18,7 +18,7 @@ The correct answer is about 100000. In fact, if we want to be close up to an err
 
 The question is: why $1/\epsilon^2$? We'll explore this in later sections. KL divergence measures how well one distribution matches another, which is why understanding its value for distributions (50%, 50%) and (50%+$\varepsilon$, 50%-$\varepsilon$) is going to shed a lot of light on this question! We will also use this as a jumping bridge to explain a bit more on how KL divergence is crucial in statistics.
 
-### Financial Mathematics <a id="financial-mathematics"></a>
+## Financial Mathematics <a id="financial-mathematics"></a>
 
 ![Financial Data Distribution](00-introduction/sap_graph.png)
 
@@ -28,6 +28,7 @@ Every day, the price jumps a little bit. I downloaded the historical data, compu
 
 1. Laplace
 2. normal
+3. střecha
 
 This was a trick question because both answers are kind of true! The shape of the histogram depends on something I did not tell you -- how far in the past did I look to collect the data. Try it for yourself both for S&P and Bitcoin:
 
@@ -43,7 +44,7 @@ There are two ways for how this connects to KL divergence. First of all, KL dive
 
 Second, we will use KL divergence to understand a deep principle in probability called maximum entropy principle. This will help us gain a lot of intuition for what both normal and Laplace distributions stand for.
 
-### Statistics <a id="statistics"></a>
+## Statistics <a id="statistics"></a>
 
 ![Determining the length of the foot in 1522](00-introduction/rod.png)
 
@@ -64,7 +65,9 @@ The coefficient $1/(n-1)$ corresponds to the so-called unbiased estimate, $1/n$ 
 
 But out of all these philosophies of how to estimate values, only one of them -- maximum likelihood estimation -- became the main workhorse of machine learning. Using KL, we will see why the maximum likelihood philosophy stands out.
 
-### How to train your LLM <a id="deep-learning"></a>
+## How to train your LLM <a id="deep-learning"></a>
+
+[TODO image: "my name is A", two distributions]
 
 So you want to train a good large language model (LLM) like GPT/Gemini/Claude. Such a model is given some text as input, does some computation inside, and outputs the next letter<Footnote>In fact, it outputs the next token. But a token is just a small group of letters -- think of it as a syllable or a short word. </Footnote> in the text.
 LLMs are in fact designed so that they don't output a single letter, but try to predict the distribution $p$ of the next letter. This is why it's simple to make LLMs output different answers on the same text.
@@ -85,25 +88,49 @@ Here's a widget with two distributions and all three loss functions. Try to make
 
 [TODO widget]
 
-### Predictions <a id="predictions"></a>
+## Predictions <a id="predictions"></a>
 
 It would be great to know what the future holds—or at least to know someone who does. To this end, you have gathered a bunch of experts and asked them to assign probabilities to a list of events for the coming year. Each expert provides an estimate for each event.
+When the year ends, you know for each event whether it occurred or not.
 
-When the year ends, you know for each event whether it occurred or not. The question is, how do we score the experts so that we can pick the best ones? Which scoring system would be most appropriate?
+[TODO table]
 
-### Information Theory <a id="information-theory"></a>
+The question is, which expert is the best one?
 
-Suppose you are interested in two things. First, whether a day is rainy or sunny—say, with probabilities 30% and 70%, respectively. Second, how you commute to work (e.g., walk, bike, or take the bus with probabilities 20%, 30%, and 50% respectively).
+1. Expert 1
+2. Expert 2
+3. Expert 3
 
-Knowing these two marginal distributions does not give you the full picture. You can form a 2$\times$3 table representing the joint distribution of these outcomes.
+Answer: It depends! In practice, people use one of two scoring rules, the Brier score or log-score. The two scores penalize you differently if you claim that an event probably won't happen, but it does -- see e.g. the ?? column. Brier does not care much whether your guess was 1%, 0.1%, or even 0% but log score does. In fact, if you estimate that an event has 0% probability and then it happens, log-score says you are infinitely bad!
 
-If the two distributions were independent, the probability in each cell would be the product of the marginal probabilities. For example, modeling the distributions as independent, we would guess that the probability of rain and walking is $0.3\times0.2=0.06$ (i.e., 6%). But in fact, it is much lower (since most people don't want to walk in the rain).
+We will see how KL divergence explains why log-score is natural and what it stands for.
 
-The question is: Is there a good measure of how far the joint distribution is from being independent? For example, given two tables, how would you determine which one is closer to independence?
+## Distance from independence <a id="information-theory"></a>
 
-As a potential, though not entirely satisfactory, answer, if the two variables were numerical, we might use correlation. Correlation is 0 if the variables are independent and 1 if they are perfectly correlated. (For example, in people, height and weight might correlate with some value between 0 and 1.) But this approach does not work in our example since we can't assign numbers to categories like walk/bike/bus. Also, two variables can be far from independent yet have zero correlation. Can we intuitively understand when using correlation makes sense and when it does not?
+Independence is one of the most important probability concepts. Here's a recap: think of two distributions $p_1$ and $p_2$. Maybe $p_1$ is over tomorrow's weather -- $\{\text{good}, \text{bad}\}$, and $p_2$ is over how I am going to commute to work -- $\{\text{walk}, \text{bike}, \text{bus}\}$. A joint distribution is a table where we put a probability for each pair of options. For example, here are three possible joint distributions for three different people:
 
-### Machine Learning <a id="machine-learning"></a>
+[todo]
+
+All three above distribution have the same _marginals_; all correspond to 70% of good weather, and 20%/30%/50% for walk/bike/bus.
+
+Two distributions are independent, if the joint distribution is a "product" of the two marginal distributions, as below:
+
+[todo]
+
+Clearly, none of our three examples correspond to independent distribution. But the question is, which table is the "closest" to being independent?
+
+1. Table 1
+2. Table 2
+3. Table 3
+
+[TODO posunout dál, irelevantní]
+Of course, to answer this question, we first have to come up with a suitable function that measures distance from independence. In practice, this is often done by computing [correlation](https://en.wikipedia.org/wiki/Correlation), but that's not a super satisfactory solution. First, it works only for random variables<Footnote>I.e., distribution over numbers</Footnote> so it's unclear how to apply it to our case. Also, dependent random variables can have zero correlation, which is weird.
+
+The hard part is to come up with a good definition of how far a joint distribution is from being independent. A good way of measuring that is a so-called mutual information. It intuitively measures how much we learn about the value of one distribution, if we learn the value of the other one. In our case, it tells us that the ?? example is closest to being independent.
+
+We will see how we can come up with the definition of mutual information using KL, and we will understand what the definition stands for.
+
+## Machine Learning <a id="machine-learning"></a>
 
 Have you noticed that certain functions appear frequently in machine learning?
 
@@ -113,7 +140,7 @@ Or consider the logarithmic function. Standard machine learning tools like logis
 
 Some formulas in machine learning are true beasts. For example, the loss function for logistic regression or the complex expressions behind variational autoencoders (the architecture behind early image generation models like DALL-E). Where do these seemingly complex expressions come from? What's their meaning?
 
-### Modeling <a id="modeling"></a>
+## Modeling <a id="modeling"></a>
 
 A customer comes to a restaurant. Each meal on the menu has a specific tastiness value, which we conveniently assume is known. If the customer spends enough time considering all the meals, she will pick the one with the highest tastiness. But if she is extremely hungry, she might simply choose a random meal. The question is: How should we model the situation in between—when the customer spends some time looking at the menu but not enough to always pick the tastiest item?
 
