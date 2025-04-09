@@ -22,7 +22,7 @@ The question is: why $1/\epsilon^2$? We'll explore this in later sections. KL di
 
 ![Financial Data Distribution](00-introduction/sap_graph.png)
 
-This picture shows the price of S&P<Footnote>If you don't know what that is, think of the price of Bitcoin, Apple, or any other stock</Footnote>.
+This picture shows the price of S&P<Footnote>If you don't know what that is, think of the price of Bitcoin, Apple, or the exchange rate of USD/EUR</Footnote>.
 
 Every day, the price jumps a little bit. I downloaded the historical data, computed the daily jumps, and plotted them in a histogram plot -- the x-axis is the size of the jump (positive roughly 50%, otherwise negative) and the y-axis is the frequency of that jump. Before I show you the plot, I want you to guess how this is going to look like:
 
@@ -32,7 +32,7 @@ Every day, the price jumps a little bit. I downloaded the historical data, compu
 
 This was a trick question because both answers are kind of true! The shape of the histogram depends on something I did not tell you -- how far in the past did I look to collect the data. Try it for yourself both for S&P and Bitcoin:
 
-[TODO widget]
+[TODO widget, přidat usd/eur?]
 
 ![Financial Data Distribution](00-introduction/financial.png)
 
@@ -132,13 +132,19 @@ We will see how we can come up with the definition of mutual information using K
 
 ## Machine Learning <a id="machine-learning"></a>
 
-Have you noticed that certain functions appear frequently in machine learning?
+When you first encounter machine learning, it seems like horrible mess, full of ad-hoc tricks and optimization problems. For example, here are a few machine learning tools you learn in the first few Machine-Learning-101 lectures, and what optimization they correspond to:
 
-For example, consider $x^2$: The most basic clustering algorithm, $k$-means, minimizes the sum of squared distances, and the same holds for linear regression. Why use $x^2$? What would it mean to use $|x|$ or $x^4$ instead?
+$k$-means -- $\min_{C} \sum_{i = 1}^{n} \min_{c \in C} ||x-c||^2$
+linear regression -- $\min_{\alpha, \beta} \sum_{i = 1}^n (\alpha \cdot x_i + \beta - y_i)^2$
+logistic regression -- $\min_{\alpha, \beta} \sum_{i = 1}^n y_i\log(\sigma(\alpha \cdot x_i + \beta)) + (1-y_i)\log(1 - \sigma(\alpha \cdot x_i + \beta))$
 
-Or consider the logarithmic function. Standard machine learning tools like logistic regression involve logarithms, and neural nets are often optimized using the so-called cross-entropy loss—which takes logarithms of probabilities.
+When you try to understand some more modern deep learning tools, it does not get that much better. For example, consider variational autoencoders (the architecture behind early image generation models like DALL-E / Midjourney as of time of writing). During training, you optimize the following beast:
 
-Some formulas in machine learning are true beasts. For example, the loss function for logistic regression or the complex expressions behind variational autoencoders (the architecture behind early image generation models like DALL-E). Where do these seemingly complex expressions come from? What's their meaning?
+$$
+E_{z \sim p_x}[||x-D(z)||^2] + \sum_{j = 1}^d (d\cdot \sigma_j^2(x) + \mu_j^2 - 2d\log \sigma(x))
+$$
+
+Although these functions look horrible, we will see what they correspond to and how they can be derived using KL divergence.
 
 ## Modeling <a id="modeling"></a>
 
