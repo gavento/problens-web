@@ -2,7 +2,7 @@
 
 This web contains an introduction to Kullback-Leibler (KL) divergence. Specifics of what we cover are [at the bottom](what-this-course-covers) together with [what we assume you know](what-we-assume), but let's start with something more exciting. We want to tell you several riddles and hope that you get [nerd-sniped](https://xkcd.com/356/) by some of them!
 
-## Polling <a id="polling"></a>
+## Why polling sucks <a id="polling"></a>
 
 The next US elections are coming and you want to estimate which of the two parties is going to win the popular vote. Here's how: You will sample a few random US citizens and ask them who they vote for, hoping that the estimate you compute from this sample is a good approximation of reality.
 
@@ -18,7 +18,7 @@ The correct answer is about 100000. In fact, if we want to be close up to an err
 
 The question is: why $1/\epsilon^2$? We'll explore this in later sections. KL divergence measures how well one distribution matches another, which is why understanding its value for distributions (50%, 50%) and (50%+$\varepsilon$, 50%-$\varepsilon$) is going to shed a lot of light on this question! We will also use this as a jumping bridge to explain a bit more on how KL divergence is crucial in statistics.
 
-## Financial Mathematics <a id="financial-mathematics"></a>
+## How S&P looks like <a id="financial-mathematics"></a>
 
 ![Financial Data Distribution](00-introduction/sap_graph.png)
 
@@ -44,7 +44,7 @@ There are two ways for how this connects to KL divergence. First of all, KL dive
 
 Second, we will use KL divergence to understand a deep principle in probability called maximum entropy principle. This will help us gain a lot of intuition for what both normal and Laplace distributions stand for.
 
-## Statistics <a id="statistics"></a>
+## Average foot <a id="statistics"></a>
 
 ![Determining the length of the foot in 1522](00-introduction/rod.png)
 
@@ -88,7 +88,7 @@ Here's a widget with two distributions and all three loss functions. Try to make
 
 [TODO widget]
 
-## Predictions <a id="predictions"></a>
+## How good are your predictions? <a id="predictions"></a>
 
 It would be great to know what the future holds—or at least to know someone who does. To this end, you have gathered a bunch of experts and asked them to assign probabilities to a list of events for the coming year. Each expert provides an estimate for each event.
 When the year ends, you know for each event whether it occurred or not.
@@ -130,7 +130,7 @@ The hard part is to come up with a good definition of how far a joint distributi
 
 We will see how we can come up with the definition of mutual information using KL, and we will understand what the definition stands for.
 
-## Machine Learning <a id="machine-learning"></a>
+## Machine Learning mess <a id="machine-learning"></a>
 
 When you first encounter machine learning, it seems like horrible mess, full of ad-hoc tricks and optimization problems. For example, here are a few machine learning tools you learn in the first few Machine-Learning-101 lectures, and what optimization they correspond to:
 
@@ -146,6 +146,32 @@ $$
 
 Although these functions look horrible, we will see what they correspond to and how they can be derived using KL divergence.
 
+## The Power of KL Divergence <a id="preview-the-power-of-kl-divergence"></a>
+
+Each of the puzzles above might seem disconnected, but they share a common thread: they can all be approached, understood, or solved using KL divergence and related concepts.
+
+KL divergence is a fundamental measure that quantifies how one probability distribution differs from another. Its formal definition is:
+
+$$KL(p, q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}$$
+
+Where $p$ represents the "ground-truth" distribution and $q$ represents our model or approximation.
+
+In the upcoming sections, we'll explore this measure in depth, develop intuitions for what it stands for, and see how it connects to probability, statistics, machine learning, information theory, and more.
+
+As we progress through the mini-course, we'll revisit these puzzles and show how they can be solved or better understood through the lens of KL divergence.
+
+## Next Steps <a id="next-steps"></a>
+
+In the next part, we'll define KL divergence and understand what it stands for. Ready to begin? Let's start with [Quantifying Information](/01-quantifying).
+
+## What we assume <a id="what-we-assume"></a>
+
+You should be familiar with the basic language of probability theory: probabilities, distributions, random variables, independence, expectations, variance, standard deviation, and so on. You should understand Bayes rule and it helps to have heard about the law of large numbers, see a few examples from statistics and perhaps machine learning.
+
+What's covered in undergrad courses in probability should be sufficient.
+
+TODO:
+
 ## Modeling <a id="modeling"></a>
 
 A customer comes to a restaurant. Each meal on the menu has a specific tastiness value, which we conveniently assume is known. If the customer spends enough time considering all the meals, she will pick the one with the highest tastiness. But if she is extremely hungry, she might simply choose a random meal. The question is: How should we model the situation in between—when the customer spends some time looking at the menu but not enough to always pick the tastiest item?
@@ -159,40 +185,3 @@ This quandary is typically resolved by what's known as the maximum entropy princ
 ### Random Pi Program <a id="random-pi-program"></a>
 
 Here's a riddle: Consider the set of all C programs of length 1000 characters (i.e., the file has 1000 bytes if saved in ASCII) that print the first million digits of $\pi$. Let's sample one such program uniformly at random. How would it probably look?
-
-## Preview: The Power of KL Divergence <a id="preview-the-power-of-kl-divergence"></a>
-
-Each of the puzzles above might seem disconnected, but they share a common thread: they can all be approached, understood, or solved using KL divergence and related concepts from information theory.
-
-KL divergence is a fundamental measure that quantifies how one probability distribution differs from another. Its formal definition is:
-
-$$KL(p, q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}$$
-
-Where $p$ represents the "true" distribution and $q$ represents our model or approximation.
-
-In the upcoming sections, we'll explore this measure in depth, develop intuitions for why it works, and see how it connects to fundamental principles of reasoning under uncertainty. We'll also examine how this single measure provides a unifying perspective on diverse problems across statistics, machine learning, information theory, and more.
-
-As we progress through the course, we'll revisit these puzzles and show how they can be solved or better understood through the lens of information theory and KL divergence.
-
-## Next Steps <a id="next-steps"></a>
-
-In the next part, we'll begin our exploration of information theory by learning how to quantify information. We'll define entropy, cross-entropy, and KL divergence, and develop intuitions for what these measures tell us about probability distributions.
-
-Ready to begin? Let's start with [Quantifying Information](/01-quantifying).
-
-## What This Course Covers <a id="what-this-course-covers"></a>
-
-This course takes a problem-driven approach. Rather than starting with abstract mathematical concepts, we begin with real-world puzzles and challenges, introducing the theoretical tools only as they become necessary for solving these problems.
-
-Throughout the course, you'll see how concepts like entropy, KL divergence, cross-entropy, mutual information, and the maximum entropy principle connect seemingly disparate fields like:
-
-- Election polling and statistical sampling
-- Financial modeling and market predictions
-- Machine learning algorithms and loss functions
-- Deep learning architectures
-- Information theory and coding
-- Algorithmic complexity and prediction
-
-By the end of this course, you'll understand not just how to apply these tools, but why they work and how they connect to fundamental principles of reasoning under uncertainty.
-
-## What we assume <a id="what-we-assume"></a>
