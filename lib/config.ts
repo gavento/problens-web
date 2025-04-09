@@ -1,15 +1,19 @@
 import { join } from "path";
 
-export const TITLE = "Probabilistic Lenses";
-export const DESCRIPTION = "Probabilistic Lenses";
-export const TITLE_SHORT = "Probabilistic Lenses";
-export const TITLE_ABBR = "Probabilistic Lenses";
+export const TITLE = "Probabilistic Lenses -- Introduction to KL divergence";
+export const DESCRIPTION = "Introduction to KL divergence";
+export const TITLE_SHORT = "Introduction to KL divergence";
+export const TITLE_ABBR = "Introduction to KL divergence";
 export const CHAPTERS = [
-  ["Introduction", "00-introduction"],
-  ["Quantifying Information, Belief, and Surprise", "01-quantifying"],
-  ["Updating Beliefs & Learning from Constraints", "02-updating"],
-  ["Building & Comparing Models", "03-modeling"],
-  ["Advanced Connections and Perspectives", "04-advanced"],
+  ["All those riddles", "00-introduction"],
+  ["KL divergence & Bayes rule", "01-kl_intro"],
+  ["Crossentropy & Entropy", "02-crossentropy"],
+  ["Minimizing KL", "03-minimizing"],
+  ["Max entropy distributions", "04-max_entropy"],
+  ["Machine learning", "05-machine_learning"],
+  ["Additional topics", "06-algorithms"],
+  // ["Multiplicative weights", "06-algorithms"],
+  // ["Statistics & Fisher information", "07-fisher_info"],
   ["Resources", "resources"],
   ["About", "about"],
 ];
