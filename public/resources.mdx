@@ -2,9 +2,28 @@
 
 We compile our favorite resources for further exploring KL divergence and related topics. Resources are organized roughly by difficulty level from introductory to advanced.
 
-## Introductory Resources <a id="introductory-resources"></a>
+## Introductory blog posts <a id="introductory-resources"></a>
 
 These resources focus on building intuition and providing accessible explanations of the core concepts.
+
+### Why KL? <a id="why-kl"></a>
+
+Series of amazing blog posts at _Alex Alemi's blog_
+
+[**"Why KL?"**](https://blog.alexalemi.com/kl.html)
+-- Axiomatic definition of KL (read to complement our discussion of the same in ??)
+
+[**"KL is All You Need"**](https://blog.alexalemi.com/kl-is-all-you-need.html)
+-- Shows how many deep learning setups follows neatly from the idea of minimizing KL divergence.
+
+[**"A Path to the Variational Diffusion Loss"**](https://blog.alexalemi.com/diffusion.html)
+-- Explains Variational Autoencoders in the language of KL.
+
+### Six (and a Half) Intuitions for KL Divergence <a id="six-intuitions-kl"></a>
+
+[**"Six (and a Half) Intuitions for KL Divergence" – _LessWrong post_ (Callum McDougall, 2022)**](https://uli.rocks/p/kl-divergence/)
+
+This is a pretty cool essay that gives as many intuitions to KL as possible. We really focused mostly on (what we think is) the most important one -- expected distinguishing evidence using Bayes' rule. But there are more of them and this essay covers them, including some that we did not encounter in the mini-course (Kelly betting one).
 
 ### Kullback-Leibler Divergence Explained <a id="kl-divergence-explained"></a>
 
@@ -18,73 +37,39 @@ A nice intro to KL. Try to check it out if the first few chapters of our mini-co
 
 As before, look at this to complement the first few chapters in our mini-course.
 
-### Six (and a Half) Intuitions for KL Divergence <a id="six-intuitions-kl"></a>
+## Classic books <a id="intermediate-resources"></a>
 
-[**"Six (and a Half) Intuitions for KL Divergence" – _LessWrong post_ (Callum McDougall, 2022)**](https://uli.rocks/p/kl-divergence/)
-
-This is a pretty cool essay that gives as many intuitions to KL as possible. We really focused mostly on (what we think is) the most important one -- expected distinguishing evidence using Bayes' rule. But there are more of them and this essay covers them, including some that we did not encounter in the mini-course (Kelly betting one).
-
-## Intermediate Resources <a id="intermediate-resources"></a>
-
-These resources connect KL divergence to important principles in machine learning and statistics.
-
-### Machine Learning: A Probabilistic Perspective <a id="machine-learning-probabilistic"></a>
-
-[**"Machine Learning: A Probabilistic Perspective" – _Kevin P. Murphy_ (2012, Textbook)**](https://probml.github.io/pml-book/book0.html)
-
-Chapter 2 of this popular ML textbook introduces KL divergence in the context of probability and information theory. Murphy defines KL divergence and explains its core properties (non-negativity, asymmetry) as a way to measure dissimilarity between distributions.
-
-Importantly, the book connects KL divergence to machine learning techniques: it notes that **maximizing likelihood is equivalent to minimizing KL divergence** between the empirical data distribution and the model distribution. In fact, as Oxford lecture notes (inspired by Murphy's content) show, the **MLE solution can be viewed as the model that minimizes $D_{KL}(p_{\text{true}} \;\|\; p_{\theta})$** in the limit of infinite data.
-
-Murphy's text also covers how KL divergence relates to **cross-entropy loss** used in classification and how it underpins measures like **mutual information** (which is a KL between joint and factorized distributions). The presentation is mathematical but geared toward readers with basic probability background, making it a solid resource to see how KL divergence bridges statistical inference and information theory in ML.
-
-### Information Theory, Inference, and Learning Algorithms <a id="information-theory-inference"></a>
-
-[**"Information Theory, Inference, and Learning Algorithms" – _David J. C. MacKay_ (2003, Textbook)**](https://www.inference.org.uk/itprnn/book.html)
-
-MacKay's renowned book offers a comprehensive treatment of entropy and KL divergence and weaves them into the fabric of Bayesian inference and machine learning. It provides a rigorous definition of KL divergence (also called _relative entropy_) and discusses its fundamental properties (e.g., non-negativity from Gibbs' inequality).
-
-What sets this book apart is its insight into _why_ KL divergence matters: for instance, MacKay shows how **Bayesian updating can be interpreted in information–theoretic terms**, and how designing coding schemes or learning models both involve minimizing KL divergence.
-
-The book covers the **maximum entropy principle** in depth – showing that maximizing entropy subject to constraints leads to exponential-family distributions – and relates this to minimizing KL to a prior. It also introduces the idea of **Occam's razor and model complexity** in Bayesian model comparison using KL (through the concept of _Occam factors_ and how much the posterior compresses the prior, i.e., a KL term).
-
-With numerous examples and exercises, this textbook helps readers develop both a theoretical and practical understanding of KL divergence.
-
-### Probability Theory: The Logic of Science <a id="probability-theory-science"></a>
-
-[**"Probability Theory: The Logic of Science" – _E. T. Jaynes_ (2003, Book)**](https://bayes.wustl.edu/etj/prob/book.pdf)
-
-This classic text by Jaynes lays the philosophical and mathematical groundwork for the **Principle of Maximum Entropy** and connects it to Bayesian probability theory. Jaynes uses relative entropy (essentially KL divergence) as a tool for deriving probability distributions from incomplete information – arguing that the distribution which **maximizes entropy** (least informative beyond given constraints) is the objectively correct choice.
-
-In the book, KL divergence appears as the cross-entropy one minimizes when updating from a prior to a posterior with new data (this is effectively an information-theoretic derivation of Bayes' rule). The material is theoretical: Jaynes shows, for example, that **Bayesian updating yields the distribution that maximizes entropy relative to the prior**, meaning the posterior is the least biased distribution consistent with the new evidence.
-
-This unification of MaxEnt and Bayes was ahead of its time and provides deep insight into why KL/entropy is central in inference. While the book is dense, it's a **highly regarded reference** for understanding KL divergence in the broader context of statistical physics, information theory, and Bayesian inference.
-
-## Advanced Resources <a id="advanced-resources"></a>
-
-These resources dive deeper into the theory and advanced applications of KL divergence.
+The following books are classics.
 
 ### Elements of Information Theory <a id="elements-information-theory"></a>
 
 [**"Elements of Information Theory" – _Thomas M. Cover & Joy A. Thomas_ (2nd ed. 2006, Textbook)**](https://www.wiley.com/en-us/Elements+of+Information+Theory%2C+2nd+Edition-p-9780471241959)
 
-This authoritative textbook covers KL divergence in detail as part of the foundation of information theory. It formally defines **relative entropy $D(p\|q)$** and proves key facts like non-negativity and convexity (via Jensen's inequality).
+This is a classic book on the topic of information theory, and its many connections to coding theory, statistics, etc. Highly recommended.
 
-The book places KL divergence at the heart of many topics: it shows that **mutual information** is a KL divergence (between the joint distribution and the product of marginals), and that **data processing can only reduce KL divergence** (an aspect of the Data Processing Inequality). It also uses KL in coding theorems – for instance, analyzing how far an arbitrary code or distribution is from the optimal by a KL term.
+### Probability Theory: The Logic of Science <a id="probability-theory-science"></a>
 
-Additionally, Cover & Thomas highlight that the principle of maximum entropy and minimum KL are two sides of the same coin for deriving distributions. This text is mathematically rigorous and is often used in graduate courses, making it ideal for those who want a deep theoretical understanding and aren't afraid of formal proofs.
+[**"Probability Theory: The Logic of Science" – _E. T. Jaynes_ (2003, Book)**](https://bayes.wustl.edu/etj/prob/book.pdf)
 
-### Why KL? <a id="why-kl"></a>
+This is one of the favorite books of the second author of this mini-course. Jaynes is the father of maximum entropy principle and many other profound ideas. His book is at times almost philosophical, and sometimes very enlightening. Also, it is unfinished and contains errors.
 
-[**"Why KL?" – _Alex Alemi's blog_ (2020)**](https://blog.alexalemi.com/kl.html)
+### Machine Learning: A Probabilistic Perspective <a id="machine-learning-probabilistic"></a>
 
-In this blog post, a research scientist takes an **axiomatic approach** to KL divergence, asking why it's so special among divergence measures. The post derives KL divergence as the _unique_ quantity (up to scale) that satisfies a set of desirable properties for an "information gain" measure.
+[**"Machine Learning: A Probabilistic Perspective" – _Kevin P. Murphy_ (2012, Textbook)**](https://probml.github.io/pml-book/book0.html)
 
-It imagines updating a prior distribution $q$ to a posterior $p$ and asks: how can we quantify "how much we learned"? From a few natural requirements (continuity, symmetry under reparameterization, non-negativity with 0 iff $p=q$, additivity for independent updates), Alemi shows that the answer must be the KL divergence.
+This book on machine learning, and probabilistic approach towards it is classic. It touches and expands many topics we covered in this mini-course.
 
-The blog explains that KL divergence goes by many names – _relative entropy, information gain, expected weight of evidence_ – hinting at its fundamental role in information theory. It also clarifies units (bits, nats) and interpretation: for instance, KL can be seen as the number of bits of surprise added by switching beliefs from $q$ to $p$.
+### Information Theory, Inference, and Learning Algorithms <a id="information-theory-inference"></a>
 
-By referencing an information theory theorem (Hobson's theorem) and walking through intuitive examples (like narrowing down suspects in a puzzle), this post gives a **deep theoretical insight** into KL divergence while remaining conversational in tone.
+[**"Information Theory, Inference, and Learning Algorithms" – _David J. C. MacKay_ (2003, Textbook)**](https://www.inference.org.uk/itprnn/book.html)
+
+This is another classic that covers a vast range of topics connected to probability, information theory, statistics, and machine learning. It expands many topics we covered in this mini-course.
+
+[TODO check]
+
+## Advanced Resources <a id="advanced-resources"></a>
+
+These resources dive deeper into the theory and advanced applications of KL divergence.
 
 ### Maximum Entropy and Bayes <a id="maximum-entropy-bayes"></a>
 
