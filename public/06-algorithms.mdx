@@ -46,7 +46,7 @@ Let's think about all the information that we learn in the first $t$ steps of ou
 
 We understand that! In the chapter on [max entropy distributions](04-max_entropy), we have seen how softmax function is the right generic way of converting numbers to probabilities. So, we should have $p_i^{(t+1)} \propto e^{\lambda \cdot L_i^{(t)}}$. The constant $\lambda$ is a proportionality constant that we have to decide on by some other means.
 
-But look, this is exactly what multiplicative weights algorithm is doing. It updates $p_i$ by multiplying it by $e^{\varepsilon \cdot \ell_i^{(t)}}$ in each step, so $p_i^(t)$ is proportional to $e^{\varepsilon \cdot \ell_i^{(1)}} \cdot  \cdot e^{\varepsilon \cdot \ell_i^{(t)}} = e^{\varepsilon \cdot L_i^{(t)}}$. So what we call $\lambda$ in softmax is called the learning rate $\varepsilon$ in multiplicative weights.
+But look, this is exactly what multiplicative weights algorithm is doing. It updates $p_i$ by multiplying it by $e^{\varepsilon \cdot \ell_i^{(t)}}$ in each step, so $p_i^{(t)}$ is proportional to $e^{\varepsilon \cdot \ell_i^{(1)}} \cdot \dots \cdot e^{\varepsilon \cdot \ell_i^{(t)}} = e^{\varepsilon \cdot L_i^{(t)}}$. So what we call $\lambda$ in softmax is called the learning rate $\varepsilon$ in multiplicative weights.
 
 ### Geometric intuition
 
@@ -56,7 +56,7 @@ In our optimization problem, we start with the following data: the current distr
 
 1. We want the new probability distribution $p^{(t+1)}$ to be close to the original one $p^{(t)}$, whatever the word "close" means.
 
-2. If we sample a random expert from $p^{(t+1)}$, we want her to be as good as possible for the current loss function. That is, we want to minimize $\sum\_{i = 1}^n p^{(t+1)}\_i \cdot \ell_i.
+2. If we sample a random expert from $p^{(t+1)}$, we want her to be as good as possible for the current loss function. That is, we want to minimize $\sum_{i = 1}^n p^{(t+1)}_i \cdot \ell_i$.
 
 Having this in mind, here's an equivalent formulation of gradient descent and multiplicative weights:
 
@@ -68,7 +68,7 @@ $$
 p^{(t+1)}_{\text{multiplicative}} = \argmin_{p, \sum_{i=1}^n p_i = 1} \sum_{i = 1}^n \ell_i p_i + \eps \cdot \frac12 \sum_{i = 1}^n p_i \cdot \log \frac{p_i}{p_i^{(t)}}.
 $$
 
-I will leave to you to check that the solution of the first optimization problem is $p_{i}^{(t+1)} = p_i^{(t)} - \eps \cdot \ell_i^{(t)}$<Footnote>Hint: If you differentiate the loss function with respect to $p_i$, you get $\frac{\partial \mathcal{L}}{\partial p_i} = \ell_i + \eps \cdot (p_i - p_i^{(t)})$. </Footnote>, whereas the solution to the second optimization problem is $p_{i}^{(t+1)} \propto p_i^{(t)} \cdot e^{-\eps \cdot \ell_i^{(t)}}$. <Footnote>Hint: You can use Lagrange multipliers to replace the hard constraint of $\sum_{i = 1}^n p_i = 1$ with the soft constraint of $ + \lambda (\sum\_{i = 1}^n p_i - 1)$ that goes to the loss function. After differentiating with respect to $p_i$, you get $\frac{\partial \mathcal{L}}{\partial p_i} = \ell_i + \eps \cdot ( \log \frac{p_i}{p_i^{(t)}} + 1) + \lambda$. </Footnote>
+I will leave to you to check that the solution of the first optimization problem is $p_{i}^{(t+1)} = p_i^{(t)} - \eps \cdot \ell_i^{(t)}$<Footnote>Hint: If you differentiate the loss function with respect to $p_i$, you get $\frac{\partial \mathcal{L}}{\partial p_i} = \ell_i + \eps \cdot (p_i - p_i^{(t)})$. </Footnote>, whereas the solution to the second optimization problem is $p_{i}^{(t+1)} \propto p_i^{(t)} \cdot e^{-\eps \cdot \ell_i^{(t)}}$. <Footnote>Hint: You can use Lagrange multipliers to replace the hard constraint of $\sum_{i = 1}^n p_i = 1$ with the soft constraint of $\lambda (\sum_{i = 1}^n p_i - 1)$ that goes to the loss function. After differentiating with respect to $p_i$, you get $\frac{\partial \mathcal{L}}{\partial p_i} = \ell_i + \eps \cdot ( \log \frac{p_i}{p_i^{(t)}} + 1) + \lambda$. </Footnote>
 
 What I want to focus on is how both algorithms try to balance two constraints (stay close to original solution, make new one good on current loss), and their difference is pretty much only in how they measure distance in the space of all probability distributions.
 
