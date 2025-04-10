@@ -1,6 +1,6 @@
 import { join } from "path";
 
-export const TITLE = "Probabilistic Lenses -- Introduction to KL divergence";
+export const TITLE = "Introduction to KL divergence";
 export const DESCRIPTION = "Introduction to KL divergence";
 export const TITLE_SHORT = "Introduction to KL divergence";
 export const TITLE_ABBR = "Introduction to KL divergence";

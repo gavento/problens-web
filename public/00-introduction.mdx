@@ -146,6 +146,20 @@ $$
 
 Although these functions look horrible, we will see what they correspond to and how they can be derived using KL divergence.
 
+## How to get rich <a id = "get-rich"></a>
+
+Here's a riddle that motivates a surprising number of recent algorithms in computer science and machine learning. Let's say that we want to get rich by investing at the stock market. Fortunately, there are $n$ investors that are willing to share their advice with us: Each day $t$, they give us some advice, and at the end of the day, we learn how good the advice was -- for the $i$-th expert, we will get to know her loss $\ell_i^{(t)}$ <Footnote>If this number is positive, the advice was bad, if it is negative, the advice was good. </Footnote>
+
+Our general investing strategy is this: We start with a uniform distribution $p_1^{(0)}, \dots, p_n^{(0)}, p_i^{(0)} = 1/n$ over the experts. At the beginning of each day, we sample an expert from this distribution and follow her advice. At the end of the day, we look at the losses $\ell_i^{(t)}$ and we update $p^{(t)}$ to $p^{(t+1)}$.
+
+The question is: how should we update?
+
+Answer 1: Choose small $\varepsilon$ and do gradient descent: $p^{(t+1)} = p^{(t)} - \eps \cdot \ell_i^{(t)}$; normalize $p^{(t+1)}$ afterwards.
+Answer 2: Choose small $\varepsilon$ and do "multiplicative" gradient descent: $p^{(t+1)} = p^{(t)} \cdot e^{- \eps \cdot \ell_i^{(t)}}$; normalize $p^{(t+1)}$ afterwards.
+Answer 3: Just follow the best guy so far: $p^{(t+1)}_i = 1$ for the guy $i$ with minimum $\ell_i^{(1)} + \ell_i^{(2)} + \dots + \ell_i^{(t)}$.
+
+Although all strategies are reasonable, the one that turns out to be the best is 2. The algorithm is called multiplicative weights update and its suspiciously similar to gradient descent. We will understand the connection between the two algorithms using KL divergence.
+
 ## Next Steps <a id="next-steps"></a>
 
 Each of the puzzles above might seem disconnected, but they share a common thread: they can all be approached, understood, or solved using KL divergence and related concepts.
@@ -171,6 +185,8 @@ What's covered in undergrad courses in probability should be sufficient.
 TODO:
 
 ## Modeling <a id="modeling"></a>
+
+-- nebo teplota v neural nets?
 
 A customer comes to a restaurant. Each meal on the menu has a specific tastiness value, which we conveniently assume is known. If the customer spends enough time considering all the meals, she will pick the one with the highest tastiness. But if she is extremely hungry, she might simply choose a random meal. The question is: How should we model the situation in between—when the customer spends some time looking at the menu but not enough to always pick the tastiest item?
 
