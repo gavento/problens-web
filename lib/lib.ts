@@ -32,7 +32,16 @@ export async function getMdxContent(path: string) {
           remarkMath, // Math equations
         ],
         rehypePlugins: [
-          rehypeKatex, // KaTeX for math rendering
+          [
+            rehypeKatex,
+            {
+              macros: {
+                "\\R": "\\mathbb{R}",
+                "\\eps": "\\varepsilon",
+              },
+              trust: true,
+            },
+          ], // KaTeX for math rendering
           rehypeHighlight, // Syntax highlighting
         ],
         development: true,
