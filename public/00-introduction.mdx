@@ -50,7 +50,7 @@ Second, we will use KL divergence to understand a deep principle in probability 
 
 In the ye olden days, people measured lengths in feet. Different people of course have differently-sized body parts, so at some point we have to be a bit more precise. One way is to measure the foot of the local warlord, but then you have to change it every now and then when the warlord is replaced.
 
-Another way (as in the engraving above) is to ask 16 random people and compute their mean foot length as
+Another way (depicted in the above 16-th century engraving from Germany) is to ask 16 random people and compute their mean foot length as
 $$\bar X = \frac{1}{16} (X_1 + \dots + X_{16})$$
 This will be a fairly stable estimate that will hopefully remain similar the next time you perform this experiment.
 
@@ -82,7 +82,7 @@ We also know the distribution that our LLM outputs, let's call it $q$. We need t
 2. $L(p,q) = \sum_{i = 1}^n (p_i - q_i)^2$ (_$\ell_2$ norm_)
 3. $L(p,q) = \sum_{i = 1}^n p_i \cdot \log (p_i / q_i)$ (_KL divergence_)
 
-There is nothing wrong with the first two functions, in practice, people usually opt for KL divergence. An important feature of it is that according to KL, if $p_i = 0.5$ and $q_i = 0.51$, it's smaller problem than if $p_i = 0.01$ and $q_i = 0.02$. Sounds reasonable!
+There is nothing wrong with the first two functions, in practice, people usually opt for KL divergence. An important feature of it is that according to KL, if $p_i = 0.5$ and $q_i = 0.51$, it's in some sense a smaller problem than if $p_i = 0.01$ and $q_i = 0.02$ (the ratios $p_i/q_i$ end up very different). Sounds reasonable!
 
 Here's a widget with two distributions and all three loss functions. Try to make KL infinitely large!
 

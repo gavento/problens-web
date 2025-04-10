@@ -83,16 +83,3 @@ The general algorithm that generalizes both gradient descent and multiplicative 
 ### The important idea
 
 What I want to stress is this: In the case of multiplicative weights, KL guides us not to come up with the right formulation of the problem to solve (as in [the previous chapter](05-machine_learning)). It guides us to come up with the right algorithm to approach a problem!
-
-{/\*
-
-### Why multiplicative weights are important
-
-[TODO divna sekce]
-
-Multiplicative weights algorithm has many applications, the only issue is that all of them are at least a bit advanced, so we don't have space to go into details here.
-
-1. In machine learning, this algorithm is super important in recommendation systems -- think of how Google search recommends webpages, Youtube recommends videos, and Facebook recommends posts. The connection is that you can think of each webpage/video/post being an expert and you want an algorithm that keeps choosing the best one based on the feedback you are getting from the users, in an online fashion. <Footnote> This is a good bit simplified. </Footnote>
-2. In algorithms, this algorithm is used in situations where you want to satisfy many constraints at once (think of making all customers reasonably happy at once). There, you can think of each constraint as an expert. You keep choosing the least satisfied constraint (the angriest customer) and make it happy. Hopefully, you make everybody reasonably happy after a few steps of the multiplicative weights algorithm.
-3. In game theory, there's a concept of Nash equilibrium in 2-people games. This equilibrium always exists, but how do you find it? Turns out, you can find it by running two players against each other, each one updating their distribution using multiplicative weights algorithm.
-   \*/}
