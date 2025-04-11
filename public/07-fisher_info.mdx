@@ -59,10 +59,17 @@ $$
 D(p_{\theta + \eps}, p_\theta) \approx \frac12 I(\theta) \cdot \eps^2 + O(\eps^3)
 $$
 
-The term $I(\theta)$ is the result of this daunting integral: $\int p_\theta(x) \cdot (\frac{\partial}{\partial \theta} \log p_\theta(x))^2 dx$ and its called _Fisher information_. Let's not try to understand what this integral mean. The short story is that you can locally approximate KL divergence as a quadratic function in $\eps$, where the multiplicative factor is called Fisher information.
+The term $I(\theta)$ is the result of this daunting integral: $\int p_\theta(x) \cdot (\frac{\partial}{\partial \theta} \log p_\theta(x))^2 dx$ and its called _Fisher information_. Let's not try to understand what this integral mean. The short story is that you can approximate KL divergence of similar distributions as $I(\theta)\cdot \eps^2$ and $I(\theta)$ can often be computed.
 
-Here are some examples of what $I$ turns out to be:
--- If you want to estimate $p$ of a biased coin, $I(p) = 1/p$
+Our KL intuition is telling us that estimating a parameter $\theta$ up to $\eps$ should require about $\frac{1}{I(\theta)\eps^2}$ many samples. Let's see what this intuition is saying in some cases:
+
+1. If you want to estimate $p$ of a biased coin, $I(p) = \frac{1}{p(1-p)}$. Thus, our KL intuition suggests that estimating the value of $p$ (with constant probability) should take about $p/\eps^2$ samples. Our polling example was this for $p = 1/2$.
+
+2. If you want to find the mean of normal random variable with known variance $\sigma^2$, we have $I(\mu) = 1/\sigma^2$. Hence, our KL intuition suggests that estimating $\mu$ up to $\eps$ requires about $\sigma^2 / \eps^2$ samples.
+
+3. If you want to find the variance of normal random variable with known mean $\mu$, we have $I(\sigma^2) = 1/(2\sigma^4)$. Hence, our KL intuition suggests that estimating $\sigma^2$ requires about $\sigma^4 / \eps^2$ samples.
+
+In all above cases, it turns out to be the case that our intuition is correct and really describes how many samples you need to solve given problem. In fact, there are two important results in statistics: One of them is [Cramér-Rao lower bound](https://en.wikipedia.org/wiki/Cram%C3%A9r%E2%80%93Rao_bound) that basically says that our formula of $n = 1/(I(\theta)\eps^2)$ is indeed a lower bound. On the other hand, the so-called [asymptotic normality theorem for MLE](https://gregorygundersen.com/blog/2019/11/28/asymptotic-normality-mle/) says that the MLE estimator is as good as our formula. <Footnote> These theorems use somewhat different language and measure the goodness of an estimator using its variance. </Footnote>
 
 ## Fisher metric
 
@@ -70,17 +77,6 @@ In fact, if we did the computation for $D(p_\theta, p_{\theta + \eps})$ instead 
 
 todo
 
-We of course know how to measure the distance between points $p,q$ on a segment, its just $|p-q|$.
-But Fisher information metric is saying that this normal way of doing it is not the right one -- around a point $p$, the distances should be scaled by $1/p$. This for example means that the distance between any two points $p$ and $2p$ (with $2p \le \frac12$), is equal to $\int_{p}^{2p} 1/x dx = \ln \frac{2\eps}{\eps} = \ln 2$. So, the distance does not matter on the value of $p$, only on the ratio of the two points. In other words, this is a supercharged-abstract-fancy way of saying what we have already seen many times -- probabilities should often be handled multiplicatively, not additively.
+We of course know how to measure the distance between points $p,q$ on a segment, its just $d(p,q) = |p-q|$. But Fisher information metric is saying that this normal way of doing it is not the right one -- around a point $p$, the distances should be scaled by $1/p$. This for example means that the distance between any two points $p$ and $q$ (with $p \le q \le \frac12$), is equal to $d(p,q) = \int_{p}^{q} 1/x dx = \ln \frac{q}{p}$. So, the distance equals the ratio of the two points. In other words, this is a supercharged-abstract-fancy way of saying what we have already seen many times -- probabilities should often be handled multiplicatively, not additively.
 
-better for smaller p.
-
-generalizing, fisher Information
-
-statements of theorems
-
-1/0.005^2 _ 0.5 _ ln(4) = 27725.8872224
-
-0.001 693147.18056
-
-combine many polls
+todo picture with hyperbole
