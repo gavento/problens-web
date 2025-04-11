@@ -4,19 +4,17 @@ This web contains an introduction to Kullback-Leibler (KL) divergence. Specifics
 
 ## Why polling sucks <a id="polling"></a>
 
-The next US elections are coming and you want to estimate which of the two parties is going to win the popular vote. Here's how: You will sample a few random US citizens and ask them who they vote for, hoping that the estimate you compute from this sample is a good approximation of reality.
+Before each US elections, we want to have a guess at which of the two parties is going to win the popular vote. This is why we have polling; you can for example look at [this Wikipedia page](https://en.wikipedia.org/wiki/Nationwide_opinion_polling_for_the_2024_United_States_presidential_election) list hundreds of polls made before the last election. A typical poll asks about 1000-2000 random people. If you crunch the numbers, you can find out that this means that the output of the poll is typically about 2-3\% from the correct answer. <Footnote>Of course, all the discussion holds under unrealistic assumptions such as we can sample a random voter, they are truthful, etc. But bear with us.</Footnote> This is astonishing! Regardless of how many people live in the country, 1000 random citizens are enough to get the answer within a few percent.
 
-If we assume a simplified model where every citizen votes for one party, they are truthful, and won't change their opinions in the future<Footnote>Of course, those assumptions are entirely unrealistic but bear with us.</Footnote>, it is possible to compute that asking 1000 people is enough to get an estimate that is probably within one percent of the right answer. [TODO check] This is astonishing! Regardless of how many people live in the country, 1000 random citizens are enough to get the answer within one percent.
+But in reality, all US elections are incredibly close; we already know in advance that both Democrats and Republicans are going to get around 50%. So we should perhaps get a bigger sample (or pool several past polls) to get an estimate that's correct within, let's say, $0.1\%$. The question is, roughly how many people should we sample to get this improved precision?
 
-But in reality, all US elections are incredibly close; we already know that both Democrats and Republicans are going to get around 50%. So we should perhaps get a bigger sample sufficient to estimate within $0.1\%$. The question is, roughly how many people should we sample to get this improved precision?
+1. about 10 000
+2. about 100 000
+3. about 1 000 000
 
-1. about 3000
-2. about 10000
-3. about 100000
+The correct answer is about 1 000 000. That's already a nontrivial proportion of the whole US! In general, if we want to be close up to an error of $\epsilon$, we need about $1/\epsilon^2$ samples. This means that getting better estimates becomes very expensive very soon! This is one reason why most polling estimates don't bother asking more than a few thousand people.
 
-The correct answer is about 100000. In fact, if we want to be close up to an error of $\epsilon$, we need about $1/\epsilon^2$ samples. This means that getting better estimates become very expensive very soon! This is one reason why most polling estimates don't bother asking more than about 1000 people - even in the most idealistic scenarios, you asking sufficient amount of people to bring your error bars below ~1% gets too costly.
-
-The question is: why $1/\epsilon^2$? We'll explore this in later sections. KL divergence measures how well one distribution matches another, which is why understanding its value for distributions (50%, 50%) and (50%+$\varepsilon$, 50%-$\varepsilon$) is going to shed a lot of light on this question! We will also use this as a jumping bridge to explain a bit more on how KL divergence is crucial in statistics.
+The question is: why $1/\epsilon^2$? We'll explore this in later sections. {/* KL divergence measures how well one distribution matches another, which is why understanding its value for distributions (50%, 50%) and (50%+$\varepsilon$, 50%-$\varepsilon$) is going to shed a lot of light on this question! We will also use this as a jumping bridge to explain a bit more on how KL divergence is crucial in statistics. */}
 
 ## How S&P looks like <a id="financial-mathematics"></a>
 
