@@ -78,40 +78,79 @@ For example, in our picture, three tails out of five flips point slightly toward
 
 ## Measuring evidence in bits
 
-Before we dive into what's going on in here, it will turn out to be easier to take logarithm of all numbers. So, let's rephrase our picture that way; since our logarithms are base-2, we will often sometimes talk about the exponents as _bits_.
+Before we dive into what's going on in here, it will turn out to be easier to take logarithm of all numbers. Our picture then becomes a kind of a balance sheet where we keep adding and subtracting the evidence.
 
 ![Repeated application of Bayes' theorem in log scale](01-kl_intro/repeated_bayes_log.png)
 
-Whenever we flip heads, instead of multiplying the posterior odds by $0.5$ and $0.4$, we think of adding $-1$ to the sum of evidence towards fair hypothesis, and adding $-1.32$ to the sum of evidence towards biased hypothesis. In the end, the difference is what counts, so we can also think of this as the fair hypothesis gaining $0.32$ bits of evidence against the biased hypothesis.
+Concretely: Whenever we flip heads, instead of multiplying the posterior odds by $0.5$ and $0.4$, we think of adding $-1$ to the sum of evidence towards fair hypothesis, and adding $-1.32$ to the sum of evidence towards biased hypothesis. In the end, the difference is what counts, so we can also think of this as the fair hypothesis gaining $0.32$ bits of evidence against the biased hypothesis.
 
 In the end, the fair hypothesis gained $0.32$ bits of evidence to its favor twice, but the biased hypothesis got $0.26$ bits three times. $3 \cdot 0.26 - 2 \cdot 0.32 \approx 0.15$, so the total evidence we accumulated is $0.15$ bits towards the coin being biased. We started with one bit of evidence towards the fair hypothesis, so our posterior is $0.85$ bits towards the fair hypothesis; this turns out to correspond to $64\%$ probability.
 
 ## Expected Distinguishing Evidence <a id="expected-distinguishing-evidence"></a>
 
-So, let's analyze what will happen after $N$ flips, for some large $N$.
+Let's say that in our scenario, the truth is that the coin is biased. To compute how quickly our hero learns, we can compute the expected number of bits she learns per flip. We've computed that heads means $-0.15$ bits towards the biased hypothesis and tails means $+0.32$ bits. So, on average we accumulate
 
-Presumably, as we keep flipping and updating our posterior by Bayes' theorem, the truth should get more and more likely. But how quickly? That's what KL measures.
+$$
+0.4 \cdot (-0.15) + 0.6 \cdot 0.32 \approx 0.03
+$$
 
-How quickly are we gathering evidence in favor of the coin being biased? To analyze this, it is simpler to take logarithms of the ratios so that we add rather than multiply. Instead of multiplying by the ratio $40/50$, we add $\log_2(40/50) \approx -0.32$ and for $60/50$ we add $\log_2(60/50) \approx 0.26$.
+bits per flip. What should we take from this number? It means that on average, we need about 33 flips to gain one bit of evidence. So, if we started with a prior of $2:1$ towards the coin being fair, after about 33 flips we will be about $1:1$. After another 33 flips, we will be $2:1$ towards the coin being biased. Then $4:1$ after another 33 flips and so on.
 
-Since $\log_2(1/2) = -1$, we can describe our three-flip experiment as follows: We started with $-1$ bit of prior evidence favoring the coin being biased. After the first flip, the evidence becomes $-1-0.32 = -1.32$ bits; after the second flip, $-1.32+0.26 = -1.06$ bits; and after the third, $-1.06+0.26 = -0.8$ bits.
+The actual odds that our Bayesian hero keeps computing are going to fluctuate around this expected behavior. But due to the law of large numbers, we can be sure that with high probability, the total number of bits accumulated by $N$ flips is going to be around $0.03 \cdot N$<Footnote>More precisely, it's around $0.03N \pm O(\sqrt{N})$. The reason why we took the logarithm of everything is that the law of large numbers holds if you keep summing stuff, but not if you keep multiplying stuff. </Footnote>
 
-You can explore this concept of evidence accumulation interactively with the simulator below:
+Try what happens yourself!
 
 <EvidenceAccumulationSimulator />
 
-In general, since the coin is biased, each flip yields $0.26$ bits of evidence with probability 0.6 and $-0.32$ bits with probability 0.4. The average evidence per flip is:
+## Finally, KL
+
+KL is simply the general formula for expected accumulated evidence. In the general case, you have two distributions $p$ and $q$. Let's say $p$ is the truth. Whenever we see the $i$-th outcome, we compare the two likelihoods of this outcome, $p_i$ and $q_i$, and update our posterior. Since we took the logarithm, this means adding $\log p_i$ bits to column counting the total evidence towards the truth, and $\log q_i$ bits to the other column. <Footnote> Of course, although I use $p$ to denote the truth, the Bayesian reasoner that applies the rules does not what the truth is. </Footnote>
+
+On average, each sample from the true distribution $p$ gives us
 
 $$
-0.6\cdot 0.26 - 0.4\cdot 0.32 \approx 0.03\text{ bits}
+D(p,q) = \sum_{i = 1}^n p_i \cdot \log \frac{p_i}{q_i}
 $$
 
-Notice that this expression is exactly the KL divergence computed for the true distribution $(0.6,0.4)$ and the model $(0.5,0.5)$.
+bits of evidence towards the truth.
 
-The positive average evidence indicates that, on average, each flip provides approximately 0.03 bits of evidence in favor of the true (biased) hypothesis. By the law of large numbers, if you flip the coin $n$ times, you would expect to accumulate about $0.03\cdot n$ bits of evidence.
+In case this number is smaller than $1$, you can think intuitively of $1/D(p,q)$ as "how many samples are needed to gain one bit of evidence towards the truth". Here, one bit of evidence means that true hypothesis got multiplied by $2$ in your posterior odds. This is not the same as saying that your posterior probability got multiplied by $2$. But it is the case that if you have unbalanced odds like $1:1000$, getting a bit of evidence towards the first hypothesis (it's now 2:1000) is almost the same as multiplying the corresponding probability by 2. And getting a bit of evidence towards the second hypothesis (it's now 1:2000) is almost the same as dividing the probability of the first hypothesis by 2.
 
-### Zooming Out: KL as Expected Evidence <a id="zooming-out-kl-as-expected-evidence"></a>
+Notice how KL divergence is about the evidence, not the prior. It tells you the rate (speed) of how your prior shifts, regardless of where you started.
+I am mentioning this because if you like to divide statistics into Bayesian and frequentist one (don't worry if you don't know what that means), our framing might suggest that we are firmly on the Bayesian-statistics ground. That's not the case, KL does not care about our petty divisions and is useful in both approaches.
 
-Zooming out, we can view KL divergence as the expected evidence obtained per observation in favor of the true hypothesis $p$ when comparing it against an incorrect model $q$. Here, $p_i$ in the KL formula represents the probability of the $i$th outcome under the true distribution, and the term $\log(p_i/q_i)$ represents the evidence for the true hypothesis when outcome $i$ occurs. The overall KL divergence is the expected evidence per trial, with the logarithm ensuring that evidence accumulates additively.
+## Wait a minute -- Can KL be negative?
 
-KL divergence is thus about the evidence, not the prior. This is why it is relevant in both classical (frequentist) and Bayesian statistics.
+If you plug in the same distribution twice into KL, you get
+
+$$
+D(p, p) = \sum_{i = 1}^n p_i \cdot \log \frac{p_i}{p_i} = 0
+$$
+
+because $\log 1 = 0$.
+
+This makes sense, you can never distinguish the truth from the truth. 🤷
+
+Fortunately, KL divergence is always nonnegative. We have not proved that, but I think we got a pretty strong intuition that if it were negative, something would be really, really messed up. Just imagine that you have two distributions $p$ and $q$, but as you keep sampling from $p$, you gradually keep believing more and more that the distribuition actually is ... $q$?
+
+There's also a short algebraic proof that KL is always nonnegative. Let me show it, although it's perhaps not as exciting.
+
+To prove that for any $p,q$ we have <Footnote>I've used the natural logarithm here to make the proof a bit shorter. Of course, the base of the logarithm does not really change the formula, it's more about in which units do we want to measure information. Computer scientists tend to like bits, physicists tend to like [nats](<https://en.wikipedia.org/wiki/Nat_(unit)>), whatever. </Footnote>
+
+$$
+D(p,q) =  \sum_{i = 1}^n p_i \cdot \ln \frac{p_i}{q_i}  \ge 0,
+$$
+
+we will estimate the expression $\log \frac{p_i}{q_i}$ inside the summation. Since we already know that the inequality is tight if all $p_i = q_i$, our estimate should be tight in this case. The best approximation of logarithm around $1$ is $\log (1+x) \le x$<Footnote>picture</Footnote>. We can use it like this:
+
+$$
+-D(p,q)
+= \sum_{i = 1}^n p_i \cdot \ln \frac{q_i}{p_i}
+\le \sum_{i = 1}^n p_i \cdot  \left( \frac{q_i}{p_i} - 1 \right)
+= \sum_{i = 1}^n q_i - p_i
+= 1 - 1 = 0
+$$
+
+## Application: Measuring distance from independence
+
+## What's next?
