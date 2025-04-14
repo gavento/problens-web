@@ -1,14 +1,24 @@
 # KL divergence & Bayes rule <a id="quantifying-information"></a>
 
-In the introduction, we presented several puzzles across different domains. Now, we'll begin to develop the conceptual toolkit needed to address these challenges. We'll focus on how to quantify the "information content" of probability distributions and measure the distance between them.
+In this chapter, we will explain what KL divergence is and how it all goes back to Bayes theorem. Also, we'll discuss [one of our riddles](mutual-information).
 
 ## Definition of KL Divergence <a id="definition-of-kl-divergence"></a>
 
-KL divergence measures how well a "true distribution" or empirical data $p$ is fitted by a model distribution $q$. The formula is:
+Here's what you need to know about KL divergence.
+
+<div>KL divergence measures how well a true distribution $p$ is fitted by a model distribution $q$.</div>
+
+This means that the function is something like a distance function measuring how two distributions are close to each other.
+
+The formula for discrete distributions $p_1, \dots, p_n$ and $q_1, \dots, q_n$ is:<Footnote> People typically use $D_{KL}(p||q)$ instead of $D(p,q)$. The two lines are there to emphasize how $D_{KL}(p||q) \not= D_{KL}(q||p)$. We will use the simplified, less cluttered, notation since we are going to talk about this function a lot. 🙂 </Footnote>
 
 $$
-D(p|q) = \sum p_i \log \frac{p_i}{q_i}
+D(p,q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}
 $$
+
+It's important to understand that the formula is not symmetrical -- in general, we don't have $D(p,q) = D(q,p)$. I want to stress that this is by design! KL measures how well a distribution $p$ is fitted by a model $q$. This is something asymmetrical, so we need an asymetrical formula, nothing to be ashamed for.
+
+In fact, the word _divergence_ is used for things like KL that behave kind of like distances<Footnote>Examples of distance functions: $\ell_1$ distance is defined as $d_1(p,q) = \sum_{i = 1}^n |p_i - q_i|$, and $\ell_2$ distance is defined as $d_2(p,q) = \sqrt{\sum_{i = 1}^n (p_i - q_i)^2}$. Both of these are symmetrical functions. </Footnote> but are not really symmetrical. <Footnote>More on that in [one of the last chapters](06-algorithms)</Footnote>
 
 The meaning behind this formula is that if you keep sampling from the true distribution $p$ and applying Bayes' theorem, KL tells you how quickly you are able to distinguish whether you are sampling from $p$ or $q$.
 

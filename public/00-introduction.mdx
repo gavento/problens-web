@@ -150,11 +150,17 @@ Here's a riddle that motivates a surprising number of recent algorithms in compu
 
 Our general investing strategy is this: We start with a uniform distribution $p_1^{(0)}, \dots, p_n^{(0)}, p_i^{(0)} = 1/n$ over the experts. At the beginning of each day, we sample an expert from this distribution and follow her advice. At the end of the day, we look at the losses $\ell_i^{(t)}$ and we update $p^{(t)}$ to $p^{(t+1)}$.
 
-The question is: how should we update?
+The question is: how should we update? There are a few plausible strategies:
 
-Answer 1: Choose small $\varepsilon$ and do gradient descent: $p^{(t+1)} = p^{(t)} - \eps \cdot \ell_i^{(t)}$; normalize $p^{(t+1)}$ afterwards.
-Answer 2: Choose small $\varepsilon$ and do "multiplicative" gradient descent: $p^{(t+1)} = p^{(t)} \cdot e^{- \eps \cdot \ell_i^{(t)}}$; normalize $p^{(t+1)}$ afterwards.
-Answer 3: Just follow the best guy so far: $p^{(t+1)}_i = 1$ for the guy $i$ with minimum $\ell_i^{(1)} + \ell_i^{(2)} + \dots + \ell_i^{(t)}$.
+"Gradient descent": Choose small $\varepsilon$ and do gradient descent: $p^{(t+1)} = p^{(t)} - \eps \cdot \ell_i^{(t)}$; normalize $p^{(t+1)}$ afterwards.
+"Multiplicative gradient descent: Choose small $\varepsilon$ and do "multiplicative" gradient descent: $p^{(t+1)} = p^{(t)} \cdot e^{- \eps \cdot \ell_i^{(t)}}$; normalize $p^{(t+1)}$ afterwards.
+"Follow the leader": Just follow the best guy so far: $p^{(t+1)}_i = 1$ for the guy $i$ with minimum $\ell_i^{(1)} + \ell_i^{(2)} + \dots + \ell_i^{(t)}$.
+
+What's the best strategy?
+
+Answer 1
+Answer 2
+Answer 3
 
 Although all strategies are reasonable, the one that turns out to be the best is 2. The algorithm is called multiplicative weights update and its suspiciously similar to gradient descent. We will understand the connection between the two algorithms using KL divergence.
 
