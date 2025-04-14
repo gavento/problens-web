@@ -56,7 +56,7 @@ $$
 = \frac{P(fair)}{P(biased)} \cdot \frac{P(flipped heads | fair)}{P(flipped heads | biased)}
 $$
 
-You can check that the two formulas are the same by yourself. To understand this rephrasing, it's good to think in terms of [odds](https://en.wikipedia.org/wiki/Odds). This is how people in the gambling industry sometimes use probabilities: instead of saying $1/3$ probability of this and $2/3$ of that, they say that odds are 1:2. Odds are like probabilities, but they don't sum up to one -- odds 1:2 are the same as 2:4. This is actually sometimes useful, if you understand implicitly that probabilities have to be normalized, but don't want to bother writing it in your equations.
+You can check that the two formulas are the same by yourself. <Footnote>To see this, use the first formula both for $P(fair | flipped heads)$ and $P(biased | flipped heads)$, and divided them. </Footnote> To understand this rephrasing, it's good to think in terms of [odds](https://en.wikipedia.org/wiki/Odds). This is how people in the gambling industry sometimes use probabilities: instead of saying $1/3$ probability of this and $2/3$ of that, they say that odds are 1:2. Odds are like probabilities, but they don't sum up to one -- odds 1:2 are the same as 2:4. This is actually sometimes useful, if you understand implicitly that probabilities have to be normalized, but don't want to bother writing it in your equations.
 
 Using odds, the Bayes' formula now makes a plenty of sense if you ask me! It's just this:
 
@@ -64,30 +64,19 @@ Using odds, the Bayes' formula now makes a plenty of sense if you ask me! It's j
 
 That is, we write the prior odds $P(fair) : P(biased)$. Then we write down the ratio $P(flipped heads | fair) : P(flipped heads | biased)$ of how likely heads are under both hypotheses. Probability expressions of the type $P(something happens | hypothesis)$ are called _likelihoods_, so this is also called the likelihood ratio.
 
-These are the two relevant parts of the equation. We do the simplest thing possible with them -- multiply them -- to arrive at the posterior $P(fair | flipped heads) : P(biased | flipped heads)$ .
+These are the two relevant parts of the equation. Bayes' theorem says we should do the simplest thing possible with them -- multiply them -- to arrive at the posterior $P(fair | flipped heads) : P(biased | flipped heads)$ .
 
 ## Expected Distinguishing Evidence <a id="expected-distinguishing-evidence"></a>
 
-One way to understand KL divergence is through the lens of Bayesian inference. When we observe data, we can use it to distinguish between competing hypotheses. KL divergence quantifies how much evidence we gain, on average, from each observation.
+## Keep flipping
 
-### Bayes' Theorem Review <a id="bayes-theorem-review"></a>
+KL divergence is about what happens if we keep flipping the coin. That is, what happens if our Bayesian hero keeps flipping a coin and after each flip, she applies Bayes' theorem to update her belief? The picture you should have in mind is this one:
 
-First, a quick recap of Bayes' theorem.
+![Repeated application of Bayes' theorem](01-kl_intro/repeated_bayes.png)
 
-Suppose you have a coin and you consider two hypotheses:
+As our hero keeps flipping, she keeps multiplying her posterior by one of the two likelihood ratios, $5/4$ for each head, and $5/6$ for each tail.
 
-1. The coin is biased: it shows heads with probability 0.4 and tails with probability 0.6.
-2. The coin is fair: it shows heads with probability 0.5 and tails with probability 0.5.
-
-Assume that the coin is actually biased (i.e., hypothesis 1 is true). However, initially you believe the coin is probably fair, assigning probabilities $2/3$ to it being fair and $1/3$ to it being biased (or odds $1:2$ for biased to fair).
-
-Now, note that under hypothesis 1 (biased), the probability of heads is 0.4, while under hypothesis 2 (fair) it is 0.5. The ratio of these probabilities is $0.4:0.5$, or equivalently $4:5$. Bayes' theorem tells us to update your odds by multiplying the prior odds by this likelihood ratio:
-
-$$
-1:2 \quad \times \quad 4:5 \quad = \quad 4:10 \quad = \quad 2:5
-$$
-
-This corresponds to a posterior probability of about 29% that the coin is biased.
+Presumably, as we keep flipping and updating our posterior by Bayes' theorem, the truth should get more and more likely. But how quickly? That's what KL measures.
 
 You can gather more evidence by flipping the coin a few more times. Suppose you flip the coin twice more and get more tails. Using Bayes' theorem, you multiply the likelihood ratios for each flip:
 
