@@ -31,6 +31,41 @@ Below, you can play with two distributions and see how different measures of dis
 
 [TODO widget s KL, l1, l2 -- ]
 
+## Bayes' theorem
+
+Before we dive into our KL formula, a short recap of Bayes' theorem. This is a theorem about how to change your probabilities in face of evidence. Here's an example:
+
+You have a coin which may or may not be biased. For simplicity, let's say there are only two options: either the coins is fair -- heads/tails with probabilities 50\%, 50\% -- or it gives heads with 40\% and otherwise tails with 60\% probability.
+
+To apply Bayes' theorem, you need a _prior_ on how likely each possibility is. Let's say we choose 50\% fair, and 50\% biased.
+
+To gain evidence, you flip a coin; let's say you got Heads. This is an evidence towards the coin being fair, as the other case has smaller heads-probability. The question is, how to compute the new, _posterior_ probability that your coin is fair?
+
+Bayes' theorem can do that. The formula for it is typically written down as follows:
+
+$$
+P(fair | flipped heads) = \frac{P(flipped heads | fair) \cdot P(fair)}{P(flipped heads)}
+$$
+
+This is not rocket science -- if you multiply both sides by $P(flipped heads)$, both sides are just a different way of writing down the definition of $P(fair \cap flipped heads)$.
+
+But I like to think of it a bit differently and in my head, I write it as this:
+
+$$
+\frac{P(fair | flipped heads)}{P(biased | flipped heads)}
+= \frac{P(fair)}{P(biased)} \cdot \frac{P(flipped heads | fair)}{P(flipped heads | biased)}
+$$
+
+You can check that the two formulas are the same by yourself. To understand this rephrasing, it's good to think in terms of [odds](https://en.wikipedia.org/wiki/Odds). This is how people in the gambling industry sometimes use probabilities: instead of saying $1/3$ probability of this and $2/3$ of that, they say that odds are 1:2. Odds are like probabilities, but they don't sum up to one -- odds 1:2 are the same as 2:4. This is actually sometimes useful, if you understand implicitly that probabilities have to be normalized, but don't want to bother writing it in your equations.
+
+Using odds, the Bayes' formula now makes a plenty of sense if you ask me! It's just this:
+
+![Bayes' theorem using odds](01-kl_intro/bayes_theorem.png)
+
+That is, we write the prior odds $P(fair) : P(biased)$. Then we write down the ratio $P(flipped heads | fair) : P(flipped heads | biased)$ of how likely heads are under both hypotheses. Probability expressions of the type $P(something happens | hypothesis)$ are called _likelihoods_, so this is also called the likelihood ratio.
+
+These are the two relevant parts of the equation. We do the simplest thing possible with them -- multiply them -- to arrive at the posterior $P(fair | flipped heads) : P(biased | flipped heads)$ .
+
 ## Expected Distinguishing Evidence <a id="expected-distinguishing-evidence"></a>
 
 One way to understand KL divergence is through the lens of Bayesian inference. When we observe data, we can use it to distinguish between competing hypotheses. KL divergence quantifies how much evidence we gain, on average, from each observation.
