@@ -6,39 +6,30 @@ In this chapter, we will explain what KL divergence is and how it all goes back 
 
 Here's what you need to know about KL divergence.
 
-<div>KL divergence measures how well a true distribution $p$ is fitted by a model distribution $q$.</div>
+<div>KL divergence measures how well a distribution $p$ is fitted by a model distribution $q$.</div>
 
 This means that the function is something like a distance function measuring how two distributions are close to each other.
 
-The formula for discrete distributions $p_1, \dots, p_n$ and $q_1, \dots, q_n$ is:<Footnote> People typically use $D_{KL}(p||q)$ instead of $D(p,q)$. The two lines are there to emphasize how $D_{KL}(p||q) \not= D_{KL}(q||p)$. We will use the simplified, less cluttered, notation since we are going to talk about this function a lot. 🙂 </Footnote>
+The formula for discrete distributions $p_1, \dots, p_n$ and $q_1, \dots, q_n$ is:<Footnote> People typically use $D_{KL}(p||q)$ instead of $D(p,q)$. The two vertical lines are there to emphasize how $D_{KL}(p||q) \not= D_{KL}(q||p)$. We will use the simplified, less cluttered, notation since we are going to talk about this function a lot. 🙂 </Footnote>
 
 $$
 D(p,q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}
 $$
 
-It's important to understand that the formula is not symmetrical -- in general, we don't have $D(p,q) = D(q,p)$. I want to stress that this is by design! KL measures how well a distribution $p$ is fitted by a model $q$. This is something asymmetrical, so we need an asymetrical formula, nothing to be ashamed for.
+The meaning behind the formula is that if you keep sampling from the true distribution $p$, KL tells you how quickly you are able to tell that you indeed sample from $p$, and not from some other distribution $q$. If it is small, this means that $q$ is a good, hard-to-distinguish model of $p$.
 
-In fact, the word _divergence_ is used for things like KL that behave kind of like distances<Footnote>Examples of distance functions: $\ell_1$ distance is defined as $d_1(p,q) = \sum_{i = 1}^n |p_i - q_i|$, and $\ell_2$ distance is defined as $d_2(p,q) = \sqrt{\sum_{i = 1}^n (p_i - q_i)^2}$. Both of these are symmetrical functions. </Footnote> but are not really symmetrical. <Footnote>More on that in [one of the last chapters](06-algorithms)</Footnote>
+I will try to explain this more precisely in this chapter.
 
-The meaning behind this formula is that if you keep sampling from the true distribution $p$ and applying Bayes' theorem, KL tells you how quickly you are able to distinguish whether you are sampling from $p$ or $q$.
+## Asymmetry
 
-KL divergence is a measure that takes two distributions as input: the true distribution $p$ (represented by $p_1, \dots, p_n$) and the model distribution $q$ (represented by $q_1, \dots, q_n$), with both summing to one.
+It's important to understand that the KL formula is not symmetrical -- in general, we don't have $D(p,q) = D(q,p)$. I want to stress that this is by design! KL measures how well a distribution $p$ is fitted by a model $q$. This is something asymmetrical, so we need an asymetrical formula, nothing to be ashamed for.
 
-KL divergence is defined as:
+In fact, the word _divergence_ is used for things like KL that behave kind of like distances but are not really symmetrical. <Footnote>More on that in [one of the last chapters](06-algorithms)</Footnote>
+KL stands for Kullback and Leibler, two clever guys who defined it in 50's.
 
-$$
-KL(p, q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}
-$$
+Below, you can play with two distributions and see how different measures of distance behave. I want you to see how KL behaves differently than simple distance functions like $\ell_1$-distance<Footnote> $d_1(p,q) = \sum_{i = 1}^n |p_i - q_i|$</Footnote>. If $p_i > 0$ and $q_i = 0$, KL divergence becomes infinite! We will understand why in a minute, but intuitively, it's because if you sampled an item $i$ from an unknown distribution, you can now be 100\% sure that the distribution is not $q$ -- you got infinitely many bits of evidence by that sample.
 
-What is the intuition behind this formula? Let's explore a few perspectives to build a deeper understanding.
-
-### Asymmetry in KL Divergence <a id="asymmetry-in-kl-divergence"></a>
-
-First, notice that there is a certain asymmetry between $p$ and $q$. If you push the value $q_i$ to zero for some $i$ where $p_i > 0$, the KL divergence becomes infinite. This reflects the fact that if your model predicts an event is impossible and it occurs, your model is infinitely bad. On the other hand, if $p_i=0$ and $q_i>0$, nothing dramatic happens—being prepared for an event that never occurs only slightly detracts from your performance.
-
-Sometimes, KL divergence is introduced as "something like a distance," but unfortunately it is not symmetric, so it is not a true distance metric. In fact, the asymmetry is important because the two distributions play different roles: $p$ is the true distribution, and $q$ is our model for it.
-
-Let's now discuss two mathematical intuitions for the formula.
+[TODO widget s KL, l1, l2 -- ]
 
 ## Expected Distinguishing Evidence <a id="expected-distinguishing-evidence"></a>
 
