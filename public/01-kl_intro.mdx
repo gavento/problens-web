@@ -96,9 +96,9 @@ $$
 
 bits per flip. What should we take from this number? It means that on average, we need about 33 flips to gain one bit of evidence. So, if we started with a prior of $2:1$ towards the coin being fair, after about 33 flips we will be about $1:1$. After another 33 flips, we will be $2:1$ towards the coin being biased. Then $4:1$ after another 33 flips and so on.
 
-The actual odds that our Bayesian hero keeps computing are going to fluctuate around this expected behavior. But due to the law of large numbers, we can be sure that with high probability, the total number of bits accumulated by $N$ flips is going to be around $0.03 \cdot N$<Footnote>More precisely, it's around $0.03N \pm O(\sqrt{N})$. The reason why we took the logarithm of everything is that the law of large numbers holds if you keep summing stuff, but not if you keep multiplying stuff. </Footnote>
+The actual odds that our Bayesian hero keeps computing are going to fluctuate around this expected behavior. But due to the law of large numbers, we can be sure that with high probability, the total number of bits accumulated by $N$ flips is going to be around $0.03 \cdot N$. <Footnote> More precisely, it's around $0.03N \pm O(\sqrt{N})$. The reason why we took the logarithm of everything is that the law of large numbers holds if you keep summing stuff, but not if you keep multiplying stuff. </Footnote>
 
-Try what happens yourself!
+Try what happens yourself! It could be interesting to try some special cases like $50\%$ vs $51\%$, to get some intuition about how long it make take until the law of large numbers kicks in.
 
 <EvidenceAccumulationSimulator />
 
