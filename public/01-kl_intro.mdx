@@ -66,8 +66,6 @@ That is, we write the prior odds $P(fair) : P(biased)$. Then we write down the r
 
 These are the two relevant parts of the equation. Bayes' theorem says we should do the simplest thing possible with them -- multiply them -- to arrive at the posterior $P(fair | flipped heads) : P(biased | flipped heads)$ .
 
-## Expected Distinguishing Evidence <a id="expected-distinguishing-evidence"></a>
-
 ## Keep flipping
 
 KL divergence is about what happens if we keep flipping the coin. That is, what happens if our Bayesian hero keeps flipping a coin and after each flip, she applies Bayes' theorem to update her belief? The picture you should have in mind is this one:
@@ -76,17 +74,23 @@ KL divergence is about what happens if we keep flipping the coin. That is, what 
 
 As our hero keeps flipping, she keeps multiplying her posterior by one of the two likelihood ratios, $5/4$ for each head, and $5/6$ for each tail.
 
+For example, in our picture, three tails out of five flips point slightly towards the biased hypothesis. So, after we normalize the posterior odds to probabilities, we find out that the original prior of about $67\%$ for the coin being fair dropped by $3\%$. Clearly, we need much more flips to find out what the truth is.
+
+## Measuring evidence in bits
+
+Before we dive into what's going on in here, it will turn out to be easier to take logarithm of all numbers. So, let's rephrase our picture that way; since our logarithms are base-2, we will often sometimes talk about the exponents as _bits_.
+
+![Repeated application of Bayes' theorem in log scale](01-kl_intro/repeated_bayes_log.png)
+
+Whenever we flip heads, instead of multiplying the posterior odds by $0.5$ and $0.4$, we think of adding $-1$ to the sum of evidence towards fair hypothesis, and adding $-1.32$ to the sum of evidence towards biased hypothesis. In the end, the difference is what counts, so we can also think of this as the fair hypothesis gaining $0.32$ bits of evidence against the biased hypothesis.
+
+In the end, the fair hypothesis gained $0.32$ bits of evidence to its favor twice, but the biased hypothesis got $0.26$ bits three times. $3 \cdot 0.26 - 2 \cdot 0.32 \approx 0.15$, so the total evidence we accumulated is $0.15$ bits towards the coin being biased. We started with one bit of evidence towards the fair hypothesis, so our posterior is $0.85$ bits towards the fair hypothesis; this turns out to correspond to $64\%$ probability.
+
+## Expected Distinguishing Evidence <a id="expected-distinguishing-evidence"></a>
+
+So, let's analyze what will happen after $N$ flips, for some large $N$.
+
 Presumably, as we keep flipping and updating our posterior by Bayes' theorem, the truth should get more and more likely. But how quickly? That's what KL measures.
-
-You can gather more evidence by flipping the coin a few more times. Suppose you flip the coin twice more and get more tails. Using Bayes' theorem, you multiply the likelihood ratios for each flip:
-
-$$
-1:2,\quad 40:50,\quad 60:50,\quad 60:50 \quad \Longrightarrow \quad 144:250
-$$
-
-which corresponds to about a 37% probability that the coin is biased.
-
-### Measuring Evidence in Bits <a id="measuring-evidence-in-bits"></a>
 
 How quickly are we gathering evidence in favor of the coin being biased? To analyze this, it is simpler to take logarithms of the ratios so that we add rather than multiply. Instead of multiplying by the ratio $40/50$, we add $\log_2(40/50) \approx -0.32$ and for $60/50$ we add $\log_2(60/50) \approx 0.26$.
 
