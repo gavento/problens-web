@@ -152,3 +152,21 @@ $$
 = \sum_{i = 1}^n q_i - p_i
 = 1 - 1 = 0
 $$
+
+## Application: Measuring distance from independence <a id="information-theory"></a>
+
+Let's solve one of our riddles: [How to measure the distance from independence](00-introduction/information-theory)?
+
+Remember, we have three possible joint distributions:
+
+![Which table is the "most" independent?](00-introduction/independence.png)
+
+All of them have the same marginal distributions, i.e., the row and column sums are the same. If the two marginal distributions were independent, the table would look like this:
+
+![Independent distributions](00-introduction/independence2.png)
+
+Which one of our three distributions is the "most" independent?
+
+To solve this, we need to find a good definition of how to measure the disimilarity between one of the tables and the idealized, independent table. There are all kinds of formulas that we could try<Footnote>To give one example, in practice, this is often done by computing [correlation](https://en.wikipedia.org/wiki/Correlation). Unfortunately, that's not a super satisfactory solution. First, correlation can only be computed for random variables, i.e., distribution over numbers and not general distributions over {☀️, ☁️}, so it's unclear how to apply it to our case. Also, zero correlation does not imply that the two variables are independent. </Footnote>, but KL divergence really begs to be used here. Remember, to use KL, we have to have two distributions. One of them is the "truth" -- in our case, one of the three tables. The second one is the "model" -- in our case, it's the idealized independent table. Computing the KL between the two intuitively tells us how well the model match the reality. More technically, it tells us, how long it takes a Bayesian reasoner to find out that the data are really coming from the actual distribution, and not the model one.
+
+## What's next?
