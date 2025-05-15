@@ -51,12 +51,12 @@ This is not rocket science -- if you multiply both sides by $P(flipped heads)$, 
 
 But I like to think of it a bit differently and in my head, I write it as this:
 
-$$
+\begin{equation}
 \frac{P(fair | flipped heads)}{P(biased | flipped heads)}
 = \frac{P(fair)}{P(biased)} \cdot \frac{P(flipped heads | fair)}{P(flipped heads | biased)}
-$$
+\end{equation}
 
-You can check that the two formulas are the same by yourself. <Footnote>To see this, use the first formula both for $P(fair | flipped heads)$ and $P(biased | flipped heads)$, and divided them. </Footnote> To understand this rephrasing, it's good to think in terms of [odds](https://en.wikipedia.org/wiki/Odds). This is how people in the gambling industry sometimes use probabilities: instead of saying $1/3$ probability of this and $2/3$ of that, they say that odds are 1:2. Odds are like probabilities, but they don't sum up to one -- odds 1:2 are the same as 2:4. This is actually sometimes useful, if you understand implicitly that probabilities have to be normalized, but don't want to bother writing it in your equations.
+You can check that the two formulas are the same by yourself. <Footnote>To see this, use the first formula both for $P(fair | flipped heads)$ and $P(biased | flipped heads)$, and divided them. </Footnote> To understand this rephrasing, it's good to think in terms of [odds](https://en.wikipedia.org/wiki/Odds). This is how people in the gambling industry sometimes use probabilities: instead of saying $1/3$ probability of this and $2/3$ of that, they say that odds are 1:2. Odds are like probabilities, but they don't sum up to one -- odds 1:2 are the same as 2:4. This way of thinking is actually very useful: Often, you don't want to bother thinking about how to normalize probabilities, so you just think in terms of odds.
 
 Using odds, the Bayes' formula now makes a plenty of sense if you ask me! It's just this:
 
