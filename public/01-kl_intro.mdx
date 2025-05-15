@@ -51,20 +51,20 @@ This is not rocket science -- if you multiply both sides by $P(flipped heads)$, 
 
 But I like to think of it a bit differently and in my head, I write it as this:
 
-\begin{equation}
+$$
 \frac{P(fair | flipped heads)}{P(biased | flipped heads)}
 = \frac{P(fair)}{P(biased)} \cdot \frac{P(flipped heads | fair)}{P(flipped heads | biased)}
-\end{equation}
+$$
 
 You can check that the two formulas are the same by yourself. <Footnote>To see this, use the first formula both for $P(fair | flipped heads)$ and $P(biased | flipped heads)$, and divided them. </Footnote> To understand this rephrasing, it's good to think in terms of [odds](https://en.wikipedia.org/wiki/Odds). This is how people in the gambling industry sometimes use probabilities: instead of saying $1/3$ probability of this and $2/3$ of that, they say that odds are 1:2. Odds are like probabilities, but they don't sum up to one -- odds 1:2 are the same as 2:4. This way of thinking is actually very useful: Often, you don't want to bother thinking about how to normalize probabilities, so you just think in terms of odds.
 
-Using odds, the Bayes' formula now makes a plenty of sense if you ask me! It's just this:
+Using odds, the Bayes' formula from equation ?? now makes a plenty of sense! You just have to multiply two ratios:
 
 ![Bayes' theorem using odds](01-kl_intro/bayes_theorem.png)
 
-That is, we write the prior odds $P(fair) : P(biased)$. Then we write down the ratio $P(flipped heads | fair) : P(flipped heads | biased)$ of how likely heads are under both hypotheses. Probability expressions of the type $P(something happens | hypothesis)$ are called _likelihoods_, so this is also called the likelihood ratio.
+That is, to compute the posterior odds, we multiply two things. First, the prior odds $P(fair) : P(biased)$. Second, the ratio $P(flipped heads | fair) : P(flipped heads | biased)$ of how likely heads are under each hypothesis. Probability expressions of the type $P(something happens | hypothesis)$ are called _likelihoods_, so this is also called the likelihood ratio.
 
-These are the two relevant parts of the equation. Bayes' theorem says we should do the simplest thing possible with them -- multiply them -- to arrive at the posterior $P(fair | flipped heads) : P(biased | flipped heads)$ .
+Bayes' theorem simply says we should do the simplest thing possible with the two relevant ratios -- multiply them -- to arrive at the posterior odds $P(fair | flipped heads) : P(biased | flipped heads)$ .
 
 ## Keep flipping
 
@@ -88,17 +88,20 @@ In the end, the fair hypothesis gained $0.32$ bits of evidence to its favor twic
 
 ## Expected Distinguishing Evidence <a id="expected-distinguishing-evidence"></a>
 
-Let's say that in our scenario, the truth is that the coin is biased. To compute how quickly our hero learns, we can compute the expected number of bits she learns per flip. We've computed that heads means $-0.15$ bits towards the biased hypothesis and tails means $+0.32$ bits. So, on average we accumulate
+e
+Let's say that in our scenario, the coin happens to be biased. To compute how quickly our Bayesian hero learns this fact, we can compute the expected number of bits she learns per flip. We've computed that heads means $0.26$ bits towards the fair hypothesis and tails means $0.32$ bits towards the biased hypothesis. So, on average, each flip we accumulate
 
 $$
-0.4 \cdot (-0.15) + 0.6 \cdot 0.32 \approx 0.03
+0.4 \cdot (-0.32) + 0.6 \cdot 0.26 \approx 0.03
 $$
 
-bits per flip. What should we take from this number? It means that on average, we need about 33 flips to gain one bit of evidence. So, if we started with a prior of $2:1$ towards the coin being fair, after about 33 flips we will be about $1:1$. After another 33 flips, we will be $2:1$ towards the coin being biased. Then $4:1$ after another 33 flips and so on.
+bits of evidence towards the true hypothesis. This number is called KL divergence between the (true) hypothesis of 40\% / 60\% and the (model) hypothesis of 50\% / 50 \%.
 
-The actual odds that our Bayesian hero keeps computing are going to fluctuate around this expected behavior. But due to the law of large numbers, we can be sure that with high probability, the total number of bits accumulated by $N$ flips is going to be around $0.03 \cdot N$. <Footnote> More precisely, it's around $0.03N \pm O(\sqrt{N})$. The reason why we took the logarithm of everything is that the law of large numbers holds if you keep summing stuff, but not if you keep multiplying stuff. </Footnote>
+What should we take from this number? It means that on average, we need about 33 flips to gain one bit of evidence. So, if we started with a prior of $2:1$ towards the coin being fair, after about 33 flips we will be about $1:1$. After another 33 flips, we will be $2:1$ towards the coin being biased. Then $4:1$ after another 33 flips and so on.
 
-Try what happens yourself! It could be interesting to try some special cases like $50\%$ vs $51\%$, to get some intuition about how long it make take until the law of large numbers kicks in.
+The actual odds that our Bayesian hero keeps computing are going to fluctuate around this expected behavior. However, due to the law of large numbers, we know that as the number of flips $N$ gets larger, with high probability, the total number of accumulated bits is going to be around $0.03 \cdot N$. <Footnote> More precisely, it's around $0.03N \pm O(\sqrt{N})$. The fundamental reason why we took the logarithm of probabilities and keep talking about bits is that the law of large numbers holds if you keep summing stuff, but not if you keep multiplying stuff. </Footnote>
+
+Try what happens yourself in the widget!
 
 <EvidenceAccumulationSimulator />
 
