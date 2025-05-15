@@ -105,28 +105,23 @@ We will see how KL divergence explains why log-score is natural and what it stan
 
 ## Distance from independence <a id="information-theory"></a>
 
-Independence is one of the most important probability concepts. Here's a recap: think of two distributions $p_1$ and $p_2$. Maybe $p_1$ is over tomorrow's weather -- $\{\text{good}, \text{bad}\}$, and $p_2$ is over how I am going to commute to work -- $\{\text{walk}, \text{bike}, \text{bus}\}$. A joint distribution is a table where we put a probability for each pair of options. For example, here are three possible joint distributions for three different people:
+Independence is one of the most important probability concepts. Here's a recap: think of two distributions $p_1$ and $p_2$. Maybe $p_1$ describes the weather on a given day -- the options are ☀️, ☁️, and $p_2$ describes how I commute to work -- it's one of 🚶‍♀️, 🚲, 🚌. A joint distribution is a table where we put a probability for each pair of options. For example, here are three possible joint distributions for three different people:
 
-[todo]
+![Which table is the "most" independent?](00-introduction/independence.png)
 
 All three above distribution have the same _marginals_; all correspond to 70% of good weather, and 20%/30%/50% for walk/bike/bus.
 
-Two distributions are independent, if the joint distribution is a "product" of the two marginal distributions, as below:
+Two distributions are independent, if the joint distribution is a "product" of the two marginal distributions. Here's how independent distribution looks like:
 
-[todo]
+![Independent distributions](00-introduction/independence2.png)
 
-Clearly, none of our three examples correspond to independent distribution. But the question is, which table is the "closest" to being independent?
+Which of our three tables is the "closest" to being independent?
 
 1. Table 1
 2. Table 2
 3. Table 3
 
-[TODO posunout dál, irelevantní]
-Of course, to answer this question, we first have to come up with a suitable function that measures distance from independence. In practice, this is often done by computing [correlation](https://en.wikipedia.org/wiki/Correlation), but that's not a super satisfactory solution. First, it works only for random variables<Footnote>I.e., distribution over numbers</Footnote> so it's unclear how to apply it to our case. Also, dependent random variables can have zero correlation, which is weird.
-
-The hard part is to come up with a good definition of how far a joint distribution is from being independent. A good way of measuring that is a so-called mutual information. It intuitively measures how much we learn about the value of one distribution, if we learn the value of the other one. In our case, it tells us that the ?? example is closest to being independent.
-
-We will see how we can come up with the definition of mutual information using KL, and we will understand what the definition stands for.
+We will see that this can be measured using a so-called mutual information, a notion which is super important in the field of information theory and which is just a special case of KL divergence.
 
 ## Machine Learning mess <a id="machine-learning"></a>
 

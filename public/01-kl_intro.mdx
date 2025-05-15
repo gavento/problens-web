@@ -155,4 +155,31 @@ $$
 
 ## Application: Measuring distance from independence
 
+Let's solve one of our riddles: [How to measure the distance from independence](00-introduction/information-theory)?
+
+Remember, we have three possible joint distributions:
+
+![Which table is the "most" independent?](00-introduction/independence.png)
+
+All of them have the same marginal distributions, i.e., the row and column sums are the same. If the two marginal distributions were independent, the table would look like this:
+
+![Independent distributions](00-introduction/independence2.png)
+
+Which one of our three distributions is the "most" independent?
+
+To solve this, we need to find a good definition of how to measure the disimilarity between one of the tables and the idealized, independent table. There are all kinds of formulas that we could try<Footnote>
+To give one example, in practice, this is often done by computing [correlation](https://en.wikipedia.org/wiki/Correlation). Unfortunately, that's not a super satisfactory solution. First, correlation can only be computed for random variables, i.e., distribution over numbers and not general distributions over {☀️, ☁️}, so it's unclear how to apply it to our case. Also, zero correlation does not imply that the two variables are independent. </Footnote>, but KL divergence really begs to be used here. Remember, to use KL, we have to have two distributions. One of them is the "truth" -- in our case, one of the three tables. The second one is the "model" -- in our case, it's the idealized independent table. Computing the KL between the two intuitively tells us how well the model match the reality. More technically, it tells us, how long it takes a Bayesian reasoner to find out that the data are really coming from the actual distribution, and not the model one.
+
+The KL divergences turns to be as follows:
+
+$$
+D(table 1, independent table) \approx 0.40
+D(table 2, independent table) \approx 0.04
+D(table 3, independent table) \approx 0.21
+$$
+
+In particular, the second table is "closest" to being independent.
+
+This computation can be done whenever you have a joint distribution $(p_1, p_2)$. The KL divergence between $(p_1, p_2)$ and the independent distribution $p_1 \otimes p_2$ is called [mutual information](http://en.wikipedia.org/wiki/Mutual_information) between $p_1$ and $p_2$ and it's a crucial quantity in e.g. information and coding theory. You should think about it as the most natural function that measures how dependent two distributions $p_1$ and $p_2$ are. More technically, it tells you how many bits on average you learn about $p_2$ if you learn the outcome of $p_1$ <Footnote> Or, symmetrically, how many bits you learn about $p_1$ if you learn the outcome of $p_2$. </Footnote>
+
 ## What's next?
