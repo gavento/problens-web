@@ -4,7 +4,7 @@ In this chapter, we will explain what KL divergence is and how it all goes back 
 
 ## Definition of KL Divergence <a id="definition-of-kl-divergence"></a>
 
-Here's what you need to know about KL divergence.
+Here's what you need to know about KL divergence. <Footnote>KL stands for Kullback and Leibler, two clever guys who defined it in 1950's, very soon after Claude Shannon's [super important paper](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication) in which he defined a closely related notion of entropy.</Footnote>
 
 <div>KL divergence measures how well a distribution $p$ is fitted by a model distribution $q$.</div>
 
@@ -16,20 +16,9 @@ $$
 D(p,q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}
 $$
 
-The meaning behind the formula is that if you keep sampling from the true distribution $p$, KL tells you how quickly you are able to tell that you indeed sample from $p$, and not from some other distribution $q$. If it is small, this means that $q$ is a good, hard-to-distinguish model of $p$.
+The meaning behind the formula is that if you keep sampling from the true distribution $p$, KL divergence tells you how quickly you are able to tell that you indeed sample from $p$, and not from some other distribution $q$. If it is small, this means that $q$ is a good, hard-to-distinguish model of $p$.
 
 I will try to explain this more precisely in this chapter.
-
-## Asymmetry
-
-It's important to understand that the KL formula is not symmetrical -- in general, we don't have $D(p,q) = D(q,p)$. I want to stress that this is by design! KL measures how well a distribution $p$ is fitted by a model $q$. This is something asymmetrical, so we need an asymetrical formula, nothing to be ashamed for.
-
-In fact, the word _divergence_ is used for things like KL that behave kind of like distances but are not really symmetrical. <Footnote>More on that in [one of the last chapters](06-algorithms)</Footnote>
-KL stands for Kullback and Leibler, two clever guys who defined it in 50's.
-
-Below, you can play with two distributions and see how different measures of distance behave. I want you to see how KL behaves differently than simple distance functions like $\ell_1$-distance<Footnote> $d_1(p,q) = \sum_{i = 1}^n |p_i - q_i|$</Footnote>. If $p_i > 0$ and $q_i = 0$, KL divergence becomes infinite! We will understand why in a minute, but intuitively, it's because if you sampled an item $i$ from an unknown distribution, you can now be 100\% sure that the distribution is not $q$ -- you got infinitely many bits of evidence by that sample.
-
-[TODO widget s KL, l1, l2 -- ]
 
 ## Bayes' theorem
 
@@ -105,7 +94,7 @@ Try what happens yourself in the widget!
 
 <EvidenceAccumulationSimulator />
 
-## Finally, KL
+## KL divergence, in general
 
 KL is simply the general formula for expected accumulated evidence. In the general case, you have two distributions $p$ and $q$. Let's say $p$ is the truth. Whenever we see the $i$-th outcome, we compare the two likelihoods of this outcome, $p_i$ and $q_i$, and update our posterior. Since we took the logarithm, this means adding $\log p_i$ bits to column counting the total evidence towards the truth, and $\log q_i$ bits to the other column. <Footnote> Of course, although I use $p$ to denote the truth, the Bayesian reasoner that applies the rules does not what the truth is. </Footnote>
 
@@ -121,6 +110,16 @@ In case this number is smaller than $1$, you can think intuitively of $1/D(p,q)$
 
 Notice how KL divergence is about the evidence, not the prior. It tells you the rate (speed) of how your prior shifts, regardless of where you started.
 I am mentioning this because if you like to divide statistics into Bayesian and frequentist one (don't worry if you don't know what that means), our framing might suggest that we are firmly on the Bayesian-statistics ground. That's not the case, KL does not care about our petty divisions and is useful in both approaches.
+
+## Asymmetry
+
+It's important to understand that the KL formula is not symmetrical -- in general, we don't have $D(p,q) = D(q,p)$. This is sometimes seen as a drawback, especially when you compare KL with (symmetrical) distance function like the $\ell_1$ or $\ell_2$ metric<Footnote> $d_1(p,q) = \sum_{i = 1}^n |p_i - q_i|$, $d_2(p,q) = \sqrt{\sum_{i = 1}^n (p_i - q_i)^2 }$, </Footnote>. I want to stress that the asymmetry is by design! KL measures how well a distribution $p$ is fitted by a model $q$. This is an asymmetrical notion, so we need an asymetrical formula, nothing to be ashamed for here.
+
+In fact, the word _divergence_ is used for things like KL that behave kind of like distances but are not really symmetrical. <Footnote>More on that in [one of the last chapters](06-algorithms)</Footnote>
+
+One important special case of the asymetry is this: Imagine that the true probability distribution is 50\%/50\% (i.e., fair coin), and the model is $100\% / 0\%$. In that case, KL divergence is infinite! That's because if we flip a coin, we have 50\% chance of flipping tails, which the model distribution says should never happen. This means that we have 50\% chance of gaining infinitely many bits of information (whatever our prior on fair/biased was, the posterior should now be 100\% fair and 0\% biased) and hence the divergence is infinite.
+
+On the other hand, if the truth is $100\% / 0\%$ and the model is $50\% / 50\%$, then each flip we are going to flip heads and gain one bit of information towards the coin being fair. One bit is a lot and our probability of the coin being fair goes down exponentially fast, but it's never zero. We simply have to account for the (exponentially) unlikely event that even though the coin is fair, all flips happened to be heads.
 
 ## Wait a minute -- Can KL be negative?
 

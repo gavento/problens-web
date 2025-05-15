@@ -4,44 +4,58 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import "katex/dist/katex.min.css";
 import { InlineMath, BlockMath } from "react-katex";
 
-const EvidenceAccumulationSimulator = () => {
+const EvidenceAccumulationSimulator: React.FC = () => {
   // Parameters for the simulation
-  const [trueHeadsProb, setTrueHeadsProb] = useState(0.7);
-  const [modelHeadsProb, setModelHeadsProb] = useState(0.5);
-  const [numFlips, setNumFlips] = useState(100);
-  const [currentFlip, setCurrentFlip] = useState(0);
-  const [simulationData, setSimulationData] = useState([{ flip: 0, evidence: 0, klAccumulated: 0 }]);
-  const [isRunning, setIsRunning] = useState(false);
-  const [speed, setSpeed] = useState(50); // default speed
+  const [trueHeadsProb, setTrueHeadsProb] = useState<number>(0.7);
+  const [modelHeadsProb, setModelHeadsProb] = useState<number>(0.5);
+  const [numFlips, setNumFlips] = useState<number>(100);
+  const [currentFlip, setCurrentFlip] = useState<number>(0);
+  const [simulationData, setSimulationData] = useState<{ flip: number; evidence: number; klAccumulated: number }[]>([
+    { flip: 0, evidence: 0, klAccumulated: 0 },
+  ]);
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+  // Simulation speed is fixed now
+  const [speed] = useState<number>(50);
 
-  // Calculate KL divergence
-  const calculateKL = () => {
-    const p = [trueHeadsProb, 1 - trueHeadsProb];
-    const q = [modelHeadsProb, 1 - modelHeadsProb];
-    if (q[0] === 0 || q[1] === 0) return Infinity;
+  // Calculate KL divergence between true and model distributions
+  const calculateKL = (): number => {
+    const p: [number, number] = [trueHeadsProb, 1 - trueHeadsProb];
+    const q: [number, number] = [modelHeadsProb, 1 - modelHeadsProb];
+
+    if (q[0] === 0 || q[1] === 0) {
+      return Infinity;
+    }
+
     return p[0] * Math.log2(p[0] / q[0]) + p[1] * Math.log2(p[1] / q[1]);
   };
 
   const klDivergence = calculateKL();
 
-  const resetSimulation = () => {
+  // Reset the simulation
+  const resetSimulation = (): void => {
     setCurrentFlip(0);
     setSimulationData([{ flip: 0, evidence: 0, klAccumulated: 0 }]);
     setIsRunning(false);
   };
 
-  const toggleSimulation = () => {
-    if (currentFlip >= numFlips) resetSimulation();
+  // Start/pause the simulation
+  const toggleSimulation = (): void => {
+    if (currentFlip >= numFlips) {
+      resetSimulation();
+    }
     setIsRunning(!isRunning);
   };
 
+  // Effect to run the simulation
   useEffect(() => {
     if (!isRunning || currentFlip >= numFlips) return;
+
     const timer = setTimeout(() => {
       const isHeads = Math.random() < trueHeadsProb;
       const evidenceFromFlip = isHeads
         ? Math.log2(trueHeadsProb / modelHeadsProb)
         : Math.log2((1 - trueHeadsProb) / (1 - modelHeadsProb));
+
       setSimulationData((prev) => {
         const last = prev[prev.length - 1];
         return [
@@ -53,16 +67,20 @@ const EvidenceAccumulationSimulator = () => {
           },
         ];
       });
+
       setCurrentFlip((f) => f + 1);
     }, speed);
+
     return () => clearTimeout(timer);
   }, [isRunning, currentFlip, trueHeadsProb, modelHeadsProb, speed, numFlips, klDivergence]);
 
+  // Initialize data on parameter change
   useEffect(() => {
     resetSimulation();
   }, [trueHeadsProb, modelHeadsProb]);
 
-  const formatProbability = (v) => `${(v * 100).toFixed(0)}%`;
+  // Format probability for display
+  const formatProbability = (v: number): string => `${(v * 100).toFixed(0)}%`;
 
   return (
     <div className="mb-6 p-4 bg-gray-50 rounded-lg">
@@ -167,11 +185,17 @@ const EvidenceAccumulationSimulator = () => {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={simulationData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="flip" label={{ value: "Number of Coin Flips" }} domain={[0, numFlips]} />
-              <YAxis label={{ value: "Evidence (bits)", angle: -90 }} />
+              <XAxis
+                dataKey="flip"
+                label={{ value: "Number of Coin Flips", position: "insideBottom", offset: -10 }}
+                domain={[0, numFlips]}
+              />
+              <YAxis label={{ value: "Evidence (bits)", angle: -90, position: "insideLeft" }} />
               <Tooltip
-                formatter={(value) =>
-                  `${value.toFixed(2)} ${React.createElement(InlineMath, { math: "\\text{bits}" })}`
+                formatter={(value: any) =>
+                  `${(value as number).toFixed(2)} ${React.createElement(InlineMath, {
+                    math: "\\text{bits}",
+                  })}`
                 }
               />
               <Legend />
@@ -205,7 +229,7 @@ const EvidenceAccumulationSimulator = () => {
             divergence.
           </li>
           <li>
-            Try very similar true/model probabilities, e.g. $50\%$ vs $51\%$, to get some intuition about how long it
+            Try very similar true/model probabilities, e.g. $50%$ vs $51%$, to get some intuition about how long it
             takes until the law of large numbers kicks in.
           </li>
           <li>What happens if the true and model probability are the same?</li>
