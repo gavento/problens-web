@@ -1,82 +1,64 @@
 # Minimizing KL divergence <a id="updating-beliefs"></a>
 
-## Guided by the beauty of our weapons
+In this chapter, we will see what happens when we minimize KL divergence between two distributions. In fact, we will discuss two setups:
 
-In the previous section, we introduced KL divergence and related concepts as tools for measuring the difference between probability distributions. Now, we'll explore how these concepts connect to the process of updating beliefs in light of new evidence.
+1. We start with a distribution $p$ and want to find a simpler model of it from a family of distributions $Q$. We can do so by minimizing $D(p, q)$ over $q \in Q$. This corresponds to the maximum likelihood principle (MLE) in statistics.
 
-## Min KL and the Maximum Entropy Principle <a id="min-kl-and-max-entropy"></a>
+2. If we start with a distribution $q$ and want to find a better model of it from a family of distributions $P$, we do so by minimizing $D(p, q)$ over $p \in P$. This corresponds to the maximum entropy principle (MaxEnt) in statistics.
 
-Minimizing KL divergence is a powerful guiding principle for finding distributions that model data.
+Let's see the details!
 
-There are two important scenarios to consider:
+## Minimizing KL & Maximum Likelihood Estimation (MLE) <a id="kl-and-mle"></a>
 
-1. If you start with a good model or empirical data $p$, find a simpler model by solving $\min_q D(p, q)$. A special case of this is the maximum likelihood principle.
+Suppose we are given some data—say, the 16 foot length measurements $X_1, \dots, X_{16}$ from our statistics riddle. Assuming the order of the data is irrelevant, it's handy to think about those data as an empirical distribution $p$ that assigns each outcome a probability of $1/16$. This is also called an _empirical distribution_. In some sense, this empirical distribution is the "best fit" of our data. In another sense, it is a horrible model of it -- it assigns zero probability to outcomes that are not in the data, although if we look at length of the foot of the 17th guy, it'l like to be outside the data. So, we need another model.
 
-2. If you start with a basic reference model $q$, find a better model by solving $\min_p D(p, q)$. A special case of this is the maximum entropy principle.
+One way to approach this is to first find a family of distributions $Q$ that we think are a good model for the data. For example, we might think that the distribution of foot lengths is Gaussian.<Footnote>Why Gaussians? We will see soon...</Footnote> So, we can take $Q$ to be the set of all Gaussian distributions with different means and variances. Visually, you could think about the potato representing all possible distributions -- $p$ is a point in the potato, and $Q$ is a subset of it, that kind of looks like a half-plane as it is parameterized by two parameters $\mu$ and $\sigma^2$.
 
-Let's explore these two approaches in more detail.
+![KL divergence potato](03-minimizing/potato_mle.png)
 
-### Finding the Best Model for Data <a id="finding-best-model"></a>
+Now, suppose we believe that a normal distribution is a good model for these data. How do we choose the best parameters $\mu$ and $\sigma^2$ to match the empirical distribution? KL divergence offers a natural answer: Choose $\mu$ and $\sigma$ to minimize $D(p, N(\mu,\sigma^2))$<Footnote> $N(\mu, \sigma^2)$ denotes the gaussian with mean $\mu$ and variance $\sigma^2$. </Footnote>. More generally, if we have a set of candidate distributions $Q$ (e.g., all Gaussians), select the $q\in Q$ that minimizes $D(p,q)$.
 
-In one typical application of KL divergence, we want to use it as a guide towards finding a good model. For example, let's say we have some set of numbers $X_1, \dots, X_n$ and we want to fit them by a Gaussian distribution. What does KL suggest?
+Why does this methodology make sense? Remember, KL is supposed to measure how well the model $q$ approximates the data $p$, so minimizing KL really just means picking the best fitting model in $Q$. If you still remember the [first chapter](01-kl_intro), you may even "compile" KL down to Bayes' theorem: choosing $q$ to minimize $D(p,q)$ really means choosing $q$ that takes the longest time to distinguish from the truth $p$ by a Bayesian. Very reasonable!
 
-Well, we can first think about the so-called empirical distribution over $X_1, \dots, X_n$, let's call it $p$.
-We can also think about the space of possible models for the data -- this time it would be the set of all possible $N(\mu, \sigma^2)$ for all $\mu \in \mathbb{R}$ and $\sigma^2 \in \mathbb{R}^+$. Let's call this set $Q$.
+### Maximum Likelihood principle <a id="kl-divergence-and-maximum-likelihood"></a>
 
-How do we find the best $q \in Q$? It seems reasonable to look for the $q$ that minimizes:
+Let's take a closer look at our minimize-KL approach. Let's focus on the most common case, where $p$ is literally the empirical distribution over $X_1, \dots, X_n$. To avoid cluttered notation, let's assume all $X_i$ are distinct<Footnote>Feel free to check that the general case is the same. </Footnote>. In that case, we can write the KL divergence we are minimizing as:
 
-$$\arg\min_{q\in Q} D(p, q)$$
-
-This approach is equivalent to what is commonly known as the maximum likelihood principle.
-
-### Finding a Better Model with Constraints <a id="finding-better-model"></a>
-
-Here's a second typical application of KL divergence. Let's say that we start with some basic probabilistic model. Maybe I want a probability distribution for how long it takes me to eat lunch. Let's say that I have a guess that the average length is about 15 minutes. What kind of distribution should I choose to model this?
-
-What does KL suggest?
-
-Let's pick some really broad and simple model $q$, like the uniform distribution between $0$ and $24$ hours.
-Then, we can think about the space of all possible distributions with mean equal to 0.25 (hours). Let's call this set $P$. As our best guess $p$ for the true distribution, it seems reasonable to pick $p$ that minimizes:
-
-$$\arg\min_{p \in P} D(p,q)$$
-
-Doing this is closely related to what people call the maximum entropy principle.
-
-## Maximum Likelihood Estimation (MLE) <a id="maximum-likelihood-estimation"></a>
-
-Suppose we are given data—say, the 16 foot length measurements $X_1, \dots, X_{16}$ from our statistics riddle. Assuming the order of the data is irrelevant, we can represent them as an empirical distribution $p$ that assigns each outcome a probability of $1/16$. Now, suppose we believe that a normal distribution is a good model for these data. How do we choose the best parameters $\mu$ and $\sigma^2$ to match the empirical distribution?
-
-KL divergence offers a natural answer: Choose $\mu$ and $\sigma$ to minimize $KL(p, N(\mu,\sigma^2))$. More generally, if we have a set of candidate distributions $Q$ (e.g., all Gaussians), select the $q\in Q$ that minimizes $KL(p,q)$.
-
-In fact, we can rewrite KL divergence as:
-
-$$KL(p,q) = \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1/n}{q(X_i)}$$
+$$D(p,q) = \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1/n}{q(X_i)}$$
 
 Splitting this into entropy and cross-entropy:
 
-$$KL(p,q) = \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1}{q(X_i)} - \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1}{n}$$
+$$D(p,q) = \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1}{q(X_i)} - \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1}{n}$$
 
-Note that the entropy term (the second sum) is $\sum \frac{1}{n}\log n = \log n$, which is constant with respect to $q$.<Footnote>It could happen that we measured the same length twice. Then, $\mathcal{X}$ has to be regarded as a multiset and the corresponding frequencies are not necessarily $1/n$. In that case, the entropy happens to be smaller than $\log n$. But it doesn't matter, the only important fact is that this term is constant, independent of $q$.</Footnote> Thus, minimizing KL divergence is equivalent to minimizing the cross-entropy:
+Note that the entropy term (the second sum) is constant with respect to $q$. <Footnote> In this special case of $p$ being uniform distribution, we even have $\sum \frac{1}{n}\log n = \log n$, but the important part is that it's a constant independent of $q$. </Footnote> Thus, minimizing KL divergence is equivalent to minimizing the cross-entropy:
 
-$$\sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1}{q(X_i)}$$
+$$\min_{q \in Q} \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1}{q(X_i)}$$
 
 Here, $q(X_i)$ is the probability (or probability density) that the model assigns to the data point $X_i$. Dropping the constant factor $1/n$ and using the identity $\log(1/x)=-\log x$, this is equivalent to maximizing the product:
 
-$$\prod_{X_i} q(X_i)$$
+$$\max_{q \in Q} \prod_{X_i} q(X_i)$$
 
 This expression has very clear meaning: it is the conditional probability of seeing the data $X_i$, provided that they have been sampled independently from the model distribution $q$. This kind of conditional probability is also called the "likelihood of $X$ under $q$".
 
-So, we conclude that we should go for $q$ that maximizes the likelihood of our data, which is exactly what's called the maximum likelihood estimation (MLE) approach.
+So what's the conclusion? Our approach of minimizing KL divergence is equivalent (at least for empirical distributions) to maximizing the likelihood of the data under the model $q$. The latter is in fact a very common approach in statistics, and it is called the maximum likelihood estimation (MLE) principle. We just derived it from the KL divergence perspective!
 
-### Application to the Statistics Riddle <a id="application-to-statistics-riddle"></a>
+## Finding a Better Model & Maximum Entropy Principle <a id="finding-better-model"></a>
 
-Let's return to our statistics riddle. When estimating the variance of a distribution from samples, we had three candidate formulas:
+So, minimizing $\min_{q \in Q} D(p,q)$ is pretty useful, what aboutn the other direction $\min_{p \in P} D(p,q)$? This is also extremely useful, so let's see an example of what it means. 
 
-$$\sigma^2 = \frac{1}{n-1} \sum_{i=1}^{n} (X_i - \bar{X})^2$$
-$$\sigma^2 = \frac{1}{n} \sum_{i=1}^{n} (X_i - \bar{X})^2$$
-$$\sigma^2 = \frac{1}{n+1} \sum_{i=1}^{n} (X_i - \bar{X})^2$$
 
-Using the MLE approach derived above, we would choose $\frac{1}{n}$ as our coefficient, yielding the maximum likelihood estimate. This is one valid approach, though as mentioned, the unbiased estimate uses $\frac{1}{n-1}$ and the minimum mean squared error uses $\frac{1}{n+1}$. Each of these options is defensible depending on your criteria.
+Let's say I want a probability distribution for how long it takes me to eat lunch. Maybe my first (very crappy) model of this is a uniform distribution between $0$ and $600$ minutes. 
+
+How do I improve this model? I should get my hands on some empirical data, so let's say that I will observe my lunch times for a while. Recording the whole empirical distribution sounds like too much work, so let's say I just record the average time it takes me to eat lunch -- say, 15 minutes. 
+
+Given this new information, how should I choose a better model? KL divergence suggests that I among all distributions $p$ with average of 15, I should pick $\arg\min_{p \in P} D(p,q)$, where $q$ is my original model (the uniform distribution).
+
+Intuitively, I want to find a (true) distribution $p$ so that $q$ is as good model of it as possible. This time it's a bit harder to see clearly why this is the right thing to do, see this footnote for a detailed explanation. 
+<Footnote>
+
+
+
+ </Footnote>
 
 ## The Maximum Entropy Principle <a id="maximum-entropy-principle"></a>
 
@@ -115,28 +97,6 @@ For example, consider a joint distribution (such as the table for weather and co
 According to the minimum KL principle, given the original distribution $q$ and the new data (that outcomes outside the sunny row have probability zero), the updated distribution $p$ is the one that minimizes $KL(p,q)$ while satisfying the constraint. In fact, choosing $p=q(\cdot|\text{sunny})$ achieves $KL(p,q)=0$ (the minimal possible value). Thus, the minimum KL principle endorses Bayesian updating.
 
 In some sense, we can even say that the principle of "minimize KL whenever you can" and the principle of "use Bayes' theorem whenever you can" are kind of equivalent.
-
-## Summary <a id="summary"></a>
-
-In this section, we've explored how KL divergence provides a framework for updating beliefs and choosing probability distributions:
-
-1. **Minimizing KL Divergence** - Two key approaches:
-
-   - $\min_q D(p, q)$: Finding the best model for given data (leads to MLE)
-   - $\min_p D(p, q)$: Finding the best distribution subject to constraints (leads to MaxEnt)
-
-2. **Maximum Likelihood Estimation** - Choosing parameters that maximize the probability of observed data
-
-   - Applied to our statistics riddle about estimating variance
-
-3. **Maximum Entropy Principle** - Choosing the least biased distribution subject to constraints
-
-   - Applied to our modeling riddle about customer choice
-   - Leads to well-known distributions like Gaussian, exponential, and softmax
-
-4. **Connection to Bayes' Theorem** - Bayesian updating as minimizing KL divergence
-
-These principles provide a unified framework for inference and modeling. By understanding the connections between KL divergence, maximum likelihood, and maximum entropy, we gain deeper insights into why certain distributions and methods are commonly used in statistics and machine learning.
 
 ## Next Steps <a id="next-steps"></a>
 
