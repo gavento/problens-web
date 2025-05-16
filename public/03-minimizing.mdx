@@ -51,52 +51,72 @@ Let's say I want a probability distribution for how long it takes me to eat lunc
 
 How do I improve this model? I should get my hands on some empirical data, so let's say that I will observe my lunch times for a while. Recording the whole empirical distribution sounds like too much work, so let's say I just record the average time it takes me to eat lunch -- say, 15 minutes. 
 
-Given this new information, how should I choose a better model? KL divergence suggests that I among all distributions $p$ with average of 15, I should pick $\arg\min_{p \in P} D(p,q)$, where $q$ is my original model (the uniform distribution).
+Given this new information, how should I choose a better model? I claim that among all distributions $p$ with average of 15, I should pick $\arg\min_{p \in P} D(p,q)$, where $q$ is my original model (the uniform distribution).
 
-Intuitively, I want to find a (true) distribution $p$ so that $q$ is as good model of it as possible. This time it's a bit harder to see clearly why this is the right thing to do, see this footnote for a detailed explanation. 
+Why? Intuitively, I want to find a (true) distribution $p$ so that $q$ is as good model of it as possible, and this is what KL stands for. Admittedly, this time it's not clear why this should be the right thing to do, so see the footnote for a detailed derivation of this from Bayes' rule. 
 <Footnote>
+Remember how at the top of this chapter, we were able to argue that $\min_{q \in Q} D(p,q)$ is a good methodology by "compiling it down" to a simple argument about Bayes' theorem? We will do the same here, using a version of so-called [Wallis derivation](https://en.wikipedia.org/wiki/Principle_of_maximum_entropy#The_Wallis_derivation). The reasoning is going to be a bit more involved. 
 
+Here is how we formulate our setup to turn this into an application of Bayes' theorem. Imagine that we start with some distribution $q$ and keep sampling from it $N$ times. We use $\hat{q}$ to denote the empirical distribution we get. Now we observe that $\hat{q}$ belongs to some family of distributions $P$ (e.g., all distributions with average 15). What is our current knowledge about $\hat{q}$? 
 
+Bayes' theorem is clear on this: we should start with the prior distribution over $\hat{q}$, and then condition on the fact that $\hat{q}$ belongs to $P$ to get the posterior distribution over $\hat{q}$. We will argue the following claim: as $N$ goes to infinity, the posterior distribution is going to be concentrated on the distribution $p \in P$ that minimizes $D(p,q)$. This is the justification for our minimize-KL approach -- our methodology is basically equivalent to "passing from $q$ to $p$ by conditioning on the fact that the distribution belongs to $P$".
 
- </Footnote>
+Let's prove the claim. 
 
-## The Maximum Entropy Principle <a id="maximum-entropy-principle"></a>
+First of all, this is all a bit confusing because we talk about the empirical distribution $\hat{q}$ which is actually a random variable depending on the $N$ samples we took from the space $P_0$ of all empirical distributions (technically, $P_0$ is the space of all distributions where probabilities are multiples of $1/N$ but let's not get bogged down in technicalities). This is technically called a mixture distribution. Here's a picture: 
 
-Let's recall the second example. I want to have a distribution modeling how long it takes me to eat a lunch. Maybe it's rounded to minutes and it never took more than 10 hours, so let's say the domain of my distribution is $\{1, \dots, 600\}$.
+![Wallis derivation](03-minimizing/wallis.png)
 
-As a first, probably very basic model, we can just take the uniform distribution as a prior guess $q_{unif}$. That is, we assign $1/600$ probability to each option. This principle of using uniform distribution when we don't know anything makes sense since uniform distribution is literally the only distribution that gives the same weight to each outcome. (The fancy name for this is the principle of indifference.)
+We should now understand what kind of distribution $\hat{q}$ has, i.e., we want to understand the probability $P(\hat{q} = p)$ for $p \in P_0$. There are two ways to do that. 
 
-Now let's say that we know a bit more, maybe that we want a distribution with average 15 minutes. In that case, for $P$ being the set of all distributions with average 15, KL divergence suggests finding $p \in P$ minimizing:
+1. We can write it down exactly ($P(\hat{q} = p) = {N \choose p_1N, \dots, p_kN}\cdot \prod_{i = 1}^k q_i ^ {p_i N}$) and solve it (using Stirling approximation, we have $P(\hat{q} = p) \approx 2^{H(p)\cdot N}$ and thus $P(\hat{q} = p) \approx 2^{-D(p,q)\cdot N}$). 
 
-$$KL(p,q_\text{uniform})$$
+2. If you like to see what's happening behind the algebra, we can also go back to the [first chapter](01-kl_intro) where our Bayesian friend was pretty much trying to compute the probability we now need. More concretely, if our friend got $N$ and the empirical distribution was $p$, all the evidence in a column of a hypothesis $q$ summed up to the value $N \cdot H(p, q)$. The meaning of the evidence is that the probability $P(\hat{q} = p)$ has to be proportional to $2^{-N \cdot H(p, q)}$, we just don't know the normalization constant.
 
-Using our splitting of KL divergence:
+Now, waving our hands a little, we can observe that the probability distribution of $\hat{q}$ is going to be concentrated on the distribution $p$ that minimizes $H(p,q)$, as $N$ goes to infinity. Thus, the right normalization is $P(\hat{q} = p) \approx 2^{-N \cdot H(p,q) + N \codt H(p)} = 2^{-N \cdot D(p,q)}$.
 
-$$KL(p,q_\text{uniform}) = \sum_i p_i\log p_i - \sum_i p_i\log (1/600)$$
+Whatever road you preferred, we can now continue. While the distribution of $\hat{q}$ is concentrated around the value of $q$, there's nonzero probability that $\hat{q} \in P$. If that happens, we similarly have that the posterior distribution is concentrated around the value $\tilde{p} = \argmin_{p \in P} D(p,q)$. We conclude that in the limit of $N$ going to infinity, doing all the abstract mixture distributions and conditioning on the new evidence is pretty much equivalent to just replacing $q$ with $\argmin_{p \in P} D(p,q)$. 
+</Footnote>
 
-Since the second term is a constant $\log (1/600) = \log(600)$, minimizing KL divergence is equivalent to maximizing the negative of the first term, which is the entropy of $p$:
+### The Maximum Entropy Principle <a id="maximum-entropy-principle"></a>
 
-$$H(p) = -\sum_i p_i\log p_i$$
+Let's take a closer look at our approach. A seemingly important problem of it is that it only enables us to change an original model $q$ to a better model $p$. But how did we choose the original model $q$? It's a bit of a chicken-and-egg problem.
 
-This is the maximum entropy principle: given a set $P$ of distributions subject to certain constraints, choose the $p\in P$ that maximizes the entropy $H(p)$.
+Fortunately, there's usually a very natural choice for the simplest possible model $q$ -- the uniform distribution. This is the unique distribution that assigns the same probability to each outcome. In some sense, it is the most "uninformative" distribution we can have. There's even a so-called [principle of indifference](https://en.wikipedia.org/wiki/Principle_of_indifference) that states that in case of no additional information, we should opt for the uniform distribution.
 
-### The Principle of Indifference as a Prior <a id="principle-of-indifference"></a>
+So, it would be very interesting to understand what happens when we start with the uniform distribution $q$ (let's say over a discrete set $\{1, \dots, k\}$) and find a better model $p \in P$ by minimizing KL divergence. Let's write it down: 
 
-The maximum entropy principle can be seen as a natural extension of the principle of indifference. When we have no information, we use a uniform distribution (the distribution with maximum entropy). When we gain some information in the form of constraints (like knowing the mean), we choose the distribution that is as "uniform" as possible while satisfying those constraints.
+$$D(p,q_{uniform}) = \sum_{i = 1}^k p_i \log \frac{p_i }{ 1/k}$$
 
-In other words, the maximum entropy principle tells us to assume as little as possible beyond what we know. It's a formalization of Occam's razor for probability distributions.
+Using our splitting of KL divergence into entropy and cross-entropy, we can rewrite this as:
 
-## Connecting KL and Bayes' Theorem <a id="connecting-kl-and-bayes-theorem"></a>
+$$D(p,q_\text{uniform}) = \sum_{i = 1}^k p_i\log p_i - \sum_i p_i\log (1/k)$$
 
-One fascinating aspect of KL divergence is its deep connection to Bayesian reasoning. In fact, Bayes' theorem itself can be derived as a special case of the principle of minimizing KL divergence.
+Since the second term is a constant (and in fact equal to $-\log (1/k) = \log(k)$), minimizing KL divergence is equivalent to maximizing the negative of the first term, which is the entropy of $p$:
 
-When deriving the minimum KL principle, we relied on an analogy with Bayes' theorem, essentially starting with $q$ and conditioning on new information. One can show that Bayesian updating is a special case of the minimum KL principle.
+$$\argmin_{p \in P} D(p, q_{uniform}) = \argmax_{p\in P} H(p)$$
 
-For example, consider a joint distribution (such as the table for weather and commuting). Upon learning that it is sunny, Bayesian updating dictates that we set $P(\text{sunny})=1$ while keeping the conditional distribution $P(\cdot|\text{sunny})$ unchanged (i.e., zeroing out the other rows and normalizing the sunny row).
+We derived what's known as the maximum entropy principle: given a set $P$ of distributions to choose from, we should opt for the $p\in P$ that maximizes the entropy $H(p)$. 
 
-According to the minimum KL principle, given the original distribution $q$ and the new data (that outcomes outside the sunny row have probability zero), the updated distribution $p$ is the one that minimizes $KL(p,q)$ while satisfying the constraint. In fact, choosing $p=q(\cdot|\text{sunny})$ achieves $KL(p,q)=0$ (the minimal possible value). Thus, the minimum KL principle endorses Bayesian updating.
+### A few observations <a id="a-few-observations"></a>
 
-In some sense, we can even say that the principle of "minimize KL whenever you can" and the principle of "use Bayes' theorem whenever you can" are kind of equivalent.
+We will spend the whole next chapter discussing all the applications of the maximum entropy principle, but let's already make a few observations about it.
+
+1. For discrete distributions over $\{1, \dots, k\}$, the distribution that maximizes the entropy is the uniform distribution and its entropy is $\log_2 k$. So if our set $P$ contains the uniform distribution, maximum entropy principle reduces to the principle of indifference.
+
+2. One of the basic facts about entropy is that if you have a joint distribution $(p,q)$, then $H((p,q)) \le H(p) + H(q)$, with equality if and only if $p$ and $q$ are independent (see []()). Here's how we can use this fact: Imagine that $P$ is the set of all joint distributions with marginals $p, q$. Then, the maximum entropy principle tells us that the joint distribution $p \in P$ that maximizes the entropy is the one that is independent. 
+
+In the practice of modeling stuff by probability distributions, it's ubiquitous to assume that two distributions are independent if we do not have any concrete guess on how they are related. We can think of this as a special case of the maximum entropy principle. 
+
+3. Let's see one more application of the more general principle of minimizing KL divergence. 
+
+Here's the generic problem solved by Bayes' theorem. We have a joint distribution $(X,Y)$ over two random variables $X$ (that we are interested in) and $Y$ (possible evidences we might see). Then we observe some evidence $Y=y$. We want to know the distribution of $X$ given $Y=y$. The Bayes' rule allows us to compute the conditional distribution $P(X|Y=y)$. This is not rocket science: If you imagine the original joint distribution as a table, you can just zero out the rows that do not correspond to $Y=y$ and normalize the remaining row to get the posterior distribution. <Footnote>The reason why Bayes' rule is a more complicated formula than that is that Bayes' rule computes this stuff from conditional probabilities instead of working with the joint distribution. </Footnote>
+
+![]()
+
+The observation I want to make is that $r = \argmin_{p \in P} D(p, (X,Y))$, where $P$ is the set of distributions where $P(Y = y') = 0$ for $y' \ne y$. <Footnote>This holds because of the following reasoning: </Footnote> 
+
+So, we can think of the philosophy of using the Bayes' theorem as a special case of the philosophy of minimizing KL divergence. This is all very circular and fuzzy, but the point is that not only the philosophy of minimize-KL-whenever-you-can-ism can be derived from the philosophy of argue-everything-from-Bayes-rule-ism, but we can also derive the philosophy of argue-everything-from-Bayes-rule-ism from the philosophy of minimize-KL-whenever-you-can-ism. Thus it is said that minimize-KL-whenever-you-can-ism is argue-everything-from-Bayes-rule-ism-complete (and vice versa). 
 
 ## Next Steps <a id="next-steps"></a>
 
