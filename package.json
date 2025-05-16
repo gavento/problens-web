@@ -12,12 +12,14 @@
     "e2e:build": "cypress install && start-server-and-test start http://localhost:3000 \"cypress run --e2e\""
   },
   "dependencies": {
+    "@mdx-js/mdx": "^3.1.0",
     "@next/third-parties": "^15.2.4",
     "@orcid/bibtex-parse-js": "^0.0.25",
     "@radix-ui/react-hover-card": "^1.1.6",
     "@radix-ui/themes": "^3.2.1",
     "@tailwindcss/typography": "^0.5.16",
     "@types/mdx": "^2.0.13",
+    "chalk": "^5.4.1",
     "highlight.js": "^11.11.1",
     "katex": "^0.16.21",
     "next": "15.2.4",
