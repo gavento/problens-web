@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+  eslint: {
+    // Include MDX and MD files in linting
+    dirs: ["public", "components", "app", "lib"],
+  },
 };
 
 export default nextConfig;
