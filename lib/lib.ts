@@ -10,10 +10,77 @@ import { Cite, References } from "@/components/Citations";
 import { Footnote } from "@/components/Footnotes";
 import { Footnotes } from "@/components/Footnotes";
 import EvidenceAccumulationSimulator from "@/components/content/EvidenceAccumulationSimulator";
+import { compile } from "@mdx-js/mdx";
+import chalk from "chalk";
+
+// Force color support for CI/build environments
+chalk.level = 3;
 
 export async function getMdxContent(path: string) {
   const fullPath = join(contentDirectory, `${path}.mdx`);
   const source = readFileSync(fullPath, "utf-8");
+
+  try {
+    // Check if the file is valid MDX
+    await compile(source, {
+      format: "mdx",
+    });
+  } catch (error) {
+    const mdxError = error as any;
+    const lineNumber = mdxError.line || mdxError.cause?.loc?.line;
+    const column = mdxError.column || mdxError.cause?.loc?.column;
+    const reason = mdxError.reason || mdxError.message;
+
+    // Get the problematic line and surrounding context
+    const lines = source.split("\n");
+
+    // Create a context snippet with line numbers
+    const startLine = Math.max(1, lineNumber - 2);
+    const endLine = Math.min(lines.length, lineNumber + 2);
+    const snippet = [];
+
+    // Find the line number width for proper padding
+    const lineNumWidth = String(endLine).length;
+
+    // Check if this might be a curly brace issue in LaTeX
+    const errorLine = lines[lineNumber - 1] || "";
+    const hasCurlyBeforeError = column > 0 && errorLine.substring(0, column).includes("{");
+
+    for (let i = startLine - 1; i < endLine; i++) {
+      const isErrorLine = i === lineNumber - 1;
+      const lineNum = String(i + 1).padStart(lineNumWidth, " ");
+
+      if (isErrorLine) {
+        // Add the error line in red
+        snippet.push(chalk.gray(`${lineNum}|`) + " " + chalk.red(lines[i]));
+
+        // Create the error marker line with precise alignment
+        const errorPointer = " ".repeat(Math.max(0, column - 1)) + chalk.bold.red("^");
+        snippet.push(chalk.gray(" ".repeat(lineNumWidth) + "|") + " " + errorPointer);
+      } else {
+        snippet.push(chalk.gray(`${lineNum}|`) + " " + lines[i]);
+      }
+    }
+
+    let errorOutput =
+      "\n" +
+      chalk.bold.red(`Error parsing MDX file: ${path}.mdx\n`) +
+      chalk.yellow(`${reason} at line ${lineNumber}${column ? `, column ${column}` : ""}\n\n`) +
+      snippet.join("\n");
+
+    // Add helpful hint for curly brace issues
+    if (hasCurlyBeforeError) {
+      errorOutput +=
+        "\n\n" +
+        chalk.cyan(
+          "Hint: Unlike plain MD, MDX uses {...} for JSX expressions. To get literal curly braces, use \\{ and \\}"
+        );
+    }
+
+    console.error(errorOutput + "\n");
+
+    throw new Error(`Failed to compile MDX: ${reason}`);
+  }
 
   const { content } = await compileMDX({
     source,
