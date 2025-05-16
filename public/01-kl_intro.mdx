@@ -55,7 +55,7 @@ That is, to compute the posterior odds, we multiply two things. First, the prior
 
 Bayes' theorem simply says we should do the simplest thing possible with the two relevant ratios -- multiply them -- to arrive at the posterior odds $P(fair | flipped heads) : P(biased | flipped heads)$ .
 
-## Keep flipping
+## Go forth and multiply
 
 KL divergence is about what happens if we keep flipping the coin. That is, what happens if our Bayesian hero keeps flipping a coin and after each flip, she applies Bayes' theorem to update her belief? The picture you should have in mind is this one:
 
@@ -63,21 +63,39 @@ KL divergence is about what happens if we keep flipping the coin. That is, what 
 
 As our hero keeps flipping, she keeps multiplying her posterior by one of the two likelihood ratios, $5/4$ for each head, and $5/6$ for each tail.
 
-For example, in our picture, three tails out of five flips point slightly towards the biased hypothesis. So, after we normalize the posterior odds to probabilities, we find out that the original prior of about $67\%$ for the coin being fair dropped by $3\%$. Clearly, we need much more flips to find out what the truth is.
+For example, in our picture, three tails out of five flips point slightly towards the biased hypothesis. So, after we normalize the posterior odds to probabilities, we find out that the original prior of about $67\%$ for the coin being fair dropped by $3\%$ to about $64\%$. Clearly, we need much more flips to find out what the truth is.
 
 ## Measuring evidence in bits
 
-Before we dive into what's going on in here, it will turn out to be easier to take logarithm of all numbers. Our picture then becomes a kind of a balance sheet where we keep adding and subtracting the evidence.
+Before we dive into what's going on in here, it will turn out to be easier to use the language of bits. That is, we will take the logarithm of all our numbers and talk about adding stuff instead of multiply stuff.
 
-![Repeated application of Bayes' theorem in log scale](01-kl_intro/repeated_bayes_log.png)
+First, let's rewrite our table like this:
 
-Concretely: Whenever we flip heads, instead of multiplying the posterior odds by $0.5$ and $0.4$, we think of adding $-1$ to the sum of evidence towards fair hypothesis, and adding $-1.32$ to the sum of evidence towards biased hypothesis. In the end, the difference is what counts, so we can also think of this as the fair hypothesis gaining $0.32$ bits of evidence against the biased hypothesis.
+![Repeated application of Bayes' theorem in log scale](01-kl_intro/repeated_bayes_log2.png)
 
-In the end, the fair hypothesis gained $0.32$ bits of evidence to its favor twice, but the biased hypothesis got $0.26$ bits three times. $3 \cdot 0.26 - 2 \cdot 0.32 \approx 0.15$, so the total evidence we accumulated is $0.15$ bits towards the coin being biased. We started with one bit of evidence towards the fair hypothesis, so our posterior is $0.85$ bits towards the fair hypothesis; this turns out to correspond to $64\%$ probability.
+We really just rewrote all numbers as $2$ to the power of something, so that multiplications can be thought of as summations in the exponent.
+
+In fact, let's remove all the clutter and just write down the important stuff:
+
+![Surprisal](01-kl_intro/repeated_bayes_surprisal.png)
+
+Basically, instead of writing down probabilities $p$ in each cell, we wrote down $\log 1/p$ instead. The formula $\log 1/p$ is called a _[surprisal](https://en.wikipedia.org/wiki/Information_content)_. That's because the intuition behind this number is that whenever an event happens, this tells you how surprised you are: If you flip heads and thought the probability of that is $1\%$, you are more surprised ($\log 1/0.01 \approx 6.6$) then if you though the probability is $50\%$ ($\log 1/0.5 = 1$).
+
+Our table now becomes a kind of a balance sheet where we keep track of all the surprisals.
+If we subtract two surprisals in the same row, the result tells us how much evidence we gained towards one of the hypotheses. In our case, whenever we flip heads, we gain $0.32$ bits of evidence that the coin is fair, and whenever we flip tails, we gain $0.26$ bits of evidence that the coin is biased.
+
+We get the final posterior probability by computing the total suprisal for both hypothesis and exponentiating it (we also have to add the prior to the equation).
+
+In our case, the total evidence we accumulated towards the coin being biased is
+
+$$
+3 \cdot 0.26 - 2 \cdot 0.32 \approx 0.15,
+$$
+
+We started with one bit of evidence towards the fair hypothesis, so our posterior is $0.85$ bits towards the fair hypothesis. We can convert this number back to probabilities and get the number of $64\%$ for the fair hypothesis.
 
 ## Expected Distinguishing Evidence <a id="expected-distinguishing-evidence"></a>
 
-e
 Let's say that in our scenario, the coin happens to be biased. To compute how quickly our Bayesian hero learns this fact, we can compute the expected number of bits she learns per flip. We've computed that heads means $0.26$ bits towards the fair hypothesis and tails means $0.32$ bits towards the biased hypothesis. So, on average, each flip we accumulate
 
 $$
@@ -133,25 +151,20 @@ because $\log 1 = 0$.
 
 This makes sense, you can never distinguish the truth from the truth. 🤷
 
-Fortunately, KL divergence is always nonnegative. We have not proved that, but I think we got a pretty strong intuition that if it were negative, something would be really, really messed up. Just imagine that you have two distributions $p$ and $q$, but as you keep sampling from $p$, you gradually keep believing more and more that the distribuition actually is ... $q$?
+Fortunately, KL divergence is always nonnegative. We have not proved that, but I think we got a pretty strong intuition that if it were negative, something would be really, really messed up. Just imagine that you have two distributions $p$ and $q$, but as you keep sampling from $p$, you gradually keep believing more and more that the distribuition actually is ... $q$? We'll prove it in the next chapter.
 
-There's also a short algebraic proof that KL is always nonnegative. Let me show it, although it's perhaps not as exciting.
+## Application: How to train your LLM <a id="application-training-smaller-models"></a>
 
-To prove that for any $p,q$ we have <Footnote>I've used the natural logarithm here to make the proof a bit shorter. Of course, the base of the logarithm does not really change the formula, it's more about in which units do we want to measure information. Computer scientists tend to like bits, physicists tend to like [nats](<https://en.wikipedia.org/wiki/Nat_(unit)>), whatever. </Footnote>
+Let's solve [one of our riddles](00-introduction/deep-learning) from the introduction. We asked about how to train a smaller language model to mimic a larger one like GPT-4. In particular, we have a (true) distribution $p$ and a (model) distribution $q$ and want to come up with a function that measures how well the model fits the truth.
 
-$$
-D(p,q) =  \sum_{i = 1}^n p_i \cdot \ln \frac{p_i}{q_i}  \ge 0,
-$$
+That's exactly what KL divergence measures!
 
-we will estimate the expression $\log \frac{p_i}{q_i}$ inside the summation. Since we already know that the inequality is tight if all $p_i = q_i$, our estimate should be tight in this case. The best approximation of logarithm around $1$ is $\log (1+x) \le x$<Footnote>picture</Footnote>. We can use it like this:
+What about other options, like minimizing the $\ell_1$ norm, i.e., $\sum |p_i - q_i|$? or $\ell_2$ norm, i.e., $\sum (p_i - q_i)^2$? Doing that would perhaps also work reasonably well, but there is something very uneasy about those approaches. Consider these two scenarios:
 
-$$
--D(p,q)
-= \sum_{i = 1}^n p_i \cdot \ln \frac{q_i}{p_i}
-\le \sum_{i = 1}^n p_i \cdot  \left( \frac{q_i}{p_i} - 1 \right)
-= \sum_{i = 1}^n q_i - p_i
-= 1 - 1 = 0
-$$
+1. $p_i = 0.5, q_i = 0.49$
+2. $p_i = 0.01, q_i = 0.0$
+
+The standard geometrical norms ($\ell_1, \ell_2$) treat both of these situations as having similar magnitude of error. KL, though, understands that while in the first situation, the model approximates the truth pretty well, the second situation is total failure!
 
 ## Application: Measuring distance from independence <a id="information-theory"></a>
 
@@ -169,4 +182,18 @@ Which one of our three distributions is the "most" independent?
 
 To solve this, we need to find a good definition of how to measure the disimilarity between one of the tables and the idealized, independent table. There are all kinds of formulas that we could try<Footnote>To give one example, in practice, this is often done by computing [correlation](https://en.wikipedia.org/wiki/Correlation). Unfortunately, that's not a super satisfactory solution. First, correlation can only be computed for random variables, i.e., distribution over numbers and not general distributions over {☀️, ☁️}, so it's unclear how to apply it to our case. Also, zero correlation does not imply that the two variables are independent. </Footnote>, but KL divergence really begs to be used here. Remember, to use KL, we have to have two distributions. One of them is the "truth" -- in our case, one of the three tables. The second one is the "model" -- in our case, it's the idealized independent table. Computing the KL between the two intuitively tells us how well the model match the reality. More technically, it tells us, how long it takes a Bayesian reasoner to find out that the data are really coming from the actual distribution, and not the model one.
 
+The KL divergences turns to be as follows:
+
+$$
+D(table 1, independent table) \approx 0.40
+D(table 2, independent table) \approx 0.04
+D(table 3, independent table) \approx 0.21
+$$
+
+In particular, the second table is "closest" to being independent.
+
+This computation can be done whenever you have a joint distribution $(p_1, p_2)$. The KL divergence between $(p_1, p_2)$ and the independent distribution $p_1 \otimes p_2$ is called [mutual information](http://en.wikipedia.org/wiki/Mutual_information) between $p_1$ and $p_2$ and it's a crucial quantity in e.g. information and coding theory. You should think about it as the most natural function that measures how dependent two distributions $p_1$ and $p_2$ are. More technically, it tells you how many bits on average you learn about $p_2$ if you learn the outcome of $p_1$ <Footnote> Or, symmetrically, how many bits you learn about $p_1$ if you learn the outcome of $p_2$. </Footnote>
+
 ## What's next?
+
+In the [next section](02-crossentropy), we will look more closely at the formula for KL divergence and see how it connects to entropy and crossentropy of distributions.
