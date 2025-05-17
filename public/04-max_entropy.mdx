@@ -2,11 +2,11 @@
 
 Maximum entropy principle helps you find the most generic distribution for your data. You just need to specify the constraints you care about, and the principle determines the "least biased" distribution that satisfies those constraints.
 
-The form of the maximum entropy distributions is very simple -- for example, if you work with numbers and care about their mean $E[X] = \mu$ and variance $\sigma^2 = E[(X-\mu)^2]$, the maximum entropy distribution is going to look like $P(X=x)\propto e^{\lambda_1 x + \lambda_2 x^2}$, i.e., it will be the normal distribution.
+The form of the maximum entropy distributions is very simple -- for example, if you work with numbers and care about their mean $E[X] = \mu$ and variance $\sigma^2 = E[(X-\mu)^2]$, the maximum entropy distribution is going to look like $P(X=x)\propto e^\{\lambda_1 x + \lambda_2 x^2}$, i.e., it will be the normal distribution.
 
 We can derive this by using the method of Lagrange multipliers. Without going through the full derivation, the key insight is that the maximum entropy distribution subject to constraints always takes the form of an exponential family:
 
-$$p(x) \propto e^{\sum_i \lambda_i f_i(x)}$$
+$$p(x) \propto e^\{\sum_i \lambda_i f_i(x)}$$
 
 where $f_i(x)$ are the functions whose expectations $E[f_i(X)]$ we're constraining, and $\lambda_i$ are Lagrange multipliers determined by the specific constraint values.
 
@@ -19,16 +19,16 @@ Here are some examples of maximum entropy distributions given different constrai
 2. **Fixed mean $E[X] = \mu$**:
 
    - On a finite set $\{a, b\}$: Logistic distribution
-   - On $\{0, 1, 2, \ldots\}$: Geometric distribution $P(x) \propto e^{-\lambda x}$
-   - On $\mathbb{R}^+$: Exponential distribution $P(x) \propto e^{-\lambda x}$
+   - On $\{0, 1, 2, \ldots\}$: Geometric distribution $P(x) \propto e^\{-\lambda x}$
+   - On $\mathbb{R}^+$: Exponential distribution $P(x) \propto e^\{-\lambda x}$
 
 3. **Fixed mean $E[X] = \mu$ and variance $E[(X-\mu)^2] = \sigma^2$**:
 
-   - On $\mathbb{R}$: Normal (Gaussian) distribution $P(x) \propto e^{-(x-\mu)^2/2\sigma^2}$
+   - On $\mathbb{R}$: Normal (Gaussian) distribution $P(x) \propto e^\{-(x-\mu)^2/2\sigma^2}$
 
 4. **Fixed $E[\log X]$**:
 
-   - On $\mathbb{R}^+$: Power-law distribution $P(x) \propto x^{-\alpha}$
+   - On $\mathbb{R}^+$: Power-law distribution $P(x) \propto x^\{-\alpha}$
 
 5. **Fixed $E[X]$ and $E[X^2]$**:
    - On $\mathbb{R}^+$: Gamma distribution
@@ -39,7 +39,7 @@ Let's return to our restaurant modeling riddle. We wanted to find a family of di
 
 The maximum entropy principle provides us with a beautiful answer. If we represent the tastiness of each item as $a_i$, then the maximum entropy distribution subject to a constraint on the average tastiness $E[a_X] = c$ is:
 
-$$P(X=i) = \frac{e^{\lambda a_i}}{\sum_j e^{\lambda a_j}}$$
+$$P(X=i) = \frac\{e^\{\lambda a_i}\}\{\sum_j e^\{\lambda a_j\}\}$$
 
 This is known as the softmax distribution. The parameter $\lambda$ controls how strongly we prefer tastier options:
 
@@ -52,7 +52,7 @@ This distribution is exactly what we were looking for in our modeling riddle. It
 
 Let's return to our financial mathematics riddle. We observed that the normal distribution is a better fit for the S&P index, while the Laplace distribution better models Bitcoin price changes.
 
-A related distribution is the Laplace distribution $e^{-|x-\mu|}$. You could think of it as the max entropy distribution if you fix mean and the value of $E[|X-\mu|]$, but there's another illuminating way to understand it. The Laplace distribution can be viewed as the result of the following process:
+A related distribution is the Laplace distribution $e^\{-|x-\mu|}$. You could think of it as the max entropy distribution if you fix mean and the value of $E[|X-\mu|]$, but there's another illuminating way to understand it. The Laplace distribution can be viewed as the result of the following process:
 
 1. Sample a variance $\sigma^2$ from the exponential distribution
 2. Output a sample from $N(\mu, \sigma^2)$
@@ -73,7 +73,7 @@ In practice, researchers often model financial data not by the Laplace distribut
 
 In our exploration of the machine learning riddle, we asked why certain functions like $x^2$ and logarithms appear so frequently in machine learning algorithms. Now we can provide a satisfying answer.
 
-The ubiquity of squared terms ($x^2$) in loss functions like linear regression and k-means comes from the assumption of Gaussian noise or Gaussian distributions. As we've seen, the Gaussian is the maximum entropy distribution when we fix the mean and variance, and its density involves an $e^{-x^2}$ term, which leads to squared terms in the log-likelihood.
+The ubiquity of squared terms ($x^2$) in loss functions like linear regression and k-means comes from the assumption of Gaussian noise or Gaussian distributions. As we've seen, the Gaussian is the maximum entropy distribution when we fix the mean and variance, and its density involves an $e^\{-x^2}$ term, which leads to squared terms in the log-likelihood.
 
 Similarly, logarithms appear because we're often dealing with likelihoods and probabilities, and the log-likelihood is what we optimize in maximum likelihood estimation. Cross-entropy loss, which is common in classification tasks, directly involves logarithms because it measures the average surprise when using one distribution to model another.
 
