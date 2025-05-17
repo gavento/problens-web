@@ -42,44 +42,50 @@ All our entropies have bunch of intuitive properties. Here are a few of them.
 
 ### Additivity
 
-Let's say that you have two distribution (the "truth" and the "model") $p, q$ and then another two distributions $p', q'$. It's true that<Footnote>
+Let's say that you have two distribution (the "truth" and the "model") $p, q$ and then another two distributions $p', q'$. It's true that
+<Footnote>
 Here's the proof (by Claude):
 Let's start with the definition of KL divergence for the joint distributions:
+</Footnote>
 
-$$D(p \otimes p', q \otimes q') = \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \log\left(\frac{p(i)p'(j)}{q(i)q'(j)}\right)$$
+$$D(p \otimes p', q \otimes q') = \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \log\left(\frac\{p(i)p'(j)\}\{q(i)q'(j)\}\right)$$
 
 Using properties of logarithms, we can rewrite this as:
 
-$$D(p \otimes p', q \otimes q') = \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \left[\log\left(\frac{p(i)}{q(i)}\right) + \log\left(\frac{p'(j)}{q'(j)}\right)\right]$$
+$$D(p \otimes p', q \otimes q') = \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \left[\log\left(\frac\{p(i)\}\{q(i)\}\right) + \log\left(\frac\{p'(j)\}\{q'(j)\}\right)\right]$$
 
 This expands to:
 
-$$D(p \otimes p', q \otimes q') = \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \log\left(\frac{p(i)}{q(i)}\right) + \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \log\left(\frac{p'(j)}{q'(j)}\right)$$
+$$D(p \otimes p', q \otimes q') = \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \log\left(\frac\{p(i)\}\{q(i)\}\right) + \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \log\left(\frac\{p'(j)\}\{q'(j)\}\right)$$
 
 Now, we can factor out terms:
 
-$$D(p \otimes p', q \otimes q') = \sum_{i=1}^{n} p(i) \log\left(\frac{p(i)}{q(i)}\right) \sum_{j=1}^{m} p'(j) + \sum_{j=1}^{m} p'(j) \log\left(\frac{p'(j)}{q'(j)}\right) \sum_{i=1}^{n} p(i)$$
+$$D(p \otimes p', q \otimes q') = \sum_{i=1}^{n} p(i) \log\left(\frac\{p(i)\}\{q(i)\}\right) \sum_{j=1}^{m} p'(j) + \sum_{j=1}^{m} p'(j) \log\left(\frac\{p'(j)\}\{q'(j)\}\right) \sum_{i=1}^{n} p(i)$$
 
 Since probability distributions sum to 1:
 $$\sum_{i=1}^{n} p(i) = 1 \text{ and } \sum_{j=1}^{m} p'(j) = 1$$
 
 This gives us:
 
-$$D(p \otimes p', q \otimes q') = \sum_{i=1}^{n} p(i) \log\left(\frac{p(i)}{q(i)}\right) + \sum_{j=1}^{m} p'(j) \log\left(\frac{p'(j)}{q'(j)}\right)$$
+$$D(p \otimes p', q \otimes q') = \sum_{i=1}^{n} p(i) \log\left(\frac\{p(i)\}\{q(i)\}\right) + \sum_{j=1}^{m} p'(j) \log\left(\frac\{p'(j)\}\{q'(j)\}\right)$$
 
 Which is exactly:
 
 $$D(p \otimes p', q \otimes q') = D(p, q) + D(p', q')$$
 
-</Footnote>
+
+
+
 $$
 D(p \otimes p', q \otimes q') = D(p, q) + D(p', q')
 $$
 where $\otimes$ stands for the product distribution, i.e. the joint distribution where $p,p'$ are independent. This is super important! In fact, in the precedening chapter, it was important that the flips of the coin were independent, so to make it more formal, we would really rely on this additive property.
 
-In fact, a slightly stronger property called _chain rule_ is true. Imagine that we have two distributions $p,q$ for how I commute to work ({🚶‍♀️, 🚲, 🚌}), but later I decide that when I take bus, I will also keep track of what line I took ({①, ②, ③}); I again have two distributions $p', q'$. Now, $p$ and $p'$ can be combined into an overall distribution $p_{overall}$ over the set {🚶‍♀️, 🚲, ①, ②, ③}; we combine $q,q'$ into $q_{overall}$ as well. It then holds that
+In fact, a slightly stronger property called _chain rule_ is true. Imagine that we have two distributions $p,q$ for how I commute to work (\{🚶‍♀️, 🚲, 🚌}), but later I decide that when I take bus, I will also keep track of what line I took (\{①, ②, ③}); I again have two distributions $p', q'$. Now, $p$ and $p'$ can be combined into an overall distribution $p_{overall}$ over the set \{🚶‍♀️, 🚲, ①, ②, ③}; we combine $q,q'$ into $q_{overall}$ as well. It then holds that
 
-<Footnote>Here's the proof (by Claude). Let $p$ and $q$ be probability distributions over a set $\{1, 2, \ldots, n\}$. Let $p'$ and $q'$ be probability distributions over a set $\{1, 2, \ldots, m\}$.
+<Footnote>
+Here's the proof (by Claude). Let $p$ and $q$ be probability distributions over a set $\{1, 2, \ldots, n\}$. Let $p'$ and $q'$ be probability distributions over a set $\{1, 2, \ldots, m\}$.
+</Footnote>
 
 Define combined distributions $p_{overall}$ and $q_{overall}$ over the set $\{(1,1), (1,2), \ldots, (1,m), 2, 3, \ldots, n\}$ where:
 
@@ -90,59 +96,58 @@ Then:
 $$D(p_{overall}, q_{overall}) = D(p, q) + p(1) \cdot D(p', q').$$
 Here's why. We compute the KL divergence for the combined distributions:
 
-$$D(p_{overall}, q_{overall}) = \sum_{z \in Z} p_{overall}(z) \log\left(\frac{p_{overall}(z)}{q_{overall}(z)}\right)$$
+$$D(p_{overall}, q_{overall}) = \sum_\{z \in Z} p_{overall}(z) \log\left(\frac\{p_{overall}(z)\}\{q_{overall}(z)\}\right)$$
 
 Where $Z = \{(1,1), (1,2), \ldots, (1,m), 2, 3, \ldots, n\}$.
 
 We can split this sum based on whether $z$ is in $\{2, 3, \ldots, n\}$ or in $\{(1,1), (1,2), \ldots, (1,m)\}$:
 
-$$D(p_{overall}, q_{overall}) = \sum_{i=2}^{n} p_{overall}(i) \log\left(\frac{p_{overall}(i)}{q_{overall}(i)}\right) + \sum_{j=1}^{m} p_{overall}(1,j) \log\left(\frac{p_{overall}(1,j)}{q_{overall}(1,j)}\right)$$
+$$D(p_{overall}, q_{overall}) = \sum_{i=2}^{n} p_{overall}(i) \log\left(\frac\{p_{overall}(i)\}\{q_{overall}(i)\}\right) + \sum_{j=1}^{m} p_{overall}(1,j) \log\left(\frac\{p_{overall}(1,j)\}\{q_{overall}(1,j)\}\right)$$
 
 For the first sum, using the definitions of $p_{overall}$ and $q_{overall}$:
 
-$$\sum_{i=2}^{n} p_{overall}(i) \log\left(\frac{p_{overall}(i)}{q_{overall}(i)}\right) = \sum_{i=2}^{n} p(i) \log\left(\frac{p(i)}{q(i)}\right)$$
+$$\sum_{i=2}^{n} p_{overall}(i) \log\left(\frac\{p_{overall}(i)\}\{q_{overall}(i)\}\right) = \sum_{i=2}^{n} p(i) \log\left(\frac\{p(i)\}\{q(i)\}\right)$$
 
 For the second sum, substituting $p_{overall}(1,j) = p(1) \cdot p'(j)$ and $q_{overall}(1,j) = q(1) \cdot q'(j)$:
 
-$$\sum_{j=1}^{m} p_{overall}(1,j) \log\left(\frac{p_{overall}(1,j)}{q_{overall}(1,j)}\right) = \sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac{p(1) \cdot p'(j)}{q(1) \cdot q'(j)}\right)$$
+$$\sum_{j=1}^{m} p_{overall}(1,j) \log\left(\frac\{p_{overall}(1,j)\}\{q_{overall}(1,j)\}\right) = \sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac\{p(1) \cdot p'(j)\}\{q(1) \cdot q'(j)\}\right)$$
 
 Using the properties of logarithms:
 
-$$\sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac{p(1)}{q(1)} \cdot \frac{p'(j)}{q'(j)}\right)$$
+$$\sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac\{p(1)\}\{q(1)\} \cdot \frac\{p'(j)\}\{q'(j)\}\right)$$
 
-$$= \sum_{j=1}^{m} p(1) \cdot p'(j) \left[\log\left(\frac{p(1)}{q(1)}\right) + \log\left(\frac{p'(j)}{q'(j)}\right)\right]$$
+$$= \sum_{j=1}^{m} p(1) \cdot p'(j) \left[\log\left(\frac\{p(1)\}\{q(1)\}\right) + \log\left(\frac\{p'(j)\}\{q'(j)\}\right)\right]$$
 
 This expands to:
 
-$$\sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac{p(1)}{q(1)}\right) + \sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac{p'(j)}{q'(j)}\right)$$
+$$\sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac\{p(1)\}\{q(1)\}\right) + \sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac\{p'(j)\}\{q'(j)\}\right)$$
 
 For the first term, factoring out $p(1)$:
 
-$$\sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac{p(1)}{q(1)}\right) = p(1) \log\left(\frac{p(1)}{q(1)}\right) \sum_{j=1}^{m} p'(j)$$
+$$\sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac\{p(1)\}\{q(1)\}\right) = p(1) \log\left(\frac\{p(1)\}\{q(1)\}\right) \sum_{j=1}^{m} p'(j)$$
 
 Since $\sum_{j=1}^{m} p'(j) = 1$, this simplifies to:
 
-$$p(1) \log\left(\frac{p(1)}{q(1)}\right)$$
+$$p(1) \log\left(\frac\{p(1)\}\{q(1)\}\right)$$
 
 For the second term:
 
-$$\sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac{p'(j)}{q'(j)}\right) = p(1) \sum_{j=1}^{m} p'(j) \log\left(\frac{p'(j)}{q'(j)}\right)$$
+$$\sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac\{p'(j)\}\{q'(j)\}\right) = p(1) \sum_{j=1}^{m} p'(j) \log\left(\frac\{p'(j)\}\{q'(j)\}\right)$$
 
 $$= p(1) \cdot D(p', q')$$
 
 Now, combining all parts:
 
-$$D(p_{overall}, q_{overall}) = \sum_{i=2}^{n} p(i) \log\left(\frac{p(i)}{q(i)}\right) + p(1) \log\left(\frac{p(1)}{q(1)}\right) + p(1) \cdot D(p', q')$$
+$$D(p_{overall}, q_{overall}) = \sum_{i=2}^{n} p(i) \log\left(\frac\{p(i)\}\{q(i)\}\right) + p(1) \log\left(\frac\{p(1)\}\{q(1)\}\right) + p(1) \cdot D(p', q')$$
 
-The first two terms together with $p(1) \log\left(\frac{p(1)}{q(1)}\right)$ form $D(p, q)$, since they cover all elements in the original set:
+The first two terms together with $p(1) \log\left(\frac\{p(1)\}\{q(1)\}\right)$ form $D(p, q)$, since they cover all elements in the original set:
 
 $$D(p_{overall}, q_{overall}) = D(p, q) + p(1) \cdot D(p', q')$$
 
 This proves the chain rule for KL divergence as specified.
 
-</Footnote>
 $$
-D(p_{overall}, q_{overall}) = D(p,q) + p_{\text{🚌}} \cdot D(p',q')
+D(p_{overall}, q_{overall}) = D(p,q) + p_\{\text{bus}} \cdot D(p',q')
 $$
 
 Crossentropy and entropy are also additive for independent distributions.
@@ -150,27 +155,30 @@ Crossentropy and entropy are also additive for independent distributions.
 ### Nonnegativity / monotonicity
 
 We have already seen in the [previous chapter](01-kl_intro) that if KL were negative for some two distributions, something would be severely wrong with the universe.
-There's also a short algebraic proof of this fact. <Footnote>To prove that for any $p,q$ we have (I have used the natural algorithm to make it a bit shorter)
+There's also a short algebraic proof of this fact. 
+
+<Footnote>
+To prove that for any $p,q$ we have (I have used the natural algorithm to make it a bit shorter)
+</Footnote>
 
 $$
-D(p,q) =  \sum_{i = 1}^n p_i \cdot \ln \frac{p_i}{q_i}  \ge 0,
+D(p,q) =  \sum_{i = 1}^n p_i \cdot \ln \frac\{p_i\}\{q_i}  \ge 0,
 $$
 
-we will estimate the expression $\ln \frac{p_i}{q_i}$ inside the summation. Since we already know that the inequality is tight if all $p_i = q_i$, we should choose an estimate of logarithm which is tight around 1. The best approximation of logarithm around $1$ is $\ln (1+x) \le x$<Footnote>picture</Footnote>. We can use it like this:
+we will estimate the expression $\ln \frac\{p_i\}\{q_i}$ inside the summation. Since we already know that the inequality is tight if all $p_i = q_i$, we should choose an estimate of logarithm which is tight around 1. The best approximation of logarithm around $1$ is $\ln (1+x) \le x$. We can use it like this:
 
 $$
 -D(p,q)
-= \sum_{i = 1}^n p_i \cdot \ln \frac{q_i}{p_i}
-\le \sum_{i = 1}^n p_i \cdot  \left( \frac{q_i}{p_i} - 1 \right)
+= \sum_{i = 1}^n p_i \cdot \ln \frac\{q_i\}\{p_i}
+\le \sum_{i = 1}^n p_i \cdot  \left( \frac\{q_i\}\{p_i} - 1 \right)
 = \sum_{i = 1}^n q_i - p_i
 = 1 - 1 = 0
 $$
 
-</Footnote>
 
 Because $D(p,q) = H(p,q) - H(p)$, you can view this fact as saying that the crossentropy $H(p,q)$ for fixed $p$ is minimized if we choose $q = p$.
 
-A bit stronger version of this fact is the so-called monotonicity <Footnote>This is pretty similar property to the so-called [Data processing inequality](https://en.wikipedia.org/wiki/Data_processing_inequality) you might have heard of. </Footnote> Imagine that we have two distributions $p,q$, let's say they are over countries ({🇺🇸,🇨🇦,🇲🇽,🇯🇵,🇬🇧,🇮🇳,...}). Then, we zoom out a little bit and consider a smaller set of geographical areas ({North America, Europe, ...}). We can convert $p,q$ to this rougher set to get distributions $p', q'$ -- e.g. we set $p'(North America) = p(🇺🇸) + p(🇨🇦) + p(🇲🇽)$. Then it's the case that
+A bit stronger version of this fact is the so-called monotonicity <Footnote>This is pretty similar property to the so-called [Data processing inequality](https://en.wikipedia.org/wiki/Data_processing_inequality) you might have heard of. </Footnote> Imagine that we have two distributions $p,q$, let's say they are over countries (\{🇺🇸,🇨🇦,🇲🇽,🇯🇵,🇬🇧,🇮🇳,...}). Then, we zoom out a little bit and consider a smaller set of geographical areas (\{North America, Europe, ...}). We can convert $p,q$ to this rougher set to get distributions $p', q'$ -- e.g. we set $p'(North America) = p(🇺🇸) + p(🇨🇦) + p(🇲🇽)$. Then it's the case that
 
 $$
 D(p, q) \ge D(p', q')
@@ -200,7 +208,7 @@ We will for simplicity assume that all the events are independent, where this si
 
 $$
 KL score = \sum_{i = 1}^n  \left(
-    p_i\log\frac{p_i}{q_i} + (1-p_i)\log\frac{1-p_i}{1-q_i}
+    p_i\log\frac\{p_i\}\{q_i} + (1-p_i)\log\frac\{1-p_i\}\{1-q_i}
     \right)
 $$
 
@@ -225,7 +233,7 @@ We can now define a new, feasible to compute, score function:
 $$
 crossentropy score =
 \sum_{i = 1}^n  \left(
-    \hat{p}_i\log\frac{\hat{p}_i}{q_i} + (1-\hat{p}_i)\log\frac{1-\hat{p}_i}{1-q_i}
+    \hat{p}_i\log\frac\{\hat{p}_i\}\{q_i} + (1-\hat{p}_i)\log\frac\{1-\hat{p}_i\}\{1-q_i}
     \right)
 $$
 
@@ -234,7 +242,7 @@ Why do we call it the _crossentropy score_? At this point, I should mention that
 $$
 crossentropy score =
 \sum_{i = 1}^n  \left(
-    \hat{p}_i\log\frac{1}{q_i} + (1-\hat{p}_i)\log\frac{1}{1-q_i}
+    \hat{p}_i\log\frac\{1\}\{q_i} + (1-\hat{p}_i)\log\frac\{1\}\{1-q_i}
     \right)
 $$
 
@@ -278,13 +286,13 @@ To build the theory behind building codes like Morse's, let's imagine the follow
 
 Our task is as follows. We should come up with some kind of binary encoding scheme so that if we get a long English text, represented as a large amount $n$ of independent samples from the above distribution, the number of bits we use is the least possible.
 
-It turns out that the best possible solution to this problem satisfies that the average amount of bits we spend per letter -- called the rate of the code -- is $\sum p_i \log \frac{1}{p_i}$, the entropy of the distribution. For example, if the entropy of the distribution is about 4.17 bits, there is a code spending that many bits per letter on average, and there is no better code.
+It turns out that the best possible solution to this problem satisfies that the average amount of bits we spend per letter -- called the rate of the code -- is $\sum p_i \log \frac\{1\}\{p_i}$, the entropy of the distribution. For example, if the entropy of the distribution is about 4.17 bits, there is a code spending that many bits per letter on average, and there is no better code.
 
 Instead of proving why the entropy is the answer to our question, let's see examples of (suboptimal) codes that suggest why the answer is entropy.
 
 First, we could encode each letter using 5 bits -- a becomes 00000, b becomes 00001 and so on. The rate of this scheme is 5 bits per letter, and it can be improved quite a bit.
 
-One way to improve it is to assign codes of different lengths to different letters, based on their frequency. The following turns out to be a good rule for the lengths: if a letter $i$ has frequency $p_i$, its code length should be about $\log \frac{1}{p_i}$.
+One way to improve it is to assign codes of different lengths to different letters, based on their frequency. The following turns out to be a good rule for the lengths: if a letter $i$ has frequency $p_i$, its code length should be about $\log \frac\{1\}\{p_i}$.
 
 As a specific example, if the alphabet were just a-d and the letter frequencies were $1/2, 1/4, 1/8, 1/8$, the best code is:
 
@@ -295,7 +303,7 @@ As a specific example, if the alphabet were just a-d and the letter frequencies 
 
 That is, "baba" is encoded as "100100".
 
-You might notice how the letter with frequency $1/2^i$ has a code of length $i$; that is, frequency $p_i$ leads to a code of length $\log \frac{1}{p_i}$.
+You might notice how the letter with frequency $1/2^i$ has a code of length $i$; that is, frequency $p_i$ leads to a code of length $\log \frac\{1\}\{p_i}$.
 
 If all the probabilities in the distribution are $1/2^k$ for some number $k$, the generalization of the above code -- having $1/2^k$ probability letters have lengths $k$ -- is always possible.
 

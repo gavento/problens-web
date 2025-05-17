@@ -36,7 +36,7 @@ This was a trick question because both answers are kind of true! The shape of th
 
 At the beginning, it seems that distribution looks a lot like the familiar bell-shaped curve $e^{-x^2}$ of [normal distribution](https://en.wikipedia.org/wiki/Normal_distribution). This makes sense! The price of a stock slightly increases whenever somebody buys it, and slighlty decreases whenever somebody sells. The daily change is a summation of bazilions of buys and sells, and this is the setup in which we can apply the so-called [Central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem), that says that in this case, the resulting distribution should be normal.
 
-So how come that as we keep zooming out, the histogram gets more and more "pointy"? The other distribution is the so-called Laplace distribution with shape $e^{-|x|}$ and it starts to be a better fit after around ?? months for S&P, and ?? for Bitcoin.
+So how come that as we keep zooming out, the histogram gets more and more "pointy"? The other distribution is the so-called Laplace distribution with shape $e^\{-|x|\}$ and it starts to be a better fit after around ?? months for S&P, and ?? for Bitcoin.
 
 There are two ways for how this connects to KL divergence. First of all, KL divergence measures how well a ground truth distribution (empirical data we collected) is fitted by a model (normal or Laplace distribution), so you can use it to make claims such as "for more than ?? months, Laplace fits the data better than normal".
 
@@ -127,14 +127,14 @@ Which of our three tables is the "closest" to being independent?
 
 When you first encounter machine learning, it seems like horrible mess, full of ad-hoc tricks and optimization problems. For example, here are a few machine learning tools you learn in the first few Machine-Learning-101 lectures, and what optimization they correspond to:
 
-$k$-means -- $\min_{C} \sum_{i = 1}^{n} \min_{c \in C} ||x-c||^2$
-linear regression -- $\min_{\alpha, \beta} \sum_{i = 1}^n (\alpha \cdot x_i + \beta - y_i)^2$
-logistic regression -- $\min_{\alpha, \beta} \sum_{i = 1}^n y_i\log(\sigma(\alpha \cdot x_i + \beta)) + (1-y_i)\log(1 - \sigma(\alpha \cdot x_i + \beta))$
+$k$-means -- $\min_{C} \sum_{i = 1}^{n} \min_\{c \in C\} ||x-c||^2$
+linear regression -- $\min_\{\alpha, \beta\} \sum_{i = 1}^n (\alpha \cdot x_i + \beta - y_i)^2$
+logistic regression -- $\min_\{\alpha, \beta\} \sum_{i = 1}^n y_i\log(\sigma(\alpha \cdot x_i + \beta)) + (1-y_i)\log(1 - \sigma(\alpha \cdot x_i + \beta))$
 
 When you try to understand some more modern deep learning tools, it does not get that much better. For example, consider variational autoencoders (the architecture behind early image generation models like DALL-E / Midjourney as of time of writing). During training, you optimize the following beast:
 
 $$
-E_{z \sim p_x}[||x-D(z)||^2] + \sum_{j = 1}^d (d\cdot \sigma_j^2(x) + \mu_j^2 - 2d\log \sigma(x))
+E_\{z \sim p_x\}[||x-D(z)||^2] + \sum_{j = 1}^d (d\cdot \sigma_j^2(x) + \mu_j^2 - 2d\log \sigma(x))
 $$
 
 Although these functions look horrible, we will see what they correspond to and how they can be derived using KL divergence.
