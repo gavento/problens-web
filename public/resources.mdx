@@ -77,9 +77,9 @@ These resources dive deeper into the theory and advanced applications of KL dive
 
 This article explores the profound connection between the Maximum Entropy principle and Bayesian inference using KL divergence. Citing research by Giffin & Caticha, it points out that the **method of Maximum _Relative_ Entropy (ME)** generalizes both vanilla MaxEnt and Bayes' rule.
 
-The blog demonstrates that when you receive new evidence, updating your prior to the posterior by **maximizing relative entropy $S_{\rm rel}(P, P_{\text{old}}) = -\int P \log(P/P_{\text{old}})\,dx$** (i.e., minimizing KL divergence to the prior) yields exactly the Bayesian posterior.
+The blog demonstrates that when you receive new evidence, updating your prior to the posterior by **maximizing relative entropy $S_{rel}(P, P_\{\text{old}}) = -\int P \log(P/P_\{\text{old}})\,dx$** (i.e., minimizing KL divergence to the prior) yields exactly the Bayesian posterior.
 
-In other words, Bayes' theorem can be derived as the distribution change that **minimizes KL divergence from the prior while fitting the data**. The post provides an intuitive interpretation: relative entropy $D(P\|P_{\text{old}})$ is the _additional information required_ to go from the old distribution to the new.
+In other words, Bayes' theorem can be derived as the distribution change that **minimizes KL divergence from the prior while fitting the data**. The post provides an intuitive interpretation: relative entropy $D(P\|P_\{\text{old}})$ is the _additional information required_ to go from the old distribution to the new.
 
 It underscores that both Bayes and MaxEnt are driven by the same information-theoretic principle of keeping your distribution as "broad" (high entropy) as possible until forced to sharpen it by new constraints. This resource is valuable for readers interested in the theoretical unity of inference and information theory.
 
