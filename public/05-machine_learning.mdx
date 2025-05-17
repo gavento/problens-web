@@ -29,7 +29,7 @@ Combining these two principles, we can derive many basic approaches in statistic
 
 ### Mean and Variance Estimation <a id="mean-and-variance-estimation"></a>
 
-Suppose we are given a list of numbers $\\{X_1, \dots, X_n\\}$. We care about their mean and variance. Let's use the combo of max entropy + max likelihood to derive the formulas for that.
+Suppose we are given a list of numbers $\\\{X_1, \dots, X_n\\\}$. We care about their mean and variance. Let's use the combo of max entropy + max likelihood to derive the formulas for that.
 
 First, the maximum entropy principle suggests that once we fix the mean of a distribution to be $\mu$ and variance to be $\sigma^2$, and consider all the distributions with that mean and that variance, there is a single distribution that stands out -- the maximum entropy distribution after fixing the mean and variance -- the normal distribution.<Footnote>The principle also suggests an even more basic thing -- to assume that the numbers have been drawn independently from some distribution, which allows us to represent the sequence $X_1, \dots, X_n$ as a set, or equivalently an empirical distribution.</Footnote>
 
@@ -71,7 +71,7 @@ For example, maybe you think that the parameters $a$ and $b$ are small and you w
 
 As another example, consider the more general case where you have many predictors $x^1, \dots, x^k$, but you believe that only a small fraction, let's say $p$ fraction of them are actually useful. For the rest, the corresponding coefficient $a_i$ that we try to find is equal to zero. Our framework suggests that you should optimize:
 
-$$\min_\{S \subseteq \\{1, \dots, k\\}, |S|=pk\} \sum_\{i=1\}^n \|a\cdot x_i - y_i\|^2$$
+$$\min_\{S \subseteq \\\{1, \dots, k\\\}, |S|=pk\} \sum_\{i=1\}^n \|a\cdot x_i - y_i\|^2$$
 
 The only problem is that optimizing this function is hard, as we would have to essentially try all possible subsets of nonzero coefficients and fit each one of them. Some more complicated math shows though, that optimizing a different objective, called Lasso, often solves this, in general complicated, problem. So, you should think of Lasso as an attempt to solve this problem.
 
@@ -87,7 +87,7 @@ Now when we know the family of distributions we care about, we can use the max l
 
 $$\sum_i y_i \log \sigma(\theta\cdot x_i) + (1-y_i)\log (1-\sigma(\theta\cdot x_i))$$
 
-where $y_i$ is the indicator ($y_i \in \\{0,1\\}$) for whether $x_i$ is red. This is hard to solve exactly, but gradient descent usually works pretty well. At the end, we get to know $\theta$ which hides not only the direction of the line, but also a scale which is larger the more confident we are about the classification. In the end, we can use $\theta$ to not just predict the more likely color of each new point $x_\{n+1\}$, but also our confidence that it has that color.
+where $y_i$ is the indicator ($y_i \in \\\{0,1\\\}$) for whether $x_i$ is red. This is hard to solve exactly, but gradient descent usually works pretty well. At the end, we get to know $\theta$ which hides not only the direction of the line, but also a scale which is larger the more confident we are about the classification. In the end, we can use $\theta$ to not just predict the more likely color of each new point $x_\{n+1\}$, but also our confidence that it has that color.
 
 ### K-means Clustering <a id="k-means-clustering"></a>
 
