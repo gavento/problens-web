@@ -24,15 +24,15 @@ Why does this methodology make sense? Remember, KL is supposed to measure how we
 
 Let's take a closer look at our minimize-KL approach. Let's focus on the most common case, where $p$ is literally the empirical distribution over $X_1, \dots, X_n$. To avoid cluttered notation, let's assume all $X_i$ are distinct<Footnote>Feel free to check that the general case is the same. </Footnote>. In that case, we can write the KL divergence we are minimizing as:
 
-$$D(p,q) = \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1/n}{q(X_i)}$$
+$$D(p,q) = \sum_\{X_i\in\mathcal{X}\} \frac{1}{n}\log\frac{1/n}{q(X_i)}$$
 
 Splitting this into entropy and cross-entropy:
 
-$$D(p,q) = \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1}{q(X_i)} - \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1}{n}$$
+$$D(p,q) = \sum_\{X_i\in\mathcal{X}\} \frac{1}{n}\log\frac{1}{q(X_i)} - \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1}{n}$$
 
 Note that the entropy term (the second sum) is constant with respect to $q$. <Footnote> In this special case of $p$ being uniform distribution, we even have $\sum \frac{1}{n}\log n = \log n$, but the important part is that it's a constant independent of $q$. </Footnote> Thus, minimizing KL divergence is equivalent to minimizing the cross-entropy:
 
-$$\min_{q \in Q} \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1}{q(X_i)}$$
+$$\min_{q \in Q} \sum_\{X_i\in\mathcal{X}\} \frac{1}{n}\log\frac{1}{q(X_i)}$$
 
 Here, $q(X_i)$ is the probability (or probability density) that the model assigns to the data point $X_i$. Dropping the constant factor $1/n$ and using the identity $\log(1/x)=-\log x$, this is equivalent to maximizing the product:
 

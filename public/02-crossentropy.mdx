@@ -19,11 +19,11 @@ Last time, we have been parsing this table "row-by-row". That is, we always subt
 We can also try to understand the table "column-by-column". That is, the Bayesian reasoner can compute the total surprisal for both hypothesis, then convert those into the final posterior probability. This corresponds to rewriting the KL divergence as follows:
 
 $$
-\underbrace{\sum_{i = 1}^n p_i \log p_i / q_i}_{D(p,q)}
+\underbrace\{\sum_{i = 1}^n p_i \log p_i / q_i\}_\{D(p,q)\}
  =
-\underbrace{\sum_{i = 1}^n p_i \log 1 / q_i}_{H(p,q)}
+\underbrace\{\sum_{i = 1}^n p_i \log 1 / q_i\}_\{H(p,q)\}
  -
-\underbrace{\sum_{i = 1}^n p_i \log 1 / p_i}_{H(p)}
+\underbrace\{\sum_{i = 1}^n p_i \log 1 / p_i\}_\{H(p)\}
 $$
 
 $H(p,q)$ is called _crossentropy_. You should think of this expression as telling you how surprised you are, on average, if you keep seeing data from $p$ and try to model them by $q$.

@@ -33,7 +33,7 @@ To gain evidence, you flip a coin; let's say you got Heads. This is an evidence 
 Bayes' theorem can do that. The formula for it is typically written down as follows:
 
 $$
-P(fair | flipped heads) = \frac{P(flipped heads | fair) \cdot P(fair)}{P(flipped heads)}
+P(fair | flipped heads) = \frac\{P(flipped heads | fair) \cdot P(fair)\}\{P(flipped heads)\}
 $$
 
 This is not rocket science -- if you multiply both sides by $P(flipped heads)$, both sides are just a different way of writing down the definition of $P(fair \cap flipped heads)$.
@@ -41,8 +41,8 @@ This is not rocket science -- if you multiply both sides by $P(flipped heads)$, 
 But I like to think of it a bit differently and in my head, I write it as this:
 
 $$
-\frac{P(fair | flipped heads)}{P(biased | flipped heads)}
-= \frac{P(fair)}{P(biased)} \cdot \frac{P(flipped heads | fair)}{P(flipped heads | biased)}
+\frac\{P(fair | flipped heads)\}\{P(biased | flipped heads)\}
+= \frac\{P(fair)\}\{P(biased)\} \cdot \frac\{P(flipped heads | fair)\}\{P(flipped heads | biased)\}
 $$
 
 You can check that the two formulas are the same by yourself. <Footnote>To see this, use the first formula both for $P(fair | flipped heads)$ and $P(biased | flipped heads)$, and divided them. </Footnote> To understand this rephrasing, it's good to think in terms of [odds](https://en.wikipedia.org/wiki/Odds). This is how people in the gambling industry sometimes use probabilities: instead of saying $1/3$ probability of this and $2/3$ of that, they say that odds are 1:2. Odds are like probabilities, but they don't sum up to one -- odds 1:2 are the same as 2:4. This way of thinking is actually very useful: Often, you don't want to bother thinking about how to normalize probabilities, so you just think in terms of odds.
