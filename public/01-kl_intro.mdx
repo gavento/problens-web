@@ -126,7 +126,7 @@ I am mentioning this because if you like to divide statistics into Bayesian and 
 
 ## Asymmetry
 
-It's important to understand that the KL formula is not symmetrical -- in general, we don't have $D(p,q) = D(q,p)$. This is sometimes seen as a drawback, especially when you compare KL with (symmetrical) distance function like the $\ell_1$ or $\ell_2$ metric<Footnote> $d_1(p,q) = \sum_{i = 1}^n |p_i - q_i|$, $d_2(p,q) = \sqrt\{\sum_{i = 1}^n (p_i - q_i)^2 \}$, </Footnote>. I want to stress that the asymmetry is by design! KL measures how well a distribution $p$ is fitted by a model $q$. This is an asymmetrical notion, so we need an asymetrical formula, nothing to be ashamed for here.
+It's important to understand that the KL formula is not symmetrical -- in general, we don't have $D(p,q) = D(q,p)$. This is sometimes seen as a drawback, especially when you compare KL with (symmetrical) distance function like the $\ell_1$ or $\ell_2$ metric<Footnote> <Math math='d_1(p,q) = \sum_{i = 1}^n |p_i - q_i|'/>, <Math math='d_2(p,q) = \sqrt{\sum_{i = 1}^n (p_i - q_i)^2}'/></Footnote>. I want to stress that the asymmetry is by design! KL measures how well a distribution $p$ is fitted by a model $q$. This is an asymmetrical notion, so we need an asymetrical formula, nothing to be ashamed for here.
 
 In fact, the word _divergence_ is used for things like KL that behave kind of like distances but are not really symmetrical. <Footnote>More on that in [one of the last chapters](06-algorithms)</Footnote>
 

@@ -1,7 +1,3 @@
-import Footnote from "../components/Footnotes.tsx"
-
-
-
 # Entropy & Crossentropy
 
 In this chapter, we will see how KL divergence connects with entropy and crossentropy. It's not rocket science:
@@ -22,13 +18,13 @@ Last time, we have been parsing this table "row-by-row". That is, we always subt
 
 We can also try to understand the table "column-by-column". That is, the Bayesian reasoner can compute the total surprisal for both hypothesis, then convert those into the final posterior probability. This corresponds to rewriting the KL divergence as follows:
 
-$$
-\underbrace\{\sum_{i = 1}^n p_i \log p_i / q_i\}_\{D(p,q)\}
+<Math displayMode={true} math='
+\underbrace{\sum_{i = 1}^n p_i \log \frac{p_i}{q_i}}_{D(p,q)}
  =
-\underbrace\{\sum_{i = 1}^n p_i \log 1 / q_i\}_\{H(p,q)\}
+\underbrace{\sum_{i = 1}^n p_i \log 1 / q_i}_{H(p,q)}
  -
-\underbrace\{\sum_{i = 1}^n p_i \log 1 / p_i\}_\{H(p)\}
-$$
+\underbrace{\sum_{i = 1}^n p_i \log 1 / p_i}_{H(p)}
+'/>
 
 $H(p,q)$ is called _crossentropy_. You should think of this expression as telling you how surprised you are, on average, if you keep seeing data from $p$ and try to model them by $q$.
 
@@ -52,26 +48,35 @@ Here's the proof (by Claude):
 Let's start with the definition of KL divergence for the joint distributions:
 </Footnote>
 
-$$D(p \otimes p', q \otimes q') = \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \log\left(\frac\{p(i)p'(j)\}\{q(i)q'(j)\}\right)$$
+<Math displayMode={true} math="
+D(p \otimes p', q \otimes q') = \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \log\left(\frac{p(i)p'(j)}{q(i)q'(j)}\right)
+"/>
 
 Using properties of logarithms, we can rewrite this as:
 
-$$D(p \otimes p', q \otimes q') = \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \left[\log\left(\frac\{p(i)\}\{q(i)\}\right) + \log\left(\frac\{p'(j)\}\{q'(j)\}\right)\right]$$
+<Math displayMode={true} math="
+D(p \otimes p', q \otimes q') = \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \left[\log\left(\frac{p(i)}{q(i)}\right) + \log\left(\frac{p'(j)}{q'(j)}\right)\right]
+"/>
 
 This expands to:
 
-$$D(p \otimes p', q \otimes q') = \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \log\left(\frac\{p(i)\}\{q(i)\}\right) + \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \log\left(\frac\{p'(j)\}\{q'(j)\}\right)$$
+<Math displayMode={true} math="
+D(p \otimes p', q \otimes q') = \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \log\left(\frac{p(i)}{q(i)}\right) + \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \log\left(\frac{p'(j)}{q'(j)}\right)
+"/>
 
 Now, we can factor out terms:
 
-$$D(p \otimes p', q \otimes q') = \sum_{i=1}^{n} p(i) \log\left(\frac\{p(i)\}\{q(i)\}\right) \sum_{j=1}^{m} p'(j) + \sum_{j=1}^{m} p'(j) \log\left(\frac\{p'(j)\}\{q'(j)\}\right) \sum_{i=1}^{n} p(i)$$
+<Math displayMode={true} math="
+D(p \otimes p', q \otimes q') = \sum_{i=1}^{n} p(i) \log\left(\frac{p(i)}{q(i)}\right) \sum_{j=1}^{m} p'(j) + \sum_{j=1}^{m} p'(j) \log\left(\frac{p'(j)}{q'(j)}\right) \sum_{i=1}^{n} p(i)
+"/>
 
 Since probability distributions sum to 1:
 $$\sum_{i=1}^{n} p(i) = 1 \text{ and } \sum_{j=1}^{m} p'(j) = 1$$
 
 This gives us:
 
-$$D(p \otimes p', q \otimes q') = \sum_{i=1}^{n} p(i) \log\left(\frac\{p(i)\}\{q(i)\}\right) + \sum_{j=1}^{m} p'(j) \log\left(\frac\{p'(j)\}\{q'(j)\}\right)$$
+<Math displayMode={true} math="
+D(p \otimes p', q \otimes q') = \sum_{i=1}^{n} p(i) \log\left(\frac{p(i)}{q(i)}\right) + \sum_{j=1}^{m} p'(j) \log\left(\frac{p'(j)}{q'(j)}\right)"/>
 
 Which is exactly:
 
@@ -100,59 +105,77 @@ Then:
 $$D(p_{overall}, q_{overall}) = D(p, q) + p(1) \cdot D(p', q').$$
 Here's why. We compute the KL divergence for the combined distributions:
 
-$$D(p_{overall}, q_{overall}) = \sum_\{z \in Z} p_{overall}(z) \log\left(\frac\{p_{overall}(z)\}\{q_{overall}(z)\}\right)$$
+<Math displayMode={true} math="
+D(p_{overall}, q_{overall}) = \sum_{z \in Z} p_{overall}(z) \log\left(\frac{p_{overall}(z)}{q_{overall}(z)}\right)
+"/>
 
 Where $Z = \{(1,1), (1,2), \ldots, (1,m), 2, 3, \ldots, n\}$.
 
 We can split this sum based on whether $z$ is in $\{2, 3, \ldots, n\}$ or in $\{(1,1), (1,2), \ldots, (1,m)\}$:
 
-$$D(p_{overall}, q_{overall}) = \sum_{i=2}^{n} p_{overall}(i) \log\left(\frac\{p_{overall}(i)\}\{q_{overall}(i)\}\right) + \sum_{j=1}^{m} p_{overall}(1,j) \log\left(\frac\{p_{overall}(1,j)\}\{q_{overall}(1,j)\}\right)$$
+<Math displayMode={true} math="
+D(p_{overall}, q_{overall}) = \sum_{i=2}^{n} p_{overall}(i) \log\left(\frac{p_{overall}(i)}{q_{overall}(i)}\right) + \sum_{j=1}^{m} p_{overall}(1,j) \log\left(\frac{p_{overall}(1,j)}{q_{overall}(1,j)}\right)
+"/>
 
 For the first sum, using the definitions of $p_{overall}$ and $q_{overall}$:
 
-$$\sum_{i=2}^{n} p_{overall}(i) \log\left(\frac\{p_{overall}(i)\}\{q_{overall}(i)\}\right) = \sum_{i=2}^{n} p(i) \log\left(\frac\{p(i)\}\{q(i)\}\right)$$
+<Math displayMode={true} math="
+\sum_{i=2}^{n} p_{overall}(i) \log\left(\frac{p_{overall}(i)}{q_{overall}(i)}\right) = \sum_{i=2}^{n} p(i) \log\left(\frac{p(i)}{q(i)}\right)
+"/>
 
 For the second sum, substituting $p_{overall}(1,j) = p(1) \cdot p'(j)$ and $q_{overall}(1,j) = q(1) \cdot q'(j)$:
 
-$$\sum_{j=1}^{m} p_{overall}(1,j) \log\left(\frac\{p_{overall}(1,j)\}\{q_{overall}(1,j)\}\right) = \sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac\{p(1) \cdot p'(j)\}\{q(1) \cdot q'(j)\}\right)$$
+<Math displayMode={true} math="
+\sum_{j=1}^{m} p_{overall}(1,j) \log\left(\frac{p_{overall}(1,j)}{q_{overall}(1,j)}\right) = \sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac{p(1) \cdot p'(j)}{q(1) \cdot q'(j)}\right)
+"/>
 
 Using the properties of logarithms:
 
-$$\sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac\{p(1)\}\{q(1)\} \cdot \frac\{p'(j)\}\{q'(j)\}\right)$$
+<Math displayMode={true} math="
+\sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac{p(1)}{q(1)} \cdot \frac{p'(j)}{q'(j)}\right)$$
+"/>
 
-$$= \sum_{j=1}^{m} p(1) \cdot p'(j) \left[\log\left(\frac\{p(1)\}\{q(1)\}\right) + \log\left(\frac\{p'(j)\}\{q'(j)\}\right)\right]$$
+<Math displayMode={true} math="
+= \sum_{j=1}^{m} p(1) \cdot p'(j) \left[\log\left(\frac{p(1)}{q(1)}\right) + \log\left(\frac{p'(j)}{q'(j)}\right)\right]$$
+"/>
 
 This expands to:
 
-$$\sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac\{p(1)\}\{q(1)\}\right) + \sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac\{p'(j)\}\{q'(j)\}\right)$$
+<Math displayMode={true} math="
+\sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac{p(1)}{q(1)}\right) + \sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac{p'(j)}{q'(j)}\right)
+"/>
 
 For the first term, factoring out $p(1)$:
 
-$$\sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac\{p(1)\}\{q(1)\}\right) = p(1) \log\left(\frac\{p(1)\}\{q(1)\}\right) \sum_{j=1}^{m} p'(j)$$
+<Math displayMode={true} math="
+\sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac{p(1)}{q(1)}\right) = p(1) \log\left(\frac{p(1)}{q(1)}\right) \sum_{j=1}^{m} p'(j)
+"/>
 
 Since $\sum_{j=1}^{m} p'(j) = 1$, this simplifies to:
 
-$$p(1) \log\left(\frac\{p(1)\}\{q(1)\}\right)$$
+$$p(1) \log\left(\frac{p(1)}{q(1)}\right)$$
 
 For the second term:
 
-$$\sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac\{p'(j)\}\{q'(j)\}\right) = p(1) \sum_{j=1}^{m} p'(j) \log\left(\frac\{p'(j)\}\{q'(j)\}\right)$$
+<Math displayMode={true} math="
+\sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac{p'(j)}{q'(j)}\right) = p(1) \sum_{j=1}^{m} p'(j) \log\left(\frac{p'(j)}{q'(j)}\right)
+"/>
 
 $$= p(1) \cdot D(p', q')$$
 
 Now, combining all parts:
 
-$$D(p_{overall}, q_{overall}) = \sum_{i=2}^{n} p(i) \log\left(\frac\{p(i)\}\{q(i)\}\right) + p(1) \log\left(\frac\{p(1)\}\{q(1)\}\right) + p(1) \cdot D(p', q')$$
+$$D(p_{overall}, q_{overall}) = \sum_{i=2}^{n} p(i) \log\left(\frac{p(i)}{q(i)}\right) + p(1) \log\left(\frac{p(1)}{q(1)}\right) + p(1) \cdot D(p', q')$$
 
-The first two terms together with $p(1) \log\left(\frac\{p(1)\}\{q(1)\}\right)$ form $D(p, q)$, since they cover all elements in the original set:
+The first two terms together with $p(1) \log\left(\frac{p(1)}{q(1)}\right)$ form $D(p, q)$, since they cover all elements in the original set:
 
 $$D(p_{overall}, q_{overall}) = D(p, q) + p(1) \cdot D(p', q')$$
 
 This proves the chain rule for KL divergence as specified.
 
-$$
-D(p_{overall}, q_{overall}) = D(p,q) + p_\{\text{bus}} \cdot D(p',q')
-$$
+<Math displayMode={true} math="
+D(p_{overall}, q_{overall}) = D(p,q) + p_{\text{bus}} \cdot D(p',q')
+"/>
 
 Crossentropy and entropy are also additive for independent distributions.
 
@@ -161,20 +184,18 @@ Crossentropy and entropy are also additive for independent distributions.
 We have already seen in the [previous chapter](01-kl_intro) that if KL were negative for some two distributions, something would be severely wrong with the universe.
 There's also a short algebraic proof of this fact.
 
-<Footnote>
 To prove that for any $p,q$ we have (I have used the natural algorithm to make it a bit shorter)
-</Footnote>
 
 $$
-D(p,q) =  \sum_{i = 1}^n p_i \cdot \ln \frac\{p_i\}\{q_i}  \ge 0,
+D(p,q) =  \sum_{i = 1}^n p_i \cdot \ln \frac{p_i}{q_i}  \ge 0,
 $$
 
-we will estimate the expression $\ln \frac\{p_i\}\{q_i}$ inside the summation. Since we already know that the inequality is tight if all $p_i = q_i$, we should choose an estimate of logarithm which is tight around 1. The best approximation of logarithm around $1$ is $\ln (1+x) \le x$. We can use it like this:
+we will estimate the expression $\ln \frac{p_i}{q_i}$ inside the summation. Since we already know that the inequality is tight if all $p_i = q_i$, we should choose an estimate of logarithm which is tight around 1. The best approximation of logarithm around $1$ is $\ln (1+x) \le x$. We can use it like this:
 
 $$
 -D(p,q)
-= \sum_{i = 1}^n p_i \cdot \ln \frac\{q_i\}\{p_i}
-\le \sum_{i = 1}^n p_i \cdot  \left( \frac\{q_i\}\{p_i} - 1 \right)
+= \sum_{i = 1}^n p_i \cdot \ln \frac{q_i}{p_i}
+\le \sum_{i = 1}^n p_i \cdot  \left( \frac{q_i}{p_i} - 1 \right)
 = \sum_{i = 1}^n q_i - p_i
 = 1 - 1 = 0
 $$
@@ -212,7 +233,7 @@ We will for simplicity assume that all the events are independent, where this si
 
 $$
 KL score = \sum_{i = 1}^n  \left(
-    p_i\log\frac\{p_i\}\{q_i} + (1-p_i)\log\frac\{1-p_i\}\{1-q_i}
+    p_i\log\frac{p_i}{q_i} + (1-p_i)\log\frac{1-p_i}{1-q_i}
     \right)
 $$
 
@@ -234,19 +255,19 @@ The only fact we know is whether each event happenned or not. Fortunately, this 
 
 We can now define a new, feasible to compute, score function:
 
-$$
+<Math displayMode={true} math="
 crossentropy score =
 \sum_{i = 1}^n  \left(
-    \hat{p}_i\log\frac\{\hat{p}_i\}\{q_i} + (1-\hat{p}_i)\log\frac\{1-\hat{p}_i\}\{1-q_i}
+    \hat{p}_i\log\frac{\hat{p}_i}{q_i} + (1-\hat{p}_i)\log\frac{1-\hat{p}_i}{1-q_i}
     \right)
-$$
+"/>
 
 Why do we call it the _crossentropy score_? At this point, I should mention that to define KL divergence, we use the convention that $0 \cdot \log 0 = 0 \cdot \log 0/0 = 0$. This means that our equation actually simplifies to
 
 $$
 crossentropy score =
 \sum_{i = 1}^n  \left(
-    \hat{p}_i\log\frac\{1\}\{q_i} + (1-\hat{p}_i)\log\frac\{1\}\{1-q_i}
+    \hat{p}_i\log\frac{1}{q_i} + (1-\hat{p}_i)\log\frac{1}{1-q_i}
     \right)
 $$
 
@@ -290,13 +311,13 @@ To build the theory behind building codes like Morse's, let's imagine the follow
 
 Our task is as follows. We should come up with some kind of binary encoding scheme so that if we get a long English text, represented as a large amount $n$ of independent samples from the above distribution, the number of bits we use is the least possible.
 
-It turns out that the best possible solution to this problem satisfies that the average amount of bits we spend per letter -- called the rate of the code -- is $\sum p_i \log \frac\{1\}\{p_i}$, the entropy of the distribution. For example, if the entropy of the distribution is about 4.17 bits, there is a code spending that many bits per letter on average, and there is no better code.
+It turns out that the best possible solution to this problem satisfies that the average amount of bits we spend per letter -- called the rate of the code -- is $\sum p_i \log \frac{1}{p_i}$, the entropy of the distribution. For example, if the entropy of the distribution is about 4.17 bits, there is a code spending that many bits per letter on average, and there is no better code.
 
 Instead of proving why the entropy is the answer to our question, let's see examples of (suboptimal) codes that suggest why the answer is entropy.
 
 First, we could encode each letter using 5 bits -- a becomes 00000, b becomes 00001 and so on. The rate of this scheme is 5 bits per letter, and it can be improved quite a bit.
 
-One way to improve it is to assign codes of different lengths to different letters, based on their frequency. The following turns out to be a good rule for the lengths: if a letter $i$ has frequency $p_i$, its code length should be about $\log \frac\{1\}\{p_i}$.
+One way to improve it is to assign codes of different lengths to different letters, based on their frequency. The following turns out to be a good rule for the lengths: if a letter $i$ has frequency $p_i$, its code length should be about $\log \frac{1}{p_i}$.
 
 As a specific example, if the alphabet were just a-d and the letter frequencies were $1/2, 1/4, 1/8, 1/8$, the best code is:
 
@@ -307,7 +328,7 @@ As a specific example, if the alphabet were just a-d and the letter frequencies 
 
 That is, "baba" is encoded as "100100".
 
-You might notice how the letter with frequency $1/2^i$ has a code of length $i$; that is, frequency $p_i$ leads to a code of length $\log \frac\{1\}\{p_i}$.
+You might notice how the letter with frequency $1/2^i$ has a code of length $i$; that is, frequency $p_i$ leads to a code of length $\log \frac{1}{p_i}$.
 
 If all the probabilities in the distribution are $1/2^k$ for some number $k$, the generalization of the above code -- having $1/2^k$ probability letters have lengths $k$ -- is always possible.
 
