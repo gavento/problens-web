@@ -50,23 +50,22 @@ $$
 $$
 
 We compute the derivative with respect to some $p_i$:<Footnote>We use $(p \log 1/p)' = -(p\log p)' = -\log p - 1$. </Footnote>
-$$
-\frac{\partial \mathcal L}{\partial p_i} = -\log p_i - 1 + \lambda_1 f_1(i) + \dots + \lambda_m f_m(i) + \lambda_{m+1}
-$$
-That's stellar! If we now set $\frac{\partial \mathcal L}{\partial p_i} = 0$, we get a formula for $p_i$:
-$$
-p_i = e^{ -1 - \lambda_1 f_1(i) - \dots - \lambda_m f_m(i) - \lambda_{m+1}}
-$$
+
+
+<Math displayMode={true} math={"\frac{\partial \mathcal L}{\partial p_i} = -\log p_i - 1 + \lambda_1 f_1(i) + \dots + \lambda_m f_m(i) + \lambda_{m+1}"}/>
+
+
+That's stellar! If we now set <Math math={"\frac{\partial \mathcal L}{\partial p_i} = 0"}/>, we get a formula for $p_i$:
+<Math displayMode={true} math={"p_i = e^{ -1 - \lambda_1 f_1(i) - \dots - \lambda_m f_m(i) - \lambda_{m+1}}"}/>
 I find it more helpful to rewrite like this:
-$$
-p_i \propto e^{ - \lambda_1 f_1(i) - \dots - \lambda_m f_m(i)}
-$$
+<Math displayMode={true} math={"p_i \propto e^{ - \lambda_1 f_1(i) - \dots - \lambda_m f_m(i)}"}/>
+
 I just swept some proportionality constants under the rug: if we remember that probabilities have to sum up to 1, we have arrived at a shockingly simple formula!
 
 We could of course generalize the formula to other discrete sets than $\{1, \dots, K\}$, we would then have:
-$$
-p(x) \propto e^{ - \lambda_1 f_1(x) - \dots - \lambda_m f_m(x)}
-$$
+
+<Math displayMode={true} math={"p(x) \propto e^{ - \lambda_1 f_1(x) - \dots - \lambda_m f_m(x)}"}/>
+
 and the same formula is also the solution if the probability distribution is continuous, except of discrete. The only difference is that $p(x)$ is then technically not probability, but probability density. Also the right buzzword is no longer Lagrange multipliers, but it is its generalization called [calculus of variations](https://en.wikipedia.org/wiki/Calculus_of_variations) <Footnote>You also have to spend a few more years of your life trying to understand under which conditions it can be used. I am not sure what those are. </Footnote>
 
 Now this formula is not the full solution to our problem, because it involves some magical constants $\lambda_1, \dots, \lambda_m$ that we don't know. To find their values, we have to go back to our constraints -- do you still remember that there were $m$ numbers $\alpha_1, \dots, \alpha_m$ there? We can use the conditions $E[f_j(x)] = \alpha_j$ to work out the precise shape of the distribution. 
@@ -74,8 +73,8 @@ Now this formula is not the full solution to our problem, because it involves so
 ## Example
 
 Let's say that we work with real numbers and care about their mean and variance. That means that we care about $f_1(x) = x$ and $f_2(x) = x^2$<Footnote>Technically speaking, $f_2 = (x-\mu)^2$, let's use this to avoid a bit of clutter. </Footnote>. Maximum entropy principle suggests that the most general distribution is of the shape
-$$
-p(x) \propto e^{-\lambda_1 x^2 - \lambda_2 x}
+
+<Math displayMode={true} math={"p(x) \propto e^{-\lambda_1 x^2 - \lambda_2 x}"}/>
 $$
 This may not sound so familiar, so let's rewrite this as this:
 $$
@@ -100,19 +99,18 @@ One issue to keep in mind is that the uniform distribution does not always exist
 ### Fixing $E[X]$
 
 If we believe that the mean is an important parameter of a distribution (as we usually do), the max entropy principle says that the right family of distributions to work with are those with the shape
-$$
-p(x) \propto e^{-\lambda x}
-$$
+
+<Math displayMode={true} math={"p(x) \propto e^{-\lambda x}"}/>
+
 
 This kind of distribution is known under many names, depending on what is the underlying ground set over which we define it. Let's see some cases:
 
 #### Binary
 
 If we are talking about distributions over $\{0, 1\}$, then the shape from ?? takes form
-$$
-p(0) = \frac{1}{1 + e^{- \lambda}},
-p(1) = \frac{e^{-\lambda x}}{1 + e^{- \lambda x}}
-$$
+
+<Math displayMode={true} math={"p(0) = \frac{1}{1 + e^{- \lambda}}, p(1) = \frac{e^{-\lambda x}}{1 + e^{- \lambda x}}"}/>
+
 
 Remember that $\lambda$ is some kind of parameter that defines a family of distributions. This family of distributions is simply all the Bernoulli distributions, i.e., all distributions of type $\{p, 1-p\}$, i.e., literally all possible distributions one can define over the set $\{0, 1\}$. 
 
@@ -122,7 +120,10 @@ What we can still learn from ?? is how to convert numbers into probabilities -- 
 
 The function $\sigma(x) = 1/(1 + e^{-x})$ is called the logistic function<Footnote>Or maybe a sigmoid function. Apparently, [sigmoid function](https://en.wikipedia.org/wiki/Sigmoid_function) is a bit more general term. </Footnote> and the parameter $x$ is typically called a logit. So, ?? is telling us that if you want to talk about probabilities, but you want to talk about general real numbers instead of numbers from $[0,1]$, you should talk about logits and use the logistic transformation to convert them to probabilities. The choice of $\lambda$ then correspond to choosing your favorite base of the logarithm function. 
 
-In fact, we kind of did this in the [first chapter](01-kl_intro) -- remember our Bayesian hero? It was easier for us to talk about her using the language of odds and their logarithms -- which is pretty much the logits. <Footnote>We will see an application of logits in a minute, and also later in logistic regression, but let me mention another (in)famous application -- the neural net sigmoid [activation function](https://en.wikipedia.org/wiki/Activation_function). In the beginnings of the field, the logistic function was used to convert aggregated inputs to a neuron to its output. We can now give a probabilistic rationale to this operation -- this way of handling neurons corresponds to modelling them as "each neuron aggregates its inputs and then it decides whether to fire or not". 
+In fact, we kind of did this in the [first chapter](01-kl_intro) -- remember our Bayesian hero? It was easier for us to talk about her using the language of odds and their logarithms -- which is pretty much the logits. 
+
+<Footnote>
+We will see an application of logits in a minute, and also later in logistic regression, but let me mention another (in)famous application -- the neural net sigmoid [activation function](https://en.wikipedia.org/wiki/Activation_function). In the beginnings of the field, the logistic function was used to convert aggregated inputs to a neuron to its output. We can now give a probabilistic rationale to this operation -- this way of handling neurons corresponds to modelling them as "each neuron aggregates its inputs and then it decides whether to fire or not". 
 
 It is possible that this is a good way of understanding how our brain works, but during the development of the field, researchers understood that the nets work better if instead if sigmoids, one uses the ReLU activation function. That activation function corresponds to neurons that not only contemplate whether to send any signal or none, but also send out a stronger output signal if they got strong input. 
 </Footnote>
@@ -130,9 +131,9 @@ It is possible that this is a good way of understanding how our brain works, but
 #### Discrete set
 
 A more general instantiation of ?? is when our distribution is over some arbitrary set of numbers $\{a_1, \dots, a_k\}$. In that case, the max entropy distribution is what's called a softmax (or softmin) distribution -- each number $a_i$ is chosen with probability 
-$$
-p_i \propto e^{\lambda a_i}. 
-$$ 
+
+<Math displayMode={true} math={"p_i \propto e^{\lambda a_i}. "}/>
+
 
 You can think about the softmax function as the generalization of the logistic function above -- it's _the right way_ of how to convert numbers to probabilities. In fact, the numbers $a_i$ are often also called logits. 
 
@@ -154,9 +155,12 @@ If the domain of the probability distribution is nonnegative integers/reals, the
 You should think about this distribution as _the most natural_ distribution to model positive numbers. 
 
 Here's an example. Let's say you told me that you measured how long it took you to eat your lunch during the past year and I am to guess how the data looks like. My approach would be to first guess the average time (15 minutes? 30 minutes?) and use the exponential distribution with that mean. 
-Only after this first model, I would actually start thinking about whether there's something specific on "eating the lunch" and your personality to add into the model. <Footnote>In practice, my guess would probably not have tail $p(x) \propto e^{-x}$, but a heavier tail, like $p(x) \propto e^{-\sqrt{x}}$ or even $p(x) \propto 1/x^{C}$. Why? Well, notice how I am not sure about what the actual mean is. So, I should perhaps use a 2-layered model: 1) I sample your average lunch time $\mu$ from some distribution 2) I use exponential distribution with mean $\mu$. 
+Only after this first model, I would actually start thinking about whether there's something specific on "eating the lunch" and your personality to add into the model. 
 
-How should I sample $\mu$ in the first step? Applying max-entropy principle again, perhaps I should sample it from exponential distribution, with mean being how long it takes me / average person to eat their lunch. If you crunch the numbers, the overall distribution that I will use as my input is going to have tails $p(x) \propto e^{-C\sqrt{x}}$. That is, the model is getting less sure that I won't see some really large numbers. Using power-law distribution in step 1) would lead to $p(x) \propto 1/x^{C}$. 
+<Footnote>
+In practice, my guess would probably not have tail $p(x) \propto e^{-x}$, but a heavier tail, like <Math displayMode={false} math={"p(x) \propto e^{-\sqrt{x}}"}/> or even $p(x) \propto 1/x^{C}$. Why? Well, notice how I am not sure about what the actual mean is. So, I should perhaps use a 2-layered model: 1) I sample your average lunch time $\mu$ from some distribution 2) I use exponential distribution with mean $\mu$. 
+
+How should I sample $\mu$ in the first step? Applying max-entropy principle again, perhaps I should sample it from exponential distribution, with mean being how long it takes me / average person to eat their lunch. If you crunch the numbers, the overall distribution that I will use as my input is going to have tails <Math displayMode={false} math={"p(x) \propto e^{-C\sqrt{x}}"}/>. That is, the model is getting less sure that I won't see some really large numbers. Using power-law distribution in step 1) would lead to $p(x) \propto 1/x^{C}$. 
 
 This discussion is mostly meant to show what I love on the max entropy principle -- it enables us to rapidly operationalize and concretize our thought processes. Modelling real life is hard, but now we have a powerful tool that automatically builds concrete probabilistic models from vague thoughts like "there's two types of randomness, first in the average lunch time, and second in the variation around that average". 
 </Footnote>
@@ -170,11 +174,11 @@ If we believe that both mean and the variance are interesting, max entropy princ
 You should view the normal distribution as _the right distribution_ if what you care is mean and variance. A related view is that this is the simplest possible distribution on real numbers -- Neither the uniform distribution nor the exponential distribution can be normalized there, so we can try to salvage this by fixing the first two moments. 
 
 #### Central limit theorem
-The normal distribution is extremely important because of the [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem).  Roughly speaking: If you keep adding some random variables $X_1, \dots, X_N$, each with mean $\mu$ and variance $\sigma^2$, then the value of $\frac{X_1 + \dots + X_N - N\mu}{\sqrt{N\sigma^2}}$ is going to be distributed like $N(0,1)$. 
+The normal distribution is extremely important because of the [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem).  Roughly speaking: If you keep adding some random variables $X_1, \dots, X_N$, each with mean $\mu$ and variance $\sigma^2$, then the value of <Math math={"\frac{X_1 + \dots + X_N - N\mu}{\sqrt{N\sigma^2}}"}/> is going to be distributed like $N(0,1)$. 
 
 Here's how the max entropy principle can help you think about this theorem: For the theorem, the mean and the variance are clearly important parameters. Thus, max entropy principle kind of suggests that if there is a single distribution that the sums are converging to, the guassian is a natural candidate. 
 
-In fact, here's one way of how one proof the central limit theorem works:<Footnote>todo link? ask llm</Footnote> We keep track of the entropy of $S_N = \frac{X_1 + \dots + X_N - N\mu}{\sqrt{N\sigma^2}}$. We prove that the operation of adding random variables -- called convolution -- has smearing-out properties that increase the entropy of the $S_N$ at least a little bit. <Footnote>This is the hard part. Although it is simple to argue from the definition that $H(X+Y) \ge \max(H(X), H(Y))$ for any two random variables, the proof requires a stronger inequality called [entropy power inequality](https://en.wikipedia.org/wiki/Entropy_power_inequality)</Footnote> As the entropy of $S_N$ keeps converging to the entropy of $N(0,1)$, we argue that the distribution of $S_N$ also has to keep looking more and more similar to the distribution of $N(0,1)$. 
+In fact, here's one way of how one proof the central limit theorem works:<Footnote>todo link? ask llm</Footnote> We keep track of the entropy of <Math math={"S_N = \frac{X_1 + \dots + X_N - N\mu}{\sqrt{N\sigma^2}}"}/>. We prove that the operation of adding random variables -- called convolution -- has smearing-out properties that increase the entropy of the $S_N$ at least a little bit. <Footnote>This is the hard part. Although it is simple to argue from the definition that $H(X+Y) \ge \max(H(X), H(Y))$ for any two random variables, the proof requires a stronger inequality called [entropy power inequality](https://en.wikipedia.org/wiki/Entropy_power_inequality)</Footnote> As the entropy of $S_N$ keeps converging to the entropy of $N(0,1)$, we argue that the distribution of $S_N$ also has to keep looking more and more similar to the distribution of $N(0,1)$. 
 
 Example: One of the running examples we used was [measuring of feet](00-introduction/statistics). Why should we model the data using the normal distribution? The typical reasoning is that the length of my foot is a random variable that can probably be modelled as a sum of many small and relatively independent random variables. Thus, using central limit theorem, the normal distribution is a good fit. 
 
