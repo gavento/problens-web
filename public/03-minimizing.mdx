@@ -42,6 +42,29 @@ This expression has very clear meaning: it is the conditional probability of see
 
 So what's the conclusion? Our approach of minimizing KL divergence is equivalent (at least for empirical distributions) to maximizing the likelihood of the data under the model $q$. The latter is in fact a very common approach in statistics, and it is called the maximum likelihood estimation (MLE) principle. We just derived it from the KL divergence perspective!
 
+### Example
+
+Let's say that we are given data $X_1, \dots, X_N$ (that we represent by its empirical distribution $p$) and want to find the best fitting Gaussian $N(\mu, \sigma^2)$. How should we choose $\hat\mu$ and $\hat\sigma^2$? 
+
+Here's what Maximum likelihood principle recommends: We should maximize the likelihood, or more conveniently, maximize the so-called log-likelihood / minimize cross-entropy:
+$$
+\hat\mu, \hat\sigma^2 
+= \argmax_{\mu, \sigma^2} \sum_{i = 1}^N \log\left( \frac{1}{2\pi\sigma^2} e^{-\frac{(X_i-\mu)^2}{\sigma^2}} \right)
+= \argmin_{\mu, \sigma^2} 2N \cdot \log \sigma + \sum_{i = 1}^N \frac{(X_i-\mu)^2}{\sigma^2}
+$$
+
+There are several ways to solve this optimization problem. Probably the cleanest is differentiation: If we define $\mathcal{L}$ to be the above expression, then:
+$$
+\frac{\partial \mathcal{L}}{\partial \mu} = \frac{1}{\sigma^2} \sum_{i = 1}^N 2(X_i - \mu) 
+$$
+Setting $\frac{\partial \mathcal{L}}{\partial \mu} = 0$ then leads to $\hat\mu = \frac{1}{N} \sum_{i = 1}^N X_i$. 
+
+Similarly, 
+$$
+\frac{\partial \mathcal{L}}{\partial \sigma} = 2N/\sigma -2  \sum_{i = 1}^N \frac{(X_i-\mu)^2}{\sigma^3}
+$$
+Setting $\frac{\partial \mathcal{L}}{\partial \sigma} = 0$ then leads to $\hat\sigma = \frac{1}{N} \sum_{i = 1}^N (X_i - \mu)^2$. 
+
 ## Finding a Better Model & Maximum Entropy Principle <a id="finding-better-model"></a>
 
 So, minimizing $\min_\{q \in Q} D(p,q)$ is pretty useful, what aboutn the other direction $\min_\{p \in P} D(p,q)$? This is also extremely useful, so let's see an example of what it means. 
@@ -98,7 +121,18 @@ $$\argmin_\{p \in P} D(p, q_\{uniform}) = \argmax_\{p\in P} H(p)$$
 
 We derived what's known as the maximum entropy principle: given a set $P$ of distributions to choose from, we should opt for the $p\in P$ that maximizes the entropy $H(p)$. 
 
-### A few observations <a id="a-few-observations"></a>
+### An example
+
+Here's an example of how we can use maximum entropy principle. Let's say that we want to model some data that are real numbers and have certain mean $E_p[X] = \mu$ and variance $E_p[(X-\mu)^2] = \sigma^2$. 
+We want to pick a distribution that models the data in the absence of any other evidence. Then, maximum entropy principle suggests we should choose the set $P$ to be all distributions with mean $\mu$ and variance $\sigma$ and pick the maximum entropy distribution $p$ in $P$. 
+
+As we will discuss in [later](05-machine_learning), this distribution $p$ is the Gaussian with mean $\mu$ and variance $\sigma^2$. So, maximum entropy principle tells us that in the absence of additional evidence, we should model data as Gaussian, with the same mean and variance. 
+
+It is often useful to think about this principle a bit more abstractly. Imagine that we don't even know the precise value of $\mu, \sigma^2$, we just believe that the mean and the variance are important parameters to know. Then, maximum entropy principle is telling us that we should model the data by some Gaussian. In other words, we conclude that the family of Gaussians is the *right* family to represent numerical data, if what we care about is their mean and variance. This is a very useful conclusion!
+
+![potato](03-minimizing/potato_maxent.png)
+
+### A few more observations <a id="a-few-observations"></a>
 
 We will spend the whole next chapter discussing all the applications of the maximum entropy principle, but let's already make a few observations about it.
 
@@ -117,6 +151,7 @@ Here's the generic problem solved by Bayes' theorem. We have a joint distributio
 The observation I want to make is that $r = \argmin_\{p \in P} D(p, (X,Y))$, where $P$ is the set of distributions where $P(Y = y') = 0$ for $y' \ne y$. <Footnote>This holds because of the following reasoning: </Footnote> 
 
 So, we can think of the philosophy of using the Bayes' theorem as a special case of the philosophy of minimizing KL divergence. This is all very circular and fuzzy, but the point is that not only the philosophy of minimize-KL-whenever-you-can-ism can be derived from the philosophy of argue-everything-from-Bayes-rule-ism, but we can also derive the philosophy of argue-everything-from-Bayes-rule-ism from the philosophy of minimize-KL-whenever-you-can-ism. Thus it is said that minimize-KL-whenever-you-can-ism is argue-everything-from-Bayes-rule-ism-complete (and vice versa). 
+
 
 ## Next Steps <a id="next-steps"></a>
 

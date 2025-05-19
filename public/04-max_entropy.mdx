@@ -1,37 +1,189 @@
-## Max Entropy Distributions <a id="max-entropy-distributions"></a>
+# Max Entropy Distributions <a id="max-entropy-distributions"></a>
 
-Maximum entropy principle helps you find the most generic distribution for your data. You just need to specify the constraints you care about, and the principle determines the "least biased" distribution that satisfies those constraints.
+In the [previous chapter](03-minimizing) we've seen how minimizing KL divergence generalizes two important statistical principles -- maximum likelihood & maximum entropy. 
 
-The form of the maximum entropy distributions is very simple -- for example, if you work with numbers and care about their mean $E[X] = \mu$ and variance $\sigma^2 = E[(X-\mu)^2]$, the maximum entropy distribution is going to look like $P(X=x)\propto e^\{\lambda_1 x + \lambda_2 x^2}$, i.e., it will be the normal distribution.
+Let's now discuss maximum entropy a bit more in depth. In particular, we will try to understand how do maximum entropy distributions look like. For such a general question, it turns out the answer is surprisingly simple!
 
-We can derive this by using the method of Lagrange multipliers. Without going through the full derivation, the key insight is that the maximum entropy distribution subject to constraints always takes the form of an exponential family:
 
-$$p(x) \propto e^\{\sum_i \lambda_i f_i(x)}$$
+## General form of maximum entropy distributions
 
-where $f_i(x)$ are the functions whose expectations $E[f_i(X)]$ we're constraining, and $\lambda_i$ are Lagrange multipliers determined by the specific constraint values.
+Here's the setup. We will first for a minute consider only discrete distributions, let's say over $\{1, \dots, K\}$. The question we would like to understand is: If we consider only a set of distributions $P$ that have some properties, how does the maximum entropy distribution in $P$ look like? 
 
-### Examples of Maximum Entropy Distributions <a id="examples-of-max-entropy-distributions"></a>
+For example, in the previous chapter we were interested in the set $P$ of distributions where $E[X] = \mu$ and $E[(X-\mu)^2] = \sigma^2$. In fact, it's very typical that the set $P$ we are interested in is simply defined by a bunch of constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$. 
 
-Here are some examples of maximum entropy distributions given different constraints:
+So, given these $m$ constraints, what's the maximum entropy distribution? This is an optimization problem for $K$ variables $p_1, \dots, p_K$:
 
-1. **No constraints**: The maximum entropy distribution is the uniform distribution.
+$$
+VARIABLES: p_1, \dots, p_K
+MAXIMIZE: \sum_{i = 1}^K p_i \log 1/p_i
+CONSTRAINTS:
+\sum_{i = 1}^K p_i \cdot f_1(i) = \alpha_1
+...
+\sum_{i = 1}^K p_i \cdot f_m(i) = \alpha_m
+\sum_{i = 1}^K p_i = 1
+$$
 
-2. **Fixed mean $E[X] = \mu$**:
+If there were no constraints, the problem would be simple to solve! We would just take the expression to maximize (the entropy) and set all partial derivates by $p_1, \dots, p_K$ to be zero.
 
-   - On a finite set $\{a, b\}$: Logistic distribution
-   - On $\{0, 1, 2, \ldots\}$: Geometric distribution $P(x) \propto e^\{-\lambda x}$
-   - On $\mathbb{R}^+$: Exponential distribution $P(x) \propto e^\{-\lambda x}$
+Fortunately, there's a technique called [Lagrange multipliers](https://en.wikipedia.org/wiki/Lagrange_multiplier) that will help us here. It involves turning _hard_ constraints (as in our problem) into _soft_ constraints. A soft-constraint variant of our problem would be:
 
-3. **Fixed mean $E[X] = \mu$ and variance $E[(X-\mu)^2] = \sigma^2$**:
+$$
+VARIABLES: p_1, \dots, p_K
+MAXIMIZE: \sum_{i = 1}^K p_i \log 1/p_i
+- \lambda_1 (\sum_{i = 1}^K p_i \cdot f_1(i) - \alpha_1)
+- ... -
+- \lambda_m (\sum_{i = 1}^K p_i \cdot f_m(i) - \alpha_m)
+- \lambda_{m+1} (\sum_{i = 1}^K p_i - 1)
+$$
 
-   - On $\mathbb{R}$: Normal (Gaussian) distribution $P(x) \propto e^\{-(x-\mu)^2/2\sigma^2}$
+What happens is that instead of requiring that the solution has to exactly satisfy all the constraints, we just say that we have to pay some additional cost for being off the target. The constants $\lambda_1, \dots, \lambda_{m+1}$ are kind of telling us how important each constraint is -- large $\lambda_j$ means that $\sum_{i = 1}^K p_i \cdot f_m(i) - \alpha_m$ should better be small!<Footnote>In fact, we are not just paying for $\sum_{i = 1}^K p_i \cdot f_m(i) - \alpha_m$ being larger than 0. In this soft constraint formulation, we are even getting paid if it is less than 0! With negative $\lambda_i$, it would be the other way around. </Footnote>
 
-4. **Fixed $E[\log X]$**:
+Long story short, Lagrange tells us that if somebody gives him a solution to our problem satisfying all the $m+1$ _hard_ constraints, then he can find $m+1$ numbers $\lambda_1, \dots, \lambda_{m+1}$ so that the solution also solves the soft-constraints variant. That's neat! We can now implement our plan of solving by smashing it with the power of differentiation. 
 
-   - On $\mathbb{R}^+$: Power-law distribution $P(x) \propto x^\{-\alpha}$
+More precisely, let's use $\mathcal{L}$ for the soft-constrained objective:
+$$
+\mathcal{L}(p_1, \dots, p_K) = \sum_{i = 1}^K p_i \log 1/p_i
+- \lambda_1 (\sum_{i = 1}^K p_i \cdot f_1(i) - \alpha_1)
+- ... -
+- \lambda_m (\sum_{i = 1}^K p_i \cdot f_m(i) - \alpha_m)
+- \lambda_{m+1} (\sum_{i = 1}^K p_i - 1)
+$$
 
-5. **Fixed $E[X]$ and $E[X^2]$**:
-   - On $\mathbb{R}^+$: Gamma distribution
+We compute the derivative with respect to some $p_i$:<Footnote>We use $(p \log 1/p)' = -(p\log p)' = -\log p - 1$. </Footnote>
+$$
+\frac{\partial \mathcal L}{\partial p_i} = -\log p_i - 1 + \lambda_1 f_1(i) + \dots + \lambda_m f_m(i) + \lambda_{m+1}
+$$
+That's stellar! If we now set $\frac{\partial \mathcal L}{\partial p_i} = 0$, we get a formula for $p_i$:
+$$
+p_i = e^{ -1 - \lambda_1 f_1(i) - \dots - \lambda_m f_m(i) - \lambda_{m+1}}
+$$
+I find it more helpful to rewrite like this:
+$$
+p_i \propto e^{ - \lambda_1 f_1(i) - \dots - \lambda_m f_m(i)}
+$$
+I just swept some proportionality constants under the rug: if we remember that probabilities have to sum up to 1, we have arrived at a shockingly simple formula!
+
+We could of course generalize the formula to other discrete sets than $\{1, \dots, K\}$, we would then have:
+$$
+p(x) \propto e^{ - \lambda_1 f_1(x) - \dots - \lambda_m f_m(x)}
+$$
+and the same formula is also the solution if the probability distribution is continuous, except of discrete. The only difference is that $p(x)$ is then technically not probability, but probability density. Also the right buzzword is no longer Lagrange multipliers, but it is its generalization called [calculus of variations](https://en.wikipedia.org/wiki/Calculus_of_variations) <Footnote>You also have to spend a few more years of your life trying to understand under which conditions it can be used. I am not sure what those are. </Footnote>
+
+Now this formula is not the full solution to our problem, because it involves some magical constants $\lambda_1, \dots, \lambda_m$ that we don't know. To find their values, we have to go back to our constraints -- do you still remember that there were $m$ numbers $\alpha_1, \dots, \alpha_m$ there? We can use the conditions $E[f_j(x)] = \alpha_j$ to work out the precise shape of the distribution. 
+
+## Example
+
+Let's say that we work with real numbers and care about their mean and variance. That means that we care about $f_1(x) = x$ and $f_2(x) = x^2$<Footnote>Technically speaking, $f_2 = (x-\mu)^2$, let's use this to avoid a bit of clutter. </Footnote>. Maximum entropy principle suggests that the most general distribution is of the shape
+$$
+p(x) \propto e^{-\lambda_1 x^2 - \lambda_2 x}
+$$
+This may not sound so familiar, so let's rewrite this as this:
+$$
+p(x) = A e^{-B(x-C)^2}
+$$
+where $A,B,C$ are some constants chosen so that $p(x)$ integrates to $1$. This is normal distribution -- $C$ is its mean and $B$ is $1/\sigma^2$; $A$ is the proportionality constant that I always forget. 
+
+I think this is a good (partial) explanation of "why $x^2$ in Gaussian"? It simply means that Gaussian is the *right* distribution to work with if you care about the first two moments. If you cared about the first four moments, the right family of distributions would be those with four-degree polynomials in the exponent. 
+
+## Catalogue of examples
+
+It turns out that many distributions you encountered are maximum entropy distributions for some choice of functions $f_1, \dots f_m$. That's not so suprising -- after all, in the case of discrete distributions over e.g. $\{1, \dots, K\}$, literally any distribution is a maximum entropy distribution for certain $K$ constraints.<Footnote>For example, for your favorite distribution $p_1, \dots, p_K$, choose the $j$-th constraint to be $E[\mathbb{1}_j(i)] = p_j$ where $\mathbb{1}_j$ returns 1 for $i$ and 0 otherwise. </Footnote> So, when you encounter a distribution, the right approach is not really to ask the question "Is this a max entropy distribution?". It's more "For what parameters is this a max entropy distribution?" For example, you can forget the formula for Gaussian distribution -- suffices to remember that if you use it, it means that you believe that the mean and the variance are the important parameters to look at. 
+
+Here's a catalogue of some max entropy distributions. 
+
+### No constraints
+
+In case of no constraints, we have $p(x) \propto e^{0}$, i.e., the distribution is uniform. This is the principle of indifference that we [already discussed]() as a special case of the max entropy principle. 
+
+One issue to keep in mind is that the uniform distribution does not always exist -- in particular there's no uniform distribution over real numbers. 
+
+### Fixing $E[X]$
+
+If we believe that the mean is an important parameter of a distribution (as we usually do), the max entropy principle says that the right family of distributions to work with are those with the shape
+$$
+p(x) \propto e^{-\lambda x}
+$$
+
+This kind of distribution is known under many names, depending on what is the underlying ground set over which we define it. Let's see some cases:
+
+#### Binary
+
+If we are talking about distributions over $\{0, 1\}$, then the shape from ?? takes form
+$$
+p(0) = \frac{1}{1 + e^{- \lambda}},
+p(1) = \frac{e^{-\lambda x}}{1 + e^{- \lambda x}}
+$$
+
+Remember that $\lambda$ is some kind of parameter that defines a family of distributions. This family of distributions is simply all the Bernoulli distributions, i.e., all distributions of type $\{p, 1-p\}$, i.e., literally all possible distributions one can define over the set $\{0, 1\}$. 
+
+You can probably appreciate the usefulness of Bernoulli distributions even without reading this KL divergence pean, so what to take of it? 
+
+What we can still learn from ?? is how to convert numbers into probabilities -- It says that (after choosing some $\lambda$) there is a single most natural way of converting real numbers into probabilities -- exponentiating + normalizing them. 
+
+The function $\sigma(x) = 1/(1 + e^{-x})$ is called the logistic function<Footnote>Or maybe a sigmoid function. Apparently, [sigmoid function](https://en.wikipedia.org/wiki/Sigmoid_function) is a bit more general term. </Footnote> and the parameter $x$ is typically called a logit. So, ?? is telling us that if you want to talk about probabilities, but you want to talk about general real numbers instead of numbers from $[0,1]$, you should talk about logits and use the logistic transformation to convert them to probabilities. The choice of $\lambda$ then correspond to choosing your favorite base of the logarithm function. 
+
+In fact, we kind of did this in the [first chapter](01-kl_intro) -- remember our Bayesian hero? It was easier for us to talk about her using the language of odds and their logarithms -- which is pretty much the logits. <Footnote>We will see an application of logits in a minute, and also later in logistic regression, but let me mention another (in)famous application -- the neural net sigmoid [activation function](https://en.wikipedia.org/wiki/Activation_function). In the beginnings of the field, the logistic function was used to convert aggregated inputs to a neuron to its output. We can now give a probabilistic rationale to this operation -- this way of handling neurons corresponds to modelling them as "each neuron aggregates its inputs and then it decides whether to fire or not". 
+
+It is possible that this is a good way of understanding how our brain works, but during the development of the field, researchers understood that the nets work better if instead if sigmoids, one uses the ReLU activation function. That activation function corresponds to neurons that not only contemplate whether to send any signal or none, but also send out a stronger output signal if they got strong input. 
+</Footnote>
+
+#### Discrete set
+
+A more general instantiation of ?? is when our distribution is over some arbitrary set of numbers $\{a_1, \dots, a_k\}$. In that case, the max entropy distribution is what's called a softmax (or softmin) distribution -- each number $a_i$ is chosen with probability 
+$$
+p_i \propto e^{\lambda a_i}. 
+$$ 
+
+You can think about the softmax function as the generalization of the logistic function above -- it's _the right way_ of how to convert numbers to probabilities. In fact, the numbers $a_i$ are often also called logits. 
+
+Here's a practical application: Typical neural networks output probabilites. For example, a typical neural network classifying images in fact outputs the whole probability distribution that a given picture is a dog/cat/horse/... instead of outputting a single prediction. 
+The problem with this is that usually, most of these probabilities are extremely small, e.g. of order of $10^{-10}$. That's because given a picture of a dog, the neural net is typically pretty sure it's not an octopus. 
+
+This makes it awkward to work with the probabilities directly inside the net -- there are all kinds of numerical and stability issues with this. So the neural nets are instead trying to predit logits, and the conversion to probabilities is just the final layer of the network. 
+
+A nice bonus to this is that if you train the network using softmax with $\lambda = 1$, you can change the parameter $\lambda$ after the training. For example, setting $\lambda$ to infinity in ?? is equivalent to just choosing the most probable option -- this way you make the output of the model deterministic which can be useful at deployment. The parameter $1/\lambda$ is analogous to temperature in physics, so this is often described as "running the model at 0 temperature". 
+
+There are also application for higher temperatures. For example, if you want to use LLM to solve a hard math problem, you might want to run it a million times to increase the probability the net solving it. But then you should probably run it at higher temperatures to make sure you want get the same thought process a million times in a row.  
+
+Notice how softmax allowed us to elegantly solve a problem that's otherwise pretty hard to approach -- given a probability distribution $p$, how do we find similar distributions $p'$ that are close to $p$, but more or less "concentrated" on the most probable values. 
+
+
+#### Positive integers / reals 
+
+If the domain of the probability distribution is nonnegative integers/reals, then we get the so-called [geometric](https://en.wikipedia.org/wiki/Geometric_distribution)/[exponential](https://en.wikipedia.org/wiki/Exponential_distribution) distribution -- another very basic and useful distribution. 
+You should think about this distribution as _the most natural_ distribution to model positive numbers. 
+
+Here's an example. Let's say you told me that you measured how long it took you to eat your lunch during the past year and I am to guess how the data looks like. My approach would be to first guess the average time (15 minutes? 30 minutes?) and use the exponential distribution with that mean. 
+Only after this first model, I would actually start thinking about whether there's something specific on "eating the lunch" and your personality to add into the model. <Footnote>In practice, my guess would probably not have tail $p(x) \propto e^{-x}$, but a heavier tail, like $p(x) \propto e^{-\sqrt{x}}$ or even $p(x) \propto 1/x^{C}$. Why? Well, notice how I am not sure about what the actual mean is. So, I should perhaps use a 2-layered model: 1) I sample your average lunch time $\mu$ from some distribution 2) I use exponential distribution with mean $\mu$. 
+
+How should I sample $\mu$ in the first step? Applying max-entropy principle again, perhaps I should sample it from exponential distribution, with mean being how long it takes me / average person to eat their lunch. If you crunch the numbers, the overall distribution that I will use as my input is going to have tails $p(x) \propto e^{-C\sqrt{x}}$. That is, the model is getting less sure that I won't see some really large numbers. Using power-law distribution in step 1) would lead to $p(x) \propto 1/x^{C}$. 
+
+This discussion is mostly meant to show what I love on the max entropy principle -- it enables us to rapidly operationalize and concretize our thought processes. Modelling real life is hard, but now we have a powerful tool that automatically builds concrete probabilistic models from vague thoughts like "there's two types of randomness, first in the average lunch time, and second in the variation around that average". 
+</Footnote>
+
+There still an elephant in the room though -- exponential distribution can't be normalized if the data are general real numbers. 
+
+### Fixing $E[X]$ & $E[X^2]$
+
+If we believe that both mean and the variance are interesting, max entropy principle suggests that we should choose the function that has some quadratic function in the exponent. The most useful application is when the domain of that function are real numbers where the appropriate distribution is called [normal or Gaussian distribution](https://en.wikipedia.org/wiki/Normal_distribution) with tails that look like $e^{-x^2}$. The distribution is parameterized by $\mu, \sigma^2$ and denoted as $N(\mu, \sigma^2)$. <Footnote>For a finite domain, the probability function could look like $P(x) \propto e^{x^2}$, i.e., it could have the smallest probabilities in the middle and large probabilities at the edges. However, this cannot happen if the domain is real numbers. There, the only possible solution is the familiar bell-shaped curve. </Footnote> 
+
+You should view the normal distribution as _the right distribution_ if what you care is mean and variance. A related view is that this is the simplest possible distribution on real numbers -- Neither the uniform distribution nor the exponential distribution can be normalized there, so we can try to salvage this by fixing the first two moments. 
+
+#### Central limit theorem
+The normal distribution is extremely important because of the [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem).  Roughly speaking: If you keep adding some random variables $X_1, \dots, X_N$, each with mean $\mu$ and variance $\sigma^2$, then the value of $\frac{X_1 + \dots + X_N - N\mu}{\sqrt{N\sigma^2}}$ is going to be distributed like $N(0,1)$. 
+
+Here's how the max entropy principle can help you think about this theorem: For the theorem, the mean and the variance are clearly important parameters. Thus, max entropy principle kind of suggests that if there is a single distribution that the sums are converging to, the guassian is a natural candidate. 
+
+In fact, here's one way of how one proof the central limit theorem works:<Footnote>todo link? ask llm</Footnote> We keep track of the entropy of $S_N = \frac{X_1 + \dots + X_N - N\mu}{\sqrt{N\sigma^2}}$. We prove that the operation of adding random variables -- called convolution -- has smearing-out properties that increase the entropy of the $S_N$ at least a little bit. <Footnote>This is the hard part. Although it is simple to argue from the definition that $H(X+Y) \ge \max(H(X), H(Y))$ for any two random variables, the proof requires a stronger inequality called [entropy power inequality](https://en.wikipedia.org/wiki/Entropy_power_inequality)</Footnote> As the entropy of $S_N$ keeps converging to the entropy of $N(0,1)$, we argue that the distribution of $S_N$ also has to keep looking more and more similar to the distribution of $N(0,1)$. 
+
+Example: One of the running examples we used was [measuring of feet](00-introduction/statistics). Why should we model the data using the normal distribution? The typical reasoning is that the length of my foot is a random variable that can probably be modelled as a sum of many small and relatively independent random variables. Thus, using central limit theorem, the normal distribution is a good fit. 
+
+We could also try to approach this modelling problem purely from the max-entropy perspective. Since the data is positive, the simplest model for it is the exponential distribution (see above). But that seems to predict that we will e.g. see many people with feet length twice the average, which does not seem to be a great feature of the model. So, we can do better if we also take into account that the typical deviation of the distribution from the mean is probably quite a bit smaller than the mean. The max entropy distribution if we now consider both the mean and the variance (that represents the scale) is going to be the normal distribution. <Footnote>More precisely, since the domain is _positive_ real numbers, the max entropy distribution is a Gaussian that is clipped to zero for negative numbers and rescaled to sum up to 1. </Footnote> 
+
+
+### Fixing $E[\log X]$
+
+### Other Examples
 
 ### Application to the Modeling Riddle <a id="application-to-modeling-riddle"></a>
 
@@ -69,34 +221,6 @@ The story we are making actually suggests that we should also see Laplace-like b
 
 In practice, researchers often model financial data not by the Laplace distribution, but by the Student-t distribution. It is the distribution that you get from the process above but instead of sampling $\sigma^2$ from the exponential distribution, you sample it from the so-called inverse gamma distribution. The Student-t distribution looks similar to normal distribution if you plot it, but its tails have power-law decay, making it better suited for modeling data with extreme events.
 
-## Connecting Machine Learning to Information Theory <a id="connecting-ml-to-information-theory"></a>
-
-In our exploration of the machine learning riddle, we asked why certain functions like $x^2$ and logarithms appear so frequently in machine learning algorithms. Now we can provide a satisfying answer.
-
-The ubiquity of squared terms ($x^2$) in loss functions like linear regression and k-means comes from the assumption of Gaussian noise or Gaussian distributions. As we've seen, the Gaussian is the maximum entropy distribution when we fix the mean and variance, and its density involves an $e^\{-x^2}$ term, which leads to squared terms in the log-likelihood.
-
-Similarly, logarithms appear because we're often dealing with likelihoods and probabilities, and the log-likelihood is what we optimize in maximum likelihood estimation. Cross-entropy loss, which is common in classification tasks, directly involves logarithms because it measures the average surprise when using one distribution to model another.
-
-More complex loss functions, like those in variational autoencoders, are derived from KL divergence between specific distributions. For example, the loss function for variational autoencoders includes a reconstruction term (related to likelihood) and a KL term that ensures the latent distribution stays close to a prior.
-
-## Summary <a id="summary"></a>
-
-In this section, we've seen how KL divergence and information-theoretic principles lead to many standard machine learning algorithms:
-
-1. **Linear Regression** - Derived from maximum likelihood estimation with Gaussian noise
-2. **Logistic Regression** - Derived from maximizing the likelihood of logistic distributions
-3. **K-means Clustering** - Connected to maximum likelihood in Gaussian mixture models
-4. **Financial Modeling** - Explaining why different distributions fit different types of data
-
-By understanding these connections, we gain insight into why these methods work and when they might fail. We also develop a unified framework for approaching modeling problems:
-
-1. Identify what's important about the data
-2. Use maximum entropy to find a suitable probabilistic model
-3. Use maximum likelihood to derive a loss function
-4. Find efficient algorithms to optimize the loss
-
-In the next section, we'll explore more advanced applications of these principles in areas like deep learning, coding theory, and reinforcement learning.
-
 ## Next Steps <a id="next-steps"></a>
 
-In the next part, we'll delve into advanced applications of KL divergence and information theory, including deep learning, variational methods, and connections to algorithmic complexity.
+In the next part, we will reach the punchline of this minicourse -- How KL divergence explains the choice of loss functions optimized in machine learning. 

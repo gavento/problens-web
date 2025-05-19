@@ -46,7 +46,6 @@ Let's say that you have two distribution (the "truth" and the "model") $p, q$ an
 <Footnote>
 Here's the proof (by Claude):
 Let's start with the definition of KL divergence for the joint distributions:
-</Footnote>
 
 $$D(p \otimes p', q \otimes q') = \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \log\left(\frac\{p(i)p'(j)\}\{q(i)q'(j)\}\right)$$
 
@@ -73,6 +72,7 @@ Which is exactly:
 
 $$D(p \otimes p', q \otimes q') = D(p, q) + D(p', q')$$
 
+</Footnote>
 
 
 
@@ -85,7 +85,6 @@ In fact, a slightly stronger property called _chain rule_ is true. Imagine that 
 
 <Footnote>
 Here's the proof (by Claude). Let $p$ and $q$ be probability distributions over a set $\{1, 2, \ldots, n\}$. Let $p'$ and $q'$ be probability distributions over a set $\{1, 2, \ldots, m\}$.
-</Footnote>
 
 Define combined distributions $p_{overall}$ and $q_{overall}$ over the set $\{(1,1), (1,2), \ldots, (1,m), 2, 3, \ldots, n\}$ where:
 
@@ -145,6 +144,7 @@ The first two terms together with $p(1) \log\left(\frac\{p(1)\}\{q(1)\}\right)$ 
 $$D(p_{overall}, q_{overall}) = D(p, q) + p(1) \cdot D(p', q')$$
 
 This proves the chain rule for KL divergence as specified.
+</Footnote>
 
 $$
 D(p_{overall}, q_{overall}) = D(p,q) + p_\{\text{bus}} \cdot D(p',q')
@@ -159,7 +159,6 @@ There's also a short algebraic proof of this fact.
 
 <Footnote>
 To prove that for any $p,q$ we have (I have used the natural algorithm to make it a bit shorter)
-</Footnote>
 
 $$
 D(p,q) =  \sum_{i = 1}^n p_i \cdot \ln \frac\{p_i\}\{q_i}  \ge 0,
@@ -177,6 +176,8 @@ $$
 
 
 Because $D(p,q) = H(p,q) - H(p)$, you can view this fact as saying that the crossentropy $H(p,q)$ for fixed $p$ is minimized if we choose $q = p$.
+</Footnote>
+
 
 A bit stronger version of this fact is the so-called monotonicity <Footnote>This is pretty similar property to the so-called [Data processing inequality](https://en.wikipedia.org/wiki/Data_processing_inequality) you might have heard of. </Footnote> Imagine that we have two distributions $p,q$, let's say they are over countries (\{🇺🇸,🇨🇦,🇲🇽,🇯🇵,🇬🇧,🇮🇳,...}). Then, we zoom out a little bit and consider a smaller set of geographical areas (\{North America, Europe, ...}). We can convert $p,q$ to this rougher set to get distributions $p', q'$ -- e.g. we set $p'(North America) = p(🇺🇸) + p(🇨🇦) + p(🇲🇽)$. Then it's the case that
 
