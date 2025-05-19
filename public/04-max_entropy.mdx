@@ -9,7 +9,7 @@ Let's now discuss maximum entropy a bit more in depth. In particular, we will tr
 
 The question we would like to understand is: If we consider only a set of distributions $P$ that have some properties, how does the maximum entropy distribution in $P$ look like? 
 
-For example, in the previous chapter we were interested in the set $P$ of distributions where $E[X] = \mu$ and $E[(X-\mu)^2] = \sigma^2$. It turns that given these two constraints, the maximum entropy distribution is the normal distribution where <Math math = {"p(x) \propto e^{-(x-\mu)^2/\sigma^2}."} />
+For example, in the previous chapter we were interested in the set $P$ of distributions where $E[X] = \mu$ and $E[(X-\mu)^2] = \sigma^2$. It turns that given these two constraints, the maximum entropy distribution is the normal distribution where <Math math = {"p(x) \propto e^{-(x-\mu)^2/\sigma^2}."} />. 
 
 If we were only fixing the value of $E[X]$ (and the domain were nonnegative real numbers), the maximum entropy distribution would be the exponential distribution where <Math math = {"p(x) \propto e^{-\lambda x}"} />. Here, $\lambda$ is some parameter -- fixing $E[X]$ to have different values leads to different $\lambda$s. 
 
@@ -17,7 +17,7 @@ Can you spot a pattern?
 
 Here's the general form of maximum entropy distributions: Let's say that we are given a bunch of constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$. Then, among all the distributions that satisfy the constraints, the distribution $p$ with maximum entropy has the shape: 
 <Math displayMode = {true} math = {"p(x) \propto e^{\lambda_1 f_1(X) + \dots + \lambda_m f_m(X)}"}/>
-The constants $\lambda_1, \dots, \lambda_m$ has to be chosen based on the values $\alpha_1, \dots, \alpha_m$. But I advise you not to focus on $\alpha$s and $\lambda$s too much. The point is that the maximum entropy distribution looks like an exponential with the "stuff we care about", i.e., the functions $f_1, \dots, f_m$, in the exponent. 
+The constants $\lambda_1, \dots, \lambda_m$ has to be chosen based on the values $\alpha_1, \dots, \alpha_m$. But I advise you not to focus on $\alpha$s and $\lambda$s too much. The point is that the maximum entropy distribution looks like an exponential with the stuff we care about  i.e. the functions $f_1, \dots, f_m$ -- in the exponent. 
 
 ## Why?
 
@@ -83,7 +83,7 @@ and the same formula is also the solution if the probability distribution is con
 
 Now this formula is not the full solution to our problem, because it involves some magical constants $\lambda_1, \dots, \lambda_m$ that we don't know. To find their values, we have to go back to our constraints -- do you still remember that there were $m$ numbers $\alpha_1, \dots, \alpha_m$ there? We can use the conditions $E[f_j(x)] = \alpha_j$ to work out the precise shape of the distribution. 
 </Footnote>
-But I want to give you an intuition. Remember, we understand from [the previous chapter](03-minimizing) that the max-entropy principle is really about finding a distribution that is close to being uniform, in the sense of minimizing KL divergence. 
+But I want to give you a concrete intuition. Remember, we understand from [the previous chapter](03-minimizing) that the max-entropy principle is really about finding a distribution that is close to being uniform, in the sense of minimizing KL divergence. 
 
 So, in which sense are max-entropy distributions close to being uniform? Let's see it on the example of exponential distribution $p(x) \propto e^{-x}$. Let's say that I independently sample two numbers from it $x_1$ and $x_2$. Here's a riddle: Is it more probable that I sample $x_1 = 10, x_2 = 20$ or that I sample $x_1' = 15, x_2' = 15$? 
 
@@ -93,18 +93,11 @@ The answer is that both have the same probability since $p(x_1)\cdot p(x_2) = e^
 
 This is not specific only to the exponential distribution, but works for all max-entropy distributions with the shape from ??. In general, consider some distribution of the shape <Math math = {"p(x) \propto e^{\lambda_1 f_1(x) + \dots + \lambda_m f_m(x)}"} /> and think of independently sampling a few points $x_1, \dots, x_k$ from that distribution. Now if you tell me what are the average values $a_1 = \frac{1}{k} \sum_{i = 1}^k f_1(x_i), \dots, a_m = \frac{1}{k} \sum_{i = 1}^k f_m(x_i)$ and I condition on this information, the conditional distribution over $x_1, \dots, x_k$ is actually uniform! That's because the occurence probability of any such tuple under our distribution $p$ is the same and equal to <Math math = {"p(x_1, \dots, x_k) \propto e^{k(\lambda_1 a_1 + \dots + \lambda_m a_m)}$"} />.  
 
-## Example
+So what should we take of it? If you sample from max-entropy distributions, the experience is actually pretty similar to sampling from the uniform distribution! After you measure the empirical averages of $f_1, \dots, f_m$ of your sample, it's distribution is uniform. This is a very concrete sense in which max-entropy distributions are close to the uniform distributions. 
+<Footnote>
+Even better, using the law of large numbers, if you sample a large sample of $k$ samples, you know that with high probability, the empirical averages $\frac{1}{k} \sum_{i = 1}^k f_j(x_i)$ are going to be close to $E[f_j(X)]$. Thus, sampling from maximum entropy distribution feels like sampling from the uniform distribution over "typical" instances. 
+</Footnote>
 
-Let's say that we work with real numbers and care about their mean and variance. That means that we care about $f_1(x) = x$ and $f_2(x) = x^2$<Footnote>Technically speaking, $f_2 = (x-\mu)^2$, let's use this to avoid a bit of clutter. </Footnote>. Maximum entropy principle suggests that the most general distribution is of the shape
-
-<Math displayMode={true} math={"p(x) \propto e^{-\lambda_1 x^2 - \lambda_2 x}"}/>
-
-This may not sound so familiar, so let's rewrite this as this:
-<Math displayMode={true} math={"p(x) = A e^{-B(x-C)^2}"}/>
-
-where $A,B,C$ are some constants chosen so that $p(x)$ integrates to $1$. This is normal distribution -- $C$ is its mean and $B$ is $1/\sigma^2$; $A$ is the proportionality constant that I always forget. 
-
-I think this is a good (partial) explanation of "why $x^2$ in Gaussian"? It simply means that Gaussian is the *right* distribution to work with if you care about the first two moments. If you cared about the first four moments, the right family of distributions would be those with four-degree polynomials in the exponent. 
 
 ## Catalogue of examples
 
@@ -127,7 +120,7 @@ If we believe that the mean is an important parameter of a distribution (as we u
 
 This kind of distribution is known under many names, depending on what is the underlying ground set over which we define it. Let's see some cases:
 
-#### Binary
+#### Bernoulli distribution & Logits
 
 If we are talking about distributions over $\{0, 1\}$, then the shape from ?? takes form
 
@@ -150,7 +143,7 @@ We will see an application of logits in a minute, and also later in logistic reg
 It is possible that this is a good way of understanding how our brain works, but during the development of the field, researchers understood that the nets work better if instead if sigmoids, one uses the ReLU activation function. That activation function corresponds to neurons that not only contemplate whether to send any signal or none, but also send out a stronger output signal if they got strong input. 
 </Footnote>
 
-#### Discrete set
+#### Categorical distribution & Softmax
 
 A more general instantiation of ?? is when our distribution is over some arbitrary set of numbers $\{a_1, \dots, a_k\}$. In that case, the max entropy distribution is what's called a softmax (or softmin) distribution -- each number $a_i$ is chosen with probability 
 
@@ -171,7 +164,7 @@ There are also application for higher temperatures. For example, if you want to 
 Notice how softmax allowed us to elegantly solve a problem that's otherwise pretty hard to approach -- given a probability distribution $p$, how do we find similar distributions $p'$ that are close to $p$, but more or less "concentrated" on the most probable values. 
 
 
-#### Positive integers / reals 
+#### Exponential and Geometrical distribution
 
 If the domain of the probability distribution is nonnegative integers/reals, then we get the so-called [geometric](https://en.wikipedia.org/wiki/Geometric_distribution)/[exponential](https://en.wikipedia.org/wiki/Exponential_distribution) distribution -- another very basic and useful distribution. 
 You should think about this distribution as _the most natural_ distribution to model positive numbers. 
@@ -189,9 +182,15 @@ This discussion is mostly meant to show what I love on the max entropy principle
 
 There still an elephant in the room though -- exponential distribution can't be normalized if the data are general real numbers. 
 
-### Fixing $E[X]$ & $E[X^2]$
+### Normal distribution
 
-If we believe that both mean and the variance are interesting, max entropy principle suggests that we should choose the function that has some quadratic function in the exponent. The most useful application is when the domain of that function are real numbers where the appropriate distribution is called [normal or Gaussian distribution](https://en.wikipedia.org/wiki/Normal_distribution) with tails that look like $e^{-x^2}$. The distribution is parameterized by $\mu, \sigma^2$ and denoted as $N(\mu, \sigma^2)$. <Footnote>For a finite domain, the probability function could look like $P(x) \propto e^{x^2}$, i.e., it could have the smallest probabilities in the middle and large probabilities at the edges. However, this cannot happen if the domain is real numbers. There, the only possible solution is the familiar bell-shaped curve. </Footnote> 
+If we believe that both mean and the variance are interesting, max entropy principle suggests that we should choose the function that has a quadratic function of $x$ in the exponent. That means it has the shape
+<Math displayMode={true} math={"p(x) \propto e^{-\lambda_1 x^2 - \lambda_2 x}"}/>
+This gets more familiar if we rewrite the equation like this:
+<Math displayMode={true} math={"p(x) = A e^{-B(x-C)^2}"}/>
+where $A,B,C$ are some constants chosen so that $p(x)$ integrates to $1$. This is the family of [normal (or Gaussian) distributions](https://en.wikipedia.org/wiki/Normal_distribution), and the density formula is usually written more precisely as <Math math = {"p(x) = \frac{1}{2\pi\sigma^2} e^{-(x-\mu)^2/\sigma^2}"} /> <Footnote>For a finite domain, the probability function from ??could also look like $P(x) \propto e^{x^2}$, i.e., it could have the smallest probabilities in the middle and large probabilities at the edges. However, this is not normalizable to 1 if the domain is real numbers. There, the only possible solution is the familiar bell-shaped curve. </Footnote> 
+
+I think this is a good (partial) explanation of "why is there $x^2$ in Gaussian"? It simply means that Gaussian is the *right* distribution to work with if you care about the first two moments. If you cared about the first four moments, the right family of distributions would be those with four-degree polynomials in the exponent. 
 
 You should view the normal distribution as _the right distribution_ if what you care is mean and variance. A related view is that this is the simplest possible distribution on real numbers -- Neither the uniform distribution nor the exponential distribution can be normalized there, so we can try to salvage this by fixing the first two moments. 
 
