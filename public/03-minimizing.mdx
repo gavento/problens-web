@@ -51,9 +51,7 @@ Here's what Maximum likelihood principle recommends: We should maximize the like
 <Math displayMode={true} math = {"\hat\mu, \hat\sigma^2 = \argmax_{\mu, \sigma^2} \sum_{i = 1}^N \log\left( \frac{1}{2\pi\sigma^2} e^{-\frac{(X_i-\mu)^2}{\sigma^2}} \right) = \argmin_{\mu, \sigma^2} 2N \cdot \log \sigma + \sum_{i = 1}^N \frac{(X_i-\mu)^2}{\sigma^2}"}/>
 
 There are several ways to solve this optimization problem. Probably the cleanest is differentiation: If we define $\mathcal{L}$ to be the above expression, then:
-<Math displayMode={true} math = {"\
-\frac{\partial \mathcal{L}}{\partial \mu} = \frac{1}{\sigma^2} \sum_{i = 1}^N 2(X_i - \mu) \
-"}/>
+<Math displayMode={true} math = {"\frac{\partial \mathcal{L}}{\partial \mu} = \frac{1}{\sigma^2} \sum_{i = 1}^N 2(X_i - \mu) "}/>
 
 Setting <Math displayMode={false} math = {"\frac{\partial \mathcal{L}}{\partial \mu} = 0"}/> then leads to $\hat\mu = \frac{1}{N} \sum_{i = 1}^N X_i$. 
 
