@@ -47,23 +47,22 @@ So what's the conclusion? Our approach of minimizing KL divergence is equivalent
 Let's say that we are given data $X_1, \dots, X_N$ (that we represent by its empirical distribution $p$) and want to find the best fitting Gaussian $N(\mu, \sigma^2)$. How should we choose $\hat\mu$ and $\hat\sigma^2$? 
 
 Here's what Maximum likelihood principle recommends: We should maximize the likelihood, or more conveniently, maximize the so-called log-likelihood / minimize cross-entropy:
-$$
-\hat\mu, \hat\sigma^2 
-= \argmax_{\mu, \sigma^2} \sum_{i = 1}^N \log\left( \frac{1}{2\pi\sigma^2} e^{-\frac{(X_i-\mu)^2}{\sigma^2}} \right)
-= \argmin_{\mu, \sigma^2} 2N \cdot \log \sigma + \sum_{i = 1}^N \frac{(X_i-\mu)^2}{\sigma^2}
-$$
+
+<Math displayMode={true} math = {"\hat\mu, \hat\sigma^2 \
+= \argmax_{\mu, \sigma^2} \sum_{i = 1}^N \log\left( \frac{1}{2\pi\sigma^2} e^{-\frac{(X_i-\mu)^2}{\sigma^2}} \right)\
+= \argmin_{\mu, \sigma^2} 2N \cdot \log \sigma + \sum_{i = 1}^N \frac{(X_i-\mu)^2}{\sigma^2}"}/>
 
 There are several ways to solve this optimization problem. Probably the cleanest is differentiation: If we define $\mathcal{L}$ to be the above expression, then:
-$$
-\frac{\partial \mathcal{L}}{\partial \mu} = \frac{1}{\sigma^2} \sum_{i = 1}^N 2(X_i - \mu) 
-$$
-Setting $\frac{\partial \mathcal{L}}{\partial \mu} = 0$ then leads to $\hat\mu = \frac{1}{N} \sum_{i = 1}^N X_i$. 
+<Math displayMode={true} math = {"\
+\frac{\partial \mathcal{L}}{\partial \mu} = \frac{1}{\sigma^2} \sum_{i = 1}^N 2(X_i - \mu) \
+"}/>
+
+Setting <Math displayMode={false} math = {"\frac{\partial \mathcal{L}}{\partial \mu} = 0"}/> then leads to $\hat\mu = \frac{1}{N} \sum_{i = 1}^N X_i$. 
 
 Similarly, 
-$$
-\frac{\partial \mathcal{L}}{\partial \sigma} = 2N/\sigma -2  \sum_{i = 1}^N \frac{(X_i-\mu)^2}{\sigma^3}
-$$
-Setting $\frac{\partial \mathcal{L}}{\partial \sigma} = 0$ then leads to $\hat\sigma = \frac{1}{N} \sum_{i = 1}^N (X_i - \mu)^2$. 
+<Math displayMode={true} math = {"\frac{\partial \mathcal{L}}{\partial \sigma} = 2N/\sigma -2  \sum_{i = 1}^N \frac{(X_i-\mu)^2}{\sigma^3}"}/>
+
+Setting <Math displayMode={false} math = {"\frac{\partial \mathcal{L}}{\partial \sigma} = 0$ then leads to $\hat\sigma = \frac{1}{N} \sum_{i = 1}^N (X_i - \mu)^2$"}/>
 
 ## Finding a Better Model & Maximum Entropy Principle <a id="finding-better-model"></a>
 
