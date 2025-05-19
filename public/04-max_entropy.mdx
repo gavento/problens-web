@@ -83,6 +83,14 @@ and the same formula is also the solution if the probability distribution is con
 
 Now this formula is not the full solution to our problem, because it involves some magical constants $\lambda_1, \dots, \lambda_m$ that we don't know. To find their values, we have to go back to our constraints -- do you still remember that there were $m$ numbers $\alpha_1, \dots, \alpha_m$ there? We can use the conditions $E[f_j(x)] = \alpha_j$ to work out the precise shape of the distribution. 
 </Footnote>
+But I want to give you an intuition. Remember, we understand from [the previous chapter](03-minimizing) that the max-entropy principle is really about finding a distribution that is close to being uniform, in the sense of minimizing KL divergence. 
+
+So, in which sense are max-entropy distributions close to being uniform? Let's see it on the example of exponential distribution $p(x) \propto e^{-x}$. Let's say that I independently sample two numbers from it $x_1$ and $x_2$. Here's a riddle: Is it more probable that I sample $x_1 = 10, x_2 = 20$ or that I sample $x_1' = 15, x_2' = 15$? 
+
+The answer is that both have the same probability since $p(x_1)\cdot p(x_2) = e^{-x_1 - x_2}$ and we have in our riddle that $x_1 + x_2 = x_1' + x_2'$. In other words, in this density graph, the lines with the same sum $x_1 + x_2$ have the same probability density. 
+
+![Exponential distribution](04-max_entropy/exponential.png)
+
 
 ## Example
 
