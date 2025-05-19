@@ -34,9 +34,9 @@ This was a trick question because both answers are kind of true! The shape of th
 
 ![Financial Data Distribution](00-introduction/financial.png)
 
-At the beginning, it seems that distribution looks a lot like the familiar bell-shaped curve $e^\{-x^2\}$ of [normal distribution](https://en.wikipedia.org/wiki/Normal_distribution). This makes sense! The price of a stock slightly increases whenever somebody buys it, and slighlty decreases whenever somebody sells. The daily change is a summation of bazilions of buys and sells, and this is the setup in which we can apply the so-called [Central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem), that says that in this case, the resulting distribution should be normal.
+At the beginning, it seems that distribution looks a lot like the familiar bell-shaped curve <Math math="e^{-x^2}" /> of [normal distribution](https://en.wikipedia.org/wiki/Normal_distribution). This makes sense! The price of a stock slightly increases whenever somebody buys it, and slighlty decreases whenever somebody sells. The daily change is a summation of bazilions of buys and sells, and this is the setup in which we can apply the so-called [Central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem), that says that in this case, the resulting distribution should be normal.
 
-So how come that as we keep zooming out, the histogram gets more and more "pointy"? The other distribution is the so-called Laplace distribution with shape $e^\{-|x|\}$ and it starts to be a better fit after around ?? months for S&P, and ?? for Bitcoin.
+So how come that as we keep zooming out, the histogram gets more and more "pointy"? The other distribution is the so-called Laplace distribution with shape <Math math="e^{-|x|}" /> and it starts to be a better fit after around ?? months for S&P, and ?? for Bitcoin.
 
 There are two ways for how this connects to KL divergence. First of all, KL divergence measures how well a ground truth distribution (empirical data we collected) is fitted by a model (normal or Laplace distribution), so you can use it to make claims such as "for more than ?? months, Laplace fits the data better than normal".
 
@@ -49,14 +49,14 @@ Second, we will use KL divergence to understand a deep principle in probability 
 In the ye olden days, people measured lengths in feet. Different people of course have differently-sized body parts, so at some point we have to be a bit more precise. One way is to measure the foot of the local warlord, but then you have to change it every now and then when the warlord is replaced.
 
 Another way (depicted in the above 16-th century engraving from Germany) is to ask 16 random people and compute their mean foot length as
-$$\bar X = \frac\{1\}\{16\} (X_1 + \dots + X_\{16\})$$
+$$\bar X = \frac{1}{16} (X_1 + \dots + X_{16})$$
 This will be a fairly stable estimate that will hopefully remain similar the next time you perform this experiment.
 
 How good is this estimate? Typically, one would gauge it by estimating the standard deviation. Do you remember the formula for that? Try to guess the correct one:
 
-1. $$\bar \sigma^2 = \frac\{1\}\{15\} \sum_\{i=1\}^\{16\} (X_i - \bar X)^2$$
-2. $$\bar \sigma^2 = \frac\{1\}\{16\} \sum_\{i=1\}^\{16\} (X_i - \bar X)^2$$
-3. $$\bar \sigma^2 = \frac\{1\}\{17\} \sum_\{i=1\}^\{16\} (X_i - \bar X)^2$$
+1. $$\bar \sigma^2 = \frac{1}{15} \sum_{i=1}^{16} (X_i - \bar X)^2$$
+2. $$\bar \sigma^2 = \frac{1}{16} \sum_{i=1}^{16} (X_i - \bar X)^2$$
+3. $$\bar \sigma^2 = \frac{1}{17} \sum_{i=1}^{16} (X_i - \bar X)^2$$
 
 Another trick question since all formulas are correct! Or a bit more precisely, all of them are defensible in the framework of (frequentist) statistics.
 The coefficient $1/(n-1)$ corresponds to the so-called unbiased estimate, $1/n$ gives the maximum likelihood estimate, and $1/(n+1)$ minimizes the mean squared error between the guess and the correct value.
@@ -70,15 +70,15 @@ But out of all these philosophies of how to estimate values, only one of them --
 So you want to train a good large language model (LLM) like GPT/Gemini/Claude. Such a model is given some text as input, does some computation inside, and outputs the next letter<Footnote>In fact, it outputs the next token. But a token is just a small group of letters -- think of it as a syllable or a short word. </Footnote> in the text.
 LLMs are in fact designed so that they don't output a single letter, but try to predict the distribution $p$ of the next letter. This is why it's simple to make LLMs output different answers on the same text.
 
-\{/* We want to train a new model that is at least as good as, say, GPT-4. In practice, this would involve collecting a lot of text and running both GPT-4 and our LLM on them -- for each predicted letter, we would look at the distribution outputted by GPT-4 and try to nudge our model to make its distribution look similar. */\}
+{/* We want to train a new model that is at least as good as, say, GPT-4. In practice, this would involve collecting a lot of text and running both GPT-4 and our LLM on them -- for each predicted letter, we would look at the distribution outputted by GPT-4 and try to nudge our model to make its distribution look similar. */}
 
 There are many complicated things going on in training of LLMs, but one particularly important one is the choice of the so-called _loss function_. To understand this, let's say that for some text that appears all over the place on the internet, like "My name is A", we know the distribution of the next letter. Perhaps "l" is frequent because of Alex, but "a" not so much. Let's call this ground-truth distribution $p$.
 
 We also know the distribution that our LLM outputs, let's call it $q$. We need to measure how well $q$ matches $p$. This way, we derive the loss function -- the function that we try to minimize during the LLM training. So which one would you choose?
 
-1. $L(p,q) = \sum_\{i = 1\}^n |p_i - q_i|$ (_$\ell_1$ norm_)
-2. $L(p,q) = \sum_\{i = 1\}^n (p_i - q_i)^2$ (_$\ell_2$ norm_)
-3. $L(p,q) = \sum_\{i = 1\}^n p_i \cdot \log (p_i / q_i)$ (_KL divergence_)
+1. $L(p,q) = \sum_{i = 1}^n |p_i - q_i|$ (_$\ell_1$ norm_)
+2. $L(p,q) = \sum_{i = 1}^n (p_i - q_i)^2$ (_$\ell_2$ norm_)
+3. $L(p,q) = \sum_{i = 1}^n p_i \cdot \log (p_i / q_i)$ (_KL divergence_)
 
 There is nothing wrong with the first two functions, in practice, people usually opt for KL divergence. An important feature of it is that according to KL, if $p_i = 0.5$ and $q_i = 0.51$, it's in some sense a smaller problem than if $p_i = 0.01$ and $q_i = 0.02$ (the ratios $p_i/q_i$ end up very different). Sounds reasonable!
 
@@ -127,29 +127,29 @@ Which of our three tables is the "closest" to being independent?
 
 When you first encounter machine learning, it seems like horrible mess, full of ad-hoc tricks and optimization problems. For example, here are a few machine learning tools you learn in the first few Machine-Learning-101 lectures, and what optimization they correspond to:
 
-$k$-means -- $\min_\{C\} \sum_\{i = 1\}^\{n\} \min_\{c \in C\} ||x-c||^2$
-linear regression -- $\min_\{\alpha, \beta\} \sum_\{i = 1\}^n (\alpha \cdot x_i + \beta - y_i)^2$
-logistic regression -- $\min_\{\alpha, \beta\} \sum_\{i = 1\}^n y_i\log(\sigma(\alpha \cdot x_i + \beta)) + (1-y_i)\log(1 - \sigma(\alpha \cdot x_i + \beta))$
+<Math math="k\text{-means -- } \min_{C} \sum_{i = 1}^{n} \min_{c \in C} ||x-c||^2" />
+<Math math="\text{linear regression -- } \min_{\alpha, \beta} \sum_{i = 1}^n (\alpha \cdot x_i + \beta - y_i)^2" />
+<Math math="\text{logistic regression -- } \min_{\alpha, \beta} \sum_{i = 1}^n y_i\log(\sigma(\alpha \cdot x_i + \beta)) + (1-y_i)\log(1 - \sigma(\alpha \cdot x_i + \beta))" />
 
 When you try to understand some more modern deep learning tools, it does not get that much better. For example, consider variational autoencoders (the architecture behind early image generation models like DALL-E / Midjourney as of time of writing). During training, you optimize the following beast:
 
-$$
-E_\{z \sim p_x\}[||x-D(z)||^2] + \sum_\{j = 1\}^d (d\cdot \sigma_j^2(x) + \mu_j^2 - 2d\log \sigma(x))
-$$
+<Math displayMode={true} math="
+E_{z \sim p_x}[||x-D(z)||^2] + \sum_{j = 1}^d (d\cdot \sigma_j^2(x) + \mu_j^2 - 2d\log \sigma(x))
+" />
 
 Although these functions look horrible, we will see what they correspond to and how they can be derived using KL divergence.
 
 ## How to get rich <a id = "get-rich"></a>
 
-Here's a riddle that motivates a surprising number of recent algorithms in computer science and machine learning. Let's say that we want to get rich by investing at the stock market. Fortunately, there are $n$ investors that are willing to share their advice with us: Each day $t$, they give us some advice, and at the end of the day, we learn how good the advice was -- for the $i$-th expert, we will get to know her loss $\ell_i^\{(t)\}$ <Footnote>If this number is positive, the advice was bad, if it is negative, the advice was good. </Footnote>
+Here's a riddle that motivates a surprising number of recent algorithms in computer science and machine learning. Let's say that we want to get rich by investing at the stock market. Fortunately, there are $n$ investors that are willing to share their advice with us: Each day $t$, they give us some advice, and at the end of the day, we learn how good the advice was -- for the $i$-th expert, we will get to know her loss $\ell_i^{(t)}$ <Footnote>If this number is positive, the advice was bad, if it is negative, the advice was good. </Footnote>
 
-Our general investing strategy is this: We start with a uniform distribution $p_1^\{(0)\}, \dots, p_n^\{(0)\}, p_i^\{(0)\} = 1/n$ over the experts. At the beginning of each day, we sample an expert from this distribution and follow her advice. At the end of the day, we look at the losses $\ell_i^\{(t)\}$ and we update $p^\{(t)\}$ to $p^\{(t+1)\}$.
+Our general investing strategy is this: We start with a uniform distribution $p_1^{(0)}, \dots, p_n^{(0)}, p_i^{(0)} = 1/n$ over the experts. At the beginning of each day, we sample an expert from this distribution and follow her advice. At the end of the day, we look at the losses $\ell_i^{(t)}$ and we update $p^{(t)}$ to $p^{(t+1)}$.
 
 The question is: how should we update? There are a few plausible strategies:
 
-"Gradient descent": Choose small $\varepsilon$ and do gradient descent: $p^\{(t+1)\} = p^\{(t)\} - \eps \cdot \ell_i^\{(t)\}$; normalize $p^\{(t+1)\}$ afterwards.
-"Multiplicative gradient descent: Choose small $\varepsilon$ and do "multiplicative" gradient descent: $p^\{(t+1)\} = p^\{(t)\} \cdot e^\{- \eps \cdot \ell_i^\{(t)\}\}$; normalize $p^\{(t+1)\}$ afterwards.
-"Follow the leader": Just follow the best guy so far: $p^\{(t+1)\}_i = 1$ for the guy $i$ with minimum $\ell_i^\{(1)\} + \ell_i^\{(2)\} + \dots + \ell_i^\{(t)\}$.
+"Gradient descent": Choose small $\varepsilon$ and do gradient descent: <Math math="p^{(t+1)} = p^{(t)} - \varepsilon \cdot \ell_i^{(t)}" />; normalize <Math math="p^{(t+1)}" /> afterwards.
+"Multiplicative gradient descent: Choose small $\varepsilon$ and do "multiplicative" gradient descent: <Math math="p^{(t+1)} = p^{(t)} \cdot e^{- \varepsilon \cdot \ell_i^{(t)}}" />; normalize <Math math="p^{(t+1)}" /> afterwards.
+"Follow the leader": Just follow the best guy so far: <Math math="p^{(t+1)}_i = 1" /> for the guy $i$ with minimum <Math math="\ell_i^{(1)} + \ell_i^{(2)} + \dots + \ell_i^{(t)}" />.
 
 What's the best strategy?
 
@@ -176,7 +176,7 @@ Each of the puzzles above might seem disconnected, but they share a common threa
 
 KL divergence is a fundamental measure that quantifies how one probability distribution differs from another. Its formal definition is:
 
-$$KL(p, q) = \sum_\{i = 1\}^n p_i \log \frac\{p_i\}\{q_i\}$$
+$$KL(p, q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}$$
 
 Where $p$ represents the "ground-truth" distribution and $q$ represents our model or approximation.
 
@@ -200,7 +200,7 @@ TODO:
 
 A customer comes to a restaurant. Each meal on the menu has a specific tastiness value, which we conveniently assume is known. If the customer spends enough time considering all the meals, she will pick the one with the highest tastiness. But if she is extremely hungry, she might simply choose a random meal. The question is: How should we model the situation in between—when the customer spends some time looking at the menu but not enough to always pick the tastiest item?
 
-More mathematically speaking, given $n$ numbers $a_1, \dots, a_n$, can we find a parameter $\lambda$ and a natural family of probability distributions such that $\lambda=0$ corresponds to the uniform distribution and $\lambda=+\infty$ corresponds to picking the maximum value (i.e., $\argmax_\{i\} a_i$)?
+More mathematically speaking, given $n$ numbers $a_1, \dots, a_n$, can we find a parameter $\lambda$ and a natural family of probability distributions such that $\lambda=0$ corresponds to the uniform distribution and $\lambda=+\infty$ corresponds to picking the maximum value (i.e., $\argmax_{i} a_i$)?
 
 You sometimes encounter this type of question when constructing a probabilistic model. There are many degrees of freedom in constructing a probability distribution, so how do we pick the "most natural" one that interpolates between complete order and total randomness?
 

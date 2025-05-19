@@ -10,8 +10,10 @@ import { Cite, References } from "@/components/Citations";
 import { Footnote } from "@/components/Footnotes";
 import { Footnotes } from "@/components/Footnotes";
 import EvidenceAccumulationSimulator from "@/components/content/EvidenceAccumulationSimulator";
-import { compile } from "@mdx-js/mdx";
+import { compile, evaluate } from "@mdx-js/mdx";
 import chalk from "chalk";
+import * as runtime from "react/jsx-runtime";
+import KatexMath from "@/components/KatexMath";
 
 // Force color support for CI/build environments
 chalk.level = 3;
@@ -22,9 +24,38 @@ export async function getMdxContent(path: string) {
 
   try {
     // Check if the file is valid MDX
-    await compile(source, {
-      format: "mdx",
-    });
+    await compile(source);
+
+    // const res = await evaluate(source, {
+    //   ...runtime,
+    //   // components: {
+    //   //   Cite: Cite,
+    //   //   References: References,
+    //   //   Footnotes: Footnotes,
+    //   //   Footnote: Footnote,
+    //   //   EvidenceAccumulationSimulator: EvidenceAccumulationSimulator,
+    //   // },
+    //   baseUrl: import.meta.url,
+    //   remarkPlugins: [
+    //     remarkGfm, // GitHub Flavored Markdown
+    //     remarkMath, // Math equations
+    //   ],
+    //   rehypePlugins: [
+    //     [
+    //       rehypeKatex,
+    //       {
+    //         macros: {
+    //           "\\R": "\\mathbb{R}",
+    //           "\\eps": "\\varepsilon",
+    //         },
+    //         trust: true,
+    //       },
+    //     ], // KaTeX for math rendering
+    //     rehypeHighlight, // Syntax highlighting
+    //   ],
+    //   // development: true,
+    // });
+    // return res.default({});
   } catch (error) {
     const mdxError = error as any;
     const lineNumber = mdxError.line || mdxError.cause?.loc?.line;
@@ -90,6 +121,7 @@ export async function getMdxContent(path: string) {
       Footnotes: Footnotes,
       Footnote: Footnote,
       EvidenceAccumulationSimulator: EvidenceAccumulationSimulator,
+      Math: KatexMath,
     },
     options: {
       parseFrontmatter: true,
