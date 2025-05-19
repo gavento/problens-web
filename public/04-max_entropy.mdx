@@ -75,11 +75,10 @@ Now this formula is not the full solution to our problem, because it involves so
 Let's say that we work with real numbers and care about their mean and variance. That means that we care about $f_1(x) = x$ and $f_2(x) = x^2$<Footnote>Technically speaking, $f_2 = (x-\mu)^2$, let's use this to avoid a bit of clutter. </Footnote>. Maximum entropy principle suggests that the most general distribution is of the shape
 
 <Math displayMode={true} math={"p(x) \propto e^{-\lambda_1 x^2 - \lambda_2 x}"}/>
-$$
+
 This may not sound so familiar, so let's rewrite this as this:
-$$
-p(x) = A e^{-B(x-C)^2}
-$$
+<Math displayMode={true} math={"p(x) = A e^{-B(x-C)^2}"}/>
+
 where $A,B,C$ are some constants chosen so that $p(x)$ integrates to $1$. This is normal distribution -- $C$ is its mean and $B$ is $1/\sigma^2$; $A$ is the proportionality constant that I always forget. 
 
 I think this is a good (partial) explanation of "why $x^2$ in Gaussian"? It simply means that Gaussian is the *right* distribution to work with if you care about the first two moments. If you cared about the first four moments, the right family of distributions would be those with four-degree polynomials in the exponent. 
