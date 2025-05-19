@@ -16,7 +16,7 @@ If we were only fixing the value of $E[X]$ (and the domain were nonnegative real
 Can you spot a pattern? 
 
 Here's the general form of maximum entropy distributions: Let's say that we are given a bunch of constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$. Then, among all the distributions that satisfy the constraints, the distribution $p$ with maximum entropy has the shape: 
-<Math displayMode = {true} math = {"p(x) \propto e^{\lambda_1 f_1(X) + \dots + \lambda_m f_m(X)}"}>
+<Math displayMode = {true} math = {"p(x) \propto e^{\lambda_1 f_1(X) + \dots + \lambda_m f_m(X)}"}/>
 The constants $\lambda_1, \dots, \lambda_m$ has to be chosen based on the values $\alpha_1, \dots, \alpha_m$. But I advise you not to focus on $\alpha$s and $\lambda$s too much. The point is that the maximum entropy distribution looks like an exponential with the "stuff we care about", i.e., the functions $f_1, \dots, f_m$, in the exponent. 
 
 ## Why?
@@ -87,10 +87,11 @@ But I want to give you an intuition. Remember, we understand from [the previous 
 
 So, in which sense are max-entropy distributions close to being uniform? Let's see it on the example of exponential distribution $p(x) \propto e^{-x}$. Let's say that I independently sample two numbers from it $x_1$ and $x_2$. Here's a riddle: Is it more probable that I sample $x_1 = 10, x_2 = 20$ or that I sample $x_1' = 15, x_2' = 15$? 
 
-The answer is that both have the same probability since $p(x_1)\cdot p(x_2) = e^{-x_1 - x_2}$ and we have in our riddle that $x_1 + x_2 = x_1' + x_2'$. In other words, in this density graph, the lines with the same sum $x_1 + x_2$ have the same probability density. 
+The answer is that both have the same probability since $p(x_1)\cdot p(x_2) = e^{-x_1 - x_2}$ and we have in our riddle that $x_1 + x_2 = x_1' + x_2'$. In other words, in this density graph, the lines with the same sum $x_1 + x_2$ have uniform density. 
 
 ![Exponential distribution](04-max_entropy/exponential.png)
 
+This is not specific only to the exponential distribution, but works for all max-entropy distributions with the shape from ??. In general, consider some distribution of the shape <Math math = {"p(x) \propto e^{\lambda_1 f_1(x) + \dots + \lambda_m f_m(x)}"} /> and think of independently sampling a few points $x_1, \dots, x_k$ from that distribution. Now if you tell me what are the average values $a_1 = \frac{1}{k} \sum_{i = 1}^k f_1(x_i), \dots, a_m = \frac{1}{k} \sum_{i = 1}^k f_m(x_i)$ and I condition on this information, the conditional distribution over $x_1, \dots, x_k$ is actually uniform! That's because the occurence probability of any such tuple under our distribution $p$ is the same and equal to <Math math = {"p(x_1, \dots, x_k) \propto e^{k(\lambda_1 a_1 + \dots + \lambda_m a_m)}$"} />.  
 
 ## Example
 
