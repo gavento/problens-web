@@ -8,11 +8,11 @@ We will also go through a few basic properties that these things have.
 
 ## Relative entropy = Crossentropy - Entropy
 
-A quick recap: The [01-kl_intro](previous chapter), we've seen how KL divergence is really the result of repeatedly applying Bayes' theorem, using this table:
+A quick recap: The [previous chapter](01-kl_intro), we've seen how KL divergence is really the result of repeatedly applying Bayes' theorem, using this table:
 
-![Surprisal](01-kl_intro/repeated_bayes_surprisal.png)
+![Surprisal](01-kl_intro/repeated_bayes_surprisals.png)
 
-Each cell in this table holds a value of type $\log 1/p$ that's also sometimes called the surprisal.
+Each cell in this table holds a value of type $\log 1/p$ that's also sometimes called the _surprisal_.
 
 Last time, we have been parsing this table "row-by-row". That is, we always subtracted two surprisals to compute how the given flip changes our posterior. The Bayesian reasoner then keeps summing up all those surprisal differences.
 
@@ -42,7 +42,7 @@ All our entropies have bunch of intuitive properties. Here are a few of them.
 
 ### Additivity
 
-Let's say that you have two distribution (the "truth" and the "model") $p, q$ and then another two distributions $p', q'$. It's true that
+Let's say that you have two distribution (the "truth" and the "model") $p, q$ and then another two distributions $p', q'$. It's true that 
 <Footnote>
 Here's the proof (by Claude):
 Let's start with the definition of KL divergence for the joint distributions:
@@ -84,105 +84,25 @@ $$D(p \otimes p', q \otimes q') = D(p, q) + D(p', q')$$
 </Footnote>
 
 
-
 $$
 D(p \otimes p', q \otimes q') = D(p, q) + D(p', q')
 $$
-where $\otimes$ stands for the product distribution, i.e. the joint distribution where $p,p'$ are independent. This is super important! In fact, in the precedening chapter, it was important that the flips of the coin were independent, so to make it more formal, we would really rely on this additive property.
+where $\otimes$ stands for the product distribution, i.e. the joint distribution where $p,p'$ are independent. This is super important! In fact, in the precedening chapter, it was important that the flips of the coin were independent, so to make it more formal, we would really rely on this additive property. Crossentropy and entropy are also additive for independent distributions.
 
-In fact, a slightly stronger property called _chain rule_ is true. Imagine that we have two distributions $p,q$ for how I commute to work (\{🚶‍♀️, 🚲, 🚌}), but later I decide that when I take bus, I will also keep track of what line I took (\{①, ②, ③}); I again have two distributions $p', q'$. Now, $p$ and $p'$ can be combined into an overall distribution $p_{overall}$ over the set \{🚶‍♀️, 🚲, ①, ②, ③}; we combine $q,q'$ into $q_{overall}$ as well. It then holds that
-
+In fact, a slightly stronger property called _chain rule_ is true. 
 <Footnote>
-Here's the proof (by Claude). Let $p$ and $q$ be probability distributions over a set $\{1, 2, \ldots, n\}$. Let $p'$ and $q'$ be probability distributions over a set $\{1, 2, \ldots, m\}$.
-
-Define combined distributions $p_{overall}$ and $q_{overall}$ over the set $\{(1,1), (1,2), \ldots, (1,m), 2, 3, \ldots, n\}$ where:
-
-- $p_{overall}(i) = p(i)$ and $q_{overall}(i) = q(i)$ for all $i \in \{2, 3, \ldots, n\}$
-- $p_{overall}(1,j) = p(1) \cdot p'(j)$ and $q_{overall}(1,j) = q(1) \cdot q'(j)$ for all $j \in \{1, 2, \ldots, m\}$
-
-Then:
-$$D(p_{overall}, q_{overall}) = D(p, q) + p(1) \cdot D(p', q').$$
-Here's why. We compute the KL divergence for the combined distributions:
-
-<Math displayMode={true} math="
-D(p_{overall}, q_{overall}) = \sum_{z \in Z} p_{overall}(z) \log\left(\frac{p_{overall}(z)}{q_{overall}(z)}\right)
-"/>
-
-Where $Z = \{(1,1), (1,2), \ldots, (1,m), 2, 3, \ldots, n\}$.
-
-We can split this sum based on whether $z$ is in $\{2, 3, \ldots, n\}$ or in $\{(1,1), (1,2), \ldots, (1,m)\}$:
-
-<Math displayMode={true} math="
-D(p_{overall}, q_{overall}) = \sum_{i=2}^{n} p_{overall}(i) \log\left(\frac{p_{overall}(i)}{q_{overall}(i)}\right) + \sum_{j=1}^{m} p_{overall}(1,j) \log\left(\frac{p_{overall}(1,j)}{q_{overall}(1,j)}\right)
-"/>
-
-For the first sum, using the definitions of $p_{overall}$ and $q_{overall}$:
-
-<Math displayMode={true} math="
-\sum_{i=2}^{n} p_{overall}(i) \log\left(\frac{p_{overall}(i)}{q_{overall}(i)}\right) = \sum_{i=2}^{n} p(i) \log\left(\frac{p(i)}{q(i)}\right)
-"/>
-
-For the second sum, substituting $p_{overall}(1,j) = p(1) \cdot p'(j)$ and $q_{overall}(1,j) = q(1) \cdot q'(j)$:
-
-<Math displayMode={true} math="
-\sum_{j=1}^{m} p_{overall}(1,j) \log\left(\frac{p_{overall}(1,j)}{q_{overall}(1,j)}\right) = \sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac{p(1) \cdot p'(j)}{q(1) \cdot q'(j)}\right)
-"/>
-
-Using the properties of logarithms:
-
-<Math displayMode={true} math="
-\sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac{p(1)}{q(1)} \cdot \frac{p'(j)}{q'(j)}\right)$$
-"/>
-
-<Math displayMode={true} math="
-= \sum_{j=1}^{m} p(1) \cdot p'(j) \left[\log\left(\frac{p(1)}{q(1)}\right) + \log\left(\frac{p'(j)}{q'(j)}\right)\right]$$
-"/>
-
-This expands to:
-
-<Math displayMode={true} math="
-\sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac{p(1)}{q(1)}\right) + \sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac{p'(j)}{q'(j)}\right)
-"/>
-
-For the first term, factoring out $p(1)$:
-
-<Math displayMode={true} math="
-\sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac{p(1)}{q(1)}\right) = p(1) \log\left(\frac{p(1)}{q(1)}\right) \sum_{j=1}^{m} p'(j)
-"/>
-
-Since $\sum_{j=1}^{m} p'(j) = 1$, this simplifies to:
-
-$$p(1) \log\left(\frac{p(1)}{q(1)}\right)$$
-
-For the second term:
-
-<Math displayMode={true} math="
-\sum_{j=1}^{m} p(1) \cdot p'(j) \log\left(\frac{p'(j)}{q'(j)}\right) = p(1) \sum_{j=1}^{m} p'(j) \log\left(\frac{p'(j)}{q'(j)}\right)
-"/>
-
-$$= p(1) \cdot D(p', q')$$
-
-Now, combining all parts:
-
-$$D(p_{overall}, q_{overall}) = \sum_{i=2}^{n} p(i) \log\left(\frac{p(i)}{q(i)}\right) + p(1) \log\left(\frac{p(1)}{q(1)}\right) + p(1) \cdot D(p', q')$$
-
-The first two terms together with $p(1) \log\left(\frac{p(1)}{q(1)}\right)$ form $D(p, q)$, since they cover all elements in the original set:
-
-$$D(p_{overall}, q_{overall}) = D(p, q) + p(1) \cdot D(p', q')$$
-
-This proves the chain rule for KL divergence as specified.
-</Footnote>
+Imagine that we have two distributions $p,q$ for how I commute to work (\{🚶‍♀️, 🚲, 🚌}), but later I decide that when I take bus, I will also keep track of what line I took (\{①, ②, ③}); I again have two distributions $p', q'$ for that. Now, $p$ and $p'$ can be combined into an overall distribution $p_{overall}$ over the set \{🚶‍♀️, 🚲, ①, ②, ③}; we combine $q,q'$ into $q_{overall}$ as well. The chain rule property says that
 
 <Math displayMode={true} math="
 D(p_{overall}, q_{overall}) = D(p,q) + p_{\text{bus}} \cdot D(p',q')
 "/>
 
-Crossentropy and entropy are also additive for independent distributions.
+One can prove the chain rule property similarly to how additivity is proven. 
+</Footnote>
 
-### Nonnegativity / monotonicity
+### Nonnegativity
 
-We have already seen in the [previous chapter](01-kl_intro) that if KL were negative for some two distributions, something would be severely wrong with the universe.
-There's also a short algebraic proof of this fact.
+We have already seen in the [previous chapter](01-kl_intro) that if KL were negative for some two distributions, something would be severely wrong with the universe. It is true that for any two $p,q$, we have
 
 <Footnote>
 To prove that for any $p,q$ we have (I have used the natural algorithm to make it a bit shorter)
@@ -202,11 +122,17 @@ $$
 $$
 
 
-Because $D(p,q) = H(p,q) - H(p)$, you can view this fact as saying that the crossentropy $H(p,q)$ for fixed $p$ is minimized if we choose $q = p$.
 </Footnote>
+$$
+D(p,q) \ge 0
+$$
 
+Because $D(p,q) = H(p,q) - H(p)$, we can also view this fact as saying that the crossentropy $H(p,q)$ for fixed $p$ is minimized if we choose $q = p$. That is, our Bayesian friend adding surprisals is going to be surprised the least if her model matches the data. 
 
-A bit stronger version of this fact is the so-called monotonicity <Footnote>This is pretty similar property to the so-called [Data processing inequality](https://en.wikipedia.org/wiki/Data_processing_inequality) you might have heard of. </Footnote> Imagine that we have two distributions $p,q$, let's say they are over countries (\{🇺🇸,🇨🇦,🇲🇽,🇯🇵,🇬🇧,🇮🇳,...}). Then, we zoom out a little bit and consider a smaller set of geographical areas (\{North America, Europe, ...}). We can convert $p,q$ to this rougher set to get distributions $p', q'$ -- e.g. we set $p'(North America) = p(🇺🇸) + p(🇨🇦) + p(🇲🇽)$. Then it's the case that
+A bit stronger version of this fact is also called monotonicity 
+<Footnote>
+
+Imagine that we have two distributions $p,q$, let's say they are over countries (\{🇺🇸,🇨🇦,🇲🇽,🇯🇵,🇬🇧,🇮🇳,...}). Then, we zoom out a little bit and consider a smaller set of geographical areas (\{North America, Europe, ...}). We can convert $p,q$ to this rougher set to get distributions $p', q'$ -- e.g. we set $p'(North America) = p(🇺🇸) + p(🇨🇦) + p(🇲🇽)$. Then it's the case that
 
 $$
 D(p, q) \ge D(p', q')
@@ -214,11 +140,14 @@ $$
 
 This makes sense! Remember that KL divergence means how hard is it to separate $p$ from $q$ using Bayes' theorem. This just says that for our Bayesian reasoner, it gets harder to distinguish $p$ from $q$, as we keep grouping different outcomes together. In the special case, we could group all the outcomes to a single outcome SOMETHING_HAPPENED -- the inequality would than reduce to $D(p,q) \ge 0$.
 
+Also, monotonicity is pretty similar to the so-called [Data processing inequality](https://en.wikipedia.org/wiki/Data_processing_inequality) you might have heard of. 
+</Footnote> 
+
 ### Uniqueness
 
-As it turns out, some kind of additivity / chain rule + monotonicity can be used to uniqely pinpoint KL divergence and entropy. By that I mean that any reasonable function of one parameter that has these two properties already [has to be the entropy](<https://en.wikipedia.org/wiki/Entropy_(information_theory)#Characterization>), and any reasonable function of two parameters with these properties [has to be KL divergence](https://blog.alexalemi.com/kl.html).
+As it turns out, some version of additivity and monotonicity can be used to uniqely pinpoint KL divergence and entropy. By that I mean that any reasonable function of one parameter that has these two properties already [has to be the entropy](<https://en.wikipedia.org/wiki/Entropy_(information_theory)#Characterization>), and any reasonable function of two parameters with these properties [has to be KL divergence](https://blog.alexalemi.com/kl.html).
 
-This is pretty cool and it helps us to appreciate that our definitions are not arbitrary at all. KL is _the right_ way to measure how well a model fits reality.
+This is pretty cool and it helps us to appreciate that our definitions are not arbitrary at all. There's just one measure with these natural properties, and this measure is KL divergence. 
 
 ## Application: Evaluating Predictions <a id="application-evaluating-predictions"></a>
 
