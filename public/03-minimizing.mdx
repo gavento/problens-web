@@ -129,24 +129,28 @@ It is often useful to think about this principle a bit more abstractly. Imagine 
 
 ### A few more observations <a id="a-few-observations"></a>
 
-We will spend the whole next chapter discussing all the applications of the maximum entropy principle, but let's already make a few observations about it.
+We will spend the whole next chapter discussing all the applications of the maximum entropy principle, but let's already make two observations about it. Those observations correspond to two important properties of entropy. 
 
-1. For discrete distributions over $\{1, \dots, k\}$, the distribution that maximizes the entropy is the uniform distribution and its entropy is $\log_2 k$. So if our set $P$ contains the uniform distribution, maximum entropy principle reduces to the principle of indifference.
+1. For discrete distributions over $\{1, \dots, k\}$, the distribution that maximizes the entropy is the uniform distribution<Footnote>See e.g. [this](https://stats.stackexchange.com/questions/66108/why-is-entropy-maximised-when-the-probability-distribution-is-uniform)</Footnote>. Its entropy is $\log_2 k$. The implication of this for the max-entropy principle is that if our set $P$ of allowed distributions contains the uniform distribution, then max-entropy principle chooses it. That is, maximum entropy principle is just an extension of the principle of indifference.
 
-2. One of the basic facts about entropy is that if you have a joint distribution $(p,q)$, then $H((p,q)) \le H(p) + H(q)$, with equality if and only if $p$ and $q$ are independent (see []()). Here's how we can use this fact: Imagine that $P$ is the set of all joint distributions with marginals $p, q$. Then, the maximum entropy principle tells us that the joint distribution $p \in P$ that maximizes the entropy is the one that is independent.
+2. If you have a joint distribution $(p,q)$, then $H((p,q)) \le H(p) + H(q)$, with equality if and only if $p$ and $q$ are independent. 
+<Footnote>
+This is called [subadditivity of entropy](01-kl_intro/information-theory). Why is it subadditive? If you still remember [our discussion of mutual information](), the mutual information is defined as $D((p,q), p \otimes q)$. You can rewrite this expression as $H(p) + H(q) - H((p,q))$ (try it!), so subadditivity of entropy is equivalent to mutual information being nonnegative. 
+</Footnote> 
+The implication for the max-entropy principle is this: Imagine that you work with a joint distribution and you know its two marginals $p,q$. Then, the maximum entropy principle tells us that the joint distribution with these two marginals that maximizes the entropy is the one where they are independent.
+Whenever people model stuff by probability distributions, they assume that two distributions are independent all the time. We can think of this assumption as a special case of the maximum entropy principle.
 
-In the practice of modeling stuff by probability distributions, it's ubiquitous to assume that two distributions are independent if we do not have any concrete guess on how they are related. We can think of this as a special case of the maximum entropy principle.
+One more point. We have already seen that KL divergence is very closely related to the philosophy of updating your beliefs by Bayes' theorem. This relatioship goes both ways; more in the footnote. 
 
-3. Let's see one more application of the more general principle of minimizing KL divergence.
+<Footnote>
+We've already derived KL divergence and its application from the philosophy of using Bayes' rule. Let's also observe that it can also be done the other way around. 
 
-Here's the generic problem solved by Bayes' theorem. We have a joint distribution $(X,Y)$ over two random variables $X$ (that we are interested in) and $Y$ (possible evidences we might see). Then we observe some evidence $Y=y$. We want to know the distribution of $X$ given $Y=y$. The Bayes' rule allows us to compute the conditional distribution $P(X|Y=y)$. This is not rocket science: If you imagine the original joint distribution as a table, you can just zero out the rows that do not correspond to $Y=y$ and normalize the remaining row to get the posterior distribution. <Footnote>The reason why Bayes' rule is a more complicated formula than that is that Bayes' rule computes this stuff from conditional probabilities instead of working with the joint distribution. </Footnote>
+Consider the generic problem solved by Bayes' theorem: We have a joint distribution $(X,Y)$ over two random variables $X$ (that we are interested in) and $Y$ (possible evidences we might see). Then we observe some evidence $Y=y$. We want to know the distribution of $X$ given $Y=y$. The Bayes' rule allows us to compute the conditional distribution $P(X|Y=y)$. This is not rocket science: If you imagine the original joint distribution as a table, you can just zero out the rows that do not correspond to $Y=y$ and normalize the remaining row to get the posterior distribution. 
 
-![]()
-
-The observation I want to make is that <Math math="r = \argmin_{p \in P} D(p, (X,Y))" />, where $P$ is the set of distributions where $P(Y = y') = 0$ for $y' \ne y$. <Footnote>This holds because of the following reasoning: </Footnote>
+The observation you can make is that <Math math="r = \argmin_{p \in P} D(p, (X,Y))" />, where $P$ is the set of distributions where $P(Y = y') = 0$ for $y' \ne y$. That's because after some rewritings, this minimization problem is equivalent to claiming that $P(X | Y=y) = \argmin_{p} D(p, P(X|Y=y))$ which is true. 
 
 So, we can think of the philosophy of using the Bayes' theorem as a special case of the philosophy of minimizing KL divergence. This is all very circular and fuzzy, but the point is that not only the philosophy of minimize-KL-whenever-you-can-ism can be derived from the philosophy of argue-everything-from-Bayes-rule-ism, but we can also derive the philosophy of argue-everything-from-Bayes-rule-ism from the philosophy of minimize-KL-whenever-you-can-ism. Thus it is said that minimize-KL-whenever-you-can-ism is argue-everything-from-Bayes-rule-ism-complete (and vice versa).
-
+</Footnote>
 
 ## Next Steps <a id="next-steps"></a>
 

@@ -7,11 +7,24 @@ Let's now discuss maximum entropy a bit more in depth. In particular, we will tr
 
 ## General form of maximum entropy distributions
 
-Here's the setup. We will first for a minute consider only discrete distributions, let's say over $\{1, \dots, K\}$. The question we would like to understand is: If we consider only a set of distributions $P$ that have some properties, how does the maximum entropy distribution in $P$ look like? 
+The question we would like to understand is: If we consider only a set of distributions $P$ that have some properties, how does the maximum entropy distribution in $P$ look like? 
 
-For example, in the previous chapter we were interested in the set $P$ of distributions where $E[X] = \mu$ and $E[(X-\mu)^2] = \sigma^2$. In fact, it's very typical that the set $P$ we are interested in is simply defined by a bunch of constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$. 
+For example, in the previous chapter we were interested in the set $P$ of distributions where $E[X] = \mu$ and $E[(X-\mu)^2] = \sigma^2$. It turns that given these two constraints, the maximum entropy distribution is the normal distribution where <Math math = {"p(x) \propto e^{-(x-\mu)^2/\sigma^2}."} />
 
-So, given these $m$ constraints, what's the maximum entropy distribution? This is an optimization problem for $K$ variables $p_1, \dots, p_K$:
+If we were only fixing the value of $E[X]$ (and the domain were nonnegative real numbers), the maximum entropy distribution would be the exponential distribution where <Math math = {"p(x) \propto e^{-\lambda x}"} />. Here, $\lambda$ is some parameter -- fixing $E[X]$ to have different values leads to different $\lambda$s. 
+
+Can you spot a pattern? 
+
+Here's the general form of maximum entropy distributions: Let's say that we are given a bunch of constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$. Then, among all the distributions that satisfy the constraints, the distribution $p$ with maximum entropy has the shape: 
+<Math displayMode = {true} math = {"p(x) \propto e^{\lambda_1 f_1(X) + \dots + \lambda_m f_m(X)}"}>
+The constants $\lambda_1, \dots, \lambda_m$ has to be chosen based on the values $\alpha_1, \dots, \alpha_m$. But I advise you not to focus on $\alpha$s and $\lambda$s too much. The point is that the maximum entropy distribution looks like an exponential with the "stuff we care about", i.e., the functions $f_1, \dots, f_m$, in the exponent. 
+
+## Why?
+
+There's a beautiful proof of this fact using Lagrange multipliers. 
+<Footnote>
+Here's the proof. We will only consider discrete distributions, let's say those with support $\{1, \dots, K\}$. 
+This is an optimization problem for $K$ variables $p_1, \dots, p_K$:
 
 $$
 VARIABLES: p_1, \dots, p_K
@@ -36,7 +49,7 @@ MAXIMIZE: \sum_{i = 1}^K p_i \log 1/p_i
 - \lambda_{m+1} (\sum_{i = 1}^K p_i - 1)
 $$
 
-What happens is that instead of requiring that the solution has to exactly satisfy all the constraints, we just say that we have to pay some additional cost for being off the target. The constants $\lambda_1, \dots, \lambda_{m+1}$ are kind of telling us how important each constraint is -- large $\lambda_j$ means that $\sum_{i = 1}^K p_i \cdot f_m(i) - \alpha_m$ should better be small!<Footnote>In fact, we are not just paying for $\sum_{i = 1}^K p_i \cdot f_m(i) - \alpha_m$ being larger than 0. In this soft constraint formulation, we are even getting paid if it is less than 0! With negative $\lambda_i$, it would be the other way around. </Footnote>
+What happens is that instead of requiring that the solution has to exactly satisfy all the constraints, we just say that we have to pay some additional cost for being off the target. The constants $\lambda_1, \dots, \lambda_{m+1}$ are kind of telling us how important each constraint is -- large $\lambda_j$ means that $\sum_{i = 1}^K p_i \cdot f_m(i) - \alpha_m$ should better be small! (In fact, we are not just paying for $\sum_{i = 1}^K p_i \cdot f_m(i) - \alpha_m$ being larger than 0. In this soft constraint formulation, we are even getting paid if it is less than 0! With negative $\lambda_i$, it would be the other way around. )
 
 Long story short, Lagrange tells us that if somebody gives him a solution to our problem satisfying all the $m+1$ _hard_ constraints, then he can find $m+1$ numbers $\lambda_1, \dots, \lambda_{m+1}$ so that the solution also solves the soft-constraints variant. That's neat! We can now implement our plan of solving by smashing it with the power of differentiation. 
 
@@ -49,7 +62,7 @@ $$
 - \lambda_{m+1} (\sum_{i = 1}^K p_i - 1)
 $$
 
-We compute the derivative with respect to some $p_i$:<Footnote>We use $(p \log 1/p)' = -(p\log p)' = -\log p - 1$. </Footnote>
+We compute the derivative with respect to some $p_i$. Using the fact that $(p \log 1/p)' = -(p\log p)' = -\log p - 1$, we conclude that
 
 
 <Math displayMode={true} math={"\frac{\partial \mathcal L}{\partial p_i} = -\log p_i - 1 + \lambda_1 f_1(i) + \dots + \lambda_m f_m(i) + \lambda_{m+1}"}/>
@@ -66,9 +79,10 @@ We could of course generalize the formula to other discrete sets than $\{1, \dot
 
 <Math displayMode={true} math={"p(x) \propto e^{ - \lambda_1 f_1(x) - \dots - \lambda_m f_m(x)}"}/>
 
-and the same formula is also the solution if the probability distribution is continuous, except of discrete. The only difference is that $p(x)$ is then technically not probability, but probability density. Also the right buzzword is no longer Lagrange multipliers, but it is its generalization called [calculus of variations](https://en.wikipedia.org/wiki/Calculus_of_variations) <Footnote>You also have to spend a few more years of your life trying to understand under which conditions it can be used. I am not sure what those are. </Footnote>
+and the same formula is also the solution if the probability distribution is continuous, except of discrete. The only difference is that $p(x)$ is then technically not probability, but probability density. Also the right buzzword is no longer Lagrange multipliers, but it is its generalization called [calculus of variations](https://en.wikipedia.org/wiki/Calculus_of_variations) (You also have to spend a few more years of your life trying to understand under which conditions it can be used. I am not sure what those are even in the Lagrange multiplier case -- even there we have just found local extrema and saddle points, not necessarily the maximizer, so one has to be careful. )
 
 Now this formula is not the full solution to our problem, because it involves some magical constants $\lambda_1, \dots, \lambda_m$ that we don't know. To find their values, we have to go back to our constraints -- do you still remember that there were $m$ numbers $\alpha_1, \dots, \alpha_m$ there? We can use the conditions $E[f_j(x)] = \alpha_j$ to work out the precise shape of the distribution. 
+</Footnote>
 
 ## Example
 
@@ -176,17 +190,52 @@ You should view the normal distribution as _the right distribution_ if what you 
 The normal distribution is extremely important because of the [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem).  Roughly speaking: If you keep adding some random variables $X_1, \dots, X_N$, each with mean $\mu$ and variance $\sigma^2$, then the value of <Math math={"\frac{X_1 + \dots + X_N - N\mu}{\sqrt{N\sigma^2}}"}/> is going to be distributed like $N(0,1)$. 
 
 Here's how the max entropy principle can help you think about this theorem: For the theorem, the mean and the variance are clearly important parameters. Thus, max entropy principle kind of suggests that if there is a single distribution that the sums are converging to, the guassian is a natural candidate. 
-
-In fact, here's one way of how one proof the central limit theorem works:<Footnote>todo link? ask llm</Footnote> We keep track of the entropy of <Math math={"S_N = \frac{X_1 + \dots + X_N - N\mu}{\sqrt{N\sigma^2}}"}/>. We prove that the operation of adding random variables -- called convolution -- has smearing-out properties that increase the entropy of the $S_N$ at least a little bit. <Footnote>This is the hard part. Although it is simple to argue from the definition that $H(X+Y) \ge \max(H(X), H(Y))$ for any two random variables, the proof requires a stronger inequality called [entropy power inequality](https://en.wikipedia.org/wiki/Entropy_power_inequality)</Footnote> As the entropy of $S_N$ keeps converging to the entropy of $N(0,1)$, we argue that the distribution of $S_N$ also has to keep looking more and more similar to the distribution of $N(0,1)$. 
+<Footnote>
+In fact, here's how one proof the central limit theorem works: We keep track of the entropy of <Math math={"S_N = \frac{X_1 + \dots + X_N - N\mu}{\sqrt{N\sigma^2}}"}/>. We prove that the operation of adding random variables -- called convolution -- has smearing-out properties that increase the entropy of the $S_N$ at least a little bit. This is actually the hard part -- Although it is simple to argue from the definition that $H(X+Y) \ge \max(H(X), H(Y))$ for any two random variables, the proof requires a stronger inequality called [entropy power inequality](https://en.wikipedia.org/wiki/Entropy_power_inequality). As the entropy of $S_N$ keeps converging to the entropy of $N(0,1)$, we argue that the distribution of $S_N$ also has to keep looking more and more similar to the distribution of $N(0,1)$, thus proving the central limit theorem. 
+</Footnote>
 
 Example: One of the running examples we used was [measuring of feet](00-introduction/statistics). Why should we model the data using the normal distribution? The typical reasoning is that the length of my foot is a random variable that can probably be modelled as a sum of many small and relatively independent random variables. Thus, using central limit theorem, the normal distribution is a good fit. 
 
 We could also try to approach this modelling problem purely from the max-entropy perspective. Since the data is positive, the simplest model for it is the exponential distribution (see above). But that seems to predict that we will e.g. see many people with feet length twice the average, which does not seem to be a great feature of the model. So, we can do better if we also take into account that the typical deviation of the distribution from the mean is probably quite a bit smaller than the mean. The max entropy distribution if we now consider both the mean and the variance (that represents the scale) is going to be the normal distribution. <Footnote>More precisely, since the domain is _positive_ real numbers, the max entropy distribution is a Gaussian that is clipped to zero for negative numbers and rescaled to sum up to 1. </Footnote> 
 
-
-### Fixing $E[\log X]$
-
 ### Other Examples
+
+Here are a few more examples you might have encountered. Feel free to skip whatever doesn't ring a bell. 
+
+#### Power law distributions
+Sometimes we care about random variables that range over large range of values. For example, the median US city has population about 2400, but there are a bunch of cities with more than million inhabitants (see the picture). 
+
+![US cities](04-max_entropy/cities.png)
+
+These situations are typically modelled by power-law distributions where $p(x) \propto 1/x^C$ for some constant $C$. On above picture, such a distribution would correspond to a straight line so it would fit the city populations pretty well. From the perspective of maximum entropy, these distributions are simply max-entropy distributions when we fix $E[\log X]$. 
+
+That is, whenever you use a power-law distribution, you are implicitly saying "The important thing to look at is not $X$, but $\log X$". In the case of cities for example, it feels more sensible to classify them in log-scale (10^4 -- small, 10^5 -- medium, 10^6 -- large, 10^7 -- megacity) instead of normal scale (10^5 -- small, 2*10^5 -- medium, ... ). Power-law distribution is then just the exponential into which we plug in $\log X$ instead of $X$. 
+
+#### [Beta distribution](https://en.wikipedia.org/wiki/Beta_distribution)
+This is a family of distributions on $[0,1]$ that are max-entropy if we fix $E[\log X]$ and $E[\log 1-X]$. You might have encountered beta distribution in Bayesian statistics, where it is used since it behaves very nicely with respect to Bayesian updates. 
+
+But look at our Bayesian hero from [the first chapter](01-kl_intro). She didn't really work with the probabilities of the two hypotheses directly, she instead dealt with the logits $\ell_1, \ell_2$. Caring about logits means that if $X$ represents probability, you care about $\log X$ and $\log (1-X)$. So, maximum entropy principle suggests that using Beta distribution means that we believe that counting logits is natural. 
+
+#### Exponential family
+
+We already discussed that in case of distributions on a finite domain, any distribution is maximum entropy for a clever choice of functions. But with infinite domain (like distribution over real numbers), if you have only finitely many functions $f_1, \dots, f_m$, then only a small proportion of distributions are max-entropy for something. 
+
+Exponential family is a family of distributions that you can define from maximum entropy principle. So, any distribution with finite domain is in exponential family. Any distribution we discussed so far (exponential, geometrical, normal, power-law, beta) are in the exponential family. [Wikipedia](https://en.wikipedia.org/wiki/Exponential_family) contains a long list of distributions in that family, many of which I've never heard about. 
+<Footnote>
+It would be more precise to say that exponential family are those distributions that minimize $D(p,q)$ from some distribution $q$, given some constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$. In particular, $q$ does not have to be uniform. 
+
+Example: Take the domain $\{0, 1, \dots, n\}$ and consider the constraint $f(X) = X$. We have already seen that this leads to the exponential distribution, given we start with uniform $q$. Now, consider $q$ with <Math math = {"q_i = {n \choose i} / 2^n"}/> instead. The new solution is the distribution $p$ with <Math math = {"p_i \propto {n \choose i} \cdot e^{\lambda i}"}/>. This may not look familiar, but if we substitute $\lambda = \log p/(1-p)$, we get the formula for the binomial distribution. Thus, binomial distribution belongs to the exponential family using $f(X) = X$, even though it's not max-entropy distribution for that $f$. 
+</Footnote>
+
+
+#### Boltzmann distribution
+
+We have many particles in a box, each particle $i$ having some energy $E_i$. What's the distribution of the energies? Maximum entropy principle suggests that the energies are going to be distributed according to the formula <Math math = {"p_i \propto e^{-\lambda E_i}"} />. This is indeed typically the case 
+<Footnote>
+The reason for this is as follows: 
+
+I am mentioning this just to make sure that  
+</Footnote>
 
 ### Application to the Modeling Riddle <a id="application-to-modeling-riddle"></a>
 
