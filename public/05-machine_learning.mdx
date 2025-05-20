@@ -1,10 +1,18 @@
-### Application to the Statistics Riddle <a id="application-to-statistics-riddle"></a>
+# Loss functions
 
-Let's return to our statistics riddle. When estimating the variance of a distribution from samples, we had three candidate formulas:
+At last, the final chapter! We will use our new KL superpowers to solve machine learning! Or, at least, understand an important aspect of it -- setting up loss functions. 
+
+
+## Application to the Statistics Riddle <a id="application-to-statistics-riddle"></a>
+
+Let's return to our statistics riddle. Recall that estimating the variance of a distribution from samples, we had three candidate formulas:
 
 $$\sigma^2 = \frac\{1\}\{n-1\} \sum_\{i=1\}^\{n\} (X_i - \bar\{X\})^2$$
 $$\sigma^2 = \frac\{1\}\{n\} \sum_\{i=1\}^\{n\} (X_i - \bar\{X\})^2$$
 $$\sigma^2 = \frac\{1\}\{n+1\} \sum_\{i=1\}^\{n\} (X_i - \bar\{X\})^2$$
+
+
+
 
 Using the MLE approach derived above, we would choose $\frac\{1\}\{n\}$ as our coefficient, yielding the maximum likelihood estimate. This is one valid approach, though as mentioned, the unbiased estimate uses $\frac\{1\}\{n-1\}$ and the minimum mean squared error uses $\frac\{1\}\{n+1\}$. Each of these options is defensible depending on your criteria.
 

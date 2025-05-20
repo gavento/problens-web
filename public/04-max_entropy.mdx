@@ -250,41 +250,60 @@ Now the meaning of max-entropy distribution is that after we single out two part
 More technical explanation would have to go into Markov chains and use physical law reversibility, see [this](??). 
 </Footnote>
 
-### Application to the Modeling Riddle <a id="application-to-modeling-riddle"></a>
+#### Solomonoff prior
 
-Let's return to our restaurant modeling riddle. We wanted to find a family of distributions that interpolates between random choice (uniform distribution) and always picking the tastiest item.
+Given an algorithm, the most basic measure of its complexity is its length. Given a mathematical object, the most basic measure of its complexity is the length of the shortest algorithm that describes that object. This is called Kolmogorov complexity $K(x)$. 
 
-The maximum entropy principle provides us with a beautiful answer. If we represent the tastiness of each item as $a_i$, then the maximum entropy distribution subject to a constraint on the average tastiness $E[a_X] = c$ is:
+For example, even though $\pi$ has infinitely many digits, its Kolmogorov complexity is small because there's a small Turing machine that keeps printing its digits. 
 
-$$P(X=i) = \frac\{e^\{\lambda a_i}\}\{\sum_j e^\{\lambda a_j\}\}$$
+In some abstract theories (like [Solomonoff induction](https://en.wikipedia.org/wiki/Solomonoff%27s_theory_of_inductive_inference) or [Tegmark multiverse](https://en.wikipedia.org/wiki/Multiverse)), we want to have a distribution over all Turing machines (i.e., algorithms) or over all mathematical objects (whatever that means). We then choose the max-entropy distribution, i.e., <Math math = {"p(x) \propto e^{-\lambda K(x)}"} />. This is called the Solomonoff prior. 
 
-This is known as the softmax distribution. The parameter $\lambda$ controls how strongly we prefer tastier options:
+## Application: XKCD joke
 
-- When $\lambda = 0$, we get the uniform distribution (completely random choice)
-- As $\lambda \to \infty$, the probability concentrates on the item with maximum tastiness
+After four chapters of developing the theory of KL divergence, we are finally ready to [dissect](https://www.goodreads.com/quotes/440683-explaining-a-joke-is-like-dissecting-a-frog-you-understand) the XKCD joke from [the list of riddles](00-introduction/xkcd). 
 
-This distribution is exactly what we were looking for in our modeling riddle. It naturally emerges from the maximum entropy principle when we constrain the expected tastiness. It's also commonly used in machine learning, particularly for the output layer of neural networks in classification tasks.
+![Are the odds in our favor?](00-introduction/countdown.png)
+
+It's all about how to choose a prior for the number on the wall. The most natural prior is simply the uniform one, i.e., before looking at the wall, we think the number is a uniform random number with 14 decimal digits. After observing the right 8 digits, the first 6 are still uniformly random (modulo the fact we also partially observed the first digit). So, the probability that all 6 digits are zero is $1/10^6$ -- we are probably fine. 
+
+Let's try to think of a better model though. We have seen that for distributions over numbers, max-entropy principle suggests that the exponential distribution <Math math = {"p(x) \propto e^{-\lambda x}"} /> or the power-law distribution $p(x) \propto x^{-C}$ are pretty reasonable. 
+
+In this case, I would argue for choosing the distribution $p(x) \propto 1/x$ because I am very uncertain about the scale in this example. I chose $C = 1$ in the power-law fit because this is the most natural constant -- it corresponds to uniform distribution over the scales -- see the left graph below. <Footnote>Technically speaking, this distribution satisfies <Math math = {"\int_{10^1}^{10^2} \frac{1}{x} dx = \int_{10^2}^{10^3} \frac{1}{x} dx = \dots "} />. </Footnote> The only problem with $1/x$ is that we can't normalize this distribution if the domain is real numbers, but now the domain is integers between $0$ and $10^{14}$, so it's OK. 
+
+
+![xkcd posterior](04-max_entropy/xkcd.png)
+
+The graph on the right shows what happens after we condition that the last digits of $x$ are "00002382" and group $x$-values to bins between $10^1, 10^{1.5}, 10^2, \dots$
+
+First of all, almost all the probability is now concentrated on a single outcome -- $x_0 = 2382$. That makes sense: in the prior, it had probability $p(x_0) = 1/x_0 \approx 5 \cdot 10^{-4}$, while the next most likely outcome -- $x_1 = 100002382$ has probability $p(x_1) = 1/x_1 \approx 10^{-8}$. 
+
+You can also notice how the binned distribution still looks uniform for numbers $>10^9$. This again makes sense -- for large numbers, their last few digits are a coin change, learning them does not make much change. The whole point is that max-entropy principle leads us to the prior that puts more weight into small numbers. The upshot is that we are not necessarily fine. 
 
 ## Application: Understanding Financial Data <a id="application-understanding-financial-data"></a>
 
-Let's return to our financial mathematics riddle. We observed that the normal distribution is a better fit for the S&P index, while the Laplace distribution better models Bitcoin price changes.
+Let's return to our financial mathematics riddle. We observed that the normal distribution is a better fit for more recent data, and Laplace better models more long-term data. Also, Laplace fits Bitcoin better than S&P. 
 
-A related distribution is the Laplace distribution $e^\{-|x-\mu|}$. You could think of it as the max entropy distribution if you fix mean and the value of $E[|X-\mu|]$, but there's another illuminating way to understand it. The Laplace distribution can be viewed as the result of the following process:
+Laplace distribution has the shape $p(x) \propto e^\{-|x-\mu|}$. We could think of it as the max entropy distribution for $E[|X-\mu|]$, but there's another illuminating way to understand it. The Laplace distribution can be viewed as the result of the following process:<Footnote>I actually don't know any way observing this fact directly. Let me know if you know a way to do that. The fact can be verified algebraically, but it's not so easy. </Footnote>
 
 1. Sample a variance $\sigma^2$ from the exponential distribution
 2. Output a sample from $N(\mu, \sigma^2)$
 
-To understand how this helps explain our financial data, consider the story for price fluctuations:
+To understand how this helps to explain our financial data, consider the story for price fluctuations:
 
-For the S&P index, which represents an average of many large companies, the value slowly goes up (mean is positive) but there is some variance in the daily increase, since many trades happen, each making its value slightly higher or lower. Because these trades are largely independent, we can use the central limit theorem to predict that the data is going to be approximately Gaussian.
+For the S&P index, which represents an average of many large companies, there is some variance in the daily change mostly because many (somewhat independent) trades happen that day, each making the value of the index slightly higher or lower. This is the setup for the  central limit theorem which predicts that the data is going to look approximately Gaussian.
 
-However, Bitcoin is much more volatile than the S&P (which itself is an average of 500 companies). There are periods where not much happens, but also periods with large volatility (e.g., around elections or when laws related to Bitcoin are passed). The two-step model above starts making more sense for Bitcoin. We can think of each day as having a different variance, drawn from some distribution. Indeed, we saw that the Laplace distribution fits the Bitcoin data much better than the normal distribution.
+However, now consider looking at Bitcoin which is more volatile than the S&P. Or consider S&P, but longer time period. Then the above simplified model is perhaps too simple. There are definitely periods in time where not much happens, but also periods with large volatility. <Footnote> For example: US elections, financial crisis, pandemic hits, war starts, Bitcoin-related laws are passed etc.</Footnote>
 
-That is, Gaussian is saying "I am pretty sure what today's fluctuation is going to be" and Laplace is saying "I know what the average fluctuation was in the past, but the volatility itself varies significantly."
+Perhaps we should try a more advanced two-layered model predicting the shape of our data: Maybe each month, we sample $\sigma^2$ -- the volatility for that month. Let's sample it from the max-entropy distribution, i.e., exponential. Next, the rest of the month, we sample from the Gaussian with that variance. Notice that we are now sampling from the Laplace distribution. 
 
-The story we are making actually suggests that we should also see Laplace-like behavior even in the S&P data, provided that we look at a large enough time scale that ranges through times of both large and small volatility. This is indeed what we might observe if we analyzed data over 5 or 10 years that capture periods like the 2008 financial crisis or COVID-19.
+That is, while Gaussian is saying "I am pretty sure about today's volatility and unsure about the fluctuation around the mean" and Laplace is saying "I am uncertain both about the volatility, and the actual fluctuation of the day." This explains why Gaussian fits near-term data (volatility of the time period stays roughly the same), while more long-term data start looking more like Laplace. 
+<Footnote>
+I am not sure whether Laplace distribution is a good practical model. As far as I know, one standard way of modelling financial data is the Student-t distribution. I will not bore you with its formula, but let you know that it is the distribution that you get from the similar process as how we arrived at Laplace; but instead of sampling $\sigma^2$ from the exponential distribution, you sample it from the so-called inverse gamma distribution. Gamma distribution is itself max-entropy distribution for fixing $E[X]$ and $E[\log X]$ (and inverse gamma distribution means we measure volatility by $1/\sigma^2$ instead of $\sigma^2$). 
 
-In practice, researchers often model financial data not by the Laplace distribution, but by the Student-t distribution. It is the distribution that you get from the process above but instead of sampling $\sigma^2$ from the exponential distribution, you sample it from the so-called inverse gamma distribution. The Student-t distribution looks similar to normal distribution if you plot it, but its tails have power-law decay, making it better suited for modeling data with extreme events.
+That is, Student-t distribution takes our model a bit further and adds uncertainty about the _scale_ of the volatility. For example, maybe if you take into large enough past, you start seeing some extreme events like world wars/the Great Depression/industrial revolution, so perhaps we should be open to power-law fits instead of exponential ones. 
+</Footnote>
+
+I like this example because I think it nicely shows the strength of the max-entropy principle. Notice how maximum entropy allows us to focus only on the important aspects of our model (do we fix volatility or is it itself a random variable?) All the details are filled in automatically by max entropy. Or if we take it from the other side -- when we see a concrete formula, like a fit by Laplace distribution, max entropy enables us to see through it and understand that it's about the uncertainty in the variance. 
 
 ## Next Steps <a id="next-steps"></a>
 
