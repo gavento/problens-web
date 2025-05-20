@@ -9,9 +9,9 @@ Let's now discuss maximum entropy a bit more in depth. In particular, we will tr
 
 The question we would like to understand is: If we consider only a set of distributions $P$ that have some properties, how does the maximum entropy distribution in $P$ look like? 
 
-For example, in the previous chapter we were interested in the set $P$ of distributions where $E[X] = \mu$ and $E[(X-\mu)^2] = \sigma^2$. It turns that given these two constraints, the maximum entropy distribution is the normal distribution where <Math math = {"p(x) \propto e^{-(x-\mu)^2/\sigma^2}."} />. 
+Let's see some examples first. If we consider distributions with $E[X] = \mu$ (and the domain is nonnegative real numbers), the maximum entropy distribution is the exponential distribution. This is the distribution with <Math math = {"p(x) \propto e^{-\lambda x}"} />. Here, $\lambda$ is some parameter -- fixing $E[X]$ to have different values leads to different $\lambda$s. <Footnote>In this particular case, the precise shape of the distribution is <Math math = {"p(x) = \frac{1}{\mu} e^{- x/\mu}"} />, but it will help if we don't worry about constants. </Footnote>
 
-If we were only fixing the value of $E[X]$ (and the domain were nonnegative real numbers), the maximum entropy distribution would be the exponential distribution where <Math math = {"p(x) \propto e^{-\lambda x}"} />. Here, $\lambda$ is some parameter -- fixing $E[X]$ to have different values leads to different $\lambda$s. 
+Another example: If we fix both $E[X]$ and $E[X^2]$ to be equal to some values, the maximum entropy distribution is the normal distribution where <Math math = {"p(x) \propto e^{-(x-\mu)^2/\sigma^2}."} />. Perhaps more simply, we can write down its shape as <Math math = {"p(x) \propto e^{-\lambda_1 x - \lambda_2 x^2}."} /> for some constants $\lambda_1, \lambda_2$. 
 
 Can you spot a pattern? 
 
@@ -19,7 +19,7 @@ Here's the general form of maximum entropy distributions: Let's say that we are 
 <Math displayMode = {true} math = {"p(x) \propto e^{\lambda_1 f_1(X) + \dots + \lambda_m f_m(X)}"}/>
 The constants $\lambda_1, \dots, \lambda_m$ has to be chosen based on the values $\alpha_1, \dots, \alpha_m$. But I advise you not to focus on $\alpha$s and $\lambda$s too much. The point is that the maximum entropy distribution looks like an exponential with the stuff we care about  i.e. the functions $f_1, \dots, f_m$ -- in the exponent. 
 
-## Why?
+## Why? <a id = "intuition"></a>
 
 There's a beautiful proof of this fact using Lagrange multipliers. 
 <Footnote>
@@ -143,6 +143,8 @@ We will see an application of logits in a minute, and also later in logistic reg
 It is possible that this is a good way of understanding how our brain works, but during the development of the field, researchers understood that the nets work better if instead if sigmoids, one uses the ReLU activation function. That activation function corresponds to neurons that not only contemplate whether to send any signal or none, but also send out a stronger output signal if they got strong input. 
 </Footnote>
 
+[TODO logit widget]
+
 #### Categorical distribution & Softmax
 
 A more general instantiation of ?? is when our distribution is over some arbitrary set of numbers $\{a_1, \dots, a_k\}$. In that case, the max entropy distribution is what's called a softmax (or softmin) distribution -- each number $a_i$ is chosen with probability 
@@ -163,6 +165,7 @@ There are also application for higher temperatures. For example, if you want to 
 
 Notice how softmax allowed us to elegantly solve a problem that's otherwise pretty hard to approach -- given a probability distribution $p$, how do we find similar distributions $p'$ that are close to $p$, but more or less "concentrated" on the most probable values. 
 
+TODO playing-with-temperature-widget
 
 #### Exponential and Geometrical distribution
 
@@ -238,11 +241,13 @@ Example: Take the domain $\{0, 1, \dots, n\}$ and consider the constraint $f(X) 
 
 #### Boltzmann distribution
 
-We have many particles in a box, each particle $i$ having some energy $E_i$. What's the distribution of the energies? Maximum entropy principle suggests that the energies are going to be distributed according to the formula <Math math = {"p_i \propto e^{-\lambda E_i}"} />. This is indeed typically the case 
+We have many particles in a box, each particle $i$ having some energy $E_i$. What's the distribution of the energies? Maximum entropy principle suggests that the energies are going to be distributed according to the formula <Math math = {"p_i \propto e^{-\lambda E_i}"} />. This is indeed typically the case.  
 <Footnote>
-The reason for this is as follows: 
+The reason for this is essentially [our intuition](04-max_entropy/intuition): When you have many particles in a box, every now and then two particles fly close to each other and exchange energies. Basically, the particles first have energies $E_1, E_2$, then some interesting physics happens, and then they have energies $E_1', E_2'$. What's important is that $E_1 + E_2 = E_1' + E_2'$; that's conservation of energy. 
 
-I am mentioning this just to make sure that  
+Now the meaning of max-entropy distribution is that after we single out two particles with total energy $E$, we are guessing that the distribution of possible pairs $E_1, E_2$ is uniform. This seems to be a reasonable guess!
+
+More technical explanation would have to go into Markov chains and use physical law reversibility, see [this](??). 
 </Footnote>
 
 ### Application to the Modeling Riddle <a id="application-to-modeling-riddle"></a>
