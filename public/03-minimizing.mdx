@@ -8,7 +8,7 @@ In this chapter, we will see what happens when we minimize KL divergence between
 
 Let's see the details!
 
-## Minimizing KL & Maximum Likelihood Estimation (MLE) <a id="kl-and-mle"></a>
+## Minimizing KL & Maximum Likelihood Estimation (MLE) <a id="mle"></a>
 
 Suppose we are given some data—say, the 16 foot length measurements $X_1, \dots, X_{16}$ from our statistics riddle. Assuming the order of the data is irrelevant, it's handy to think about those data as an empirical distribution $p$ that assigns each outcome a probability of $1/16$. This is also called an _empirical distribution_. In some sense, this empirical distribution is the "best fit" of our data. In another sense, it is a horrible model of it -- it assigns zero probability to outcomes that are not in the data, although if we look at length of the foot of the 17th guy, it'l like to be outside the data. So, we need another model.
 
@@ -42,7 +42,7 @@ This expression has very clear meaning: it is the conditional probability of see
 
 So what's the conclusion? Our approach of minimizing KL divergence is equivalent (at least for empirical distributions) to maximizing the likelihood of the data under the model $q$. The latter is in fact a very common approach in statistics, and it is called the maximum likelihood estimation (MLE) principle. We just derived it from the KL divergence perspective!
 
-### Example
+### Example <a id = "mle_for_mean_sigma"></a>
 
 Let's say that we are given data $X_1, \dots, X_N$ (that we represent by its empirical distribution $p$) and want to find the best fitting Gaussian $N(\mu, \sigma^2)$. How should we choose $\hat\mu$ and $\hat\sigma^2$? 
 

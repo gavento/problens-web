@@ -170,6 +170,12 @@ No
 depends
 
 
+### Random Pi Program <a id="random-pi-program"></a>
+
+Here's a riddle: Consider the set of all C programs of length 1000 characters (i.e., the file has 1000 bytes if saved in ASCII) that print the first million digits of $\pi$. Let's sample one such program uniformly at random. How would it probably look?
+
+
+
 ## Next Steps <a id="next-steps"></a>
 
 Each of the puzzles above might seem disconnected, but they share a common thread: they can all be approached, understood, or solved using KL divergence and related concepts.
@@ -192,20 +198,3 @@ You should be familiar with the basic language of probability theory: probabilit
 
 What's covered in undergrad courses in probability should be sufficient.
 
-TODO:
-
-## Modeling <a id="modeling"></a>
-
--- nebo teplota v neural nets?
-
-A customer comes to a restaurant. Each meal on the menu has a specific tastiness value, which we conveniently assume is known. If the customer spends enough time considering all the meals, she will pick the one with the highest tastiness. But if she is extremely hungry, she might simply choose a random meal. The question is: How should we model the situation in between—when the customer spends some time looking at the menu but not enough to always pick the tastiest item?
-
-More mathematically speaking, given $n$ numbers $a_1, \dots, a_n$, can we find a parameter $\lambda$ and a natural family of probability distributions such that $\lambda=0$ corresponds to the uniform distribution and $\lambda=+\infty$ corresponds to picking the maximum value (i.e., $\argmax_{i} a_i$)?
-
-You sometimes encounter this type of question when constructing a probabilistic model. There are many degrees of freedom in constructing a probability distribution, so how do we pick the "most natural" one that interpolates between complete order and total randomness?
-
-This quandary is typically resolved by what's known as the maximum entropy principle. In this case, the principle dictates that we should choose the so-called softmax distribution. How does this principle work, and where does it come from?
-
-### Random Pi Program <a id="random-pi-program"></a>
-
-Here's a riddle: Consider the set of all C programs of length 1000 characters (i.e., the file has 1000 bytes if saved in ASCII) that print the first million digits of $\pi$. Let's sample one such program uniformly at random. How would it probably look?

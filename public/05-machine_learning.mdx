@@ -1,99 +1,68 @@
 # Loss functions
 
-At last, the final chapter! We will use our new KL superpowers to solve machine learning! Or, at least, understand an important aspect of it -- setting up loss functions. 
+At last, the final chapter! We will use our new KL superpowers to solve machine learning! Or, at least, understand an important aspect of it -- [setting up loss functions](00-introduction/machine-learning). 
+
+The essence to take out from this is that given a machine learning problem, there are four stages of understanding it, before we have an algorithm. It's like this:
+
+1. We start with some data and rough idea of which aspects of it are important. 
+2. Using maximum entropy principle, we convert this into a probabilistic model. 
+3. Using maximum likelihood principle, we convert this into a loss function. 
+4. We optimize the loss function. 
+
+This may not make much sense now, so let's see some examples. 
+
+## Example: Estimating mean and variance <a id="application-to-statistics-riddle"></a>
+
+Our [basic statistics riddle](00-introduction/statistics) was like this: We have some numbers $X_1, \dots, X_n$ and we want to estimate their mean and variance. 
+
+We have already discussed this riddle from several angles; now we can combine all of them to this four-stage recipe:
+
+1. What are the important parameters? Seems like the mean and the variance are important. 
+
+2. Let's turn this into a concrete probabilistic model. Maximum entropy principle from [the previous chapter](04-max_entropy) suggests to model the data by being [independent samples](03-minimizing/a-few-observations) from [the normal distribution](04-max_entropy/normal). 
+
+3. Once we have a set of possible models -- all gaussian distribution -- we can pick the best model out of this set using [the maximum likelihood principle](04-minimizing/mle). 
+We [did this in an earlier chapter](04-minimizing/mle_for_mean_sigma), the upshot is that we casted the problem of finding $\hat\mu_{MLE}, \hat\sigma^2_{MLE}$ as the problem of minimizing _loss functions_: 
+
+<Math displayMode={true} math = {"\hat\mu_{MLE}, \hat\sigma^2_{MLE} = \argmin_{\mu, \sigma^2} 2N \cdot \log \sigma + \sum_{i = 1}^N \frac{(X_i-\mu)^2}{\sigma^2}"}/>
+
+4. Finally, we forget the details of the full probabilistic model and just focus on the important parameters $\mu, \sigma^2$. We have to decide on an algorithm optimizing the loss function ??. In this case, the optimization problem has a closed-form formula $\hat\mu_{MLE} = \frac{1}{N} \cdot \sum_{i = 1}^N X_i$ and $\hat\sigma^2_{MLE} = \frac{1}{N} \cdot \sum_{i = 1}^N (X_i-\hat\mu_{MLE})^2$, so the algorithm is pretty trivial. 
+
+What I want to stress is how the only assumption we made about the data was at the very beginning, where we said "we have a bunch of numbers, we care about their mean and variance". The rest came automatically from our understanding of KL divergence. In particular, at no point we argued about central limit theorem.
 
 
-## Application to the Statistics Riddle <a id="application-to-statistics-riddle"></a>
+## Linear Regression <a id="linear-regression"></a>
 
-Let's return to our statistics riddle. Recall that estimating the variance of a distribution from samples, we had three candidate formulas:
+Suppose we are given a list of pairs $(x_1, y_1), \dots, (x_n, y_n)$; we think that the data are roughly linearly dependent, meaning that there are some $a,b$ such that $y_i \approx a\cdot x_i + b$. The task is to find $a,b$. Let's do it in four stages. What we said about the data so far is the first step. 
 
-$$\sigma^2 = \frac\{1\}\{n-1\} \sum_\{i=1\}^\{n\} (X_i - \bar\{X\})^2$$
-$$\sigma^2 = \frac\{1\}\{n\} \sum_\{i=1\}^\{n\} (X_i - \bar\{X\})^2$$
-$$\sigma^2 = \frac\{1\}\{n+1\} \sum_\{i=1\}^\{n\} (X_i - \bar\{X\})^2$$
+The second step is to turn this into a concrete probabilistic model. Let's model the data as $y_i$ coming from the distribution $a\cdot x_i + b + \text\{noise\}$. <Footnote>We could also model the distribution from which $x_i$'s are coming, but that's not going to be relevant.</Footnote> 
 
+The noise is generated from a distribution on real numbers -- how do we choose it? The uniform distribution does not normalize on real numbers, so it's not a choice; the same holds for the exponential distribution. The next choice in line is Gaussian $N(\mu, \sigma^2)$, so let's choose that one. This is a bit awkward since we now have two new parameters $\mu, \sigma^2$ in our model, although we don't really care about them; we only care about $a$ and $b$.
 
+But that's ok. First, we can assume that $\mu = 0$, since otherwise we can replace $N(\mu, \sigma^2)$ by $N(0, \sigma^2)$ and $b$ by $b + \mu$ and get the same model of the data. We will get rid of $\sigma$ in a minute. 
 
-
-Using the MLE approach derived above, we would choose $\frac\{1\}\{n\}$ as our coefficient, yielding the maximum likelihood estimate. This is one valid approach, though as mentioned, the unbiased estimate uses $\frac\{1\}\{n-1\}$ and the minimum mean squared error uses $\frac\{1\}\{n+1\}$. Each of these options is defensible depending on your criteria.
-
-
-todo what a strange coincidence! (definovat expo family jako rodinu "vsech" max entropy distributcí)
-
-
-## Application: measuring feet
-
-We can now understand [our statistical riddle](00-introduction/statistics). Remember, if we measure $N$ lengths $X_1, \dots, X_N$, we were asking about the formula estimating the variance of the underlying data. 
-
-The combo of maximum entropy & maximum likelihood offer us a way:
-
-1. We can use maximu
-
-
-
-
-
-
-# Modeling Reality <a id="modeling-reality"></a>
-
-In the previous sections, we introduced KL divergence and showed how it relates to belief updating, maximum likelihood estimation, and the maximum entropy principle. Now, we'll explore how these concepts apply to practical modeling problems, particularly in machine learning.
-
-## Good Old Machine Learning <a id="good-old-machine-learning"></a>
-
-In the previous sections, we've seen how, when we have a distribution and want a different one, it's really useful to find it by minimizing KL divergence. There were two important cases of that:
-
-1. When we have a distribution $p$ and want to find a less precise $q$ from some family $Q$ that approximates it well, we choose it by minimizing $\min_\{q \in Q\} D(p,q)$. A special case of this is the maximum likelihood estimation (see previous section) where we derived that if we measured some data $D$, that we want to fit by some distribution $q \in Q$, we should choose $q$ that maximizes the likelihood $P_q(D)$.
-
-2. When we have a model distribution $q$ and learn some new information about the truth, like that the true distribution is from some family $P$, we should choose our new model by minimizing $\min_\{p \in P\} D(p,q)$. A special case of this is the maximum entropy principle where we started with the most general -- uniform -- $q$ and $P$ corresponded to learning the value of some parameter of the distribution, like its mean or variance.
-
-Combining these two principles, we can derive many basic approaches in statistics and classical machine learning. Let's see some examples.
-
-### Mean and Variance Estimation <a id="mean-and-variance-estimation"></a>
-
-Suppose we are given a list of numbers $\\\{X_1, \dots, X_n\\\}$. We care about their mean and variance. Let's use the combo of max entropy + max likelihood to derive the formulas for that.
-
-First, the maximum entropy principle suggests that once we fix the mean of a distribution to be $\mu$ and variance to be $\sigma^2$, and consider all the distributions with that mean and that variance, there is a single distribution that stands out -- the maximum entropy distribution after fixing the mean and variance -- the normal distribution.<Footnote>The principle also suggests an even more basic thing -- to assume that the numbers have been drawn independently from some distribution, which allows us to represent the sequence $X_1, \dots, X_n$ as a set, or equivalently an empirical distribution.</Footnote>
-
-Now that we have fixed a set of relevant distributions $Q$, we will find a particular $q \in Q$ approximating the empirical distribution of $X$s as well as possible. This is done by the maximum likelihood method. Concretely, we should pick $\hat\mu, \hat\sigma^2$ maximizing:
-
-$$\prod_\{i=1\}^n \frac\{1\}\{\sqrt\{2\pi\hat\sigma^2\}\} \cdot e^\{-(X_i - \hat\mu)^2/2\hat\sigma^2\}$$
-
-If we rewrite this as the log-likelihood and crunch the numbers, we derive the formula:
-
-$$\hat\mu = \frac\{1\}\{n\} \sum X_i$$
-
-and
-
-$$\hat\sigma^2 = \frac\{1\}\{n\} \sum (X_i - \hat\mu)^2$$
-
-What I want to stress is how the only assumption we made was at the beginning, where we said "we have a bunch of numbers, we care about their mean and variance", the rest flowed from our understanding of KL divergence. First, we used the max entropy principle to turn the knowledge of the important parameters (mean, variance) into a concrete probabilistic model of our data. Then, maximum likelihood tells us how to turn this model into a concrete loss function to optimize.
-
-In particular, we didn't really argue that Gaussian is the right fit because of some kind of central limit theorem, we instead used it as the max entropy distribution.
-
-### Linear Regression <a id="linear-regression"></a>
-
-Suppose we are given a list of pairs $(x_1, y_1), \dots, (x_n, y_n)$; we think that the data are roughly linearly dependent, meaning that there are some $a,b$ such that $y_i \approx a\cdot x_i + b$. Let's see how we can find $a,b$.
-
-We model the data as $y_i$ coming from the distribution $a\cdot x_i + b + \text\{noise\}$. The noise is generated from a distribution on real numbers. The natural choice is Gaussian $N(\mu, \sigma^2)$, though it's a bit awkward since we now added two parameters $\mu, \sigma^2$ that we don't really care about; we care about $a$ and $b$.
-
-But that's ok. First, we can assume that $\mu = 0$, since otherwise we can replace $N(\mu, \sigma^2)$ by $N(0, \sigma^2)$ and $b$ by $b + \mu$ and get the same, but more reasonable model of the data. Second, if we now use the max likelihood principle and write down the log-likelihood:
+Let's now start the third step of our recipe and use the max likelihood principle. We write down the log-likelihood:
 
 $$\log P(\text\{data\} | a, b, \sigma^2) = -\frac\{n\}\{2\}\log(2\pi\sigma^2) - \frac\{1\}\{2\sigma^2\} \sum_\{i=1\}^n (a\cdot x_i + b - y_i)^2$$
 
-we notice that whatever value $\sigma$ we fix<Footnote>Statistical software like R or Python's statsmodels also outputs $\sigma^2$. This can be helpful if you also, given some new point $x_\{n+1\}$, want to predict not just $y_\{n+1\}$, but also some kind of interval in which you expect $y_\{n+1\}$ to lie.</Footnote>, the optimization problem becomes to minimize:
+This is pretty complicated, but we notice that whatever value $\sigma^2$ we fix, the optimization problem for $a,b$ becomes to minimize:
 
 $$\sum_\{i=1\}^n (a\cdot x_i + b - y_i)^2$$
 
-We arrive at the classical linear regression loss function (usually there are more variables $x^1, \dots, x^k$ that we use to predict $y$ which leads to more complicated formulas, but the derivation stays the same). Notice how the square in the loss function came from our max entropy assumption of Gaussian noise.
+So, we may forget $\sigma^2$ again<Footnote>Statistical software like R or Python's statsmodels also outputs $\sigma^2$. This can be helpful if you also, given some new point $x_\{n+1\}$, want to predict not just $y_\{n+1\}$, but also some kind of interval in which you expect $y_\{n+1\}$ to lie.</Footnote> and just optimize this expressions which is the classical [least-squares loss function](https://en.wikipedia.org/wiki/Ordinary_least_squares) for linear regression <Footnote>Usually, there are more variables $x^1, \dots, x^k$ that we use to predict $y$. This leads to more complicated formula, but the derivation stays the same. </Footnote>. Notice how the square in the loss function came from our max entropy assumption of Gaussian noise.
 
-Notice how this approach is pretty flexible so that if you have additional information, you can add it to the model.
+The fourth step is to turn the optimization problem from ?? into an algorithm. In this case, the problem is still sufficiently nice so that there is a formula, though this formula contains matrix inversion so in practice it's going to be solved by some kind of gradient descent. 
+<Footnote>
+Notice how our approach is pretty flexible so that if we have additional information about the data, we can add it to the model.
 
-For example, maybe you think that the parameters $a$ and $b$ are small and you want to add this information to the model. Our framework tells you to add that $a,b \sim N(0, w^2)$ to the model, for some number $w$ that you have to supply by either guessing or using some other machine learning trick like cross-validation. This leads to optimizing $\sum_\{i=1\}^n (a\cdot x_i + b - y_i)^2 + \frac\{1\}\{w^2\}(a^2 + b^2)$, known as Ridge regression.
+For example, maybe we think that the parameters $a$ and $b$ are small. Our framework suggests to add that $a,b \sim N(0, w^2)$ to the model, for some number $w$ that we have to supply by either guessing it or using some other machine learning trick like cross-validation. This leads to optimizing $\sum_\{i=1\}^n (a\cdot x_i + b - y_i)^2 + \frac\{1\}\{w^2\}(a^2 + b^2)$, known as [Ridge regression](https://en.wikipedia.org/wiki/Ridge_regression).
 
-As another example, consider the more general case where you have many predictors $x^1, \dots, x^k$, but you believe that only a small fraction, let's say $p$ fraction of them are actually useful. For the rest, the corresponding coefficient $a_i$ that we try to find is equal to zero. Our framework suggests that you should optimize:
+As another example, consider the more general case where we have many predictors $x^1, \dots, x^k$, but we believe that only a small fraction, let's say $p$ fraction of them are actually useful. For the rest, the corresponding coefficient $a_i$ is equal to zero. Our framework suggests that we should optimize:
 
 $$\min_\{S \subseteq \\\{1, \dots, k\\\}, |S|=pk\} \sum_\{i=1\}^n \|a\cdot x_i - y_i\|^2$$
 
-The only problem is that optimizing this function is hard, as we would have to essentially try all possible subsets of nonzero coefficients and fit each one of them. Some more complicated math shows though, that optimizing a different objective, called Lasso, often solves this, in general complicated, problem. So, you should think of Lasso as an attempt to solve this problem.
+The only problem is that optimizing this function is hard (in fact, NP-hard) -- we have to try all possible subsets of nonzero coefficients and fit each one of them which takes exponential time. Some more complicated math shows though, that optimizing a different objective, called Lasso, often solves this complicated problem (see e.g. [10.6 here](https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-book.html) or [this book](https://link.springer.com/book/10.1007/978-3-642-20192-9)). So, you should think of Lasso as an attempt to solve our probabilistic model.
+</Footnote>
 
 ### Logistic Regression <a id="logistic-regression"></a>
 
