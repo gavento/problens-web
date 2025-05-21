@@ -124,18 +124,22 @@ This kind of distribution is known under many names, depending on what is the un
 
 If we are talking about distributions over $\{0, 1\}$, then the shape from ?? takes form
 
-<Math displayMode={true} math={"p(0) = \frac{1}{1 + e^{- \lambda}}, p(1) = \frac{e^{-\lambda x}}{1 + e^{- \lambda x}}"}/>
-
+<Math displayMode={true} math={"p(0) = \frac{1}{1 + e^{- \lambda}}, p(1) = \frac{e^{-\lambda x}}{1 + e^{- \lambda}}"}/>
 
 Remember that $\lambda$ is some kind of parameter that defines a family of distributions. This family of distributions is simply all the Bernoulli distributions, i.e., all distributions of type $\{p, 1-p\}$, i.e., literally all possible distributions one can define over the set $\{0, 1\}$. 
 
 You can probably appreciate the usefulness of Bernoulli distributions even without reading this KL divergence pean, so what to take of it? 
 
-What we can still learn from ?? is how to convert numbers into probabilities -- It says that (after choosing some $\lambda$) there is a single most natural way of converting real numbers into probabilities -- exponentiating + normalizing them. 
+What we can still learn from ?? is how to convert numbers into probabilities -- The equation says that (after choosing some $\lambda$) there is a single most natural way of converting real numbers into probabilities -- exponentiating + normalizing them. 
 
 The function $\sigma(x) = 1/(1 + e^{-x})$ is called the logistic function<Footnote>Or maybe a sigmoid function. Apparently, [sigmoid function](https://en.wikipedia.org/wiki/Sigmoid_function) is a bit more general term. </Footnote> and the parameter $x$ is typically called a logit. So, ?? is telling us that if you want to talk about probabilities, but you want to talk about general real numbers instead of numbers from $[0,1]$, you should talk about logits and use the logistic transformation to convert them to probabilities. The choice of $\lambda$ then correspond to choosing your favorite base of the logarithm function. 
 
-In fact, we kind of did this in the [first chapter](01-kl_intro) -- remember our Bayesian hero? It was easier for us to talk about her using the language of odds and their logarithms -- which is pretty much the logits. 
+Example:
+Remember the Bayesian hero from the [first chapter](01-kl_intro)? It was easier for us to talk about her using the language of odds and their logarithms -- which is pretty much the logits. 
+
+Example: 
+The Elo system is the system used to assign ratings to e.g. chess players. The basic idea of it is that when you have two players with Elos $E_1$ and $E_2$, you can estimate the probability that the first one wins from the difference $D = E_1 - E_2$. As we know, max-entropy principle suggests that converting numbers to probabilities should be done via the logistic function. 
+This is indeed how Elo system was designed; the interpretation of chess Elo is that the probability that the first player<Footnote>Due to the existence of draws, it's actually the expected score of the first player</Footnote> wins should be <Math math = {"\frac{1}{1 + 10^{D / 400}}"} />. This is the logistic function with $\lambda = 1/400 \cdot \ln 10$. 
 
 <Footnote>
 We will see an application of logits in a minute, and also later in logistic regression, but let me mention another (in)famous application -- the neural net sigmoid [activation function](https://en.wikipedia.org/wiki/Activation_function). In the beginnings of the field, the logistic function was used to convert aggregated inputs to a neuron to its output. We can now give a probabilistic rationale to this operation -- this way of handling neurons corresponds to modelling them as "each neuron aggregates its inputs and then it decides whether to fire or not". 
@@ -147,7 +151,7 @@ It is possible that this is a good way of understanding how our brain works, but
 
 #### Categorical distribution & Softmax
 
-A more general instantiation of ?? is when our distribution is over some arbitrary set of numbers $\{a_1, \dots, a_k\}$. In that case, the max entropy distribution is what's called a softmax (or softmin) distribution -- each number $a_i$ is chosen with probability 
+A more general instantiation of ?? is when our distribution is over some arbitrary set of numbers $\{a_1, \dots, a_k\}$ -- these are also called categorical distributions. In that case, the max entropy distribution is what's called a softmax (or softmin) distribution -- each number $a_i$ is chosen with probability 
 
 <Math displayMode={true} math={"p_i \propto e^{\lambda a_i}. "}/>
 
