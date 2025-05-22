@@ -82,7 +82,7 @@ The constant $\lambda$ is a new parameter of our model that max-entropy principl
 
 Once we have a model, we can use the max likelihood principle to find its parameters. The principle tells us to find $a,b,\lambda$ that minimize the following expression:
 
-<Math displayMode = {true} math = "\sum_{i = 1}^n \ell_i \log \sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)) + (1-\ell_i) \log (1-\sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)))">
+<Math displayMode = {true} math = "\sum_{i = 1}^n \ell_i \log \sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)) + (1-\ell_i) \log (1-\sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)))"/>
 
 where $\ell_i$ is the indicator ($\ell_i \in \\\{0,1\\\}$) for whether the point $(x_i,y_i)$ is red. This problem known as the [logistic regression](https://en.wikipedia.org/wiki/Logistic_regression) is hard to solve exactly, but gradient descent usually works pretty well. 
 
@@ -94,21 +94,21 @@ Let's turn this into a probabilistic model. Let's use $\mu_1, \dots, \mu_k$ to d
 
 As before, we can use the max entropy distribution to turn this into a concrete model. Exponential function does not normalize, so we will use the normal distribution:
 
-<Math displayMode={true} math = "p(x | \mu_j) \propto e^{-\frac{||x-\mu_j||^2}{\sigma^2}}">
+<Math displayMode={true} math = "p(x | \mu_j) \propto e^{-\frac{||x-\mu_j||^2}{\sigma^2}}"/>
 
 The notation $p(x | \mu_j)$ means that this is only our model distribution of points coming from the $j$-th cluster. We want a full probabilistic model $p(x)$ though. We can get it by putting a prior on how likely each cluster is. The maximum entropy prior is the uniform distribution, so we will choose:
 
-<Math displayMode={true} math = "p(x) = \frac{1}{k} \sum_{i = 1}^k p(x | \mu_j)">
+<Math displayMode={true} math = "p(x) = \frac{1}{k} \sum_{i = 1}^k p(x | \mu_j)"/>
 
 We now have a probabilistic model parameterized by $k+1$ numbers: $\mu_1, \dots, \mu_k, \sigma$. We will use maximum likelihood to find those parameters. The principle tells us that we should minimize this expression:
 
-<Math displayMode = {true} math = "\frac{n}{2\pi k} \log \sigma + \sum_{i = 1}^n - \sum_{i = 1}^n \log \sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{\sigma^2}}">
+<Math displayMode = {true} math = "\frac{n}{2\pi k} \log \sigma + \sum_{i = 1}^n - \sum_{i = 1}^n \log \sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{\sigma^2}}"/>
 
 Optimizing this expression corresponds to an algorithm known as [soft $k$-means](https://en.wikipedia.org/wiki/Fuzzy_clustering) (TODO check). The "word" soft is there because the parameter $\sigma$ enables us to output a distribution for each point $x$ telling us how likely it is that $x$ comes from each cluster. 
 
 In practice, people don't care that much about this; knowing the closest cluster is enough. This corresponds to being interested in the limit $\sigma \rightarrow 0$. In this limit, the beastly expression ?? simplifies pretty nicely. In particular, we can replace the summation <Math math = "\sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{\sigma^2}}" /> by <Math math = "\max_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{\sigma^2}}" /> since all other terms are simply negligible. The expression ?? simplifies to this:
 
-<Math displayMode = {true} math = "\sum_{i = 1}^n \min_{j = 1}^k ||x_i-\mu_j||^2">
+<Math displayMode = {true} math = "\sum_{i = 1}^n \min_{j = 1}^k ||x_i-\mu_j||^2"/>
 
 The problem of finding $\mu_1, \dots, \mu_k$ that minimize this expression is called [$k$-means](https://en.wikipedia.org/wiki/K-means_clustering). 
 
