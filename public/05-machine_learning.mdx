@@ -2,14 +2,13 @@
 
 At last, the final chapter! We will use our new KL superpowers to solve machine learning! Or, at least, understand an important aspect of it -- [setting up loss functions](00-introduction/machine-learning). 
 
-The essence to take out from this is that given a machine learning problem, there are four stages of understanding it, before we have an algorithm. It's like this:
+The essence to take out from this chapter is that when we start with some data and a rough idea about what aspects of it are important to know, KL divergence is guiding us towards a concrete algorithm estimating the aspects. 
 
-1. We start with some data and rough idea of which aspects of it are important. 
-2. Using maximum entropy principle, we convert this into a probabilistic model. 
-3. Using maximum likelihood principle, we convert this into a loss function. 
-4. We optimize the loss function. 
+In particular, we can use maximum entropy to turn our rough idea into a fully probabilistic model, and maximum likelihood to turn the model into a loss function to optimize. 
 
-This may not make much sense now, so let's see some examples. 
+We will go through the examples in the following table (feel free to skip examples you don't find interesting). 
+
+![Examples](05-machine-learning/table)
 
 ## Example: Estimating mean and variance <a id="application-to-statistics-riddle"></a>
 
@@ -52,7 +51,9 @@ $$\sum_\{i=1\}^n (a\cdot x_i + b - y_i)^2$$
 So, we may forget $\sigma^2$ again<Footnote>Statistical software like R or Python's statsmodels also outputs $\sigma^2$. This can be helpful if you also, given some new point $x_\{n+1\}$, want to predict not just $y_\{n+1\}$, but also some kind of interval in which you expect $y_\{n+1\}$ to lie.</Footnote> and just optimize this expressions which is the classical [least-squares loss function](https://en.wikipedia.org/wiki/Ordinary_least_squares) for linear regression <Footnote>Usually, there are more variables $x^1, \dots, x^k$ that we use to predict $y$. This leads to more complicated formula, but the derivation stays the same. </Footnote>. Notice how the square in the loss function came from our max entropy assumption of Gaussian noise.
 
 The fourth step is to turn the optimization problem from ?? into an algorithm. In this case, the problem is still sufficiently nice so that there is a formula, though this formula contains matrix inversion so in practice it's going to be solved by some kind of gradient descent. 
-<Footnote>
+
+Advanced:
+
 Notice how our approach is pretty flexible so that if we have additional information about the data, we can add it to the model.
 
 For example, maybe we think that the parameters $a$ and $b$ are small. Our framework suggests to add that $a,b \sim N(0, w^2)$ to the model, for some number $w$ that we have to supply by either guessing it or using some other machine learning trick like cross-validation. This leads to optimizing $\sum_\{i=1\}^n (a\cdot x_i + b - y_i)^2 + \frac\{1\}\{w^2\}(a^2 + b^2)$, known as [Ridge regression](https://en.wikipedia.org/wiki/Ridge_regression).
@@ -61,49 +62,56 @@ As another example, consider the more general case where we have many predictors
 
 $$\min_\{S \subseteq \\\{1, \dots, k\\\}, |S|=pk\} \sum_\{i=1\}^n \|a\cdot x_i - y_i\|^2$$
 
-The only problem is that optimizing this function is hard (in fact, NP-hard) -- we have to try all possible subsets of nonzero coefficients and fit each one of them which takes exponential time. Some more complicated math shows though, that optimizing a different objective, called Lasso, often solves this complicated problem (see e.g. [10.6 here](https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-book.html) or [this book](https://link.springer.com/book/10.1007/978-3-642-20192-9)). So, you should think of Lasso as an attempt to solve our probabilistic model.
-</Footnote>
+The only problem is that optimizing this function is hard (in fact, NP-hard) -- we have to try all possible subsets of nonzero coefficients and fit each one of them which takes exponential time. Some more complicated math shows though, that optimizing a different objective, called Lasso, often solves this complicated problem<Footnote>See e.g. [10.6 here](https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-book.html) or [this book](https://link.springer.com/book/10.1007/978-3-642-20192-9)</Footnote>. So, you should think of Lasso as an attempt to solve our probabilistic model.
+
 
 ### Logistic Regression <a id="logistic-regression"></a>
 
-This time, we get red and blue points in a plane and we want to find the best line separating them. Ideally, we would like all the red points on one side and all the blue ones on the other, but that's not always possible. Let's use our combo of max entropy + max likelihood to approach the general case.
+This time, we get red and blue points in a plane and we want to find the best line separating them. Ideally, we would like all the red points on one side and all the blue ones on the other, but that's not always possible. In that case, how do we find the best line? 
 
-As in the previous case of linear regression, we want to find a line $y = ax + b$; this time, we will make our life a bit simpler and assume the line has to pass through the origin, so $y = ax$ -- that's just to make the math simpler. We will represent the line using the normal vector $\theta = (a, -1)$ orthogonal to that line, to avoid the edge case of a vertical line. It seems that given a point $p = (x_i, y_i)$, the relevant quantity is the dot product $\theta \cdot p = ax_i - y_i$. This quantity is related to the distance of $p$ from the line; the important detail though is that the same line can be represented by $\theta_1 = (1,-1)$ and $\theta_2=(100,-100)$; the dot product is proportional both to the distance of $p$ from the line and the scale of $\theta$.
+As in the previous case of linear regression, we want to find a line $y = ax + b$. This time, we will make our life a bit simpler and assume the line has to pass through the origin, so $y = ax$ -- that's just to make the math simpler. 
+It will be more helpful to represent the line using the normal vector $\theta = \frac{1}{a^2+1} (a, -1)$ orthogonal to that line, and the distance $\delta = |b|/\sqrt{a^2+1}$ of the origin from the line. 
 
-Now, using the max entropy principle, it makes sense to use the model where, given the line with normal vector $\theta$, the probability that a point $x$ is red or blue is the max entropy distribution if we care about $\theta \cdot x$, which is the logistic distribution with $P(\text\{red\}) = \sigma(\theta\cdot x)$ and $P(\text\{blue\}) = 1 - \sigma(\theta \cdot x)$<Footnote>We should use the general max entropy distribution that has form $\sigma(\lambda\theta\cdot x)$ for a parameter $\lambda$, but we can set it to $1$ since $\theta$ already can have different scales; but this shows that the scale is a relevant factor, even if we started without it.</Footnote>, where $\sigma(z) = \frac\{1\}\{1+e^\{-z\}\}$ is the sigmoid function.
+Given a point $(x_i, y_i)$, the relevant quantity is the distance of that point from our line. This can be computed using the dot product as $\theta \cdot (x_i, y_i) + \delta$. 
 
-Now when we know the family of distributions we care about, we can use the max likelihood principle to conclude that we should optimize this expression:
+Now, using the max entropy principle, we construct the probabilistic model that converts this distance into probability -- we use the logistic function. That is, our model is
+<Math displayMode={true} math = "p(red | (x_i, y_i)) = \sigma\left( \lambda (\theta \cdot (x_i, y_i) + \delta) \right)"/>
+where $\sigma$ is the logistic function $\sigma(x) = e^x / (1+e^x)$. Of course, we also have $p(blue | (x_i, y_i)) = 1 - p(red | (x_i, y_i))$. 
 
-$$\sum_i y_i \log \sigma(\theta\cdot x_i) + (1-y_i)\log (1-\sigma(\theta\cdot x_i))$$
+The constant $\lambda$ is a new parameter of our model that max-entropy principle suggest we add to it. That is, we will have to optimize three parameters -- $a,b, \lambda$. The parameter $\lambda$ captures our confidence about the classification. This is handy because if a new point comes after we find the best line, we can not only color the point red/blue based on which side of the line it is on, but also use equation ?? to compute how certain we are about our classification. 
 
-where $y_i$ is the indicator ($y_i \in \\\{0,1\\\}$) for whether $x_i$ is red. This is hard to solve exactly, but gradient descent usually works pretty well. At the end, we get to know $\theta$ which hides not only the direction of the line, but also a scale which is larger the more confident we are about the classification. In the end, we can use $\theta$ to not just predict the more likely color of each new point $x_\{n+1\}$, but also our confidence that it has that color.
+Once we have a model, we can use the max likelihood principle to find its parameters. The principle tells us to find $a,b,\lambda$ that minimize the following expression:
+
+<Math displayMode = {true} math = "\sum_{i = 1}^n \ell_i \log \sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)) + (1-\ell_i) \log (1-\sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)))">
+
+where $\ell_i$ is the indicator ($\ell_i \in \\\{0,1\\\}$) for whether the point $(x_i,y_i)$ is red. This problem known as the [logistic regression](https://en.wikipedia.org/wiki/Logistic_regression) is hard to solve exactly, but gradient descent usually works pretty well. 
 
 ### K-means Clustering <a id="k-means-clustering"></a>
 
-Another classic machine learning algorithm is k-means clustering. In this problem, we have a set of points $x_1, \dots, x_n$ in a space, and we want to group them into $k$ clusters. The algorithm iteratively assigns points to the nearest cluster center and then updates the centers to be the means of the assigned points.
+We are given a set of points $x_1, \dots, x_n$ on, say, 2D plane. We want to group them into $k$ clusters. 
 
-How does this relate to KL divergence? We can view k-means as minimizing the KL divergence between the empirical distribution of the data and a mixture of $k$ Gaussians with identical spherical covariance matrices. In the limit as the covariance approaches zero, this becomes equivalent to the standard k-means algorithm.
+Let's turn this into a probabilistic model. Let's use $\mu_1, \dots, \mu_k$ to denote centers of the clusters. The meaning of those points is that if a point $x_i$ belongs to the cluster $j$, then the distance $||x_i - \mu_j||_2$ should be small. 
 
-More specifically, if we have a mixture model with $k$ components, each with mean $\mu_j$ and the same covariance matrix $\sigma^2 I$, the likelihood of a data point $x_i$ is:
+As before, we can use the max entropy distribution to turn this into a concrete model. Exponential function does not normalize, so we will use the normal distribution:
 
-$$p(x_i) = \sum_\{j=1\}^k \pi_j \mathcal\{N\}(x_i | \mu_j, \sigma^2 I)$$
+<Math displayMode={true} math = "p(x | \mu_j) \propto e^{-\frac{||x-\mu_j||^2}{\sigma^2}}">
 
-where $\pi_j$ is the weight of the $j$-th component. As $\sigma^2 \to 0$, the negative log-likelihood (which we want to minimize) becomes proportional to the sum of squared distances from each point to its nearest center:
+The notation $p(x | \mu_j)$ means that this is only our model distribution of points coming from the $j$-th cluster. We want a full probabilistic model $p(x)$ though. We can get it by putting a prior on how likely each cluster is. The maximum entropy prior is the uniform distribution, so we will choose:
 
-$$-\log p(x_i) \propto \min_j \|x_i - \mu_j\|^2$$
+<Math displayMode={true} math = "p(x) = \frac{1}{k} \sum_{i = 1}^k p(x | \mu_j)">
 
-This is exactly the objective that k-means seeks to minimize. So, k-means can be seen as a special case of maximum likelihood estimation for a specific probabilistic model.
+We now have a probabilistic model parameterized by $k+1$ numbers: $\mu_1, \dots, \mu_k, \sigma$. We will use maximum likelihood to find those parameters. The principle tells us that we should minimize this expression:
 
-## Four Viewpoints on Machine Learning Models <a id="four-viewpoints"></a>
+<Math displayMode = {true} math = "\frac{n}{2\pi k} \log \sigma + \sum_{i = 1}^n - \sum_{i = 1}^n \log \sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{\sigma^2}}">
 
-Given some machine learning model, there are four viewpoints that one can have:
+Optimizing this expression corresponds to an algorithm known as [soft $k$-means](https://en.wikipedia.org/wiki/Fuzzy_clustering) (TODO check). The "word" soft is there because the parameter $\sigma$ enables us to output a distribution for each point $x$ telling us how likely it is that $x$ comes from each cluster. 
 
-1. **What is important about the data?** - Identifying the key features or aspects of the data that we care about.
-2. **What is a good probabilistic model?** - Determining a suitable family of probability distributions based on the identified features.
-3. **What loss function should we optimize?** - Deriving an objective function from the probabilistic model.
-4. **What algorithm efficiently optimizes this loss?** - Finding efficient ways to minimize or maximize the objective.
+In practice, people don't care that much about this; knowing the closest cluster is enough. This corresponds to being interested in the limit $\sigma \rightarrow 0$. In this limit, the beastly expression ?? simplifies pretty nicely. In particular, we can replace the summation <Math math = "\sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{\sigma^2}}" /> by <Math math = "\max_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{\sigma^2}}" /> since all other terms are simply negligible. The expression ?? simplifies to this:
 
-The point of our discussion has been explaining how understanding KL divergence brings us from the first column to the second one (max entropy) and then from the second one to the third one (max likelihood). Sometimes, like in the mean estimation example, loss function implies exact simple formulas, so there's not much more we can say. Sometimes, the optimization simply means running gradient descent on the loss. And sometimes, it's a bit more tricky though and understanding KL is helpful.
+<Math displayMode = {true} math = "\sum_{i = 1}^n \min_{j = 1}^k ||x_i-\mu_j||^2">
+
+The problem of finding $\mu_1, \dots, \mu_k$ that minimize this expression is called [$k$-means](https://en.wikipedia.org/wiki/K-means_clustering). 
+
 
 ### Variational Autoencoders <a id="variational-autoencoders"></a>
 
