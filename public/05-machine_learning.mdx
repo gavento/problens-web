@@ -14,13 +14,11 @@ We will go through the examples in the following table (feel free to skip exampl
 
 Our [basic statistics riddle](00-introduction/statistics) was like this: We have some numbers $X_1, \dots, X_n$ and we want to estimate their mean and variance. 
 
-We have already discussed this riddle from several angles; now we can combine all of them to this four-stage recipe:
+We have already discussed this riddle from several angles; now we can combine them. 
 
-1. What are the important parameters? Seems like the mean and the variance are important. 
+First, we turn the rough idea that mean and variance are important into a concrete probabilistic model. Maximum entropy principle from [the previous chapter](04-max_entropy) suggests to model the data by being [independent samples](03-minimizing/a-few-observations) from [the normal distribution](04-max_entropy/normal). 
 
-2. Let's turn this into a concrete probabilistic model. Maximum entropy principle from [the previous chapter](04-max_entropy) suggests to model the data by being [independent samples](03-minimizing/a-few-observations) from [the normal distribution](04-max_entropy/normal). 
-
-3. Once we have a set of possible models -- all gaussian distribution -- we can pick the best model out of this set using [the maximum likelihood principle](04-minimizing/mle). 
+3. Once we have a set of possible models -- all gaussian distribution -- we can pick the best model out of this set using [the maximum likelihood principle](04-minimizing/mle)<Footnote>In the equations, it will be easier to maximize the logarithm of the likelihood function, i.e., the log-likelihood. This is perhaps not too suprising since [we understand](03-minimizing/mle) that maximizing log-likelihood is really just minimizing the KL divergence, which is fundamentally what's going on here. </Footnote>. 
 We [did this in an earlier chapter](04-minimizing/mle_for_mean_sigma), the upshot is that we casted the problem of finding $\hat\mu_{MLE}, \hat\sigma^2_{MLE}$ as the problem of minimizing _loss functions_: 
 
 <Math displayMode={true} math = {"\hat\mu_{MLE}, \hat\sigma^2_{MLE} = \argmin_{\mu, \sigma^2} 2N \cdot \log \sigma + \sum_{i = 1}^N \frac{(X_i-\mu)^2}{\sigma^2}"}/>
@@ -112,6 +110,16 @@ In practice, people don't care that much about this; knowing the closest cluster
 
 The problem of finding $\mu_1, \dots, \mu_k$ that minimize this expression is called [$k$-means](https://en.wikipedia.org/wiki/K-means_clustering). 
 
+### Classification by neural nets <a id = "neural-nets"></a>
+
+We are given a huge number of images, and each one has one of $k$ possible labels (a dog, a muffin, ...). We want to optimize a neural net that takes an image on the input and outputs a probability distribution over the $k$ possible classes. 
+
+Coming up with an architecture of a neural net is a very tricky problem. Maximum entropy helps a little bit there -- [we already discussed](04-max-entropy/softmax) that it suggests that the last layer should convert logits into probabilities by softmax. 
+
+Next, the maximum-likelihood principle says that we should maximize the log-likelihood, i.e., if on image $X_i$ with label $\ell_i$ the net outputs a distribution $p_1^i, \dots, p_k^i$, we should try to minimize
+<Math displayMode={true} math = "\sum_{i = 1}^n \log 1/p_{\ell_i}^i">
+
+[As we know](03-minimizing/mle), log-likelihood is pretty much the same as cross-entropy, so in this case, this is usually called "optimizing the cross-entropy loss". 
 
 ### Variational Autoencoders <a id="variational-autoencoders"></a>
 

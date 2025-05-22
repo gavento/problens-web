@@ -20,7 +20,7 @@ Now, suppose we believe that a normal distribution is a good model for these dat
 
 Why does this methodology make sense? Remember, KL is supposed to measure how well the model $q$ approximates the data $p$, so minimizing KL really just means picking the best fitting model in $Q$. If you still remember the [first chapter](01-kl_intro), you may even "compile" KL down to Bayes' theorem: choosing $q$ to minimize $D(p,q)$ really means choosing $q$ that takes the longest time to distinguish from the truth $p$ by a Bayesian. Very reasonable!
 
-### Maximum Likelihood principle <a id="kl-divergence-and-maximum-likelihood"></a>
+### Maximum Likelihood principle <a id="mle"></a>
 
 Let's take a closer look at our minimize-KL approach. Let's focus on the most common case, where $p$ is literally the empirical distribution over $X_1, \dots, X_n$. To avoid cluttered notation, let's assume all $X_i$ are distinct<Footnote>Feel free to check that the general case is the same. </Footnote>. In that case, we can write the KL divergence we are minimizing as:
 
