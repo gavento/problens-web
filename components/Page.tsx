@@ -2,11 +2,11 @@ import { ReactNode } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
-import { CitationsProvider, References } from "./Citations";
+import { CitationsProvider, References } from "./content/Citations";
 import { loadBibtexFromFile } from "@/lib/citations";
 import { getMdxContent } from "@/lib/lib";
 import { referencesPath } from "@/lib/config";
-import { Footnotes, FootnotesProvider } from "./Footnotes";
+import { Footnotes, FootnotesProvider } from "./content/Footnotes";
 import styles from "./Page.module.css";
 
 interface PageProps {

@@ -25,7 +25,7 @@
 import React, { createContext, useContext, useState } from "react";
 import * as HoverCard from "@radix-ui/react-hover-card";
 import styles from "./Citations.module.css";
-import type { BibEntry } from "../lib/citations";
+import type { BibEntry } from "../../lib/citations";
 
 type CitationsContextType = {
   citations: Set<string>;

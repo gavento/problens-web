@@ -6,14 +6,14 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypeHighlight from "rehype-highlight";
-import { Cite, References } from "@/components/Citations";
-import { Footnote } from "@/components/Footnotes";
-import { Footnotes } from "@/components/Footnotes";
-import EvidenceAccumulationSimulator from "@/components/content/EvidenceAccumulationSimulator";
+import { Cite, References } from "@/components/content/Citations";
+import { Footnote } from "@/components/content/Footnotes";
+import { Footnotes } from "@/components/content/Footnotes";
+import EvidenceAccumulationSimulator from "@/components/widgets/EvidenceAccumulationSimulator";
 import { compile, evaluate } from "@mdx-js/mdx";
 import chalk from "chalk";
 import * as runtime from "react/jsx-runtime";
-import KatexMath from "@/components/KatexMath";
+import KatexMath from "@/components/content/KatexMath";
 
 // Force color support for CI/build environments
 chalk.level = 3;
