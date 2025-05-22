@@ -18,12 +18,12 @@ We have already discussed this riddle from several angles; now we can combine th
 
 First, we turn the rough idea that mean and variance are important into a concrete probabilistic model. Maximum entropy principle from [the previous chapter](04-max_entropy) suggests to model the data by being [independent samples](03-minimizing/a-few-observations) from [the normal distribution](04-max_entropy/normal). 
 
-3. Once we have a set of possible models -- all gaussian distribution -- we can pick the best model out of this set using [the maximum likelihood principle](04-minimizing/mle)<Footnote>In the equations, it will be easier to maximize the logarithm of the likelihood function, i.e., the log-likelihood. This is perhaps not too suprising since [we understand](03-minimizing/mle) that maximizing log-likelihood is really just minimizing the KL divergence, which is fundamentally what's going on here. </Footnote>. 
+Once we have a set of possible models -- all gaussian distribution -- we can pick the best model out of this set using [the maximum likelihood principle](04-minimizing/mle)<Footnote>In the equations, it will be easier to maximize the logarithm of the likelihood function, i.e., the log-likelihood. This is perhaps not too suprising since [we understand](03-minimizing/mle) that maximizing log-likelihood is really just minimizing the KL divergence, which is fundamentally what's going on here. </Footnote>. 
 We [did this in an earlier chapter](04-minimizing/mle_for_mean_sigma), the upshot is that we casted the problem of finding $\hat\mu_{MLE}, \hat\sigma^2_{MLE}$ as the problem of minimizing _loss functions_: 
 
 <Math displayMode={true} math = "\hat\mu_{MLE}, \hat\sigma^2_{MLE} = \argmin_{\mu, \sigma^2} 2N \cdot \log \sigma + \sum_{i = 1}^N \frac{(X_i-\mu)^2}{\sigma^2}"/>
 
-4. Finally, we forget the details of the full probabilistic model and just focus on the important parameters $\mu, \sigma^2$. We have to decide on an algorithm optimizing the loss function ??. In this case, the optimization problem has a closed-form formula $\hat\mu_{MLE} = \frac{1}{N} \cdot \sum_{i = 1}^N X_i$ and $\hat\sigma^2_{MLE} = \frac{1}{N} \cdot \sum_{i = 1}^N (X_i-\hat\mu_{MLE})^2$, so the algorithm is pretty trivial. 
+In this case, the optimization problem has a closed-form formula $\hat\mu_{MLE} = \frac{1}{N} \cdot \sum_{i = 1}^N X_i$ and $\hat\sigma^2_{MLE} = \frac{1}{N} \cdot \sum_{i = 1}^N (X_i-\hat\mu_{MLE})^2$. Thus, we ended up with a formula for the important parameters. Although the formula does not talk about probabilities, they are important to understand what's happening under the hood. 
 
 What I want to stress is how the only assumption we made about the data was at the very beginning, where we said "we have a bunch of numbers, we care about their mean and variance". The rest came automatically from our understanding of KL divergence. In particular, at no point we argued about central limit theorem.
 
@@ -32,7 +32,7 @@ What I want to stress is how the only assumption we made about the data was at t
 
 Suppose we are given a list of pairs $(x_1, y_1), \dots, (x_n, y_n)$; we think that the data are roughly linearly dependent, meaning that there are some $a,b$ such that $y_i \approx a\cdot x_i + b$. The task is to find $a,b$. Let's do it in four stages. What we said about the data so far is the first step. 
 
-The second step is to turn this into a concrete probabilistic model. Let's model the data as $y_i$ coming from the distribution $a\cdot x_i + b + \text\{noise\}$. <Footnote>We could also model the distribution from which $x_i$'s are coming, but that's not going to be relevant.</Footnote> 
+The second step is to turn this into a concrete probabilistic model. Let's model the data as $y_i$ coming from the distribution $a\cdot x_i + b + \text{noise}$. <Footnote>We could also model the distribution from which $x_i$'s are coming, but that's not going to be relevant.</Footnote> 
 
 The noise is generated from a distribution on real numbers -- how do we choose it? The uniform distribution does not normalize on real numbers, so it's not a choice; the same holds for the exponential distribution. The next choice in line is Gaussian $N(\mu, \sigma^2)$, so let's choose that one. This is a bit awkward since we now have two new parameters $\mu, \sigma^2$ in our model, although we don't really care about them; we only care about $a$ and $b$.
 
@@ -40,13 +40,13 @@ But that's ok. First, we can assume that $\mu = 0$, since otherwise we can repla
 
 Let's now start the third step of our recipe and use the max likelihood principle. We write down the log-likelihood:
 
-$$\log P(\text\{data\} | a, b, \sigma^2) = -\frac\{n\}\{2\}\log(2\pi\sigma^2) - \frac\{1\}\{2\sigma^2\} \sum_\{i=1\}^n (a\cdot x_i + b - y_i)^2$$
+<Math displayMode={true} math = "\log P(\text{data} | a, b, \sigma^2) = -\frac{n}{2}\log(2\pi\sigma^2) - \frac{1}{2\sigma^2} \sum_{i=1}^n (a\cdot x_i + b - y_i)^2"/>
 
 This is pretty complicated, but we notice that whatever value $\sigma^2$ we fix, the optimization problem for $a,b$ becomes to minimize:
 
-$$\sum_\{i=1\}^n (a\cdot x_i + b - y_i)^2$$
+$$\sum_{i=1}^n (a\cdot x_i + b - y_i)^2$$
 
-So, we may forget $\sigma^2$ again<Footnote>Statistical software like R or Python's statsmodels also outputs $\sigma^2$. This can be helpful if you also, given some new point $x_\{n+1\}$, want to predict not just $y_\{n+1\}$, but also some kind of interval in which you expect $y_\{n+1\}$ to lie.</Footnote> and just optimize this expressions which is the classical [least-squares loss function](https://en.wikipedia.org/wiki/Ordinary_least_squares) for linear regression <Footnote>Usually, there are more variables $x^1, \dots, x^k$ that we use to predict $y$. This leads to more complicated formula, but the derivation stays the same. </Footnote>. Notice how the square in the loss function came from our max entropy assumption of Gaussian noise.
+So, we may forget $\sigma^2$ again<Footnote>Statistical software like R or Python's statsmodels also outputs $\sigma^2$. This can be helpful if you also, given some new point $x_{n+1}$, want to predict not just $y_{n+1}$, but also some kind of interval in which you expect $y_{n+1}$ to lie.</Footnote> and just optimize this expressions which is the classical [least-squares loss function](https://en.wikipedia.org/wiki/Ordinary_least_squares) for linear regression <Footnote>Usually, there are more variables $x^1, \dots, x^k$ that we use to predict $y$. This leads to more complicated formula, but the derivation stays the same. </Footnote>. Notice how the square in the loss function came from our max entropy assumption of Gaussian noise.
 
 The fourth step is to turn the optimization problem from ?? into an algorithm. In this case, the problem is still sufficiently nice so that there is a formula, though this formula contains matrix inversion so in practice it's going to be solved by some kind of gradient descent. 
 
@@ -54,11 +54,11 @@ Advanced:
 
 Notice how our approach is pretty flexible so that if we have additional information about the data, we can add it to the model.
 
-For example, maybe we think that the parameters $a$ and $b$ are small. Our framework suggests to add that $a,b \sim N(0, w^2)$ to the model, for some number $w$ that we have to supply by either guessing it or using some other machine learning trick like cross-validation. This leads to optimizing $\sum_\{i=1\}^n (a\cdot x_i + b - y_i)^2 + \frac\{1\}\{w^2\}(a^2 + b^2)$, known as [Ridge regression](https://en.wikipedia.org/wiki/Ridge_regression).
+For example, maybe we think that the parameters $a$ and $b$ are small. Our framework suggests to add that $a,b \sim N(0, w^2)$ to the model, for some number $w$ that we have to supply by either guessing it or using some other machine learning trick like cross-validation. This leads to optimizing $\sum_{i=1}^n (a\cdot x_i + b - y_i)^2 + \frac{1}{w^2}(a^2 + b^2)$, known as [Ridge regression](https://en.wikipedia.org/wiki/Ridge_regression).
 
 As another example, consider the more general case where we have many predictors $x^1, \dots, x^k$, but we believe that only a small fraction, let's say $p$ fraction of them are actually useful. For the rest, the corresponding coefficient $a_i$ is equal to zero. Our framework suggests that we should optimize:
 
-$$\min_\{S \subseteq \\\{1, \dots, k\\\}, |S|=pk\} \sum_\{i=1\}^n \|a\cdot x_i - y_i\|^2$$
+<Math displayMode={true} math = "\min_{S \subseteq \\{1, \dots, k\\}, |S|=pk} \sum_{i=1}^n \|a\cdot x_i - y_i\|^2" />
 
 The only problem is that optimizing this function is hard (in fact, NP-hard) -- we have to try all possible subsets of nonzero coefficients and fit each one of them which takes exponential time. Some more complicated math shows though, that optimizing a different objective, called Lasso, often solves this complicated problem<Footnote>See e.g. [10.6 here](https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-book.html) or [this book](https://link.springer.com/book/10.1007/978-3-642-20192-9)</Footnote>. So, you should think of Lasso as an attempt to solve our probabilistic model.
 
@@ -100,13 +100,13 @@ The notation $p(x | \mu_j)$ means that this is only our model distribution of po
 
 <Math displayMode={true} math = "p(x) = \frac{1}{k} \sum_{i = 1}^k p(x | \mu_j)"/>
 
-We now have a probabilistic model parameterized by $k+1$ numbers: $\mu_1, \dots, \mu_k, \sigma^2$. We will use maximum likelihood to find those parameters. The principle tells us that we should minimize this expression:
+We now have a probabilistic model generating data $x$ from a distribution $p$. It is parameterized by $k+1$ numbers: $\mu_1, \dots, \mu_k, \sigma^2$. We will use maximum likelihood to find those parameters. The principle tells us that we should maximize this expression:
 
-<Math displayMode = {true} math = "\argmin_{\substack{\mu_1, \dots, \mu_k \\ \sigma^2}} \frac{n}{2\pi k} \log \sigma^2 + \sum_{i = 1}^n - \sum_{i = 1}^n \log \sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{\sigma^2}}"/>
+<Math displayMode = {true} math = "\argmax_{\substack{\mu_1, \dots, \mu_k \\ \sigma^2}} -n \log \left( k\sqrt{2\pi\sigma^2}\right) + \sum_{i = 1}^n  \log \sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{\sigma^2}}"/>
 
-Optimizing this expression corresponds to an algorithm known as [soft $k$-means](https://en.wikipedia.org/wiki/Fuzzy_clustering) (TODO check). The "word" soft is there because the parameter $\sigma$ enables us to output a distribution for each point $x$ telling us how likely it is that $x$ comes from each cluster. 
+Optimizing this expression corresponds to an algorithm known as [soft $k$-means](https://en.wikipedia.org/wiki/Fuzzy_clustering) (TODO check). The word "soft" is there because the parameter $\sigma$ enables us to output a distribution for each point $x$ telling us how likely it is that $x$ comes from each cluster. 
 
-In practice, people don't care that much about this; knowing the closest cluster is enough. This corresponds to being interested in the limit $\sigma \rightarrow 0$. In this limit, the beastly expression ?? simplifies pretty nicely. In particular, we can replace the summation <Math math = "\sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{\sigma^2}}" /> by <Math math = "\max_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{\sigma^2}}" /> since all other terms are simply negligible. The expression ?? simplifies to this:
+In practice, people don't care that much about this; knowing the closest cluster is enough. This corresponds to being interested in the limit $\sigma \rightarrow 0$. In this limit, the beastly expression ?? simplifies pretty nicely. In particular, we can replace the summation <Math math = "\sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{\sigma^2}}" /> by <Math math = "\max_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{\sigma^2}}" /> since all other terms in the sum are simply negligible. The expression ?? simplifies to this:
 
 <Math displayMode = {true} math = "\argmin_{\substack{\mu_1, \dots, \mu_k}} \sum_{i = 1}^n \min_{j = 1}^k ||x_i-\mu_j||^2"/>
 
@@ -118,10 +118,10 @@ We are given a huge number of images, and each one has one of $k$ possible label
 
 Coming up with an architecture of a neural net is a very tricky problem. Maximum entropy helps a little bit there -- [we already discussed](04-max-entropy/softmax) that it suggests that the last layer should convert logits into probabilities by softmax. 
 
-Next, the maximum-likelihood principle says that we should maximize the log-likelihood, i.e., if on image $X_i$ with label $\ell_i$ the net outputs a distribution $p_1^i, \dots, p_k^i$, we should try to minimize
-<Math displayMode={true} math = "\sum_{i = 1}^n \log 1/p_{\ell_i}^i"/>
+Next, the maximum-likelihood principle says that we should maximize the log-likelihood, i.e., if on image $X_i$ with label $\ell_i$ the net outputs a distribution $p_1(X_i), \dots, p_k(X_i)$, we should try to maximize
+<Math displayMode={true} math = "\argmax_{\substack{\textrm{neural net}\\\textrm{parameters}} \sum_{i = 1}^n \log p_{\ell_i}(X_i)"/>
 
-[As we know](03-minimizing/mle), log-likelihood is pretty much the same as cross-entropy, so in this case, this is usually called "optimizing the cross-entropy loss". 
+[As we know](03-minimizing/mle), maximizing log-likelihood is pretty much the same as minimizing cross-entropy, so in this case, this is usually called _minimizing the cross-entropy loss_ <Math math = "\sum_{i = 1}^n \log 1/p_{\ell_i}(X_i)" />. 
 
 ### Variational Autoencoders <a id="variational-autoencoders"></a>
 
@@ -136,8 +136,6 @@ The goal is to find a good latent representation that captures the important fea
 
 The loss function for a VAE can be written as:
 
-$$\mathcal\{L\}(\theta, \phi; x) = -\mathbb\{E\}_\{z \sim q_\phi(z|x)\}[\log p_\theta(x|z)] + D_\{KL\}(q_\phi(z|x) \| p(z))$$
-
 Let's break this down:
 
 - The first term is the reconstruction loss, measuring how well we can reconstruct $x$ after encoding it to $z$ and then decoding it back.
@@ -145,7 +143,6 @@ Let's break this down:
 
 This loss function can be derived from the principle of maximizing the evidence lower bound (ELBO) on the log-likelihood of the data. The ELBO is:
 
-$$\log p_\theta(x) \geq \mathbb\{E\}_\{z \sim q_\phi(z|x)\}[\log p_\theta(x|z)] - D_\{KL\}(q_\phi(z|x) \| p(z))$$
 
 Maximizing this lower bound is equivalent to minimizing the negative of the right-hand side, which gives us the VAE loss function.
 
