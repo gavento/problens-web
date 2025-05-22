@@ -1,0 +1,46 @@
+.expand {
+  border-radius: 0.5rem;
+  margin: 1.5rem 0;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  user-select: none;
+  gap: 0.75rem;
+}
+
+.image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.headline {
+  flex-grow: 1;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--neutral-600);
+  transition: transform 0.2s ease;
+}
+
+.arrow.open {
+  transform: rotate(180deg);
+}
+
+.content {
+  padding: 0 1rem 1rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}

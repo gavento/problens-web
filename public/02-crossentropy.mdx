@@ -42,8 +42,15 @@ All our entropies have bunch of intuitive properties. Here are a few of them.
 
 ### Additivity
 
-Let's say that you have two distribution (the "truth" and the "model") $p, q$ and then another two distributions $p', q'$. It's true that 
-<Footnote>
+Let's say that you have two distribution (the "truth" and the "model") $p, q$ and then another two distributions $p', q'$. It's true that
+
+
+$$
+D(p \otimes p', q \otimes q') = D(p, q) + D(p', q')
+$$
+where $\otimes$ stands for the product distribution, i.e. the joint distribution where $p,p'$ are independent.
+
+<Expand headline="Proof of additivity">
 Here's the proof (by Claude):
 Let's start with the definition of KL divergence for the joint distributions:
 
@@ -80,31 +87,33 @@ D(p \otimes p', q \otimes q') = \sum_{i=1}^{n} p(i) \log\left(\frac{p(i)}{q(i)}\
 Which is exactly:
 
 $$D(p \otimes p', q \otimes q') = D(p, q) + D(p', q')$$
+</Expand>
 
-</Footnote>
+This is super important! In fact, in the precedening chapter, it was important that the flips of the coin were independent, so to make it more formal, we would really rely on this additive property. Crossentropy and entropy are also additive for independent distributions.
 
+In fact, a slightly stronger property called _chain rule_ is true.
 
-$$
-D(p \otimes p', q \otimes q') = D(p, q) + D(p', q')
-$$
-where $\otimes$ stands for the product distribution, i.e. the joint distribution where $p,p'$ are independent. This is super important! In fact, in the precedening chapter, it was important that the flips of the coin were independent, so to make it more formal, we would really rely on this additive property. Crossentropy and entropy are also additive for independent distributions.
-
-In fact, a slightly stronger property called _chain rule_ is true. 
-<Footnote>
+<Expand headline="Chain rule explanation">
 Imagine that we have two distributions $p,q$ for how I commute to work (\{🚶‍♀️, 🚲, 🚌}), but later I decide that when I take bus, I will also keep track of what line I took (\{①, ②, ③}); I again have two distributions $p', q'$ for that. Now, $p$ and $p'$ can be combined into an overall distribution $p_{overall}$ over the set \{🚶‍♀️, 🚲, ①, ②, ③}; we combine $q,q'$ into $q_{overall}$ as well. The chain rule property says that
 
 <Math displayMode={true} math="
 D(p_{overall}, q_{overall}) = D(p,q) + p_{\text{bus}} \cdot D(p',q')
 "/>
 
-One can prove the chain rule property similarly to how additivity is proven. 
-</Footnote>
+One can prove the chain rule property similarly to how additivity is proven.
+</Expand>
 
 ### Nonnegativity
 
 We have already seen in the [previous chapter](01-kl_intro) that if KL were negative for some two distributions, something would be severely wrong with the universe. It is true that for any two $p,q$, we have
 
-<Footnote>
+
+
+$$
+D(p,q) \ge 0
+$$
+
+<Expand headline="Proof of nonnegativity">
 To prove that for any $p,q$ we have (I have used the natural algorithm to make it a bit shorter)
 
 $$
@@ -121,17 +130,12 @@ $$
 = 1 - 1 = 0
 $$
 
+</Expand>
+Because $D(p,q) = H(p,q) - H(p)$, we can also view this fact as saying that the crossentropy $H(p,q)$ for fixed $p$ is minimized if we choose $q = p$. That is, our Bayesian friend adding surprisals is going to be surprised the least if her model matches the data.
 
-</Footnote>
-$$
-D(p,q) \ge 0
-$$
+A bit stronger version of this fact is also called monotonicity
 
-Because $D(p,q) = H(p,q) - H(p)$, we can also view this fact as saying that the crossentropy $H(p,q)$ for fixed $p$ is minimized if we choose $q = p$. That is, our Bayesian friend adding surprisals is going to be surprised the least if her model matches the data. 
-
-A bit stronger version of this fact is also called monotonicity 
-<Footnote>
-
+<Expand headline="Monotonicity explanation">
 Imagine that we have two distributions $p,q$, let's say they are over countries (\{🇺🇸,🇨🇦,🇲🇽,🇯🇵,🇬🇧,🇮🇳,...}). Then, we zoom out a little bit and consider a smaller set of geographical areas (\{North America, Europe, ...}). We can convert $p,q$ to this rougher set to get distributions $p', q'$ -- e.g. we set $p'(North America) = p(🇺🇸) + p(🇨🇦) + p(🇲🇽)$. Then it's the case that
 
 $$
@@ -140,14 +144,14 @@ $$
 
 This makes sense! Remember that KL divergence means how hard is it to separate $p$ from $q$ using Bayes' theorem. This just says that for our Bayesian reasoner, it gets harder to distinguish $p$ from $q$, as we keep grouping different outcomes together. In the special case, we could group all the outcomes to a single outcome SOMETHING_HAPPENED -- the inequality would than reduce to $D(p,q) \ge 0$.
 
-Also, monotonicity is pretty similar to the so-called [Data processing inequality](https://en.wikipedia.org/wiki/Data_processing_inequality) you might have heard of. 
-</Footnote> 
+Also, monotonicity is pretty similar to the so-called [Data processing inequality](https://en.wikipedia.org/wiki/Data_processing_inequality) you might have heard of.
+</Expand>
 
 ### Uniqueness
 
 As it turns out, some version of additivity and monotonicity can be used to uniqely pinpoint KL divergence and entropy. By that I mean that any reasonable function of one parameter that has these two properties already [has to be the entropy](<https://en.wikipedia.org/wiki/Entropy_(information_theory)#Characterization>), and any reasonable function of two parameters with these properties [has to be KL divergence](https://blog.alexalemi.com/kl.html).
 
-This is pretty cool and it helps us to appreciate that our definitions are not arbitrary at all. There's just one measure with these natural properties, and this measure is KL divergence. 
+This is pretty cool and it helps us to appreciate that our definitions are not arbitrary at all. There's just one measure with these natural properties, and this measure is KL divergence.
 
 ## Application: Evaluating Predictions <a id="application-evaluating-predictions"></a>
 
@@ -225,6 +229,7 @@ Although we can't compute the value of $D(p,q)$, notice that for two expert pred
 
 ### Example
 
+<Block headline="Example: Coin flipping">
 Let's see an example of this. Let's say we flip a fair coin $N$ times ($p_1 = \dots = p_N = 1/2$) and ask two experts for their probabilities. Let's say that the first expert predicts correctly ($q_1 = \dots = q_N = 1/2$) and the other one is a bit off ($q'_1 = \dots = q'_N = 0.6$).
 
 Then, the idealized KL score happens to be $KL(p, q) = N \cdot 0 = 0$ and $KL(p, q') = N \cdot D(p_1, q'_1) \approx 0.03 \cdot N$.
@@ -232,6 +237,7 @@ Then, the idealized KL score happens to be $KL(p, q) = N \cdot 0 = 0$ and $KL(p,
 We don't have access to this score, but if we compute their crossentropy scores, the law of large numbers tells us that for large enough $N$, the scores are going to be roughly $H(p,q) = N$ and $H(p, q') \approx 1.03 \cdot N$. Both crossentropies are shifted by the entropy of the underlying process which is $N$. So we are penalizing both experts for something they can't know. But that's OK since both values are shifted by the same amount, so if we use the score to e.g. select the best experts, it behaves the same as using the ideal KL score.
 
 We will not bother computing the cross entropy score for the example data. The reason is that, as we have seen, our score is only reasonable if we can argue via the law of large numbers that the value we compute is going to be close to the crossentropy $H(p,q)$. But that's very fishy assumption for just 8 predictions, especially if some of the events happen with very small or very large probability.
+</Block>
 
 ## Coding Theory Intuitions <a id="coding-theory-intuitions"></a>
 

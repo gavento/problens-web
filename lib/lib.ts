@@ -14,6 +14,8 @@ import { compile, evaluate } from "@mdx-js/mdx";
 import chalk from "chalk";
 import * as runtime from "react/jsx-runtime";
 import KatexMath from "@/components/content/KatexMath";
+import Block from "@/components/content/Block";
+import Expand from "@/components/content/Expand";
 
 // Force color support for CI/build environments
 chalk.level = 3;
@@ -122,6 +124,8 @@ export async function getMdxContent(path: string) {
       Footnote: Footnote,
       EvidenceAccumulationSimulator: EvidenceAccumulationSimulator,
       Math: KatexMath,
+      Block: Block,
+      Expand: Expand,
     },
     options: {
       parseFrontmatter: true,
