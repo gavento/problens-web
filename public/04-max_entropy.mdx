@@ -9,14 +9,14 @@ Let's now discuss maximum entropy a bit more in depth. In particular, we will tr
 
 The question we would like to understand is: If we consider only a set of distributions $P$ that have some properties, how does the maximum entropy distribution in $P$ look like? 
 
-Let's see some examples first. If we consider distributions with $E[X] = \mu$ (and the domain is nonnegative real numbers), the maximum entropy distribution is the exponential distribution. This is the distribution with <Math math = {"p(x) \propto e^{-\lambda x}"} />. Here, $\lambda$ is some parameter -- fixing $E[X]$ to have different values leads to different $\lambda$s. <Footnote>In this particular case, the precise shape of the distribution is <Math math = {"p(x) = \frac{1}{\mu} e^{- x/\mu}"} />, but it will help if we don't worry about constants. </Footnote>
+Let's see some examples first. If we consider distributions with $E[X] = \mu$ (and the domain is nonnegative real numbers), the maximum entropy distribution is the exponential distribution. This is the distribution with <Math math = "p(x) \propto e^{-\lambda x}" />. Here, $\lambda$ is some parameter -- fixing $E[X]$ to have different values leads to different $\lambda$s. <Footnote>In this particular case, the precise shape of the distribution is <Math math = "p(x) = \frac{1}{\mu} e^{- x/\mu}" />, but it will help if we don't worry about constants. </Footnote>
 
-Another example: If we fix both $E[X]$ and $E[X^2]$ to be equal to some values, the maximum entropy distribution is the normal distribution where <Math math = {"p(x) \propto e^{-(x-\mu)^2/\sigma^2}."} />. Perhaps more simply, we can write down its shape as <Math math = {"p(x) \propto e^{-\lambda_1 x - \lambda_2 x^2}."} /> for some constants $\lambda_1, \lambda_2$. 
+Another example: If we fix both $E[X]$ and $E[X^2]$ to be equal to some values, the maximum entropy distribution is the normal distribution where <Math math = "p(x) \propto e^{-(x-\mu)^2/\sigma^2}." />. Perhaps more simply, we can write down its shape as <Math math = "p(x) \propto e^{-\lambda_1 x - \lambda_2 x^2}." /> for some constants $\lambda_1, \lambda_2$. 
 
 Can you spot a pattern? 
 
 Here's the general form of maximum entropy distributions: Let's say that we are given a bunch of constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$. Then, among all the distributions that satisfy the constraints, the distribution $p$ with maximum entropy has the shape: 
-<Math displayMode = {true} math = {"p(x) \propto e^{\lambda_1 f_1(X) + \dots + \lambda_m f_m(X)}"}/>
+<Math displayMode = {true} math = "p(x) \propto e^{\lambda_1 f_1(X) + \dots + \lambda_m f_m(X)}"/>
 The constants $\lambda_1, \dots, \lambda_m$ has to be chosen based on the values $\alpha_1, \dots, \alpha_m$. But I advise you not to focus on $\alpha$s and $\lambda$s too much. The point is that the maximum entropy distribution looks like an exponential with the stuff we care about  i.e. the functions $f_1, \dots, f_m$ -- in the exponent. 
 
 ## Why? <a id = "intuition"></a>
@@ -65,19 +65,19 @@ $$
 We compute the derivative with respect to some $p_i$. Using the fact that $(p \log 1/p)' = -(p\log p)' = -\log p - 1$, we conclude that
 
 
-<Math displayMode={true} math={"\frac{\partial \mathcal L}{\partial p_i} = -\log p_i - 1 + \lambda_1 f_1(i) + \dots + \lambda_m f_m(i) + \lambda_{m+1}"}/>
+<Math displayMode={true} math = "\frac{\partial \mathcal L}{\partial p_i} = -\log p_i - 1 + \lambda_1 f_1(i) + \dots + \lambda_m f_m(i) + \lambda_{m+1}"/>
 
 
-That's stellar! If we now set <Math math={"\frac{\partial \mathcal L}{\partial p_i} = 0"}/>, we get a formula for $p_i$:
-<Math displayMode={true} math={"p_i = e^{ -1 - \lambda_1 f_1(i) - \dots - \lambda_m f_m(i) - \lambda_{m+1}}"}/>
+That's stellar! If we now set <Math math = "\frac{\partial \mathcal L}{\partial p_i} = 0"/>, we get a formula for $p_i$:
+<Math displayMode={true} math = "p_i = e^{ -1 - \lambda_1 f_1(i) - \dots - \lambda_m f_m(i) - \lambda_{m+1}}"/>
 I find it more helpful to rewrite like this:
-<Math displayMode={true} math={"p_i \propto e^{ - \lambda_1 f_1(i) - \dots - \lambda_m f_m(i)}"}/>
+<Math displayMode={true} math = "p_i \propto e^{ - \lambda_1 f_1(i) - \dots - \lambda_m f_m(i)}"/>
 
 I just swept some proportionality constants under the rug: if we remember that probabilities have to sum up to 1, we have arrived at a shockingly simple formula!
 
 We could of course generalize the formula to other discrete sets than $\{1, \dots, K\}$, we would then have:
 
-<Math displayMode={true} math={"p(x) \propto e^{ - \lambda_1 f_1(x) - \dots - \lambda_m f_m(x)}"}/>
+<Math displayMode={true} math = "p(x) \propto e^{ - \lambda_1 f_1(x) - \dots - \lambda_m f_m(x)}"/>
 
 and the same formula is also the solution if the probability distribution is continuous, except of discrete. The only difference is that $p(x)$ is then technically not probability, but probability density. Also the right buzzword is no longer Lagrange multipliers, but it is its generalization called [calculus of variations](https://en.wikipedia.org/wiki/Calculus_of_variations) (You also have to spend a few more years of your life trying to understand under which conditions it can be used. I am not sure what those are even in the Lagrange multiplier case -- even there we have just found local extrema and saddle points, not necessarily the maximizer, so one has to be careful. )
 
@@ -91,7 +91,7 @@ The answer is that both have the same probability since $p(x_1)\cdot p(x_2) = e^
 
 ![Exponential distribution](04-max_entropy/exponential.png)
 
-This is not specific only to the exponential distribution, but works for all max-entropy distributions with the shape from ??. In general, consider some distribution of the shape <Math math = {"p(x) \propto e^{\lambda_1 f_1(x) + \dots + \lambda_m f_m(x)}"} /> and think of independently sampling a few points $x_1, \dots, x_k$ from that distribution. Now if you tell me what are the average values $a_1 = \frac{1}{k} \sum_{i = 1}^k f_1(x_i), \dots, a_m = \frac{1}{k} \sum_{i = 1}^k f_m(x_i)$ and I condition on this information, the conditional distribution over $x_1, \dots, x_k$ is actually uniform! That's because the occurence probability of any such tuple under our distribution $p$ is the same and equal to <Math math = {"p(x_1, \dots, x_k) \propto e^{k(\lambda_1 a_1 + \dots + \lambda_m a_m)}$"} />.  
+This is not specific only to the exponential distribution, but works for all max-entropy distributions with the shape from ??. In general, consider some distribution of the shape <Math math = "p(x) \propto e^{\lambda_1 f_1(x) + \dots + \lambda_m f_m(x)}" /> and think of independently sampling a few points $x_1, \dots, x_k$ from that distribution. Now if you tell me what are the average values $a_1 = \frac{1}{k} \sum_{i = 1}^k f_1(x_i), \dots, a_m = \frac{1}{k} \sum_{i = 1}^k f_m(x_i)$ and I condition on this information, the conditional distribution over $x_1, \dots, x_k$ is actually uniform! That's because the occurence probability of any such tuple under our distribution $p$ is the same and equal to <Math math = "p(x_1, \dots, x_k) \propto e^{k(\lambda_1 a_1 + \dots + \lambda_m a_m)}$" />.  
 
 So what should we take of it? If you sample from max-entropy distributions, the experience is actually pretty similar to sampling from the uniform distribution! After you measure the empirical averages of $f_1, \dots, f_m$ of your sample, it's distribution is uniform. This is a very concrete sense in which max-entropy distributions are close to the uniform distributions. 
 <Footnote>
@@ -115,7 +115,7 @@ One issue to keep in mind is that the uniform distribution does not always exist
 
 If we believe that the mean is an important parameter of a distribution (as we usually do), the max entropy principle says that the right family of distributions to work with are those with the shape
 
-<Math displayMode={true} math={"p(x) \propto e^{-\lambda x}"}/>
+<Math displayMode={true} math = "p(x) \propto e^{-\lambda x}"/>
 
 
 This kind of distribution is known under many names, depending on what is the underlying ground set over which we define it. Let's see some cases:
@@ -124,7 +124,7 @@ This kind of distribution is known under many names, depending on what is the un
 
 If we are talking about distributions over $\{0, 1\}$, then the shape from ?? takes form
 
-<Math displayMode={true} math={"p(0) = \frac{1}{1 + e^{- \lambda}}, p(1) = \frac{e^{-\lambda x}}{1 + e^{- \lambda}}"}/>
+<Math displayMode={true} math = "p(0) = \frac{1}{1 + e^{- \lambda}}, p(1) = \frac{e^{-\lambda x}}{1 + e^{- \lambda}}"/>
 
 Remember that $\lambda$ is some kind of parameter that defines a family of distributions. This family of distributions is simply all the Bernoulli distributions, i.e., all distributions of type $\{p, 1-p\}$, i.e., literally all possible distributions one can define over the set $\{0, 1\}$. 
 
@@ -140,7 +140,7 @@ Remember the Bayesian hero from the [first chapter](01-kl_intro)? It was easier 
 Example: 
 The Elo system is the system used to assign ratings to e.g. chess players. The basic idea of it is that when you have two players with Elos $E_1$ and $E_2$, you can estimate the probability that the first one wins from the difference $D = E_1 - E_2$. As we know, max-entropy principle suggests that converting numbers to probabilities should be done via the logistic function. 
 
-This is indeed how Elo system was designed; the interpretation of chess Elo is that the probability that the first player<Footnote>Due to the existence of draws, it's actually the expected score of the first player</Footnote> wins should be <Math math = {"\frac{1}{1 + 10^{D / 400}}"} />. This is the logistic function with $\lambda = 1/400 \cdot \ln 10$. 
+This is indeed how Elo system was designed; the interpretation of chess Elo is that the probability that the first player<Footnote>Due to the existence of draws, it's actually the expected score of the first player</Footnote> wins should be <Math math = "\frac{1}{1 + 10^{D / 400}}" />. This is the logistic function with $\lambda = 1/400 \cdot \ln 10$. 
 
 Notice that without knowing the value of $\lambda$, the information "the Elo difference between these two players is 200" is meaningless -- we don't know how Elo is scaled. Yet, even without knowing $\lambda$, we know a lot: if the chance of an upset (i.e., the lower-rated player wins) is $p$ for $D = 200$, then for $D=400$ it's roughly $p^2$, for $D=600$ it's roughly $p^3$ and so on. 
 
@@ -156,7 +156,7 @@ It is possible that this is a good way of understanding how our brain works, but
 
 A more general instantiation of ?? is when our distribution is over some arbitrary set of numbers $\{a_1, \dots, a_k\}$ -- these are also called categorical distributions. In that case, the max entropy distribution is what's called a softmax (or softmin) distribution -- each number $a_i$ is chosen with probability 
 
-<Math displayMode={true} math={"p_i \propto e^{\lambda a_i}. "}/>
+<Math displayMode={true} math = "p_i \propto e^{\lambda a_i}. "/>
 
 
 You can think about the softmax function as the generalization of the logistic function above -- it's _the right way_ of how to convert numbers to probabilities. In fact, the numbers $a_i$ are often also called logits. 
@@ -184,9 +184,9 @@ Here's an example. Let's say you told me that you measured how long it took you 
 Only after this first model, I would actually start thinking about whether there's something specific on "eating the lunch" and your personality to add into the model. 
 
 <Footnote>
-In practice, my guess would probably not have tail $p(x) \propto e^{-x}$, but a heavier tail, like <Math displayMode={false} math={"p(x) \propto e^{-\sqrt{x}}"}/> or even $p(x) \propto 1/x^{C}$. Why? Well, notice how I am not sure about what the actual mean is. So, I should perhaps use a 2-layered model: 1) I sample your average lunch time $\mu$ from some distribution 2) I use exponential distribution with mean $\mu$. 
+In practice, my guess would probably not have tail $p(x) \propto e^{-x}$, but a heavier tail, like <Math displayMode={false} math = "p(x) \propto e^{-\sqrt{x}}"/> or even $p(x) \propto 1/x^{C}$. Why? Well, notice how I am not sure about what the actual mean is. So, I should perhaps use a 2-layered model: 1) I sample your average lunch time $\mu$ from some distribution 2) I use exponential distribution with mean $\mu$. 
 
-How should I sample $\mu$ in the first step? Applying max-entropy principle again, perhaps I should sample it from exponential distribution, with mean being how long it takes me / average person to eat their lunch. If you crunch the numbers, the overall distribution that I will use as my input is going to have tails <Math displayMode={false} math={"p(x) \propto e^{-C\sqrt{x}}"}/>. That is, the model is getting less sure that I won't see some really large numbers. Using power-law distribution in step 1) would lead to $p(x) \propto 1/x^{C}$. 
+How should I sample $\mu$ in the first step? Applying max-entropy principle again, perhaps I should sample it from exponential distribution, with mean being how long it takes me / average person to eat their lunch. If you crunch the numbers, the overall distribution that I will use as my input is going to have tails <Math displayMode={false} math = "p(x) \propto e^{-C\sqrt{x}}"/>. That is, the model is getting less sure that I won't see some really large numbers. Using power-law distribution in step 1) would lead to $p(x) \propto 1/x^{C}$. 
 
 This discussion is mostly meant to show what I love on the max entropy principle -- it enables us to rapidly operationalize and concretize our thought processes. Modelling real life is hard, but now we have a powerful tool that automatically builds concrete probabilistic models from vague thoughts like "there's two types of randomness, first in the average lunch time, and second in the variation around that average". 
 </Footnote>
@@ -196,21 +196,21 @@ There still an elephant in the room though -- exponential distribution can't be 
 ### Normal distribution <a id = "normal"></a>
 
 If we believe that both mean and the variance are interesting, max entropy principle suggests that we should choose the function that has a quadratic function of $x$ in the exponent. That means it has the shape
-<Math displayMode={true} math={"p(x) \propto e^{-\lambda_1 x^2 - \lambda_2 x}"}/>
+<Math displayMode={true} math = "p(x) \propto e^{-\lambda_1 x^2 - \lambda_2 x}"/>
 This gets more familiar if we rewrite the equation like this:
-<Math displayMode={true} math={"p(x) = A e^{-B(x-C)^2}"}/>
-where $A,B,C$ are some constants chosen so that $p(x)$ integrates to $1$. This is the family of [normal (or Gaussian) distributions](https://en.wikipedia.org/wiki/Normal_distribution), and the density formula is usually written more precisely as <Math math = {"p(x) = \frac{1}{2\pi\sigma^2} e^{-(x-\mu)^2/\sigma^2}"} /> <Footnote>For a finite domain, the probability function from ??could also look like $P(x) \propto e^{x^2}$, i.e., it could have the smallest probabilities in the middle and large probabilities at the edges. However, this is not normalizable to 1 if the domain is real numbers. There, the only possible solution is the familiar bell-shaped curve. </Footnote> 
+<Math displayMode={true} math = "p(x) = A e^{-B(x-C)^2}"/>
+where $A,B,C$ are some constants chosen so that $p(x)$ integrates to $1$. This is the family of [normal (or Gaussian) distributions](https://en.wikipedia.org/wiki/Normal_distribution), and the density formula is usually written more precisely as <Math math = "p(x) = \frac{1}{2\pi\sigma^2} e^{-(x-\mu)^2/\sigma^2}" /> <Footnote>For a finite domain, the probability function from ??could also look like $P(x) \propto e^{x^2}$, i.e., it could have the smallest probabilities in the middle and large probabilities at the edges. However, this is not normalizable to 1 if the domain is real numbers. There, the only possible solution is the familiar bell-shaped curve. </Footnote> 
 
 I think this is a good (partial) explanation of "why is there $x^2$ in Gaussian"? It simply means that Gaussian is the *right* distribution to work with if you care about the first two moments. If you cared about the first four moments, the right family of distributions would be those with four-degree polynomials in the exponent. 
 
 You should view the normal distribution as _the right distribution_ if what you care is mean and variance. A related view is that this is the simplest possible distribution on real numbers -- Neither the uniform distribution nor the exponential distribution can be normalized there, so we can try to salvage this by fixing the first two moments. 
 
 #### Central limit theorem
-The normal distribution is extremely important because of the [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem).  Roughly speaking: If you keep adding some random variables $X_1, \dots, X_N$, each with mean $\mu$ and variance $\sigma^2$, then the value of <Math math={"\frac{X_1 + \dots + X_N - N\mu}{\sqrt{N\sigma^2}}"}/> is going to be distributed like $N(0,1)$. 
+The normal distribution is extremely important because of the [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem).  Roughly speaking: If you keep adding some random variables $X_1, \dots, X_N$, each with mean $\mu$ and variance $\sigma^2$, then the value of <Math math = "\frac{X_1 + \dots + X_N - N\mu}{\sqrt{N\sigma^2}}"/> is going to be distributed like $N(0,1)$. 
 
 Here's how the max entropy principle can help you think about this theorem: For the theorem, the mean and the variance are clearly important parameters. Thus, max entropy principle kind of suggests that if there is a single distribution that the sums are converging to, the guassian is a natural candidate. 
 <Footnote>
-In fact, here's how one proof the central limit theorem works: We keep track of the entropy of <Math math={"S_N = \frac{X_1 + \dots + X_N - N\mu}{\sqrt{N\sigma^2}}"}/>. We prove that the operation of adding random variables -- called convolution -- has smearing-out properties that increase the entropy of the $S_N$ at least a little bit. This is actually the hard part -- Although it is simple to argue from the definition that $H(X+Y) \ge \max(H(X), H(Y))$ for any two random variables, the proof requires a stronger inequality called [entropy power inequality](https://en.wikipedia.org/wiki/Entropy_power_inequality). As the entropy of $S_N$ keeps converging to the entropy of $N(0,1)$, we argue that the distribution of $S_N$ also has to keep looking more and more similar to the distribution of $N(0,1)$, thus proving the central limit theorem. 
+In fact, here's how one proof the central limit theorem works: We keep track of the entropy of <Math math = "S_N = \frac{X_1 + \dots + X_N - N\mu}{\sqrt{N\sigma^2}}"/>. We prove that the operation of adding random variables -- called convolution -- has smearing-out properties that increase the entropy of the $S_N$ at least a little bit. This is actually the hard part -- Although it is simple to argue from the definition that $H(X+Y) \ge \max(H(X), H(Y))$ for any two random variables, the proof requires a stronger inequality called [entropy power inequality](https://en.wikipedia.org/wiki/Entropy_power_inequality). As the entropy of $S_N$ keeps converging to the entropy of $N(0,1)$, we argue that the distribution of $S_N$ also has to keep looking more and more similar to the distribution of $N(0,1)$, thus proving the central limit theorem. 
 </Footnote>
 
 Example: One of the running examples we used was [measuring of feet](00-introduction/statistics). Why should we model the data using the normal distribution? The typical reasoning is that the length of my foot is a random variable that can probably be modelled as a sum of many small and relatively independent random variables. Thus, using central limit theorem, the normal distribution is a good fit. 
@@ -243,7 +243,7 @@ Exponential family is a family of distributions that you can define from maximum
 <Footnote>
 It would be more precise to say that exponential family are those distributions that minimize $D(p,q)$ from some distribution $q$, given some constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$. In particular, $q$ does not have to be uniform. 
 
-Example: Take the domain $\{0, 1, \dots, n\}$ and consider the constraint $f(X) = X$. We have already seen that this leads to the exponential distribution, given we start with uniform $q$. Now, consider $q$ with <Math math = {"q_i = {n \choose i} / 2^n"}/> instead. The new solution is the distribution $p$ with <Math math = {"p_i \propto {n \choose i} \cdot e^{\lambda i}"}/>. This may not look familiar, but if we substitute $\lambda = \log p/(1-p)$, we get the formula for the binomial distribution. Thus, binomial distribution belongs to the exponential family using $f(X) = X$, even though it's not max-entropy distribution for that $f$. 
+Example: Take the domain $\{0, 1, \dots, n\}$ and consider the constraint $f(X) = X$. We have already seen that this leads to the exponential distribution, given we start with uniform $q$. Now, consider $q$ with <Math math = "q_i = {n \choose i} / 2^n"/> instead. The new solution is the distribution $p$ with <Math math = "p_i \propto {n \choose i} \cdot e^{\lambda i}"/>. This may not look familiar, but if we substitute $\lambda = \log p/(1-p)$, we get the formula for the binomial distribution. Thus, binomial distribution belongs to the exponential family using $f(X) = X$, even though it's not max-entropy distribution for that $f$. 
 </Footnote>
 The importance of this family is that the distributions from it have a bunch of nice and intuitive properties. 
 <Footnote>
@@ -251,19 +251,19 @@ Here's one of the nice properties which is actually quite relevant in the next c
 
 Suppose that you have some data with mean $\mu$ and variance $\sigma^2$ and you want to fit it with a distribution. There are two ways to go about this. 
 
-1. Use maximum entropy principle to work out that you want to model it by a normal distribution. Then use maximum likelihood to find the best parameters <Math math = {"\hat{\mu}, \hat{\sigma^2}"} /> of this general model -- it turns that <Math math = {"\hat\mu_{MLE} = \mu, \hat\sigma^2_{MLE} = \sigma^2"}/>. 
+1. Use maximum entropy principle to work out that you want to model it by a normal distribution. Then use maximum likelihood to find the best parameters <Math math = "\hat{\mu}, \hat{\sigma^2}" /> of this general model -- it turns that <Math math = "\hat\mu_{MLE} = \mu, \hat\sigma^2_{MLE} = \sigma^2"/>. 
 
 2. Use maximum entropy principle directly -- the max entropy distribution with mean $\mu$ and variance $\sigma^2$ is $N(\mu, \sigma^2)$. 
 
 Both approaches gave the same answer, but it's not a priori clear that this should be the case! Perhaps MLE could have decided that $N(\mu, \frac{n-1}{n} \sigma^2)$ is a better fit for the data. 
 
-Fortunately, the distributions in the exponential family have the nice property that if you settle the parameters of the distribution by MLE, they turn out to be what they should be. Formally, if your destribution is defined by constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$, then <Math math = {"\hat\alpha_{1, MLE} = \alpha_1, \dots, \hat\alpha_{m,MLE} = \alpha_m"} />.
+Fortunately, the distributions in the exponential family have the nice property that if you settle the parameters of the distribution by MLE, they turn out to be what they should be. Formally, if your destribution is defined by constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$, then <Math math = "\hat\alpha_{1, MLE} = \alpha_1, \dots, \hat\alpha_{m,MLE} = \alpha_m" />.
 </Footnote>
 
 
 #### Boltzmann distribution
 
-We have many particles in a box, each particle $i$ having some energy $E_i$. What's the distribution of the energies? Maximum entropy principle suggests that the energies are going to be distributed according to the formula <Math math = {"p_i \propto e^{-\lambda E_i}"} />. This is indeed typically the case.  
+We have many particles in a box, each particle $i$ having some energy $E_i$. What's the distribution of the energies? Maximum entropy principle suggests that the energies are going to be distributed according to the formula <Math math = "p_i \propto e^{-\lambda E_i}" />. This is indeed typically the case.  
 <Footnote>
 The reason for this is essentially [our intuition](04-max_entropy/intuition): When you have many particles in a box, every now and then two particles fly close to each other and exchange energies. Basically, the particles first have energies $E_1, E_2$, then some interesting physics happens, and then they have energies $E_1', E_2'$. What's important is that $E_1 + E_2 = E_1' + E_2'$; that's conservation of energy. 
 
@@ -278,7 +278,7 @@ Given an algorithm, the most basic measure of its complexity is its length. Give
 
 For example, even though $\pi$ has infinitely many digits, its Kolmogorov complexity is small because there's a small Turing machine that keeps printing its digits. 
 
-In some abstract theories (like [Solomonoff induction](https://en.wikipedia.org/wiki/Solomonoff%27s_theory_of_inductive_inference) or [Tegmark multiverse](https://en.wikipedia.org/wiki/Multiverse)), we want to have a distribution over all Turing machines (i.e., algorithms) or over all mathematical objects (whatever that means). We then choose the max-entropy distribution, i.e., <Math math = {"p(x) \propto e^{-\lambda K(x)}"} />. This is called the Solomonoff prior. 
+In some abstract theories (like [Solomonoff induction](https://en.wikipedia.org/wiki/Solomonoff%27s_theory_of_inductive_inference) or [Tegmark multiverse](https://en.wikipedia.org/wiki/Multiverse)), we want to have a distribution over all Turing machines (i.e., algorithms) or over all mathematical objects (whatever that means). We then choose the max-entropy distribution, i.e., <Math math = "p(x) \propto e^{-\lambda K(x)}" />. This is called the Solomonoff prior. 
 
 ## Application: XKCD joke
 
@@ -288,9 +288,9 @@ After four chapters of developing the theory of KL divergence, we are finally re
 
 It's all about how to choose a prior for the number on the wall. The most natural prior is simply the uniform one, i.e., before looking at the wall, we think the number is a uniform random number with 14 decimal digits. After observing the right 8 digits, the first 6 are still uniformly random (modulo the fact we also partially observed the first digit). So, the probability that all 6 digits are zero is $1/10^6$ -- we are probably fine. 
 
-Let's try to think of a better model though. We have seen that for distributions over numbers, max-entropy principle suggests that the exponential distribution <Math math = {"p(x) \propto e^{-\lambda x}"} /> or the power-law distribution $p(x) \propto x^{-C}$ are pretty reasonable. 
+Let's try to think of a better model though. We have seen that for distributions over numbers, max-entropy principle suggests that the exponential distribution <Math math = "p(x) \propto e^{-\lambda x}" /> or the power-law distribution $p(x) \propto x^{-C}$ are pretty reasonable. 
 
-In this case, I would argue for choosing the distribution $p(x) \propto 1/x$ because I am very uncertain about the scale in this example. I chose $C = 1$ in the power-law fit because this is the most natural constant -- it corresponds to uniform distribution over the scales -- see the left graph below. <Footnote>Technically speaking, this distribution satisfies <Math math = {"\int_{10^1}^{10^2} \frac{1}{x} dx = \int_{10^2}^{10^3} \frac{1}{x} dx = \dots "} />. </Footnote> The only problem with $1/x$ is that we can't normalize this distribution if the domain is real numbers, but now the domain is integers between $0$ and $10^{14}$, so it's OK. 
+In this case, I would argue for choosing the distribution $p(x) \propto 1/x$ because I am very uncertain about the scale in this example. I chose $C = 1$ in the power-law fit because this is the most natural constant -- it corresponds to uniform distribution over the scales -- see the left graph below. <Footnote>Technically speaking, this distribution satisfies <Math math = "\int_{10^1}^{10^2} \frac{1}{x} dx = \int_{10^2}^{10^3} \frac{1}{x} dx = \dots " />. </Footnote> The only problem with $1/x$ is that we can't normalize this distribution if the domain is real numbers, but now the domain is integers between $0$ and $10^{14}$, so it's OK. 
 
 
 ![xkcd posterior](04-max_entropy/xkcd.png)

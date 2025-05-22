@@ -21,7 +21,7 @@ First, we turn the rough idea that mean and variance are important into a concre
 3. Once we have a set of possible models -- all gaussian distribution -- we can pick the best model out of this set using [the maximum likelihood principle](04-minimizing/mle)<Footnote>In the equations, it will be easier to maximize the logarithm of the likelihood function, i.e., the log-likelihood. This is perhaps not too suprising since [we understand](03-minimizing/mle) that maximizing log-likelihood is really just minimizing the KL divergence, which is fundamentally what's going on here. </Footnote>. 
 We [did this in an earlier chapter](04-minimizing/mle_for_mean_sigma), the upshot is that we casted the problem of finding $\hat\mu_{MLE}, \hat\sigma^2_{MLE}$ as the problem of minimizing _loss functions_: 
 
-<Math displayMode={true} math = {"\hat\mu_{MLE}, \hat\sigma^2_{MLE} = \argmin_{\mu, \sigma^2} 2N \cdot \log \sigma + \sum_{i = 1}^N \frac{(X_i-\mu)^2}{\sigma^2}"}/>
+<Math displayMode={true} math = "\hat\mu_{MLE}, \hat\sigma^2_{MLE} = \argmin_{\mu, \sigma^2} 2N \cdot \log \sigma + \sum_{i = 1}^N \frac{(X_i-\mu)^2}{\sigma^2}"/>
 
 4. Finally, we forget the details of the full probabilistic model and just focus on the important parameters $\mu, \sigma^2$. We have to decide on an algorithm optimizing the loss function ??. In this case, the optimization problem has a closed-form formula $\hat\mu_{MLE} = \frac{1}{N} \cdot \sum_{i = 1}^N X_i$ and $\hat\sigma^2_{MLE} = \frac{1}{N} \cdot \sum_{i = 1}^N (X_i-\hat\mu_{MLE})^2$, so the algorithm is pretty trivial. 
 
@@ -68,7 +68,9 @@ The only problem is that optimizing this function is hard (in fact, NP-hard) -- 
 This time, we get red and blue points in a plane and we want to find the best line separating them. Ideally, we would like all the red points on one side and all the blue ones on the other, but that's not always possible. In that case, how do we find the best line? 
 
 As in the previous case of linear regression, we want to find a line $y = ax + b$. This time, we will make our life a bit simpler and assume the line has to pass through the origin, so $y = ax$ -- that's just to make the math simpler. 
-It will be more helpful to represent the line using the normal vector $\theta = \frac{1}{a^2+1} (a, -1)$ orthogonal to that line, and the distance $\delta = |b|/\sqrt{a^2+1}$ of the origin from the line. 
+It will be more helpful to represent the line using the normal vector $\theta$ orthogonal to that line, and the distance $\delta$ of the origin from the line. <Footnote>Specifically, $\theta = \frac{1}{a^2+1} (a, -1)$ and $\delta = |b|/\sqrt{a^2+1}$, but let's not worry about that. </Footnote>
+
+![Logistic regression](05-machine_learning/logistic.png)
 
 Given a point $(x_i, y_i)$, the relevant quantity is the distance of that point from our line. This can be computed using the dot product as $\theta \cdot (x_i, y_i) + \delta$. 
 
@@ -82,7 +84,7 @@ Once we have a model, we can use the max likelihood principle to find its parame
 
 <Math displayMode = {true} math = "\sum_{i = 1}^n \ell_i \log \sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)) + (1-\ell_i) \log (1-\sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)))"/>
 
-where $\ell_i$ is the indicator ($\ell_i \in \\\{0,1\\\}$) for whether the point $(x_i,y_i)$ is red. This problem known as the [logistic regression](https://en.wikipedia.org/wiki/Logistic_regression) is hard to solve exactly, but gradient descent usually works pretty well. 
+where $\ell_i$ is the indicator (i.e. $\ell_i \in \{0,1\}$) for whether the point $(x_i,y_i)$ is red. This problem known as the [logistic regression](https://en.wikipedia.org/wiki/Logistic_regression) is hard to solve exactly, but gradient descent usually works pretty well. 
 
 ### K-means Clustering <a id="k-means-clustering"></a>
 
@@ -98,15 +100,15 @@ The notation $p(x | \mu_j)$ means that this is only our model distribution of po
 
 <Math displayMode={true} math = "p(x) = \frac{1}{k} \sum_{i = 1}^k p(x | \mu_j)"/>
 
-We now have a probabilistic model parameterized by $k+1$ numbers: $\mu_1, \dots, \mu_k, \sigma$. We will use maximum likelihood to find those parameters. The principle tells us that we should minimize this expression:
+We now have a probabilistic model parameterized by $k+1$ numbers: $\mu_1, \dots, \mu_k, \sigma^2$. We will use maximum likelihood to find those parameters. The principle tells us that we should minimize this expression:
 
-<Math displayMode = {true} math = "\frac{n}{2\pi k} \log \sigma + \sum_{i = 1}^n - \sum_{i = 1}^n \log \sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{\sigma^2}}"/>
+<Math displayMode = {true} math = "\argmin_{\substack{\mu_1, \dots, \mu_k \\ \sigma^2}} \frac{n}{2\pi k} \log \sigma^2 + \sum_{i = 1}^n - \sum_{i = 1}^n \log \sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{\sigma^2}}"/>
 
 Optimizing this expression corresponds to an algorithm known as [soft $k$-means](https://en.wikipedia.org/wiki/Fuzzy_clustering) (TODO check). The "word" soft is there because the parameter $\sigma$ enables us to output a distribution for each point $x$ telling us how likely it is that $x$ comes from each cluster. 
 
 In practice, people don't care that much about this; knowing the closest cluster is enough. This corresponds to being interested in the limit $\sigma \rightarrow 0$. In this limit, the beastly expression ?? simplifies pretty nicely. In particular, we can replace the summation <Math math = "\sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{\sigma^2}}" /> by <Math math = "\max_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{\sigma^2}}" /> since all other terms are simply negligible. The expression ?? simplifies to this:
 
-<Math displayMode = {true} math = "\sum_{i = 1}^n \min_{j = 1}^k ||x_i-\mu_j||^2"/>
+<Math displayMode = {true} math = "\argmin_{\substack{\mu_1, \dots, \mu_k}} \sum_{i = 1}^n \min_{j = 1}^k ||x_i-\mu_j||^2"/>
 
 The problem of finding $\mu_1, \dots, \mu_k$ that minimize this expression is called [$k$-means](https://en.wikipedia.org/wiki/K-means_clustering). 
 
@@ -117,7 +119,7 @@ We are given a huge number of images, and each one has one of $k$ possible label
 Coming up with an architecture of a neural net is a very tricky problem. Maximum entropy helps a little bit there -- [we already discussed](04-max-entropy/softmax) that it suggests that the last layer should convert logits into probabilities by softmax. 
 
 Next, the maximum-likelihood principle says that we should maximize the log-likelihood, i.e., if on image $X_i$ with label $\ell_i$ the net outputs a distribution $p_1^i, \dots, p_k^i$, we should try to minimize
-<Math displayMode={true} math = "\sum_{i = 1}^n \log 1/p_{\ell_i}^i">
+<Math displayMode={true} math = "\sum_{i = 1}^n \log 1/p_{\ell_i}^i"/>
 
 [As we know](03-minimizing/mle), log-likelihood is pretty much the same as cross-entropy, so in this case, this is usually called "optimizing the cross-entropy loss". 
 
