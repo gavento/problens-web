@@ -42,13 +42,9 @@ Even better, KL divergence is always nonnegative. I think we got a pretty strong
 
 
 <Expand headline="Proof of nonnegativity">
-To prove that for any $p,q$ we have (I have used the natural algorithm to make it a bit shorter)
+We will use the natural logarithm to make the proof a bit shorter, i.e., we want to prove that <Math math = "D(p,q) =  \sum_{i = 1}^n p_i \cdot \ln \frac{p_i}{q_i}  \ge 0" /> holds for any $p,q$. 
 
-$$
-D(p,q) =  \sum_{i = 1}^n p_i \cdot \ln \frac{p_i}{q_i}  \ge 0,
-$$
-
-we will estimate the expression $\ln \frac{p_i}{q_i}$ inside the summation. Since we already know that the inequality is tight if all $p_i = q_i$, we should choose an estimate of logarithm which is tight around 1. The best approximation of logarithm around $1$ is $\ln (1+x) \le x$. We can use it like this:
+We will estimate the expression $\ln \frac{p_i}{q_i}$ inside the summation. Since we already know that the inequality is tight if all $p_i = q_i$, we should choose an estimate of logarithm which is tight around 1. The best approximation of logarithm around $1$ is $\ln (1+x) \le x$. We can use it like this:
 
 $$
 -D(p,q)
@@ -58,6 +54,87 @@ $$
 = 1 - 1 = 0
 $$
 
+</Expand>
+
+
+A bit stronger version of this fact is also called monotonicity. We won't really use it, so feel free to skip it. 
+
+<Expand headline="Monotonicity explanation">
+Imagine that we have two distributions $p,q$, let's say they are over countries (\{🇺🇸,🇨🇦,🇲🇽,🇯🇵,🇬🇧,🇮🇳,...}). Then, we zoom out a little bit and consider a set of larger geographical areas (\{North America, Europe, ...}). We can convert $p,q$ to this rougher set to get distributions $p', q'$ -- e.g. we set <Math math = "p'(\textrm{North America}) = p(🇺🇸) + p(🇨🇦) + p(🇲🇽)" />. Then it's the case that
+
+$$
+D(p, q) \ge D(p', q')
+$$
+
+This makes sense! Remember that KL divergence tells us how hard it is to separate $p$ from $q$ using Bayes' theorem. This just says that for our Bayesian reasoner, it gets harder to distinguish $p$ from $q$, as we keep grouping different outcomes together. In the special case, we could group all the outcomes to a single outcome SOMETHING_HAPPENED -- the inequality would than reduce to $D(p,q) \ge 0$, i.e., nonnegativity is a special case of this.
+</Expand>
+
+## Additivity
+
+Let's say that we have two distribution (the "truth" and the "model") $p, q$ and then another two distributions $p', q'$. It's true that
+
+$$
+D(p \otimes p', q \otimes q') = D(p, q) + D(p', q')
+$$
+where $p \otimes p'$ stands for the product distribution with marginals $p,p'$, i.e. the joint distribution where $p,p'$ are independent.
+
+We have used this property implicitly in the previous chapter -- it allowed us not to compute the overall KL divergence as the sum for individual flips. 
+
+<Expand headline="Proof of additivity">
+The proof is to just write it down. Here' it is (by Claude)':
+Let's start with the definition of KL divergence for the joint distributions:
+
+<Math displayMode={true} math="
+D(p \otimes p', q \otimes q') = \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \log\left(\frac{p(i)p'(j)}{q(i)q'(j)}\right)
+"/>
+
+Using properties of logarithms, we can rewrite this as:
+
+<Math displayMode={true} math="
+D(p \otimes p', q \otimes q') = \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \left[\log\left(\frac{p(i)}{q(i)}\right) + \log\left(\frac{p'(j)}{q'(j)}\right)\right]
+"/>
+
+This expands to:
+
+<Math displayMode={true} math="
+D(p \otimes p', q \otimes q') = \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \log\left(\frac{p(i)}{q(i)}\right) + \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \log\left(\frac{p'(j)}{q'(j)}\right)
+"/>
+
+Now, we can factor out terms:
+
+<Math displayMode={true} math="
+D(p \otimes p', q \otimes q') = \sum_{i=1}^{n} p(i) \log\left(\frac{p(i)}{q(i)}\right) \sum_{j=1}^{m} p'(j) + \sum_{j=1}^{m} p'(j) \log\left(\frac{p'(j)}{q'(j)}\right) \sum_{i=1}^{n} p(i)
+"/>
+
+Since probability distributions sum to 1:
+$$\sum_{i=1}^{n} p(i) = 1 \text{ and } \sum_{j=1}^{m} p'(j) = 1$$
+
+This gives us:
+
+<Math displayMode={true} math="
+D(p \otimes p', q \otimes q') = \sum_{i=1}^{n} p(i) \log\left(\frac{p(i)}{q(i)}\right) + \sum_{j=1}^{m} p'(j) \log\left(\frac{p'(j)}{q'(j)}\right)"/>
+
+Which is exactly:
+
+$$D(p \otimes p', q \otimes q') = D(p, q) + D(p', q')$$
+</Expand>
+
+
+In fact, a slightly stronger property called _chain rule_ is true. We won't really use it, so feel free to skip. 
+
+<Expand headline="Chain rule explanation">
+Imagine that we have two distributions $p,q$ for how I commute to work (\{🚶‍♀️, 🚲, 🚌}). Later, I decide that when I take bus, I will also keep track of what line I took (\{①, ②, ③}); I again have two (so-called conditional) distributions $p', q'$ for that. Now, $p$ and $p'$ can be combined into an overall distribution <Math math = "p_{\textrm{overall}}" /> over the set \{🚶‍♀️, 🚲, ①, ②, ③}. For example, if $p=$\{🚶‍♀️:0.3, 🚲:0.3, 🚌:0.2\} and $p'=$\{①: 0.5, ②:0.25, ③:0.25\}, then <Math math = "p_{\textrm{overall}}=" />\{🚶‍♀️:0.3, 🚲:0.3, 🚌①: 0.1, 🚌②:0.05, 🚌③:0.05\}. 
+
+The chain rule property of KL divergence is the fact that
+
+<Math displayMode={true} math="
+D(p_{\textrm{overall}}, q_{\textrm{overall}}) = D(p,q) + p_{\textrm{bus}} \cdot D(p',q')
+"/>
+Here, <Math math = "p_{\text{bus}}" /> is the probability of 🚌 according to the (true) distribution $p$. 
+
+This property makes sense! It says that distinguishing the truth $p_{overall}$ from the model $q_{overall}$ can't be harder than distinguishing $q$ from $p$. In fact, the additional refinement of the option 🚌  is helping us whenever it comes up. Algebraically, we just add the two relevant divergences together, with $D(p', q')$ weighted by the frequency <Math math = "p_{\textrm{bus}}" />. 
+
+Try to derive this property or see how it implies additivity! 
 </Expand>
 
 
