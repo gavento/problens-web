@@ -1,6 +1,6 @@
 # KL properties & (Cross-)entropy
 
-In this chapter, we will discuss a few nice algebraic properties of KL divergence. Also, it's often very useful to split the formula into two terms called _crossentropy_ and _entropy_. 
+In this chapter, we will discuss a few nice algebraic properties of KL divergence. Also, it's often very useful to split the formula into two terms called _cross-entropy_ and _entropy_. 
 
 
 We will also go through a few basic properties that these things have.
@@ -15,7 +15,7 @@ $$
 
 KL divergence can be infinite: this happens whenever $q_i \not= 0$ and $p_i = 0$ for some $i$. We also use convention $0 \cdot \log 0/0 = 0$ so that KL is always a well-defined number or $+\infty$.
 
-## Asymmetry
+### Asymmetry
 
 The KL formula is not symmetrical -- in general, we don't have $D(p,q) = D(q,p)$. This is sometimes seen as a drawback, especially when you compare KL with (symmetrical) distance function like the $\ell_1$ or $\ell_2$ metric<Footnote> <Math math='d_1(p,q) = \sum_{i = 1}^n |p_i - q_i|'/>, <Math math='d_2(p,q) = \sqrt{\sum_{i = 1}^n (p_i - q_i)^2}'/></Footnote>. I want to stress that the asymmetry is by design! KL measures how well a distribution $p$ is fitted by a model $q$. This is an asymmetrical notion, so we need an asymetrical formula, nothing to be ashamed for here.
 
@@ -27,7 +27,7 @@ Imagine that the true probability distribution is 50\%/50\% (i.e., fair coin), a
 On the other hand, if the truth is $100\% / 0\%$ and the model is $50\% / 50\%$, then $D(p,q) = 1$. That's because each flip, we are going to flip heads and thus gain one bit of evidence towards the coin being fair. One bit is a lot and our probability of the coin being fair goes down really fast, but it's never zero. We simply have to account for the (exponentially unlikely) event that even if the coin is fair, all flips may have happenned to be heads.
 </Expand>
 
-## Nonnegativity
+### Nonnegativity
 
 If you plug in the same distribution twice into KL, you get
 
@@ -69,7 +69,7 @@ $$
 This makes sense! Remember that KL divergence tells us how hard it is to separate $p$ from $q$ using Bayes' theorem. This just says that for our Bayesian reasoner, it gets harder to distinguish $p$ from $q$, as we keep grouping different outcomes together. In the special case, we could group all the outcomes to a single outcome SOMETHING_HAPPENED -- the inequality would than reduce to $D(p,q) \ge 0$, i.e., nonnegativity is a special case of this.
 </Expand>
 
-## Additivity
+### Additivity
 
 Let's say that we have two distribution (the "truth" and the "model") $p, q$ and then another two distributions $p', q'$. It's true that
 
@@ -123,7 +123,7 @@ $$D(p \otimes p', q \otimes q') = D(p, q) + D(p', q')$$
 In fact, a slightly stronger property called _chain rule_ is true. We won't really use it, so feel free to skip. 
 
 <Expand headline="Chain rule explanation">
-Imagine that we have two distributions $p,q$ for how I commute to work (\{🚶‍♀️, 🚲, 🚌}). Later, I decide that when I take bus, I will also keep track of what line I took (\{①, ②, ③}); I again have two (so-called conditional) distributions $p', q'$ for that. Now, $p$ and $p'$ can be combined into an overall distribution <Math math = "p_{\textrm{overall}}" /> over the set \{🚶‍♀️, 🚲, ①, ②, ③}. For example, if $p=$\{🚶‍♀️:0.3, 🚲:0.3, 🚌:0.2\} and $p'=$\{①: 0.5, ②:0.25, ③:0.25\}, then <Math math = "p_{\textrm{overall}}=" />\{🚶‍♀️:0.3, 🚲:0.3, 🚌①: 0.1, 🚌②:0.05, 🚌③:0.05\}. 
+Imagine that we have two distributions $p,q$ for how I commute to work (\{🚶‍♀️, 🚲, 🚌}). Later, I decide that when I take bus, I will also keep track of what line I took (\{①, ②, ③}); I again have two (so-called conditional) distributions $p', q'$ for that. Now, $p$ and $p'$ can be combined into an overall distribution <Math math = "p_{\textrm{overall}}" /> over the set \{🚶‍♀️, 🚲, ①, ②, ③}. For example, if $p=$\{🚶‍♀️: 0.3, 🚲: 0.3, 🚌: 0.2\} and $p'=$\{①: 0.5, ②: 0.25, ③: 0.25\}, then <Math math = "p_{\textrm{overall}}=" />\{🚶‍♀️: 0.3, 🚲: 0.3, 🚌①: 0.1, 🚌②: 0.05, 🚌③: 0.05\}. 
 
 The chain rule property of KL divergence is the fact that
 
@@ -132,21 +132,28 @@ D(p_{\textrm{overall}}, q_{\textrm{overall}}) = D(p,q) + p_{\textrm{bus}} \cdot 
 "/>
 Here, <Math math = "p_{\text{bus}}" /> is the probability of 🚌 according to the (true) distribution $p$. 
 
-This property makes sense! It says that distinguishing the truth $p_{overall}$ from the model $q_{overall}$ can't be harder than distinguishing $q$ from $p$. In fact, the additional refinement of the option 🚌  is helping us whenever it comes up. Algebraically, we just add the two relevant divergences together, with $D(p', q')$ weighted by the frequency <Math math = "p_{\textrm{bus}}" />. 
+This property makes sense! First, notice that distinguishing the truth $p_{overall}$ from the model $q_{overall}$ gets easier than distinguishing $p$ from $p$. But the formula even says how much -- the additional refinement of the option 🚌  is helping us by $D(p', q')$ whenever it comes up, which happens with frequency <Math math = "p_{\textrm{bus}}" />. 
 
 Try to derive this property or see how it implies additivity! 
 </Expand>
 
 
-## Relative entropy = Crossentropy - Entropy
+### Uniqueness
 
-A quick recap: The [previous chapter](01-kl_intro), we've seen how KL divergence is really the result of repeatedly applying Bayes' theorem, using this table:
+As it turns out, any reasonable function that that has the monotonicity and chain rule properties already [has to be KL divergence](https://blog.alexalemi.com/kl.html).
+
+This is pretty cool and it helps us to appreciate that KL divergence is not at all arbitrary function. There's just one measure with the natural properties of KL divergence -- KL divergence itself.
+
+
+## Relative entropy = Cross-entropy - Entropy
+
+First, a quick recap: In the [previous chapter](01-kl_intro), we've seen how KL divergence is really the result of repeatedly applying Bayes' theorem, using this table:
 
 ![Surprisal](01-kl_intro/repeated_bayes_surprisals.png)
 
 Each cell in this table holds a value of type $\log 1/p$ that's also sometimes called the _surprisal_.
 
-Last time, we have been parsing this table "row-by-row". That is, we always subtracted two surprisals to compute how the given flip changes our posterior. The Bayesian reasoner then keeps summing up all those surprisal differences.
+Last time, we have been parsing this table "row-by-row". That is, we always subtracted two surprisals to compute how much evidence we got towards one of the two hypotheses. The Bayesian reasoner simply keeps summing up all those surprisal differences.
 
 We can also try to understand the table "column-by-column". That is, the Bayesian reasoner can compute the total surprisal for both hypothesis, then convert those into the final posterior probability. This corresponds to rewriting the KL divergence as follows:
 
@@ -158,116 +165,38 @@ We can also try to understand the table "column-by-column". That is, the Bayesia
 \underbrace{\sum_{i = 1}^n p_i \log 1 / p_i}_{H(p)}
 '/>
 
-$H(p,q)$ is called _crossentropy_. You should think of this expression as telling you how surprised you are, on average, if you keep seeing data from $p$ and try to model them by $q$.
+The two expressions on the right hand side are important. We will try to get some intuition about them now. 
 
-$H(p) = H(p, p)$ is an important special case called _entropy_. Intuitively, it's telling you how much surprise there is, if you keep seeing data sampled from $p$ (and you know they are coming from $p$).
+<dl>
+    <dt>Cross-entropy: </dt>
+    <dd>
+    The term $H(p,q) = \sum_{i = 1}^n p_i \log 1 / q_i$ is called _cross-entropy_. You should think of this expression as telling you how surprised you are, on average, if you keep seeing data from $p$ and try to model them by $q$. For example, let's say we keep flipping fair coin, so $p =$ \{H: 0.5, T: 0.5\}, but our model of it is $q =$ \{H: 0.999, T: 0.001\}. Although we are not surprised to see heads at all, each time we see a tail, our surprisal is equal to $\log 1/0.001 \approx 10$. So, our average surprisal -- cross-entropy -- is about 5. 
+    
+    On the other hand, if we use $q =$ \{H: 0.5, T: 0.5\}, the cross-entropy is equal to 1. In general, better models mean smaller cross-entropy. 
+    </dd>
+    <dt>Entropy: </dt>
+    <dd>
+    The term $H(p) = H(p, p) = \sum_{i = 1}^n p_i \log 1 / p_i$ is an important special case of cross-entropy called _entropy_. This is the best possible cross-entropy we can achieve for a distribution $p$ if we model it by $p$ itself.  
+    
+    Intuitively, entropy is telling us how much suprise or uncertainty there is hidden inside $p$. For example, even if we know that we are flipping a fair coin, we still don't know which side it lands on, so there is something to learn about the outcome of the experiment. The entropy of the fair coin flip is $H((1/2, 1/2)) = 1$. 
 
-Finally, $D(p,q)$ is the difference between these two values. That's also why in some communities, it's known as the _relative entropy_ between $p$ and $q$. <Footnote>Much better name than KL divergence, if you ask me. The name KL divergence seems to be much more common, though, so we stick with it. </Footnote>
+    The entropy can get much smaller -- for example, $H((0.001, 0.999)) \approx 0.01$. That makes sense, there is not much average surprise if we keep flipping this coin! The entropy can go down all the way to zero, if the distribution has 100\% chance of giving one outcome. 
+
+    On the other hand, the entropy can also get much larger than 1 bit. For example, the entropy of throwing a die is equal to $\log_2(6) \approx 2.6$ bits and in general, the entropy of a uniform distribution over $k$ options is $\log_2 k$. The uniform distribution also has the largest entropy among distributions with $k$ options. This again makes sense -- there's most uncertainty if all the options are possible.  
+    </dd>
+    <dt>Relative entropy: </dt>
+    <dd>
+    Finally, $D(p,q)$ is the difference between these two values. That is, it tells us how close our average surprisal measured by cross-entropy is to the ultimate limit measured by entropy. That's also why in some communities, KL divergence is known as the _relative entropy_ between $p$ and $q$. <Footnote>Much better name than KL divergence, if you ask me. The name KL divergence seems to be much more common, though, so we stick with it. </Footnote>
+    </dd>
+</dl>
+
+Unsurprisingly, cross-entropy and entropy have also nice algebraic properties. The most important one is that they are also additive for independent distributions. 
 
 ### So what is this good for?
 
-Splitting a summation into two summations is not some kind of hard-core mathematical trick; the main advantage of adding crossentropy & entropy to our vocabulary is that they are simply very meaningful concepts. Let's solve a few more riddles and see what I mean by that!
+Splitting a summation into two summations is not some kind of hard-core mathematical trick; the main advantage of adding cross-entropy & entropy to our vocabulary is that they are simply very meaningful concepts. Let's solve a few more riddles and see what I mean by that!
 
-## Two important properties of (cross-, relative-) entropy
-
-All our entropies have bunch of intuitive properties. Here are a few of them.
-
-### Additivity
-
-Let's say that you have two distribution (the "truth" and the "model") $p, q$ and then another two distributions $p', q'$. It's true that
-
-
-$$
-D(p \otimes p', q \otimes q') = D(p, q) + D(p', q')
-$$
-where $\otimes$ stands for the product distribution, i.e. the joint distribution where $p,p'$ are independent.
-
-<Expand headline="Proof of additivity">
-Here's the proof (by Claude):
-Let's start with the definition of KL divergence for the joint distributions:
-
-<Math displayMode={true} math="
-D(p \otimes p', q \otimes q') = \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \log\left(\frac{p(i)p'(j)}{q(i)q'(j)}\right)
-"/>
-
-Using properties of logarithms, we can rewrite this as:
-
-<Math displayMode={true} math="
-D(p \otimes p', q \otimes q') = \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \left[\log\left(\frac{p(i)}{q(i)}\right) + \log\left(\frac{p'(j)}{q'(j)}\right)\right]
-"/>
-
-This expands to:
-
-<Math displayMode={true} math="
-D(p \otimes p', q \otimes q') = \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \log\left(\frac{p(i)}{q(i)}\right) + \sum_{i=1}^{n}\sum_{j=1}^{m} p(i)p'(j) \log\left(\frac{p'(j)}{q'(j)}\right)
-"/>
-
-Now, we can factor out terms:
-
-<Math displayMode={true} math="
-D(p \otimes p', q \otimes q') = \sum_{i=1}^{n} p(i) \log\left(\frac{p(i)}{q(i)}\right) \sum_{j=1}^{m} p'(j) + \sum_{j=1}^{m} p'(j) \log\left(\frac{p'(j)}{q'(j)}\right) \sum_{i=1}^{n} p(i)
-"/>
-
-Since probability distributions sum to 1:
-$$\sum_{i=1}^{n} p(i) = 1 \text{ and } \sum_{j=1}^{m} p'(j) = 1$$
-
-This gives us:
-
-<Math displayMode={true} math="
-D(p \otimes p', q \otimes q') = \sum_{i=1}^{n} p(i) \log\left(\frac{p(i)}{q(i)}\right) + \sum_{j=1}^{m} p'(j) \log\left(\frac{p'(j)}{q'(j)}\right)"/>
-
-Which is exactly:
-
-$$D(p \otimes p', q \otimes q') = D(p, q) + D(p', q')$$
-</Expand>
-
-This is super important! In fact, in the precedening chapter, it was important that the flips of the coin were independent, so to make it more formal, we would really rely on this additive property. Crossentropy and entropy are also additive for independent distributions.
-
-In fact, a slightly stronger property called _chain rule_ is true.
-
-<Expand headline="Chain rule explanation">
-Imagine that we have two distributions $p,q$ for how I commute to work (\{🚶‍♀️, 🚲, 🚌}), but later I decide that when I take bus, I will also keep track of what line I took (\{①, ②, ③}); I again have two distributions $p', q'$ for that. Now, $p$ and $p'$ can be combined into an overall distribution $p_{overall}$ over the set \{🚶‍♀️, 🚲, ①, ②, ③}; we combine $q,q'$ into $q_{overall}$ as well. The chain rule property says that
-
-<Math displayMode={true} math="
-D(p_{overall}, q_{overall}) = D(p,q) + p_{\text{bus}} \cdot D(p',q')
-"/>
-
-One can prove the chain rule property similarly to how additivity is proven.
-</Expand>
-
-### Nonnegativity
-
-We have already seen in the [previous chapter](01-kl_intro) that if KL were negative for some two distributions, something would be severely wrong with the universe. It is true that for any two $p,q$, we have
-
-
-
-$$
-D(p,q) \ge 0
-$$
-
-Because $D(p,q) = H(p,q) - H(p)$, we can also view this fact as saying that the crossentropy $H(p,q)$ for fixed $p$ is minimized if we choose $q = p$. That is, our Bayesian friend adding surprisals is going to be surprised the least if her model matches the data.
-
-A bit stronger version of this fact is also called monotonicity
-
-<Expand headline="Monotonicity explanation">
-Imagine that we have two distributions $p,q$, let's say they are over countries (\{🇺🇸,🇨🇦,🇲🇽,🇯🇵,🇬🇧,🇮🇳,...}). Then, we zoom out a little bit and consider a smaller set of geographical areas (\{North America, Europe, ...}). We can convert $p,q$ to this rougher set to get distributions $p', q'$ -- e.g. we set $p'(North America) = p(🇺🇸) + p(🇨🇦) + p(🇲🇽)$. Then it's the case that
-
-$$
-D(p, q) \ge D(p', q')
-$$
-
-This makes sense! Remember that KL divergence means how hard is it to separate $p$ from $q$ using Bayes' theorem. This just says that for our Bayesian reasoner, it gets harder to distinguish $p$ from $q$, as we keep grouping different outcomes together. In the special case, we could group all the outcomes to a single outcome SOMETHING_HAPPENED -- the inequality would than reduce to $D(p,q) \ge 0$.
-
-Also, monotonicity is pretty similar to the so-called [Data processing inequality](https://en.wikipedia.org/wiki/Data_processing_inequality) you might have heard of.
-</Expand>
-
-### Uniqueness
-
-As it turns out, some version of additivity and monotonicity can be used to uniqely pinpoint KL divergence and entropy. By that I mean that any reasonable function of one parameter that has these two properties already [has to be the entropy](<https://en.wikipedia.org/wiki/Entropy_(information_theory)#Characterization>), and any reasonable function of two parameters with these properties [has to be KL divergence](https://blog.alexalemi.com/kl.html).
-
-This is pretty cool and it helps us to appreciate that our definitions are not arbitrary at all. There's just one measure with these natural properties, and this measure is KL divergence.
-
-## Application: Evaluating Predictions <a id="application-evaluating-predictions"></a>
+<Expand headline = "Riddle: Evaluating Predictions"> <a id="application-evaluating-predictions"></a>
 
 As the next application of KL divergence and cross-entropy, let's solve our [prediction riddle](00-introduction/predictions). Recall that we asked about a few experts to predict future events and recorded their probabilities -- how do we measure their performance?
 
@@ -297,7 +226,7 @@ $$
 
 There's just one problem with our approach -- can you see it?
 
-### Crossentropy score
+### Cross-entropy score
 
 The problem is that when we are grading, we have typically absolutely no idea what the "true" probabilities are! <Footnote> We could now have a very long philosophical discussion about whether something like "true" probability even exists. Fortunately, nothing in this text really depends on these philosophical subtleties. </Footnote>
 
@@ -306,32 +235,32 @@ The only fact we know is whether each event happenned or not. Fortunately, this 
 We can now define a new, feasible to compute, score function:
 
 <Math displayMode={true} math="
-crossentropy score =
+cross-entropy score =
 \sum_{i = 1}^n  \left(
     \hat{p}_i\log\frac{\hat{p}_i}{q_i} + (1-\hat{p}_i)\log\frac{1-\hat{p}_i}{1-q_i}
     \right)
 "/>
 
-Why do we call it the _crossentropy score_? At this point, I should mention that to define KL divergence, we use the convention that $0 \cdot \log 0 = 0 \cdot \log 0/0 = 0$. This means that our equation actually simplifies to
+Why do we call it the _cross-entropy score_? At this point, I should mention that to define KL divergence, we use the convention that $0 \cdot \log 0 = 0 \cdot \log 0/0 = 0$. This means that our equation actually simplifies to
 
 $$
-crossentropy score =
+cross-entropy score =
 \sum_{i = 1}^n  \left(
     \hat{p}_i\log\frac{1}{q_i} + (1-\hat{p}_i)\log\frac{1}{1-q_i}
     \right)
 $$
 
-That is, the score is both equal to the KL divergence between $\hat{p}$ and $q$, and to crossentropy between them. <Footnote> Another way to see that is via the equation $D(\hat{p}, q) = H(\hat{p}, q) - H(\hat{p})$; the distribution $\hat{p}$ is a trivial distribution supported only on one outcome, so its entropy is 0 and we thus have $D(\hat{p}, q) = H(\hat{p}, q)$. </Footnote> So we might as well call this crossentropy score. In the forecasting community, this score is typically called [Log-score](https://forecasting.wiki/wiki/Log_score), the crossentropy score notation is closer to how this is called in machine learning.
+That is, the score is both equal to the KL divergence between $\hat{p}$ and $q$, and to cross-entropy between them. <Footnote> Another way to see that is via the equation $D(\hat{p}, q) = H(\hat{p}, q) - H(\hat{p})$; the distribution $\hat{p}$ is a trivial distribution supported only on one outcome, so its entropy is 0 and we thus have $D(\hat{p}, q) = H(\hat{p}, q)$. </Footnote> So we might as well call this cross-entropy score. In the forecasting community, this score is typically called [Log-score](https://forecasting.wiki/wiki/Log_score), the cross-entropy score notation is closer to how this is called in machine learning.
 
-Before we compute the score, let's understand more deeply how it connects to the idealized KL score. Technically speaking, crossentropy score is a random variable because it depends on the "true" randomness of $p$. More concretely, each $\hat{p}_i$ is actually a random variable equal to 1 with probability $p_i$, and otherwise equal to 0.
+Before we compute the score, let's understand more deeply how it connects to the idealized KL score. Technically speaking, cross-entropy score is a random variable because it depends on the "true" randomness of $p$. More concretely, each $\hat{p}_i$ is actually a random variable equal to 1 with probability $p_i$, and otherwise equal to 0.
 
-So what's the expected value of the crossentropy score, i.e., $E_p[crossentropy score]$? Well, since $\hat{p_i}$ is on average equal to $p_i$, i.e., $E_p[\hat{p}_i] = p_i$, we simply have
+So what's the expected value of the cross-entropy score, i.e., $E_p[cross-entropy score]$? Well, since $\hat{p_i}$ is on average equal to $p_i$, i.e., $E_p[\hat{p}_i] = p_i$, we simply have
 
 $$
-E_p[crossentropy score] = H(p, q)
+E_p[cross-entropy score] = H(p, q)
 $$
 
-This is pretty cool! If we give our experts many questions, then in the long run, we can use the law of large numbers to argue that the score we measure is close to the crossentropy $H(p,q)$.
+This is pretty cool! If we give our experts many questions, then in the long run, we can use the law of large numbers to argue that the score we measure is close to the cross-entropy $H(p,q)$.
 
 At this point, let's remember the equation
 
@@ -339,7 +268,9 @@ $$
 D(p,q) = H(p,q) - H(p)
 $$
 
-Although we can't compute the value of $D(p,q)$, notice that for two expert predictions $q_1, q_2$, we have $D(p,q_1) < D(p, q_2)$ if and only if $H(p, q_1) < H(p, q_2)$: KL divergence and crossentropy only differ by $H(p)$ which is in this case just some constant. That is, _if we compare the experts based by their cross entropy score, it's in the long run the same as comparing them by their KL score!_
+Although we can't compute the value of $D(p,q)$, notice that for two expert predictions $q_1, q_2$, we have $D(p,q_1) < D(p, q_2)$ if and only if $H(p, q_1) < H(p, q_2)$: KL divergence and cross-entropy only differ by $H(p)$ which is in this case just some constant. That is, _if we compare the experts based by their cross entropy score, it's in the long run the same as comparing them by their KL score!_
+
+
 
 ### Example
 
@@ -348,10 +279,11 @@ Let's see an example of this. Let's say we flip a fair coin $N$ times ($p_1 = \d
 
 Then, the idealized KL score happens to be $KL(p, q) = N \cdot 0 = 0$ and $KL(p, q') = N \cdot D(p_1, q'_1) \approx 0.03 \cdot N$.
 
-We don't have access to this score, but if we compute their crossentropy scores, the law of large numbers tells us that for large enough $N$, the scores are going to be roughly $H(p,q) = N$ and $H(p, q') \approx 1.03 \cdot N$. Both crossentropies are shifted by the entropy of the underlying process which is $N$. So we are penalizing both experts for something they can't know. But that's OK since both values are shifted by the same amount, so if we use the score to e.g. select the best experts, it behaves the same as using the ideal KL score.
+We don't have access to this score, but if we compute their cross-entropy scores, the law of large numbers tells us that for large enough $N$, the scores are going to be roughly $H(p,q) = N$ and $H(p, q') \approx 1.03 \cdot N$. Both crossentropies are shifted by the entropy of the underlying process which is $N$. So we are penalizing both experts for something they can't know. But that's OK since both values are shifted by the same amount, so if we use the score to e.g. select the best experts, it behaves the same as using the ideal KL score.
 
-We will not bother computing the cross entropy score for the example data. The reason is that, as we have seen, our score is only reasonable if we can argue via the law of large numbers that the value we compute is going to be close to the crossentropy $H(p,q)$. But that's very fishy assumption for just 8 predictions, especially if some of the events happen with very small or very large probability.
+We will not bother computing the cross entropy score for the example data. The reason is that, as we have seen, our score is only reasonable if we can argue via the law of large numbers that the value we compute is going to be close to the cross-entropy $H(p,q)$. But that's very fishy assumption for just 8 predictions, especially if some of the events happen with very small or very large probability.
 </Block>
+</Expand>
 
 ## Coding Theory Intuitions <a id="coding-theory-intuitions"></a>
 
@@ -392,7 +324,7 @@ But that's not a big deal. If you allow codes that don't necessarily map single 
 
 We are getting comfortable with KL divergence! A quick recap:
 
-![Formula for KL divergence](02-crossentropy/crossentropy_entropy_formula.png)
+![Formula for KL divergence](02-cross-entropy/cross-entropy_entropy_formula.png)
 
 If it is really the right way to measure how well a model fits the truth, it sure seems that making it small is a good way to build good models!? [Let's see in the next chapter](03-minimizing)!
 
