@@ -120,7 +120,7 @@ If we believe that the mean is an important parameter of a distribution (as we u
 
 This kind of distribution is known under many names, depending on what is the underlying ground set over which we define it. Let's see some cases:
 
-#### Bernoulli distribution & Logits
+#### Bernoulli distribution & Logits <a id = "logit"></a>
 
 If we are talking about distributions over $\{0, 1\}$, then the shape from ?? takes form
 
@@ -174,6 +174,20 @@ There are also application for higher temperatures. For example, if you want to 
 Notice how softmax allowed us to elegantly solve a problem that's so fuzzy that it's otherwise pretty hard to approach -- given a probability distribution $p$, how do we find distributions $p'$ that preserve as much as possible from $p$, yet they are more or less concentrated on the most probable values. 
 
 TODO playing-with-temperature-widget
+
+
+Example: Modelling in economy (rational inattention)
+
+![Types of pasta -- from https://suttachaibar.com/15-types-of-pasta-shapes-to-know-and-love/](04-max_entropy/pasta.webp)
+
+Theoretical economy tries to understand setups like this: Say there are $k$ replacable products competing on the market -- perhaps different shapes of pasta. We can observe how well each shape sells, but to make some conclusions out of this data, we should have some kind of model of them. The basic model of rational customers is that each product $i$ has a certain utility $a_i$ and each customer simply buys the product with highest utility. The problem of this model is that it predicts that people should keep buying a single product! (E.g. everybody buys spaghetti, nobody buys anything else).
+
+How should we adapt the model to allow nontrivial probability distributions? Well, we have seen that the natural soft generalization of taking maximum is the softmax function, and this is indeed the function that economists use to model this kind of situation. There are more possible justifications for using this more complicated model -- each customer has slightly different utility function, doesn't like repretition in her diet, etc. The parameter $\lambda$ in this model (the inverse temperature) then measures the strength of all these aspects.
+
+However, it should be said that one of the popular interpretations of softmax in behavioral economy is more sophisticated than "softmax seems natural, so let's go with it, whatever". The approach of the theory of rational inattention is that even if all agents are perfectly rational and have same utilities, they still have to spend a nontrivial amount of time comparing the different options and estimating their utility (at this point stop thinking about pasta and think about buying a flat/car instead). If you think about customers as solving an optimization problem that takes this into account, you end up with a type of optimization problem similar to [our derivation of max-entropy distributions](); under reasonable<Footnote>I.e., I forgot them. </Footnote> circumstances you can derive the softmax distribution as the distribution of observed purchases.
+
+
+
 
 #### Exponential and Geometrical distribution
 
