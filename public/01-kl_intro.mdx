@@ -6,7 +6,9 @@ In this chapter, we will explain what KL divergence is and how it all goes back 
 
 Here's what you need to know about KL divergence. <Footnote>KL stands for Kullback and Leibler, two clever guys who defined it in 1950's, very soon after Claude Shannon's [super important paper](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication) in which he defined a closely related notion of entropy.</Footnote>
 
-<div>KL divergence measures how well a distribution $p$ is fitted by a model distribution $q$.</div>
+<Block>
+KL divergence measures how well a distribution $p$ is fitted by a model distribution $q$.
+</Block>
 
 This means that the function is something like a distance function measuring how two distributions are close to each other.
 
@@ -32,23 +34,23 @@ To gain evidence, you flip a coin; let's say you got Heads. This is an evidence 
 
 Bayes' theorem can do that. The formula for it is typically written down as follows:
 
-<Math displayMode={true} math={'P(fair | flipped heads) = \\frac{P(flipped heads | fair) \\cdot P(fair)}{P(flipped heads)}'} />
+<Math displayMode={true} math='P(\textrm{fair} | \textrm{heads}) = \frac{P(\textrm{heads} | fair) \cdot P(\textrm{fair})}{P(\textrm{heads})}' />
 
-This is not rocket science -- if you multiply both sides by $P(flipped heads)$, both sides are just a different way of writing down the definition of $P(fair \cap flipped heads)$.
+This is not rocket science -- if you multiply both sides by $P(\textrm{heads})$, both sides are just a different way of writing down the definition of $P(\textrm{fair} \cap \textrm{heads})$.
 
 But I like to think of it a bit differently and in my head, I write it as this:
 
-<Math displayMode={true} math={'\\frac{P(fair | flipped heads)}{P(biased | flipped heads)} = \\frac{P(fair)}{P(biased)} \\cdot \\frac{P(flipped heads | fair)}{P(flipped heads | biased)}'} />
+<Math displayMode={true} math='\frac{P(\textrm{fair} | \textrm{heads})}{P(\textrm{biased} | \textrm{heads})} = \frac{P(\textrm{fair})}{P(\textrm{biased})} \cdot \frac{P(\textrm{heads} | fair)}{P(\textrm{heads} | biased)}' />
 
-You can check that the two formulas are the same by yourself. <Footnote>To see this, use the first formula both for $P(fair | flipped heads)$ and $P(biased | flipped heads)$, and divided them. </Footnote> To understand this rephrasing, it's good to think in terms of [odds](https://en.wikipedia.org/wiki/Odds). This is how people in the gambling industry sometimes use probabilities: instead of saying $1/3$ probability of this and $2/3$ of that, they say that odds are 1:2. Odds are like probabilities, but they don't sum up to one -- odds 1:2 are the same as 2:4. This way of thinking is actually very useful: Often, you don't want to bother thinking about how to normalize probabilities, so you just think in terms of odds.
+You can check that the two formulas are the same by yourself. <Footnote>To see this, use the first formula both for $P(\textrm{fair} | \textrm{heads})$ and $P(\textrm{biased} | \textrm{heads})$, and divided them. </Footnote> To understand this rephrasing, it's good to think in terms of [odds](https://en.wikipedia.org/wiki/Odds). This is how people in the gambling industry sometimes use probabilities: instead of saying $1/3$ probability of this and $2/3$ of that, they say that odds are 1:2. Odds are like probabilities, but they don't sum up to one -- odds 1:2 are the same as 2:4. This way of thinking is actually very useful: Often, you don't want to bother thinking about how to normalize probabilities, so you just think in terms of odds.
 
 Using odds, the Bayes' formula from equation ?? now makes a plenty of sense! You just have to multiply two ratios:
 
 ![Bayes' theorem using odds](01-kl_intro/bayes_theorem.png)
 
-That is, to compute the posterior odds, we multiply two things. First, the prior odds $P(fair) : P(biased)$. Second, the ratio $P(flipped heads | fair) : P(flipped heads | biased)$ of how likely heads are under each hypothesis. Probability expressions of the type $P(something happens | hypothesis)$ are called _likelihoods_, so this is also called the likelihood ratio.
+That is, to compute the posterior odds, we multiply two things. First, the prior odds $P(\textrm{fair}) : P(\textrm{biased})$. Second, the ratio $P(\textrm{heads} | fair) : P(\textrm{heads} | biased)$ of how likely heads are under each hypothesis. Probability expressions of the type $P(something happens | hypothesis)$ are called _likelihoods_, so this is also called the likelihood ratio.
 
-Bayes' theorem simply says we should do the simplest thing possible with the two relevant ratios -- multiply them -- to arrive at the posterior odds $P(fair | flipped heads) : P(biased | flipped heads)$ .
+Bayes' theorem simply says we should do the simplest thing possible with the two relevant ratios -- multiply them -- to arrive at the posterior odds $P(\textrm{fair} | \textrm{heads}) : P(\textrm{biased} | \textrm{heads})$ .
 
 ## Go forth and multiply
 
