@@ -1,12 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import "katex/dist/katex.min.css";
 import { InlineMath, BlockMath } from "react-katex";
 
 const EvidenceAccumulationSimulator = () => {
   // Parameters for the simulation
-  const [trueHeadsProb, setTrueHeadsProb] = useState(0.7); // True probability of heads
+  const [trueHeadsProb, setTrueHeadsProb] = useState(0.4); // True probability of heads
   const [modelHeadsProb, setModelHeadsProb] = useState(0.5); // Model probability of heads
   // Removed prior odds state
   const [numFlips, setNumFlips] = useState(100); // Number of coin flips to simulate
@@ -271,15 +270,15 @@ const EvidenceAccumulationSimulator = () => {
 
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={simulationData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <LineChart data={simulationData} margin={{ top: 5, right: 30, left: 20, bottom: 35 }}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="flip" label={{ value: "Number of Coin Flips" }} domain={[0, numFlips]} />
-              <YAxis label={{ value: "Evidence (bits)", angle: -90 }} />
-              <Tooltip
-                formatter={(value: number) =>
-                  `${value.toFixed(2)} ${React.createElement(InlineMath, { math: "\\text{bits}" })}`
-                }
+              <XAxis
+                dataKey="flip"
+                label={{ value: "Number of Coin Flips", position: "insideBottom", offset: -10 }}
+                domain={[0, numFlips]}
               />
+              <YAxis label={{ value: "Evidence (bits)", angle: -90 }} />
+              <Tooltip formatter={(value: number) => `${value.toFixed(2)} bits`} />
               <Legend />
               <Line
                 type="monotone"
@@ -309,8 +308,8 @@ const EvidenceAccumulationSimulator = () => {
         <h3 className="font-semibold mb-2">Try yourself:</h3>
         <ul className="list-disc pl-5 space-y-1 text-sm">
           <li>
-            Check that as you flip the coin more times, the accumulated evidence tends to grow at a rate equal to the KL
-            divergence.
+            Check that as you keep flipping the coin many times, the accumulated evidence tends to grow at a rate equal
+            to the KL divergence.
           </li>
           <li>
             Try very similar true/model probabilities, e.g. $50\%$ vs $51\%$, to get some intuition about how long it
@@ -318,8 +317,8 @@ const EvidenceAccumulationSimulator = () => {
           </li>
           <li>What happens if the true and model probability are the same?</li>
           <li>
-            What happens if the truth is 50/50 and the model is 1/99? What happens in the opposite case? Try to guess in
-            advance, in which case KL is higher.
+            Consider two cases: the truth is 50/50 and the model is 1/99, and the truth is 1/99 and the model is 50/50.
+            Which case corresponds to higher KL divergence?
           </li>
         </ul>
       </div>
