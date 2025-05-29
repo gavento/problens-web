@@ -24,9 +24,9 @@ I will try to explain this more precisely in this chapter.
 
 ## Bayes' theorem
 
-Before we dive into our KL formula, a short recap of Bayes' theorem. This is a theorem about how to change your probabilities in face of evidence. Here's an example:
+Before we dive into our KL formula, here's a short recap of Bayes' theorem. This is a theorem about how to change your probability distributions in face of evidence. Here's an example:
 
-You have a coin which may or may not be biased. For simplicity, let's say there are only two options: either the coins is fair -- heads/tails with probabilities 50\%, 50\% -- or it gives heads with 40\% and otherwise tails with 60\% probability.
+You have a coin which may or may not be biased. For simplicity, let's say there are only two options: either the coins is fair -- heads/tails with probabilities 50\%, 50\% -- or it gives heads with 40\% and tails otherwise.
 
 To apply Bayes' theorem, you need a _prior_ on how likely each possibility is. Let's say we choose 50\% fair, and 50\% biased.
 
@@ -74,7 +74,7 @@ We really just rewrote all numbers as $2$ to the power of something, so that mul
 
 In fact, let's remove all the clutter and just write down the important stuff:
 
-![Surprisal](01-kl_intro/repeated_bayes_surprisal.png)
+![Surprisal](01-kl_intro/repeated_bayes_surprisals.png)
 
 Basically, instead of writing down probabilities $p$ in each cell, we wrote down $\log 1/p$ instead. The formula $\log 1/p$ is called a _[surprisal](https://en.wikipedia.org/wiki/Information_content)_. That's because the intuition behind this number is that whenever an event happens, this tells you how surprised you are: If you flip heads and thought the probability of that is $1\%$, you are more surprised ($\log 1/0.01 \approx 6.6$) then if you though the probability is $50\%$ ($\log 1/0.5 = 1$).
 
@@ -150,9 +150,9 @@ This makes sense, you can never distinguish the truth from the truth. 🤷
 
 Even better, KL divergence is always nonnegative. We have not proved that, but I think we got a pretty strong intuition that if it were negative, something would be really, really messed up. Just imagine that you have two distributions $p$ and $q$, but as you keep sampling from $p$, you gradually keep believing more and more that the distribuition actually is ... $q$? We'll discuss the nonnegativity in the next chapter.
 
-## Application: How to train your LLM <a id="application-training-smaller-models"></a>
+<Expand headline = "Riddle: How to train your LLM" > <a id="application-training-smaller-models"></a>
 
-Let's solve [one of our riddles](00-introduction/deep-learning) from the introduction. We asked about how to train a smaller language model to mimic a larger one like GPT-4. In particular, we have a (true) distribution $p$ and a (model) distribution $q$ and want to come up with a function that measures how well the model fits the truth.
+Let's discuss [one of our riddles](00-introduction/deep-learning) from the introduction. We asked about how to train a smaller language model to mimic a larger one like GPT-4. In particular, we have a (true) distribution $p$ and a (model) distribution $q$ and want to come up with a function that measures how well the model fits the truth.
 
 That's exactly what KL divergence measures!
 
@@ -162,10 +162,12 @@ What about other options, like minimizing the $\ell_1$ norm, i.e., $\sum |p_i - 
 2. $p_i = 0.01, q_i = 0.0$
 
 The standard geometrical norms ($\ell_1, \ell_2$) treat both of these situations as having similar magnitude of error. KL, though, understands that while in the first situation, the model approximates the truth pretty well, the second situation is total failure!
+</Expand>
 
-## Application: Measuring distance from independence <a id="information-theory"></a>
+<Expand headline = "Riddle: Measuring distance from independence">
+<a id="information-theory"></a>
 
-Let's solve one of our riddles: [How to measure the distance from independence](00-introduction/information-theory)?
+Let's come back to one of our riddles: [How to measure the distance from independence](00-introduction/information-theory)?
 
 Remember, we have three possible joint distributions:
 
@@ -188,6 +190,8 @@ $$D(table 3, independent table) \approx 0.21$$
 In particular, the second table is "closest" to being independent.
 
 This computation can be done whenever you have a joint distribution $(p_1, p_2)$. The KL divergence between $(p_1, p_2)$ and the independent distribution $p_1 \otimes p_2$ is called [mutual information](http://en.wikipedia.org/wiki/Mutual_information) between $p_1$ and $p_2$ and it's a crucial quantity in e.g. information and coding theory. You should think about it as the most natural function that measures how dependent two distributions $p_1$ and $p_2$ are. More technically, it tells you how many bits on average you learn about $p_2$ if you learn the outcome of $p_1$ <Footnote> Or, symmetrically, how many bits you learn about $p_1$ if you learn the outcome of $p_2$. </Footnote>
+
+</Expand>
 
 ## What's next?
 

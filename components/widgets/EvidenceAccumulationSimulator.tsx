@@ -104,14 +104,14 @@ const EvidenceAccumulationSimulator = () => {
       <h4 className="text-center">Evidence Accumulation Simulator</h4>
 
       <div className="">
-        <p className="">
+        {/*<p className="">
           This simulator demonstrates how evidence accumulates when comparing two competing hypotheses about a coin. The
           blue line shows the actual accumulated evidence (in bits) favoring the true model, while the dashed red line
           shows the expected accumulation based on KL divergence.
-        </p>
+        </p>*/}
 
         <div className="">
-          <div className="font-semibold mb-2">Model Parameters</div>
+          {/*<div className="font-semibold mb-2">Model Parameters</div>*/}
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -147,7 +147,7 @@ const EvidenceAccumulationSimulator = () => {
           </div>
 
           {/* <p className="font-medium mb-1">Current Distributions:</p> */}
-          <div className="mb-2">
+          {/*          <div className="mb-2">
             <span className="font-medium">
               True distribution (<InlineMath math="p" />
               ):
@@ -160,18 +160,17 @@ const EvidenceAccumulationSimulator = () => {
               ):
             </span>{" "}
             [Heads: {modelHeadsProb.toFixed(2)}, Tails: {(1 - modelHeadsProb).toFixed(2)}]
-          </div>
+          </div>*/}
           <div>
             {/* <span className="font-medium">KL Divergence:</span> */}
             <div className="">
               <BlockMath
                 math={`\\begin{align*}
-                  D(p||q) &= p(H)\\log_2\\left(\\frac{p(H)}{q(H)}\\right) + p(T)\\log_2\\left(\\frac{p(T)}{q(T)}\\right) \\\\
-                  &= ${trueHeadsProb.toFixed(2)}\\log_2\\left(\\frac{${trueHeadsProb.toFixed(
-                  2
-                )}}{${modelHeadsProb.toFixed(2)}}\\right) + ${(1 - trueHeadsProb).toFixed(2)}\\log_2\\left(\\frac{${(
-                  1 - trueHeadsProb
-                ).toFixed(2)}}{${(1 - modelHeadsProb).toFixed(2)}}\\right) \\\\
+                  D(p, q) &= ${trueHeadsProb.toFixed(2)}\\log_2\\left(\\frac{${trueHeadsProb.toFixed(
+                    2,
+                  )}}{${modelHeadsProb.toFixed(2)}}\\right) + ${(1 - trueHeadsProb).toFixed(2)}\\log_2\\left(\\frac{${(
+                    1 - trueHeadsProb
+                  ).toFixed(2)}}{${(1 - modelHeadsProb).toFixed(2)}}\\right) \\\\
                   &= ${klDivergence.toFixed(4)}\\text{ bits per flip}
                 \\end{align*}`}
               />
