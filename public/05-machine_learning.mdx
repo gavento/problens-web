@@ -142,10 +142,10 @@ How do we start? The first item on our todo list is to come up with a probabilis
 
 Now, the encoder and the decoder represents two ways in which we can factorise the joint distribution. 
 The encoder corresponds to the factorization $p(x,y) = p(x) \cdot p(y | x)$: First sample a random image and then encode it to the latent space. More precisely, we can model $p(x,y)$ as 
-<Math displayMode={true} math="p(x,y) = N(Enc_\mu(x), Enc_{\sigma^2}(x))">
+<Math displayMode={true} math="p(x,y) = N(Enc_\mu(x), Enc_{\sigma^2}(x))"/>
 
 The decoder gives us a second way to model the data where we first sample a random latent-space representation and then decode it to the image -- i.e. $p(x,y) = p(y) \cdot p(x|y)$. We have to be more creative though to turn the decoder into this probabilistic model. For start, we don't know the marginal distribution $p(y)$; so we will just model it with a gaussian -- $q(y) = N(0, I)$ ($I$ stands for unit matrix). How should we model $p(x|y)$? Using $Dec(y)$ is a good start, but we should also add some randomness, so let's add the gaussian noise $N(0,1)$ to every pixel of the final image. We have arrived for a different probabilistic model of $p(x,y)$:
-<Math displayMode={true} math="p(x,y) = N(Dec(N(0, I)), I)">
+<Math displayMode={true} math="p(x,y) = N(Dec(N(0, I)), I)"/>
 
 
 

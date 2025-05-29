@@ -17,7 +17,7 @@ The correct answer is about 1 000 000. That's already a nontrivial proportion of
 The question is: why $1/\epsilon^2$? We'll explore this in later sections. {/* KL divergence measures how well one distribution matches another, which is why understanding its value for distributions (50%, 50%) and (50%+$\varepsilon$, 50%-$\varepsilon$) is going to shed a lot of light on this question! We will also use this as a jumping bridge to explain a bit more on how KL divergence is crucial in statistics. */}
 </Expand>
 
-## How S&P looks like <a id="financial-mathematics"></a>
+<Expand headline="How S&P looks like"> <a id="financial-mathematics"></a>
 
 ![Financial Data Distribution](00-introduction/sap_graph.png)
 
@@ -42,8 +42,9 @@ So how come that as we keep zooming out, the histogram gets more and more "point
 There are two ways for how this connects to KL divergence. First of all, KL divergence measures how well a ground truth distribution (empirical data we collected) is fitted by a model (normal or Laplace distribution), so you can use it to make claims such as "for more than ?? months, Laplace fits the data better than normal".
 
 Second, we will use KL divergence to understand a deep principle in probability called maximum entropy principle. This will help us gain a lot of intuition for what both normal and Laplace distributions stand for.
+</Expand>
 
-## Average foot <a id="statistics"></a>
+<Expand headline="Average foot"> <a id="statistics"></a>
 
 ![Determining the length of the foot in 1522](00-introduction/rod.png)
 
@@ -63,8 +64,10 @@ Another trick question since all formulas are correct! Or a bit more precisely, 
 The coefficient $1/(n-1)$ corresponds to the so-called unbiased estimate, $1/n$ gives the maximum likelihood estimate, and $1/(n+1)$ minimizes the mean squared error between the guess and the correct value.
 
 But out of all these philosophies of how to estimate values, only one of them -- maximum likelihood estimation -- became the main workhorse of machine learning. Using KL, we will see why the maximum likelihood philosophy stands out.
+</Expand>
 
-## How to train your LLM <a id="deep-learning"></a>
+
+<Expand headline="How to train your LLM"> <a id="deep-learning"></a>
 
 [TODO image: "my name is A", two distributions]
 
@@ -86,8 +89,10 @@ There is nothing wrong with the first two functions, in practice, people usually
 Here's a widget with two distributions and all three loss functions. Try to make KL infinitely large!
 
 [TODO widget]
+</Expand>
 
-## How good are your predictions? <a id="predictions"></a>
+
+<Expand headline="How good are your predictions?"> <a id="predictions"></a>
 
 It would be great to know what the future holds—or at least to know someone who does. To this end, you have gathered a bunch of experts and asked them to assign probabilities to a list of events for the coming year. Each expert provides an estimate for each event.
 When the year ends, you know for each event whether it occurred or not.
@@ -103,8 +108,10 @@ The question is, which expert is the best one?
 Answer: It depends! In practice, people use one of two scoring rules, the Brier score or log-score. The two scores penalize you differently if you claim that an event probably won't happen, but it does -- see e.g. the ?? column. Brier does not care much whether your guess was 1%, 0.1%, or even 0% but log score does. In fact, if you estimate that an event has 0% probability and then it happens, log-score says you are infinitely bad!
 
 We will see how KL divergence explains why log-score is natural and what it stands for.
+</Expand>
 
-## Distance from independence <a id="information-theory"></a>
+
+<Expand headline="Distance from independence"> <a id="information-theory"></a>
 
 Independence is one of the most important probability concepts. Here's a recap: think of two distributions $p_1$ and $p_2$. Maybe $p_1$ describes the weather on a given day -- the options are ☀️, ☁️, and $p_2$ describes how I commute to work -- it's one of 🚶‍♀️, 🚲, 🚌. A joint distribution is a table where we put a probability for each pair of options. For example, here are three possible joint distributions for three different people:
 
@@ -123,8 +130,10 @@ Which of our three tables is the "closest" to being independent?
 3. Table 3
 
 [We will see](01-kl_intro/information-theory) that this can be measured using a so-called mutual information, a notion which is super important in the field of information theory and which is just a special case of KL divergence.
+</Expand>
 
-## Machine Learning mess <a id="machine-learning"></a>
+
+<Expand headline="Machine Learning mess"> <a id="machine-learning"></a>
 
 When you first encounter machine learning, it seems like horrible mess, full of ad-hoc tricks and optimization problems. For example, here are a few machine learning tools you learn in the first few Machine-Learning-101 lectures, and what optimization they correspond to:
 
@@ -139,8 +148,10 @@ E_{z \sim p_x}[||x-D(z)||^2] + \sum_{j = 1}^d (d\cdot \sigma_j^2(x) + \mu_j^2 - 
 " />
 
 Although these functions look horrible, we will see what they correspond to and how they can be derived using KL divergence.
+</Expand>
 
-## How to get rich <a id = "get-rich"></a>
+
+<Expand headline="How to get rich"> <a id = "get-rich"></a>
 
 Here's a riddle that motivates a surprising number of recent algorithms in computer science and machine learning. Let's say that we want to get rich by investing at the stock market. Fortunately, there are $n$ investors that are willing to share their advice with us: Each day $t$, they give us some advice, and at the end of the day, we learn how good the advice was -- for the $i$-th expert, we will get to know her loss $\ell_i^{(t)}$ <Footnote>If this number is positive, the advice was bad, if it is negative, the advice was good. </Footnote>
 
@@ -159,8 +170,10 @@ Answer 2
 Answer 3
 
 Although all strategies are reasonable, the one that turns out to be the most robust and broadly applicable is 2. The algorithm is called multiplicative weights update and its suspiciously similar to gradient descent. We will understand the connection between the two algorithms using KL divergence.
+</Expand>
 
-## Understanding this XKCD joke <a id = "xkcd"></a>
+
+<Expand headline="Understanding this XKCD joke"> <a id = "xkcd"></a>
 
 ![Are the odds in our favor?](00-introduction/countdown.png)
 
@@ -169,13 +182,19 @@ So are the odds in our favor?
 Yes
 No
 depends
+</Expand>
 
-## How large is Wikipedia?
+
+<Expand headline="How large is Wikipedia?">
+</Expand>
 
 
-### Random Pi Program <a id="random-pi-program"></a>
+
+<Expand headline="Random Pi Program"> <a id="random-pi-program"></a>
 
 Here's a riddle: Consider the set of all C programs of length 1000 characters (i.e., the file has 1000 bytes if saved in ASCII) that print the first million digits of $\pi$. Let's sample one such program uniformly at random. How would it probably look?
+</Expand>
+
 
 
 
