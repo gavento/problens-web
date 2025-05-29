@@ -103,7 +103,7 @@ bits of evidence towards the true hypothesis. This number is called KL divergenc
 
 What should we take from this number? It means that on average, we need about 33 flips to gain one bit of evidence. So, if we started with a prior of $2:1$ towards the coin being fair, after about 33 flips we will be about $1:1$. After another 33 flips, we will be $2:1$ towards the coin being biased. Then $4:1$ after another 33 flips and so on.
 
-The actual odds that our Bayesian hero keeps computing are going to fluctuate around this expected behavior. However, due to the law of large numbers, we know that as the number of flips $N$ gets larger, with high probability, the total number of accumulated bits is going to be around $0.03 \cdot N$. <Footnote> More precisely, it's around $0.03N \pm O(\sqrt{N})$. The fundamental reason why we took the logarithm of probabilities and keep talking about bits is that the law of large numbers holds if you keep summing stuff, but not if you keep multiplying stuff. </Footnote>
+The actual odds that our Bayesian hero keeps computing are going to fluctuate around this expected behavior. However, due to the law of large numbers, we know that as the number of flips $N$ gets larger, with high probability, the total number of accumulated bits is going to be around $0.03 \cdot N$. <Footnote> More precisely, it's around $0.03N \pm O(\sqrt{N})$. The fundamental reason why we took the logarithm of probabilities and why we talk about bits is that the law of large numbers holds if you keep summing stuff, but not if you keep multiplying stuff. </Footnote>
 
 Try what happens yourself in the widget!
 
@@ -111,7 +111,9 @@ Try what happens yourself in the widget!
 
 ## KL divergence, in general
 
-KL is simply the general formula for expected accumulated evidence. In the general case, you have two distributions $p$ and $q$. Let's say $p$ is the truth. Whenever we see the $i$-th outcome, we compare the two likelihoods of this outcome, $p_i$ and $q_i$, and update our posterior. Since we took the logarithm, this means adding $\log p_i$ bits to column counting the total evidence towards the truth, and $\log q_i$ bits to the other column. <Footnote> Of course, although I use $p$ to denote the truth, the Bayesian reasoner that applies the rules does not what the truth is. </Footnote>
+KL divergence is simply the general formula for expected accumulated evidence. In the general case, let's say there are two distributions $p$ and $q$ where $p$ describes the true behavior of a random experiment. 
+
+We can repeat the experiment and play the Baysian game: Whenever we see the $i$-th outcome, we compare the two likelihoods of this outcome, $p_i$ and $q_i$, and update our posterior. In practice, this means adding $\log 1/p_i$ bits to the total surprise of $p$, and $\log 1/q_i$ bits to the total surprise of $q$. 
 
 On average, each sample from the true distribution $p$ gives us
 
@@ -121,34 +123,11 @@ $$
 
 bits of evidence towards the truth.
 
-In case this number is smaller than $1$, you can think intuitively of $1/D(p,q)$ as "how many samples are needed to gain one bit of evidence towards the truth". Here, one bit of evidence means that true hypothesis got multiplied by $2$ in your posterior odds. This is not the same as saying that your posterior probability got multiplied by $2$. But it is the case that if you have unbalanced odds like $1:1000$, getting a bit of evidence towards the first hypothesis (it's now 2:1000) is almost the same as multiplying the corresponding probability by 2. And getting a bit of evidence towards the second hypothesis (it's now 1:2000) is almost the same as dividing the probability of the first hypothesis by 2.
+In case this number is smaller than $1$, you can think intuitively of $1/D(p,q)$ as "how many samples are needed to gain one bit of evidence towards the truth". Here, one bit of evidence means that the posterior odds of the true hypothesis got multiplied by $2$. <Footnote>This is not the same as saying that your posterior probability got multiplied by $2$: For example changing $1:1$ to $2:1$ means that you go from 50% to 66.7%. But it is the case that if you have unbalanced odds like $1:1000$, getting a bit of evidence towards the first hypothesis (change to 2:1000) is almost the same as multiplying the corresponding probability by 2. And getting a bit of evidence towards the second hypothesis (it's now 1:2000) is almost the same as dividing the probability of the first hypothesis by 2. The upshot is that the probability of the truth goes up exponentially fast, until it's roughly the same as the probability of the other hypothesis. After that, the probability of the other hypothesis goes down exponentially fast. </Footnote>
 
-Notice how KL divergence is about the evidence, not the prior. It tells you the rate (speed) of how your prior shifts, regardless of where you started.
-I am mentioning this because if you like to divide statistics into Bayesian and frequentist one (don't worry if you don't know what that means), our framing might suggest that we are firmly on the Bayesian-statistics ground. That's not the case, KL does not care about our petty divisions and is useful in both approaches.
+Notice how KL divergence is about the evidence, not the prior. It tells us the rate (speed) of how our prior shifts, regardless of where we started.
+I am mentioning this because if you like to divide statistics into Bayesian and frequentist one (don't worry if you don't know what that means), our Bayes-namedropping might suggest that we are firmly on the Bayesian-statistics ground. That's not the case, KL does not care about our petty divisions and is useful in both approaches to statistics. 
 
-## Asymmetry
-
-It's important to understand that the KL formula is not symmetrical -- in general, we don't have $D(p,q) = D(q,p)$. This is sometimes seen as a drawback, especially when you compare KL with (symmetrical) distance function like the $\ell_1$ or $\ell_2$ metric<Footnote> <Math math='d_1(p,q) = \sum_{i = 1}^n |p_i - q_i|'/>, <Math math='d_2(p,q) = \sqrt{\sum_{i = 1}^n (p_i - q_i)^2}'/></Footnote>. I want to stress that the asymmetry is by design! KL measures how well a distribution $p$ is fitted by a model $q$. This is an asymmetrical notion, so we need an asymetrical formula, nothing to be ashamed for here.
-
-In fact, the word _divergence_ is used for things like KL that behave kind of like distances but are not really symmetrical. <Footnote>More on that in [one of the last chapters](06-algorithms)</Footnote>
-
-One important special case of the asymetry is this: Imagine that the true probability distribution is 50\%/50\% (i.e., fair coin), and the model is $100\% / 0\%$. In that case, KL divergence is infinite! That's because if we flip a coin, we have 50\% chance of flipping tails, which the model distribution says should never happen. This means that we have 50\% chance of gaining infinitely many bits of information (whatever our prior on fair/biased was, the posterior should now be 100\% fair and 0\% biased) and hence the divergence is infinite.
-
-On the other hand, if the truth is $100\% / 0\%$ and the model is $50\% / 50\%$, then each flip we are going to flip heads and gain one bit of information towards the coin being fair. One bit is a lot and our probability of the coin being fair goes down exponentially fast, but it's never zero. We simply have to account for the (exponentially) unlikely event that even though the coin is fair, all flips happened to be heads.
-
-## Wait a minute -- Can KL be negative?
-
-If you plug in the same distribution twice into KL, you get
-
-$$
-D(p, p) = \sum_{i = 1}^n p_i \cdot \log \frac{p_i}{p_i} = 0
-$$
-
-because $\log 1 = 0$.
-
-This makes sense, you can never distinguish the truth from the truth. 🤷
-
-Even better, KL divergence is always nonnegative. We have not proved that, but I think we got a pretty strong intuition that if it were negative, something would be really, really messed up. Just imagine that you have two distributions $p$ and $q$, but as you keep sampling from $p$, you gradually keep believing more and more that the distribuition actually is ... $q$? We'll discuss the nonnegativity in the next chapter.
 
 <Expand headline = "Riddle: How to train your LLM" > <a id="application-training-smaller-models"></a>
 

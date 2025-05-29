@@ -1,10 +1,65 @@
-# Entropy & Crossentropy
+# KL properties & (Cross-)entropy
 
-In this chapter, we will see how KL divergence connects with entropy and crossentropy. It's not rocket science:
+In this chapter, we will discuss a few nice algebraic properties of KL divergence. Also, it's often very useful to split the formula into two terms called _crossentropy_ and _entropy_. 
 
-![Formula for KL divergence](02-crossentropy/crossentropy_entropy_formula.png)
 
 We will also go through a few basic properties that these things have.
+
+## Properties of KL divergence
+
+Let's go through several properties of KL divergence it's good to understand. Remember that KL divergence is algebraically defined like this:
+
+$$
+D(p,q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}
+$$
+
+KL divergence can be infinite: this happens whenever $q_i \not= 0$ and $p_i = 0$ for some $i$. We also use convention $0 \cdot \log 0/0 = 0$ so that KL is always a well-defined number or $+\infty$.
+
+## Asymmetry
+
+The KL formula is not symmetrical -- in general, we don't have $D(p,q) = D(q,p)$. This is sometimes seen as a drawback, especially when you compare KL with (symmetrical) distance function like the $\ell_1$ or $\ell_2$ metric<Footnote> <Math math='d_1(p,q) = \sum_{i = 1}^n |p_i - q_i|'/>, <Math math='d_2(p,q) = \sqrt{\sum_{i = 1}^n (p_i - q_i)^2}'/></Footnote>. I want to stress that the asymmetry is by design! KL measures how well a distribution $p$ is fitted by a model $q$. This is an asymmetrical notion, so we need an asymetrical formula, nothing to be ashamed for here.
+
+In fact, the word _divergence_ is used for things like KL that behave kind of like distances but are not really symmetrical. <Footnote>More on that in [one of the last chapters](06-algorithms)</Footnote>
+
+<Expand headline = "Example">
+Imagine that the true probability distribution is 50\%/50\% (i.e., fair coin), and the model is $100\% / 0\%$. In that case, KL divergence is infinite. That's because if we flip a coin, we have 50\% chance of flipping tails, which the model distribution says should never happen. This means that we have 50\% chance of gaining infinitely many bits of information (whatever our prior on fair/biased was, the posterior should now be 100\% fair and 0\% biased) and hence the divergence is infinite.
+
+On the other hand, if the truth is $100\% / 0\%$ and the model is $50\% / 50\%$, then $D(p,q) = 1$. That's because each flip, we are going to flip heads and thus gain one bit of evidence towards the coin being fair. One bit is a lot and our probability of the coin being fair goes down really fast, but it's never zero. We simply have to account for the (exponentially unlikely) event that even if the coin is fair, all flips may have happenned to be heads.
+</Expand>
+
+## Nonnegativity
+
+If you plug in the same distribution twice into KL, you get
+
+$$
+D(p, p) = \sum_{i = 1}^n p_i \cdot \log \frac{p_i}{p_i} = 0
+$$
+
+because $\log 1 = 0$.
+This makes sense, you can never distinguish the truth from the truth. 🤷
+
+Even better, KL divergence is always nonnegative. I think we got a pretty strong intuition why in the previous chapter. Just imagine that you have two distributions $p$ and $q$, but as you keep sampling from $p$, you gradually keep believing more and more that the distribuition actually is ... $q$? The world would be really, really messed up in that case! Feel free to check the formal proof below. 
+
+
+<Expand headline="Proof of nonnegativity">
+To prove that for any $p,q$ we have (I have used the natural algorithm to make it a bit shorter)
+
+$$
+D(p,q) =  \sum_{i = 1}^n p_i \cdot \ln \frac{p_i}{q_i}  \ge 0,
+$$
+
+we will estimate the expression $\ln \frac{p_i}{q_i}$ inside the summation. Since we already know that the inequality is tight if all $p_i = q_i$, we should choose an estimate of logarithm which is tight around 1. The best approximation of logarithm around $1$ is $\ln (1+x) \le x$. We can use it like this:
+
+$$
+-D(p,q)
+= \sum_{i = 1}^n p_i \cdot \ln \frac{q_i}{p_i}
+\le \sum_{i = 1}^n p_i \cdot  \left( \frac{q_i}{p_i} - 1 \right)
+= \sum_{i = 1}^n q_i - p_i
+= 1 - 1 = 0
+$$
+
+</Expand>
+
 
 ## Relative entropy = Crossentropy - Entropy
 
@@ -113,24 +168,6 @@ $$
 D(p,q) \ge 0
 $$
 
-<Expand headline="Proof of nonnegativity">
-To prove that for any $p,q$ we have (I have used the natural algorithm to make it a bit shorter)
-
-$$
-D(p,q) =  \sum_{i = 1}^n p_i \cdot \ln \frac{p_i}{q_i}  \ge 0,
-$$
-
-we will estimate the expression $\ln \frac{p_i}{q_i}$ inside the summation. Since we already know that the inequality is tight if all $p_i = q_i$, we should choose an estimate of logarithm which is tight around 1. The best approximation of logarithm around $1$ is $\ln (1+x) \le x$. We can use it like this:
-
-$$
--D(p,q)
-= \sum_{i = 1}^n p_i \cdot \ln \frac{q_i}{p_i}
-\le \sum_{i = 1}^n p_i \cdot  \left( \frac{q_i}{p_i} - 1 \right)
-= \sum_{i = 1}^n q_i - p_i
-= 1 - 1 = 0
-$$
-
-</Expand>
 Because $D(p,q) = H(p,q) - H(p)$, we can also view this fact as saying that the crossentropy $H(p,q)$ for fixed $p$ is minimized if we choose $q = p$. That is, our Bayesian friend adding surprisals is going to be surprised the least if her model matches the data.
 
 A bit stronger version of this fact is also called monotonicity
@@ -276,4 +313,11 @@ But that's not a big deal. If you allow codes that don't necessarily map single 
 
 ## Next Steps <a id="next-steps"></a>
 
-We are now familiar with how KL divergence works! If it is really the right way of how a model fits the truth, it sure seems that making it small is a good way to build good models!? [Let's see](03-minimizing)!
+We are getting comfortable with KL divergence! A quick recap:
+
+![Formula for KL divergence](02-crossentropy/crossentropy_entropy_formula.png)
+
+If it is really the right way to measure how well a model fits the truth, it sure seems that making it small is a good way to build good models!? [Let's see in the next chapter](03-minimizing)!
+
+
+

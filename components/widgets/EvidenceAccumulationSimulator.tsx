@@ -312,13 +312,13 @@ const EvidenceAccumulationSimulator = () => {
             to the KL divergence.
           </li>
           <li>
-            Try very similar true/model probabilities, e.g. $50\%$ vs $51\%$, to get some intuition about how long it
-            takes until the law of large numbers kicks in.
+            Try very similar true/model probabilities, e.g. 50% vs 51%, to get some intuition about how long it takes
+            until the law of large numbers kicks in.
           </li>
           <li>What happens if the true and model probability are the same?</li>
           <li>
-            Consider two cases: the truth is 50/50 and the model is 1/99, and the truth is 1/99 and the model is 50/50.
-            Which case corresponds to higher KL divergence?
+            Consider two cases: the truth is 50%/50% and the model is 1%/99%, and the truth is 1%/99% and the model is
+            50%/50%. Which case corresponds to higher KL divergence?
           </li>
         </ul>
       </div>
