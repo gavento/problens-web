@@ -151,8 +151,7 @@ First, a quick recap: In the [previous chapter](01-kl_intro), we've seen how KL 
 
 ![Surprisal](01-kl_intro/repeated_bayes_surprisals.png)
 
-Each cell in this table holds a value of type $\log 1/p$ that's also sometimes called the _surprisal_.
-
+Each cell in this table holds a value of type $\log 1/p$ called the surprisal.
 Last time, we have been parsing this table "row-by-row". That is, we always subtracted two surprisals to compute how much evidence we got towards one of the two hypotheses. The Bayesian reasoner simply keeps summing up all those surprisal differences.
 
 We can also try to understand the table "column-by-column". That is, the Bayesian reasoner can compute the total surprisal for both hypothesis, then convert those into the final posterior probability. This corresponds to rewriting the KL divergence as follows:
@@ -178,9 +177,9 @@ The two expressions on the right hand side are important. We will try to get som
     <dd>
     The term $H(p) = H(p, p) = \sum_{i = 1}^n p_i \log 1 / p_i$ is an important special case of cross-entropy called _entropy_. This is the best possible cross-entropy we can achieve for a distribution $p$ if we model it by $p$ itself.  
     
-    Intuitively, entropy is telling us how much suprise or uncertainty there is hidden inside $p$. For example, even if we know that we are flipping a fair coin, we still don't know which side it lands on, so there is something to learn about the outcome of the experiment. The entropy of the fair coin flip is $H((1/2, 1/2)) = 1$. 
+    Intuitively, entropy is telling us how much suprise or uncertainty there is hidden inside $p$. For example, even if we know that we are flipping a fair coin, we still don't know which side it lands on, so there is something to learn about the outcome of the experiment. The entropy of the fair coin flip is <Math math = "H(\{\textrm{H: }1/2, \textrm{T: }1/2\}) = 1" />. 
 
-    The entropy can get much smaller -- for example, $H((0.001, 0.999)) \approx 0.01$. That makes sense, there is not much average surprise if we keep flipping this coin! The entropy can go down all the way to zero, if the distribution has 100\% chance of giving one outcome. 
+    The entropy can get much smaller -- for example,<Math math = "H(\{\textrm{H: }0.001, \textrm{T: }0.999\}) = 0.01" />. That makes sense, there is not much average surprise if we keep flipping this coin! The entropy can go down all the way to zero, if the distribution has 100\% chance of giving one outcome. 
 
     On the other hand, the entropy can also get much larger than 1 bit. For example, the entropy of throwing a die is equal to $\log_2(6) \approx 2.6$ bits and in general, the entropy of a uniform distribution over $k$ options is $\log_2 k$. The uniform distribution also has the largest entropy among distributions with $k$ options. This again makes sense -- there's most uncertainty if all the options are possible.  
     </dd>
@@ -202,65 +201,64 @@ As the next application of KL divergence and cross-entropy, let's solve our [pre
 
 ### Idealized KL score
 
-To grade an expert's predictions, let $p$ denote the true probabilities of events and $q$ denote the expert's predicted probabilities. It sure sounds like a good idea to define the expert's score as:
+To grade an expert's predictions, let $p = (p_1, \dots, p_n)$ denote the true probabilities of the events happening and $q$ denote the expert's predicted probabilities. It sure sounds like a good idea to define the expert's score as:
 
 $$
-KL score = D(p,q)
+S_{KL}(q) = D(p,q)
 $$
 
-We will for simplicity assume that all the events are independent, where this simplifies to the following formula:
+We will for simplicity assume that all the $n$ events are independent, where this simplifies to the following formula:
 
 $$
-KL score = \sum_{i = 1}^n  \left(
+S_{KL}(q) = \sum_{i = 1}^n  \left(
     p_i\log\frac{p_i}{q_i} + (1-p_i)\log\frac{1-p_i}{1-q_i}
     \right)
 $$
 
+{/*
 For example, if we ask an expert about two independent events that happen with probabilities $30\%$ and 90\%, and she estimates the probabilities as $50\%$ and $80\%$, her score would be
 
 $$
-KL score = 0.3 \cdot \log 0.3/0.5 + 0.7 \cdot \log 0.7/0.5 \\
+S_{KL}(q) = 0.3 \cdot \log 0.3/0.5 + 0.7 \cdot \log 0.7/0.5 \\
 + 0.9 \cdot \log 0.9 / 0.8 + 0.1 \cdot 0.1 / 0.2
 \approx ??.
-$$
+$$*/}
 
-There's just one problem with our approach -- can you see it?
+There's one big problem with our approach -- can you see it?
 
 ### Cross-entropy score
 
-The problem is that when we are grading, we have typically absolutely no idea what the "true" probabilities are! <Footnote> We could now have a very long philosophical discussion about whether something like "true" probability even exists. Fortunately, nothing in this text really depends on these philosophical subtleties. </Footnote>
+The problem is that when we are grading, we have absolutely no idea what the "true" probabilities are! <Footnote> We could now have a very long philosophical discussion about whether something like "true" probability even exists. Fortunately, this is not very relevant now. </Footnote>
 
-The only fact we know is whether each event happenned or not. Fortunately, this also corresponds to a valid probability distribution $\hat{p}$ -- it's simply the case that $\hat{p}_i = 0$ or $\hat{p}_i = 1$ for each $i$.
+The only fact we know is whether each event happenned or not. This also corresponds to a valid empirical probability distribution $\hat{p}$ -- it's just the case that $\hat{p}_i = 0$ or $\hat{p}_i = 1$ for each $i$, i.e., this empirical distribution is supported on a single outcome that we observed.
 
-We can now define a new, feasible to compute, score function:
+What happens if we plug $\hat{p}$ into our KL score from ?? instead of $p$? Since the entropy of $\hat{p}$ is zero (it's supported on a single outcome), the cross-entropy and relative entropy are the same, i.e., 
 
 <Math displayMode={true} math="
-cross-entropy score =
-\sum_{i = 1}^n  \left(
+S_{CE}(q) =
+&\sum_{i = 1}^n  \left(
     \hat{p}_i\log\frac{\hat{p}_i}{q_i} + (1-\hat{p}_i)\log\frac{1-\hat{p}_i}{1-q_i}
+    \right)\\
+    &\sum_{i = 1}^n  \left(
+    \hat{p}_i\log\frac{1}{q_i} + (1-\hat{p}_i)\log\frac{1}{1-q_i}
     \right)
 "/>
 
-Why do we call it the _cross-entropy score_? At this point, I should mention that to define KL divergence, we use the convention that $0 \cdot \log 0 = 0 \cdot \log 0/0 = 0$. This means that our equation actually simplifies to
+This is why this kind of expression is usually called the _cross-entropy score_, although, as far as I can say, in the forecasting community it's typically called the [Log-score](https://forecasting.wiki/wiki/Log_score).
 
-$$
-cross-entropy score =
+### Connection to the idealized score
+Let's understand more deeply how the cross-entropy score connects to the idealized KL score. Technically speaking, cross-entropy score is a random variable because it depends on the randomness of $p$. More concretely, each $\hat{p}_i$ is actually a random variable equal to 1 with probability $p_i$, and otherwise equal to 0.
+
+So what's the expected value of the cross-entropy score, i.e., $E_p[S_{CE}(q)]$? Well, since $\hat{p_i}$ is on average equal to $p_i$, i.e., $E_p[\hat{p}_i] = p_i$, we simply have by linearity of expectation that
+
+<Math displayMode={true} math="
+E_p[S_{CE}(q)] 
 \sum_{i = 1}^n  \left(
-    \hat{p}_i\log\frac{1}{q_i} + (1-\hat{p}_i)\log\frac{1}{1-q_i}
+    p_i\log\frac{1}{q_i} + (1-p_i)\log\frac{1}{1-q_i}
     \right)
-$$
+"/>
 
-That is, the score is both equal to the KL divergence between $\hat{p}$ and $q$, and to cross-entropy between them. <Footnote> Another way to see that is via the equation $D(\hat{p}, q) = H(\hat{p}, q) - H(\hat{p})$; the distribution $\hat{p}$ is a trivial distribution supported only on one outcome, so its entropy is 0 and we thus have $D(\hat{p}, q) = H(\hat{p}, q)$. </Footnote> So we might as well call this cross-entropy score. In the forecasting community, this score is typically called [Log-score](https://forecasting.wiki/wiki/Log_score), the cross-entropy score notation is closer to how this is called in machine learning.
-
-Before we compute the score, let's understand more deeply how it connects to the idealized KL score. Technically speaking, cross-entropy score is a random variable because it depends on the "true" randomness of $p$. More concretely, each $\hat{p}_i$ is actually a random variable equal to 1 with probability $p_i$, and otherwise equal to 0.
-
-So what's the expected value of the cross-entropy score, i.e., $E_p[cross-entropy score]$? Well, since $\hat{p_i}$ is on average equal to $p_i$, i.e., $E_p[\hat{p}_i] = p_i$, we simply have
-
-$$
-E_p[cross-entropy score] = H(p, q)
-$$
-
-This is pretty cool! If we give our experts many questions, then in the long run, we can use the law of large numbers to argue that the score we measure is close to the cross-entropy $H(p,q)$.
+That is, <Math  math="E_p[S_{CE}(q)] = H(p,q)"/>. This is pretty cool! If we give our experts many questions, then in the long run, we can use the law of large numbers to argue that their score is going to be close to the cross-entropy $H(p,q)$ between the "true" probability distribution $p$ and their estimate.
 
 At this point, let's remember the equation
 
@@ -268,11 +266,7 @@ $$
 D(p,q) = H(p,q) - H(p)
 $$
 
-Although we can't compute the value of $D(p,q)$, notice that for two expert predictions $q_1, q_2$, we have $D(p,q_1) < D(p, q_2)$ if and only if $H(p, q_1) < H(p, q_2)$: KL divergence and cross-entropy only differ by $H(p)$ which is in this case just some constant. That is, _if we compare the experts based by their cross entropy score, it's in the long run the same as comparing them by their KL score!_
-
-
-
-### Example
+Although we can't compute the value of $D(p,q)$, notice that for two expert predictions $q_1, q_2$, we have $D(p,q_1) < D(p, q_2)$ if and only if $H(p, q_1) < H(p, q_2)$: KL divergence and cross-entropy only differ by $H(p)$ which a constant independent of $q_1, q_2$. That is, _comparing the experts by their cross-entropy score is in the long run the same as comparing them by their KL score!_
 
 <Block headline="Example: Coin flipping">
 Let's see an example of this. Let's say we flip a fair coin $N$ times ($p_1 = \dots = p_N = 1/2$) and ask two experts for their probabilities. Let's say that the first expert predicts correctly ($q_1 = \dots = q_N = 1/2$) and the other one is a bit off ($q'_1 = \dots = q'_N = 0.6$).
@@ -324,7 +318,7 @@ But that's not a big deal. If you allow codes that don't necessarily map single 
 
 We are getting comfortable with KL divergence! A quick recap:
 
-![Formula for KL divergence](02-cross-entropy/cross-entropy_entropy_formula.png)
+![Formula for KL divergence](02-crossentropy/crossentropy_entropy_formula.png)
 
 If it is really the right way to measure how well a model fits the truth, it sure seems that making it small is a good way to build good models!? [Let's see in the next chapter](03-minimizing)!
 
