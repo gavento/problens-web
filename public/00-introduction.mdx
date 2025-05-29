@@ -2,46 +2,34 @@
 
 This web contains an introduction to Kullback-Leibler (KL) divergence. Specifics of what we cover are [at the bottom](what-this-course-covers) together with [what we assume you know](what-we-assume), but let's start with something more exciting. We want to tell you several riddles and hope that you get [nerd-sniped](https://xkcd.com/356/) by some of them!
 
-<Expand headline="Why polling sucks"><a id="polling"></a>
 
-Before each US elections, we want to have a guess at which of the two parties is going to win the popular vote. This is why we have polling; you can for example look at [this Wikipedia page](https://en.wikipedia.org/wiki/Nationwide_opinion_polling_for_the_2024_United_States_presidential_election) list hundreds of polls made before the last election. A typical poll asks about 1000-2000 random people. If you crunch the numbers, you can find out that this means that the output of the poll is typically about 2-3\% from the correct answer. <Footnote>Of course, all the discussion holds under unrealistic assumptions such as we can sample a random voter, they are truthful, etc. But bear with us.</Footnote> This is astonishing! Regardless of how many people live in the country, 1000 random citizens are enough to get the answer within a few percent.
-
-But in reality, all US elections are incredibly close; we already know in advance that both Democrats and Republicans are going to get around 50%. So we should perhaps get a bigger sample (or pool several past polls) to get an estimate that's correct within, let's say, $0.1\%$. The question is, roughly how many people should we sample to get this improved precision?
-
-1. about 10 000
-2. about 100 000
-3. about 1 000 000
-
-The correct answer is about 1 000 000. That's already a nontrivial proportion of the whole US! In general, if we want to be close up to an error of $\epsilon$, we need about $1/\epsilon^2$ samples. This means that getting better estimates becomes very expensive very soon! This is one reason why most polling estimates don't bother asking more than a few thousand people.
-
-The question is: why $1/\epsilon^2$? We'll explore this in later sections. {/* KL divergence measures how well one distribution matches another, which is why understanding its value for distributions (50%, 50%) and (50%+$\varepsilon$, 50%-$\varepsilon$) is going to shed a lot of light on this question! We will also use this as a jumping bridge to explain a bit more on how KL divergence is crucial in statistics. */}
-</Expand>
-
-<Expand headline="How S&P looks like"> <a id="financial-mathematics"></a>
+<Expand headline="How to get rich"> <a id="financial-mathematics"></a>
 
 ![Financial Data Distribution](00-introduction/sap_graph.png)
 
-This picture shows the price of S&P<Footnote>If you don't know what that is, think of the price of Bitcoin, Apple, or the exchange rate of USD/EUR</Footnote>.
+This picture shows the price of the S&P index. <Footnote>If you don't know what that is, think of the price of Bitcoin, Apple, or the exchange rate of USD/EUR</Footnote>
 
-Every day, the price jumps a little bit. I downloaded the historical data, computed the daily jumps, and plotted them in a histogram plot -- the x-axis is the size of the jump (positive roughly 50%, otherwise negative) and the y-axis is the frequency of that jump. Before I show you the plot, I want you to guess how this is going to look like:
+Every day, the price jumps a little bit. I downloaded the historical data, computed the daily jumps, and plotted them in a histogram plot. The x-axis is the size of the jump (positive roughly half of the time, otherwise negative) and the y-axis is the frequency of that jump. Before I show you the plot, I want you to guess how this is going to look like:
 
-1. Laplace
-2. normal
-3. střecha
+![shapes](00-introduction/shapes.png)
 
-This was a trick question because both answers are kind of true! The shape of the histogram depends on something I did not tell you -- how far in the past did I look to collect the data. Try it for yourself both for S&P and Bitcoin:
+A
+B
+C
+
+This was a trick question because both answers 1 & 2 are kind of true! The shape of the histogram depends on something I did not tell you -- how far in the past did I look to collect the data. Try it for yourself both for S&P and Bitcoin:
 
 [TODO widget, přidat usd/eur?]
 
 ![Financial Data Distribution](00-introduction/financial.png)
 
-At the beginning, it seems that distribution looks a lot like the familiar bell-shaped curve <Math math="e^{-x^2}" /> of [normal distribution](https://en.wikipedia.org/wiki/Normal_distribution). This makes sense! The price of a stock slightly increases whenever somebody buys it, and slighlty decreases whenever somebody sells. The daily change is a summation of bazilions of buys and sells, and this is the setup in which we can apply the so-called [Central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem), that says that in this case, the resulting distribution should be normal.
+At the beginning, it seems that distribution looks a lot like the familiar bell-shaped curve <Math math="e^{-x^2}" /> of [normal distribution](https://en.wikipedia.org/wiki/Normal_distribution). This makes sense! The price of a stock slightly increases whenever somebody buys it, and slightly decreases whenever somebody sells. The daily change is a summation of bazilions of buys and sells, and this is the setup in which we can usually apply the [Central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem) and conclude that the resulting distribution should be normal.
 
 So how come that as we keep zooming out, the histogram gets more and more "pointy"? The other distribution is the so-called Laplace distribution with shape <Math math="e^{-|x|}" /> and it starts to be a better fit after around ?? months for S&P, and ?? for Bitcoin.
 
-There are two ways for how this connects to KL divergence. First of all, KL divergence measures how well a ground truth distribution (empirical data we collected) is fitted by a model (normal or Laplace distribution), so you can use it to make claims such as "for more than ?? months, Laplace fits the data better than normal".
+{/*There are two ways for how this connects to KL divergence. First of all, KL divergence measures how well a ground truth distribution (empirical data we collected) is fitted by a model (normal or Laplace distribution), so you can use it to make claims such as "for more than ?? months, Laplace fits the data better than normal".*/}
 
-Second, we will use KL divergence to understand a deep principle in probability called maximum entropy principle. This will help us gain a lot of intuition for what both normal and Laplace distributions stand for.
+We will use KL divergence to understand a deep principle in probability called maximum entropy principle. This will help us gain a lot of intuition for what both normal and Laplace distributions stand for.
 </Expand>
 
 <Expand headline="Average foot"> <a id="statistics"></a>
@@ -151,6 +139,21 @@ Although these functions look horrible, we will see what they correspond to and 
 </Expand>
 
 
+<Expand headline="Why polling sucks"><a id="polling"></a>
+
+[This Wikipedia page](https://en.wikipedia.org/wiki/Nationwide_opinion_polling_for_the_2024_United_States_presidential_election) lists hundreds of polls made before the last election. A typical poll asks about 1000-2000 random people. If you crunch the numbers<Footnote>For example, if you know the central limit theorem, you can use it to approximate the random variable corresponding to the outcome of the poll. </Footnote>, you can find out that for these numbers, the output of the poll is typically about 2-3\% from the correct answer. <Footnote>Of course, all the discussion holds under unrealistic assumptions such as we can sample a random voter, they are truthful, etc. But bear with me.</Footnote> This is astonishing! Regardless of how many people live in the country, 1000 random citizens are enough to get the answer within a few percent.
+
+But in reality, all US elections are incredibly close; we already know in advance that both Democrats and Republicans are going to get around 50%. So we should perhaps get a bigger sample (or pool several past polls) to get an estimate that's correct within, let's say, $0.1\%$. The question is, roughly how many people should we sample to get this improved precision?
+
+1. about 10 000
+2. about 100 000
+3. about 1 000 000
+
+The correct answer is about 1 000 000. That's already a nontrivial proportion of the whole US! In general, if we want to be close up to an error of $\epsilon$, we need about $1/\epsilon^2$ samples. The square in the formula is important -- it's the reason why getting better estimates becomes very expensive very soon! This is one reason why most polling estimates don't bother asking more than a few thousand people.
+
+The question is: why $1/\epsilon^2$? We'll explore this in later sections. {/* KL divergence measures how well one distribution matches another, which is why understanding its value for distributions (50%, 50%) and (50%+$\varepsilon$, 50%-$\varepsilon$) is going to shed a lot of light on this question! We will also use this as a jumping bridge to explain a bit more on how KL divergence is crucial in statistics. */}
+</Expand>
+
 <Expand headline="How to get rich"> <a id = "get-rich"></a>
 
 Here's a riddle that motivates a surprising number of recent algorithms in computer science and machine learning. Let's say that we want to get rich by investing at the stock market. Fortunately, there are $n$ investors that are willing to share their advice with us: Each day $t$, they give us some advice, and at the end of the day, we learn how good the advice was -- for the $i$-th expert, we will get to know her loss $\ell_i^{(t)}$ <Footnote>If this number is positive, the advice was bad, if it is negative, the advice was good. </Footnote>
@@ -200,23 +203,14 @@ Here's a riddle: Consider the set of all C programs of length 1000 characters (i
 
 ## Next Steps <a id="next-steps"></a>
 
-Each of the puzzles above might seem disconnected, but they share a common thread: they can all be approached, understood, or solved using KL divergence and related concepts.
+All the puzzles share a common thread: they can all be approached, understood, or solved using KL divergence and related concepts.
 
-KL divergence is a fundamental measure that quantifies how one probability distribution differs from another. Its formal definition is:
+KL divergence is a fundamental measure that quantifies how well one probability distribution is modelled by another. Formal definition: $KL(p, q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}$. Here, $p$ represents the "ground-truth" distribution and $q$ represents our model or approximation.
 
-$$KL(p, q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}$$
+// In the upcoming sections, we'll explore this measure in depth, develop intuitions for what it stands for, and see how it connects to probability, statistics, machine learning, information theory, and more.
 
-Where $p$ represents the "ground-truth" distribution and $q$ represents our model or approximation.
-
-In the upcoming sections, we'll explore this measure in depth, develop intuitions for what it stands for, and see how it connects to probability, statistics, machine learning, information theory, and more.
-
-As we progress through the mini-course, we'll revisit these puzzles and show how they can be solved or better understood through the lens of KL divergence.
+As we progress through the mini-course, we'll revisit all the puzzles and understand them through the lens of KL divergence.
 
 In the next part, we'll define KL divergence and understand what it stands for. [Let's begin](/01-kl_intro).
 
-## What we assume <a id="what-we-assume"></a>
-
-You should be familiar with the basic language of probability theory: probabilities, distributions, random variables, independence, expectations, variance, standard deviation, and so on. You should understand Bayes rule and it helps to have heard about the law of large numbers, see a few examples from statistics and perhaps machine learning.
-
-What's covered in undergrad courses in probability should be sufficient.
 
