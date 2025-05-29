@@ -181,7 +181,7 @@ const EvidenceAccumulationSimulator = () => {
 
       <div className="mb-6">
         <div>
-          <div className="font-semibold mb-2">Simulation Controls</div>
+          {/*<div className="font-semibold mb-2">Simulation Controls</div>*/}
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Number of Flips: {numFlips}</label>
@@ -230,7 +230,7 @@ const EvidenceAccumulationSimulator = () => {
                 Reset
               </button>
 
-              <div className="flex items-center ml-4">
+              {/*<div className="flex items-center ml-4">
                 <input
                   type="checkbox"
                   id="showKL"
@@ -241,7 +241,7 @@ const EvidenceAccumulationSimulator = () => {
                 <label htmlFor="showKL" className="ml-2 text-sm text-gray-700">
                   Show Expected (KL)
                 </label>
-              </div>
+              </div>*/}
             </div>
           </div>
         </div>
