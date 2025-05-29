@@ -3,7 +3,7 @@
 This web contains an introduction to Kullback-Leibler (KL) divergence. Specifics of what we cover are [at the bottom](what-this-course-covers) together with [what we assume you know](what-we-assume), but let's start with something more exciting. We want to tell you several riddles and hope that you get [nerd-sniped](https://xkcd.com/356/) by some of them!
 
 
-<Expand headline="How to get rich"> <a id="financial-mathematics"></a>
+<Expand headline="Shape of Bitcoin"> <a id="financial-mathematics"></a>
 
 ![Financial Data Distribution](00-introduction/sap_graph.png)
 
@@ -29,29 +29,26 @@ So how come that as we keep zooming out, the histogram gets more and more "point
 
 {/*There are two ways for how this connects to KL divergence. First of all, KL divergence measures how well a ground truth distribution (empirical data we collected) is fitted by a model (normal or Laplace distribution), so you can use it to make claims such as "for more than ?? months, Laplace fits the data better than normal".*/}
 
-We will use KL divergence to understand a deep principle in probability called maximum entropy principle. This will help us gain a lot of intuition for what both normal and Laplace distributions stand for.
+We will use KL divergence to understand a deep principle in probability called maximum entropy principle. This will give us a lot of intuition for what both normal and Laplace distributions stand for.
 </Expand>
 
 <Expand headline="Average foot"> <a id="statistics"></a>
 
-![Determining the length of the foot in 1522](00-introduction/rod.png)
+![rod](00-introduction/rod.png "Determining the length of the foot in 1522; taken from https://commons.wikimedia.org/wiki/File:Determination_of_the_rute_and_the_feet_in_Frankfurt.png")
 
-In the ye olden days, people measured lengths in feet. Different people of course have differently-sized body parts, so at some point we have to be a bit more precise. One way is to measure the foot of the local warlord, but then you have to change it every now and then when the warlord is replaced.
-
-Another way (depicted in the above 16-th century engraving from Germany) is to ask 16 random people and compute their mean foot length as
+In the ye olden days, people measured lengths in feet. It's pretty clear roughly how long one foot is, but at some point, we have to be a bit more precise. One way to decide on the length (depicted above) is to ask 16 random people and compute their mean foot length as
 $$\bar X = \frac{1}{16} (X_1 + \dots + X_{16})$$
-This will be a fairly stable estimate that will hopefully remain similar the next time you perform this experiment.
 
-How good is this estimate? Typically, one would gauge it by estimating the standard deviation. Do you remember the formula for that? Try to guess the correct one:
+This will be a fairly stable estimate that will hopefully remain similar the next time we do this. To measure the error of the estimate, we usually use the standard deviation. Do you remember the formula that estimates it? Try to guess the correct one:
 
 1. $$\bar \sigma^2 = \frac{1}{15} \sum_{i=1}^{16} (X_i - \bar X)^2$$
 2. $$\bar \sigma^2 = \frac{1}{16} \sum_{i=1}^{16} (X_i - \bar X)^2$$
 3. $$\bar \sigma^2 = \frac{1}{17} \sum_{i=1}^{16} (X_i - \bar X)^2$$
 
 Another trick question since all formulas are correct! Or a bit more precisely, all of them are defensible in the framework of (frequentist) statistics.
-The coefficient $1/(n-1)$ corresponds to the so-called unbiased estimate, $1/n$ gives the maximum likelihood estimate, and $1/(n+1)$ minimizes the mean squared error between the guess and the correct value.
+The coefficient $1/(n-1)$ corresponds to the so-called [unbiased estimate](https://en.wikipedia.org/wiki/Bias_of_an_estimator), $1/n$ gives the [maximum likelihood estimate](https://en.wikipedia.org/wiki/Maximum_likelihood_estimation), and $1/(n+1)$ minimizes [the mean squared error](https://en.wikipedia.org/wiki/Mean_squared_error) between the guess and the correct value.
 
-But out of all these philosophies of how to estimate values, only one of them -- maximum likelihood estimation -- became the main workhorse of machine learning. Using KL, we will see why the maximum likelihood philosophy stands out.
+But out of all these philosophies of how to estimate values, only one of them -- maximum likelihood estimation -- became the main workhorse of machine learning. Using KL divergence, we will see why the maximum likelihood philosophy stands out and what it stands for.
 </Expand>
 
 

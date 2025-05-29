@@ -315,31 +315,35 @@ First of all, almost all the probability is now concentrated on a single outcome
 
 You can also notice how the binned distribution still looks uniform for numbers $>10^9$. This again makes sense -- for large numbers, their last few digits are a coin change, learning them does not make much change. The whole point is that max-entropy principle leads us to the prior that puts more weight into small numbers. The upshot is that we are not necessarily fine. 
 
-## Application: Understanding Financial Data <a id="application-understanding-financial-data"></a>
+<Expand headline="Understanding Financial Data"> <a id="application-understanding-financial-data"></a>
 
-Let's return to our financial mathematics riddle. We observed that the normal distribution is a better fit for more recent data, and Laplace better models more long-term data. Also, Laplace fits Bitcoin better than S&P. 
+Let's return to our financial mathematics riddle [from the intro](00-introduction/financial-mathematics). 
 
-Laplace distribution has the shape $p(x) \propto e^\{-|x-\mu|}$. We could think of it as the max entropy distribution for $E[|X-\mu|]$, but there's another illuminating way to understand it. The Laplace distribution can be viewed as the result of the following process:<Footnote>I actually don't know any way observing this fact directly. Let me know if you know a way to do that. The fact can be verified algebraically, but it's not so easy. </Footnote>
+[Widget]
+
+We observed that the normal distribution is a better fit for more recent data, and Laplace distribution with  better models more long-term data.  Also, Laplace fits Bitcoin better than S&P. <Footnote>How do we formalize the claim "the distribution X fits the data $p$ better than the distribution Y"? Of course by measuring $D(p, X)$ and $D(p, Y)$! In our case for example, it says that Laplace starts to be a better fit for S&P for at least ?? days. </Footnote>
+
+Laplace distribution has the shape $p(x) \propto e^\{-\lambda |x-\mu|}$. What's the meaning of this formula? We could think of it as the max entropy distribution for fixing the value $E[|X-\mu|]$, but there's another illuminating way to understand it. The Laplace distribution can be viewed as the result of the following process:<Footnote>I actually don't know any way observing this fact directly. Let me know if you know a way to do that. The fact can be verified algebraically, but it's not so easy. </Footnote>
 
 1. Sample a variance $\sigma^2$ from the exponential distribution
 2. Output a sample from $N(\mu, \sigma^2)$
 
-To understand how this helps to explain our financial data, consider the story for price fluctuations:
+To understand how this helps to explain our financial data, consider the following two stories for price fluctuations:
 
-For the S&P index, which represents an average of many large companies, there is some variance in the daily change mostly because many (somewhat independent) trades happen that day, each making the value of the index slightly higher or lower. This is the setup for the  central limit theorem which predicts that the data is going to look approximately Gaussian.
+-- For the S&P index, which represents an average of many large companies, there is some variance in the daily change mostly because many (somewhat independent) trades happen that day, each making the value of the index slightly higher or lower. This is the setup for the  central limit theorem which predicts that the data is going to look approximately Gaussian.
 
-However, now consider looking at Bitcoin which is more volatile than the S&P. Or consider S&P, but longer time period. Then the above simplified model is perhaps too simple. There are definitely periods in time where not much happens, but also periods with large volatility. <Footnote> For example: US elections, financial crisis, pandemic hits, war starts, Bitcoin-related laws are passed etc.</Footnote>
+-- However, now consider looking at Bitcoin which is more volatile than the S&P. Or consider S&P, but longer time period. Then the above simplified model is perhaps too simple. There are definitely periods in time where not much happens, but also periods with large volatility. <Footnote> For example: US elections, financial crisis, pandemic hits, war starts, Bitcoin-related laws are passed etc.</Footnote>
 
-Perhaps we should try a more advanced two-layered model predicting the shape of our data: Maybe each month, we sample $\sigma^2$ -- the volatility for that month. Let's sample it from the max-entropy distribution, i.e., exponential. Next, the rest of the month, we sample from the Gaussian with that variance. Notice that we are now sampling from the Laplace distribution. 
+Perhaps we should try a more advanced two-layered model predicting the shape of our data: Maybe each month, we sample $\sigma^2$ -- the volatility for that month. Let's sample it from the max-entropy distribution, i.e., exponential. Next, the rest of the month, we sample from the Gaussian with that variance. As we mentioned above, this two-layered process actually samples from the Laplace distribution. 
 
-That is, while Gaussian is saying "I am pretty sure about today's volatility and unsure about the fluctuation around the mean" and Laplace is saying "I am uncertain both about the volatility, and the actual fluctuation of the day." This explains why Gaussian fits near-term data (volatility of the time period stays roughly the same), while more long-term data start looking more like Laplace. 
+Put differently, while Gaussian fit is claiming "I am pretty sure about today's volatility and unsure about the fluctuation around the mean" and Laplace is saying "I am uncertain both about the volatility, and the actual fluctuation of the day." This explains why Gaussian fits near-term data (volatility of the time period stays roughly the same), while more long-term data starts looking more like Laplace. 
 <Footnote>
-I am not sure whether Laplace distribution is a good practical model. As far as I know, one standard way of modelling financial data is the Student-t distribution. I will not bore you with its formula, but let you know that it is the distribution that you get from the similar process as how we arrived at Laplace; but instead of sampling $\sigma^2$ from the exponential distribution, you sample it from the so-called inverse gamma distribution. Gamma distribution is itself max-entropy distribution for fixing $E[X]$ and $E[\log X]$ (and inverse gamma distribution means we measure volatility by $1/\sigma^2$ instead of $\sigma^2$). 
-
+Laplace distribution is not necessarily a good practical model. As far as I know, one standard way of modelling financial data is the Student-t distribution. I will not bore you with its formula, but let you know that it is the distribution that you get from the similar process as how we arrived at Laplace; but instead of sampling $\sigma^2$ from the exponential distribution, you sample it from the so-called inverse gamma distribution. Gamma distribution is itself max-entropy distribution for fixing $E[X]$ and $E[\log X]$ (and inverse gamma distribution means we measure volatility by $1/\sigma^2$ instead of $\sigma^2$). 
 That is, Student-t distribution takes our model a bit further and adds uncertainty about the _scale_ of the volatility. For example, maybe if you take into large enough past, you start seeing some extreme events like world wars/the Great Depression/industrial revolution, so perhaps we should be open to power-law fits instead of exponential ones. 
 </Footnote>
 
-I like this example because I think it nicely shows the strength of the max-entropy principle. Notice how maximum entropy allows us to focus only on the important aspects of our model (do we fix volatility or is it itself a random variable?) All the details are filled in automatically by max entropy. Or if we take it from the other side -- when we see a concrete formula, like a fit by Laplace distribution, max entropy enables us to see through it and understand that it's about the uncertainty in the variance. 
+I like this example because I think it nicely shows the strength of the max-entropy principle. Notice how maximum entropy allows us to focus only on the important aspects of our model (do we fix volatility or is it itself a random variable?) All the algebraic details are filled in automatically by max entropy reasoning. Or if we take it from the other side -- when we see a concrete formula, like a fit by Laplace distribution, max entropy enables us to see through it and understand what the formula stands for. 
+</Expand>
 
 ## Next Steps <a id="next-steps"></a>
 
