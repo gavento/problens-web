@@ -248,38 +248,38 @@ Notice that _"in the long run"_ is really important here. In our example of 8 pr
 
 ## Coding Theory Intuitions <a id="coding"></a>
 
-One of the most powerful intuition pumps about entropy and related concepts comes from information theory, in particular coding theory. Let's explain it here very briefly.
+KL divergence and entropy are closely connected to coding theory. There are [many amazing explainers of that](resources), so let's only see a quick intuition for why this is so closely connected.  
 
-If you look at Morse code, you might notice how the code for certain frequent letters like e or t are much shorter than the codes for rare letters like h or q.
+Suppose that we have a long string; for simplicity, let's say the alphabet of the string is A,C,G,T (the string encodes DNA). We want to store the string on the disk using the least amount of space possible.  
 
-To build the theory behind building codes like Morse's, let's imagine the following task. Consider the distribution over the English alphabet a,b,...,z where the probability of each letter is its approximate frequency in English text.
+We will make this problem easier for ourselves by disregarding correlations between letters. Technically speaking, we will assume that there is some underlying distribution $p$ over the alphabet and our string was produced by sampling repeatedly from $p$.  
 
-Our task is as follows. We should come up with some kind of binary encoding scheme so that if we get a long English text, represented as a large amount $n$ of independent samples from the above distribution, the number of bits we use is the least possible.
+If $p$ is the uniform distribution, the best encoding is to simply use two bits per letter -- for example: <Math math = "A \rightarrow \textsf{00}, C \rightarrow \textsf{01}, G \rightarrow \textsf{10}, T \rightarrow \textsf{11} " />. This way, a string of length $N$ has size of $2N$ bits on the disk. 
 
-It turns out that the best possible solution to this problem satisfies that the average amount of bits we spend per letter -- called the rate of the code -- is $\sum p_i \log \frac{1}{p_i}$, the entropy of the distribution. For example, if the entropy of the distribution is about 4.17 bits, there is a code spending that many bits per letter on average, and there is no better code.
+But what if $p$ is skewed towards some letter? For example, what if $A$ has probability $1/2$, C has probability $1/4$, and G with T have $1/8$ both? Then there is a better encoding: <Math math = "A \rightarrow \textsf{0}, C \rightarrow \textsf{10}, G \rightarrow \textsf{110}, T \rightarrow \textsf{111} " />. On this example, this encoding uses only $1.75N$ bits on average to store the string on the disk. 
 
-Instead of proving why the entropy is the answer to our question, let's see examples of (suboptimal) codes that suggest why the answer is entropy.
+![encoding](02-crossentropy/encoding.png)
 
-First, we could encode each letter using 5 bits -- a becomes 00000, b becomes 00001 and so on. The rate of this scheme is 5 bits per letter, and it can be improved quite a bit.
+It makes sense that more frequent letters get shorter code, but what is the best way to map frequencies into code-lengths? Long story short, the coding theory says that if we want to build a good code, then the letter with frequency $p$ should be assigned a bit string of length around $\log 1/p$. For example, since $A$ had probability $1/2$ above, our optimized code assigned it a bit string of length $\log 1/(1/2) = \log 2 = 1$; and similarly for C,G,T. <Footnote>I sneakily chose an example where all probabilities are powers of two. Then, what I said about lengths of $\log 1/p$ is really true. If probabilities are general numbers, it gets more complicated because we can't have code names of noninteger length. For example, if there are five letters with the same frequency, we unfortunately can't have a code that gives each letter a code name of length $\log 5 \approx 2.3$. The good codes solve this problem by giving code names to small tuples of letters instead of just single letters; this way they approach the goal of spending $\log 1/p$ bits for a frequency-$p$ letter. </Footnote> 
 
-One way to improve it is to assign codes of different lengths to different letters, based on their frequency. The following turns out to be a good rule for the lengths: if a letter $i$ has frequency $p_i$, its code length should be about $\log \frac{1}{p_i}$.
+Here's roughly the intuition why the formula $p \rightarrow \log 1/p$ makes sense for code lengths. First, imagine the case of uniform distribution, like 8 letters, each coming with frequency $1/8$. Then, it makes sense that the best code gives code names of same length to each letter, and the right length is $\log 8 = 3$ so that we can cover all letters. 
 
-As a specific example, if the alphabet were just a-d and the letter frequencies were $1/2, 1/4, 1/8, 1/8$, the best code is:
+More generally, it makes sense to assign code names starting with <Math math = "\textsc{0}" /> to letters with overall frequency $1/2$, and the rest should start with <Math math = "\textsc{1}" />. For example, our code assigned <Math math = "\textsc{0}" /> to A and <Math math = "\textsc{1}" /> is the starting bit for codes of C,G,T. This way of repeatedly splitting the letters in halves leads to code lengths of $\log 1/p$ for letters of frequency $p$. <Footnote>Again, this works if probabilities are powers of two, if not, building good codes gets a bit more technical. </Footnote> 
 
-- a - 0
-- b - 10
-- c - 110
-- d - 111
+The upshot is that if our string was generated by sampling $N$ letters independently from a distribution $p$, we can build a code that maps the string to a bit string with about $N \cdot \sum_{i = 1}^k p_i \cdot \log 1/p_i = N \cdot H(p)$ bits -- because the code needs to use $\log 1/p_i$ bits with probability $p_i$. It can also be proven that it's impossible to store such bit strings with less than $N \cdot H(p)$ bits of memory. 
 
-That is, "baba" is encoded as "100100".
+This can give us a lot of intuition for entropy. For example, take this picture we already discussed. 
 
-You might notice how the letter with frequency $1/2^i$ has a code of length $i$; that is, frequency $p_i$ leads to a code of length $\log \frac{1}{p_i}$.
+![entropy](02-crossentropy/entropy.png)
 
-If all the probabilities in the distribution are $1/2^k$ for some number $k$, the generalization of the above code -- having $1/2^k$ probability letters have lengths $k$ -- is always possible.
+We discussed the picture using the language of entropy as "average surprisal", but really, we can also talk about how many bits are needed (on average) to store the coin-flipping outcomes to memory. On the left, we need 1 bit per outcome. On the right, it's more frugal to only store the positions of heads, which on average requires much less space than 1 bit per flip. 
 
-If the probabilities in the distribution are not "round", you can't quite achieve a code mapping letters to binary strings as good as the entropy $H(p)$ of the distribution due to the rounding issues. You can only achieve a code of rate at most $1 + H(p)$. For example, the entropy of our English letter distribution is about $4.17$, but the best code mapping letters to bits (so-called Huffman code) has slightly worse rate of about $4.25$.
+We can also get intuition about cross-entropy: This is the number of bits you need if your data is coming from $p$, but you mistakenly optimize your code for a distribution $q$. Finally, relative entropy is simply how much worse your cross-entropy code is than the best possible code for $p$. 
 
-But that's not a big deal. If you allow codes that don't necessarily map single letters to bit strings, but that can also map pairs of letters and so on, then you can get codes with rate arbitrarily close to the entropy.
+
+<Expand headline = "Riddle: Size of Wikipedia">
+d
+</Expand>
 
 ## Next Steps <a id="next-steps"></a>
 
