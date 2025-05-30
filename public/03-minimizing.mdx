@@ -42,7 +42,8 @@ This expression has very clear meaning: it is the conditional probability of see
 
 So what's the conclusion? Our approach of minimizing KL divergence is equivalent (at least for empirical distributions) to maximizing the likelihood of the data under the model $q$. The latter is in fact a very common approach in statistics, and it is called the maximum likelihood estimation (MLE) principle. We just derived it from the KL divergence perspective!
 
-### Example <a id = "mle_for_mean_sigma"></a>
+<Expand headline = "Maximum likelihood for normal distribution">
+<a id = "mle_for_mean_sigma"></a>
 
 Let's say that we are given data $X_1, \dots, X_N$ (that we represent by its empirical distribution $p$) and want to find the best fitting Gaussian $N(\mu, \sigma^2)$. How should we choose $\hat\mu$ and $\hat\sigma^2$?
 
@@ -59,6 +60,7 @@ Similarly,
 <Math displayMode={true} math="\frac{\partial \mathcal{L}}{\partial \sigma} = 2N/\sigma -2  \sum_{i = 1}^N \frac{(X_i-\mu)^2}{\sigma^3}"/>
 
 Setting <Math displayMode={false} math="\frac{\partial \mathcal{L}}{\partial \sigma} = 0"/> then leads to <Math displayMode={false} math="\hat\sigma = \frac{1}{N} \sum_{i = 1}^N (X_i - \mu)^2"/>
+</Expand>
 
 ## Finding a Better Model & Maximum Entropy Principle <a id="finding-better-model"></a>
 
@@ -72,7 +74,8 @@ How do I improve this model? I should get my hands on some empirical data, so le
 Given this new information, how should I choose a better model? I claim that among all distributions <Math math="p" /> with average of 15, I should pick <Math math="\arg\min_{p \in P} D(p,q)" />, where <Math math="q" /> is my original model (the uniform distribution).
 
 Why? Intuitively, I want to find a (true) distribution <Math math="p" /> so that <Math math="q" /> is as good model of it as possible, and this is what KL stands for. Admittedly, this time it's not clear why this should be the right thing to do, so see the footnote for a detailed derivation of this from Bayes' rule.
-<Footnote>
+
+<Expand headline="Detailed discussion of how this follows from Bayes">
 Remember how at the top of this chapter, we were able to argue that <Math math="\min_{q \in Q} D(p,q)" /> is a good methodology by "compiling it down" to a simple argument about Bayes' theorem? We will do the same here, using a version of so-called [Wallis derivation](https://en.wikipedia.org/wiki/Principle_of_maximum_entropy#The_Wallis_derivation). The reasoning is going to be a bit more involved.
 
 Here is how we formulate our setup to turn this into an application of Bayes' theorem. Imagine that we start with some distribution $q$ and keep sampling from it $N$ times. We use $\hat{q}$ to denote the empirical distribution we get. Now we observe that $\hat{q}$ belongs to some family of distributions $P$ (e.g., all distributions with average 15). What is our current knowledge about $\hat{q}$?
@@ -94,7 +97,7 @@ We should now understand what kind of distribution $\hat{q}$ has, i.e., we want 
 Now, waving our hands a little, we can observe that the probability distribution of <Math math="\hat{q}" /> is going to be concentrated on the distribution <Math math="p" /> that minimizes <Math math="H(p,q)" />, as <Math math="N" /> goes to infinity. Thus, the right normalization is <Math math="P(\hat{q} = p) \approx 2^{-N \cdot H(p,q) + N \cdot H(p)} = 2^{-N \cdot D(p,q)}" />.
 
 Whatever road you preferred, we can now continue. While the distribution of $\hat{q}$ is concentrated around the value of $q$, there's nonzero probability that $\hat{q} \in P$. If that happens, we similarly have that the posterior distribution is concentrated around the value <Math math="\tilde{p} = \argmin_{p \in P} D(p,q)"/>. We conclude that in the limit of $N$ going to infinity, doing all the abstract mixture distributions and conditioning on the new evidence is pretty much equivalent to just replacing $q$ with <Math math="\argmin_{p \in P} D(p,q)"/>.
-</Footnote>
+</Expand>
 
 ### The Maximum Entropy Principle <a id="maximum-entropy-principle"></a>
 
@@ -142,15 +145,15 @@ Whenever people model stuff by probability distributions, they assume that two d
 
 One more point. We have already seen that KL divergence is very closely related to the philosophy of updating your beliefs by Bayes' theorem. This relatioship goes both ways; more in the footnote.
 
-<Footnote>
-We've already derived KL divergence and its application from the philosophy of using Bayes' rule. Let's also observe that it can also be done the other way around.
+<Expand headline = "Relation with Bayes' goes both ways">
+We've already derived KL divergence and its application from the philosophy of using Bayes' rule. This relationship goes both ways; let's see how. <Footnote></Footnote>
 
 Consider the generic problem solved by Bayes' theorem: We have a joint distribution $(X,Y)$ over two random variables $X$ (that we are interested in) and $Y$ (possible evidences we might see). Then we observe some evidence $Y=y$. We want to know the distribution of $X$ given $Y=y$. The Bayes' rule allows us to compute the conditional distribution $P(X|Y=y)$. This is not rocket science: If you imagine the original joint distribution as a table, you can just zero out the rows that do not correspond to $Y=y$ and normalize the remaining row to get the posterior distribution.
 
 The observation you can make is that <Math math="r = \argmin_{p \in P} D(p, (X,Y))" />, where $P$ is the set of distributions where $P(Y = y') = 0$ for $y' \ne y$. That's because after some rewritings, this minimization problem is equivalent to claiming that $P(X | Y=y) = \argmin_{p} D(p, P(X|Y=y))$ which is true.
 
 So, we can think of the philosophy of using the Bayes' theorem as a special case of the philosophy of minimizing KL divergence. This is all very circular and fuzzy, but the point is that not only the philosophy of minimize-KL-whenever-you-can-ism can be derived from the philosophy of argue-everything-from-Bayes-rule-ism, but we can also derive the philosophy of argue-everything-from-Bayes-rule-ism from the philosophy of minimize-KL-whenever-you-can-ism. Thus it is said that minimize-KL-whenever-you-can-ism is argue-everything-from-Bayes-rule-ism-complete (and vice versa).
-</Footnote>
+</Expand>
 
 ## Next Steps <a id="next-steps"></a>
 

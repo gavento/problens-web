@@ -4,18 +4,19 @@ This mini-course on KL divergence starts with [a few puzzles and challenges](00-
 
 Here are some concepts we will explore: KL divergence, entropy, cross-entropy, maximum likelihood principle, maximum entropy principles, machine-learning loss functions, and more.
 
-The applications of KL are in probability, statistics, machine learning, information and coding theory, financial math, etc. etc. As our guiding light, we took the applications of KL to machine learning -- this is what we are building up towards during the five chapters. But on our journey, we will see a little bit of everything.
+The applications of KL are in probability, statistics, machine learning, information and coding theory, financial math, etc. etc. This mini-course is building up towards applications to machine learning, but on our journey, we will see a little bit of everything.
 
 # How to read this
 
--- skip stuff you find boring (expanding boxes)
---  the total length is about ?? chapters of Harry Potter and the Philosopher's stone. ?? chapters if you read all footnotes and Expanding boxes
+Skip stuff you find boring, especially expanding boxes and footnotes. Follow links and don't feel the need to read this linearly. 
+
+The total length of the main text is about ?? chapters of Harry Potter and the Philosopher's stone (From the beginning to when Harry ??). ?? chapters if you read all footnotes and Expanding boxes (Harry ??)
 
 # What we assume <a id="what-we-assume"></a>
 
-You should be familiar with the basic language of probability theory: probabilities, distributions, random variables, independence, expectations, variance, standard deviation, and so on. You should definitely understand Bayes' rule. 
+You should be familiar with the basic language of probability theory: probabilities, distributions, random variables, independence, expectations, variance, and standard deviation. You should definitely understand the [Bayes' rule](https://www.lesswrong.com/w/bayes-rule). 
 
-We also assume that you get the gist of [the law of large numbers](https://en.wikipedia.org/wiki/Law_of_large_numbers) <Footnote>If you keep flipping a coin and $X_i$ is the $i$-th outcome, the so-called sample mean $1/n \cdot \sum_{i = 1}^n X_i$ is likely to be very close to the true bias of the coin. </Footnote> and even the central limit theorem. <Footnote>If you keep flipping a coin and $X_i$ is the $i$-th outcome, the distribution of the sample mean is going to look like the normal distribution, with standard deviation about $1/\sqrt{n}$ for $n$ flips. </Footnote> It helps if you know and love the bell-shaped curve of the normal distribution. 
+We also assume that you get the gist of [the law of large numbers](https://en.wikipedia.org/wiki/Law_of_large_numbers) <Footnote>If you keep flipping a coin and $X_i$ is the $i$-th outcome, the so-called sample mean $1/n \cdot \sum_{i = 1}^n X_i$ is likely to be very close to the true bias of the coin. </Footnote> and even the [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem). <Footnote>If you keep flipping a coin and $X_i$ is the $i$-th outcome, the distribution of the sample mean is going to look like the normal distribution, with standard deviation about $1/\sqrt{n}$ for $n$ flips. </Footnote> While Little Prince is cool, it helps if you associate the [slender, bell-shape curve of normal distribution](https://en.wikipedia.org/wiki/Bell-shaped_function#/media/File:Normal_Distribution_PDF.svg) with $e^{-x^2}$ rather than a devoured elephant. 
 
 Knowing example uses of statistics and machine learning helps a good bit to appreciate the context.
 
@@ -31,5 +32,7 @@ Our hope is that by the end of this mini-course, you will not only remember the 
 # About The Authors
 
 [Tom Gavenčiak](https://gavento.cz/) is a researcher in AI alignment and applied rationality at Charles University in Prague.
+![gavento](img/gavento.jpg)
 
 [Vašek Rozhoň](https://vaclavrozhon.github.io/) is a computer science researcher and an assistant professor at Charles Universtiy in Prague.
+![vasek](img/vasek.jpg)

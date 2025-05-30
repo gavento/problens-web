@@ -78,10 +78,10 @@ D(p \otimes p', q \otimes q') = D(p, q) + D(p', q')
 $$
 where $p \otimes p'$ stands for the product distribution with marginals $p,p'$, i.e. the joint distribution where $p,p'$ are independent.
 
-We have used this property implicitly in the previous chapter -- it allowed us not to compute the overall KL divergence as the sum for individual flips. 
+We have used this property implicitly in the previous chapter -- it allowed us to compute the overall KL divergence as the sum for individual flips. 
 
 <Expand headline="Proof of additivity">
-The proof is to just write it down. Here' it is (by Claude)':
+The fact can be verified by writing down the definitions. Here it is (by Claude):
 Let's start with the definition of KL divergence for the joint distributions:
 
 <Math displayMode={true} math="
@@ -252,7 +252,7 @@ Let's understand more deeply how the cross-entropy score connects to the idealiz
 So what's the expected value of the cross-entropy score, i.e., $E_p[S_{CE}(q)]$? Well, since $\hat{p_i}$ is on average equal to $p_i$, i.e., $E_p[\hat{p}_i] = p_i$, we simply have by linearity of expectation that
 
 <Math displayMode={true} math="
-E_p[S_{CE}(q)] 
+E_p[S_{CE}(q)] =
 \sum_{i = 1}^n  \left(
     p_i\log\frac{1}{q_i} + (1-p_i)\log\frac{1}{1-q_i}
     \right)
@@ -268,15 +268,15 @@ $$
 
 Although we can't compute the value of $D(p,q)$, notice that for two expert predictions $q_1, q_2$, we have $D(p,q_1) < D(p, q_2)$ if and only if $H(p, q_1) < H(p, q_2)$: KL divergence and cross-entropy only differ by $H(p)$ which a constant independent of $q_1, q_2$. That is, _comparing the experts by their cross-entropy score is in the long run the same as comparing them by their KL score!_
 
-<Block headline="Example: Coin flipping">
+<Expand headline="Example: Coin flipping">
 Let's see an example of this. Let's say we flip a fair coin $N$ times ($p_1 = \dots = p_N = 1/2$) and ask two experts for their probabilities. Let's say that the first expert predicts correctly ($q_1 = \dots = q_N = 1/2$) and the other one is a bit off ($q'_1 = \dots = q'_N = 0.6$).
 
 Then, the idealized KL score happens to be $KL(p, q) = N \cdot 0 = 0$ and $KL(p, q') = N \cdot D(p_1, q'_1) \approx 0.03 \cdot N$.
 
-We don't have access to this score, but if we compute their cross-entropy scores, the law of large numbers tells us that for large enough $N$, the scores are going to be roughly $H(p,q) = N$ and $H(p, q') \approx 1.03 \cdot N$. Both crossentropies are shifted by the entropy of the underlying process which is $N$. So we are penalizing both experts for something they can't know. But that's OK since both values are shifted by the same amount, so if we use the score to e.g. select the best experts, it behaves the same as using the ideal KL score.
+We don't have access to this score, but if we compute the experts' cross-entropy scores, the law of large numbers tells us that for large enough $N$, the scores are going to be roughly $H(p,q) = N$ and $H(p, q') \approx 1.03 \cdot N$. Both crossentropies are larger by the entropy of the underlying process which is $H(p) = N$. So, the score of both experts is quite high, even if the first expert is as good as it gets. However, since both values are shifted by the same amount, using the score to select the best experts is as good as using the ideal KL score in the long run. 
 
-We will not bother computing the cross entropy score for the example data. The reason is that, as we have seen, our score is only reasonable if we can argue via the law of large numbers that the value we compute is going to be close to the cross-entropy $H(p,q)$. But that's very fishy assumption for just 8 predictions, especially if some of the events happen with very small or very large probability.
-</Block>
+Notice that _"in the long run"_ is really important here. In our example of 8 predictions, computing their crossentropy (or any other score function) is premature. 
+</Expand>
 </Expand>
 
 ## Coding Theory Intuitions <a id="coding-theory-intuitions"></a>

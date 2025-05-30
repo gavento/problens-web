@@ -8,100 +8,25 @@ We compile our favorite resources for further exploring KL divergence and relate
 [TODO link to orgpad map (nějakou víc cool než současná)]
 
 
-## Introductory blog posts <a id="introductory-resources"></a>
-
+## Blog posts <a id="introductory-resources"></a>
+- A [series](https://www.lesswrong.com/w/bayes-rule) of great explanations and applications of Bayes' rule by alexei and E. Yudkowsky
 - A [series](https://blog.alexalemi.com/kl.html) of [amazing](https://blog.alexalemi.com/kl-is-all-you-need.html) blog [posts]((https://blog.alexalemi.com/diffusion.html)) at _Alex Alemi's blog_ about intuition for KL divergence and its applications. 
 - [Different intuitions behind KL divergence](https://www.lesswrong.com/posts/no5jDTut5Byjqb4j5/six-and-a-half-intuitions-for-kl-divergence): a LessWrong post by CallumMcDougall. 
 - [Intuition behind KL Divergence](https://johfischer.com/2021/12/31/intuitive-explanation-of-the-kullback-leibler-divergence/) by Johannes Schusterbauer. 
 - [Intuition behind KL divergence](https://www.countbayesie.com/blog/2017/5/9/kullback-leibler-divergence-explained) by Will Kurt. 
+- [Maximum Entropy and Bayes' rule](https://risingentropy.com/maximum-entropy-and-bayes/) by Rising Entropy blog
 
+## Books <a id="intermediate-resources"></a>
+- [Elements of Information Theory](https://www.wiley.com/en-us/Elements+of+Information+Theory%2C+2nd+Edition-p-9780471241959) by Thomas Cover & Joy Thomas
+- [Probability Theory: The Logic of Science](https://bayes.wustl.edu/etj/prob/book.pdf) by E. Jaynes 
+<Footnote>
+Jaynes is the father of maximum entropy principle and many other profound ideas. His book is at times philosophical, and usually very enlightening. Also, it is unfinished and contains errors.
+</Footnote>
+- [Entropic Physics](https://drive.google.com/file/d/1faiZCbg_HnmKayI7hBFWfhNSuZZU451Y/view) by Ariel Caticha 
+- [Machine Learning: A Probabilistic Perspective](https://probml.github.io/pml-book/book0.html) by Kevin P. Murphy
+- [Information Theory, Inference, and Learning Algorithms](https://www.inference.org.uk/itprnn/book.html) by David MacKay
 
-## Classic books <a id="intermediate-resources"></a>
-
-The following books are classics.
-
-### Elements of Information Theory <a id="elements-information-theory"></a>
-
-[**"Elements of Information Theory" – _Thomas M. Cover & Joy A. Thomas_ (2nd ed. 2006, Textbook)**](https://www.wiley.com/en-us/Elements+of+Information+Theory%2C+2nd+Edition-p-9780471241959)
-
-This is a classic book on the topic of information theory, and its many connections to coding theory, statistics, etc. Highly recommended.
-
-### Probability Theory: The Logic of Science <a id="probability-theory-science"></a>
-
-[**"Probability Theory: The Logic of Science" – _E. T. Jaynes_ (2003, Book)**](https://bayes.wustl.edu/etj/prob/book.pdf)
-
-This is one of the favorite books of the second author of this mini-course. Jaynes is the father of maximum entropy principle and many other profound ideas. His book is at times almost philosophical, and sometimes very enlightening. Also, it is unfinished and contains errors.
-
-### Machine Learning: A Probabilistic Perspective <a id="machine-learning-probabilistic"></a>
-
-[**"Machine Learning: A Probabilistic Perspective" – _Kevin P. Murphy_ (2012, Textbook)**](https://probml.github.io/pml-book/book0.html)
-
-This book on machine learning, and probabilistic approach towards it is classic. It touches and expands many topics we covered in this mini-course.
-
-### Information Theory, Inference, and Learning Algorithms <a id="information-theory-inference"></a>
-
-[**"Information Theory, Inference, and Learning Algorithms" – _David J. C. MacKay_ (2003, Textbook)**](https://www.inference.org.uk/itprnn/book.html)
-
-This is another classic that covers a vast range of topics connected to probability, information theory, statistics, and machine learning. It expands many topics we covered in this mini-course.
-
-[TODO check]
-
-## Advanced Resources <a id="advanced-resources"></a>
-
-These resources dive deeper into the theory and advanced applications of KL divergence.
-
-### Maximum Entropy and Bayes <a id="maximum-entropy-bayes"></a>
-
-[**"Maximum Entropy and Bayes" – _Rising Entropy blog_ (2020)**](https://risingentropy.com/maximum-entropy-and-bayes/)
-
-This article explores the profound connection between the Maximum Entropy principle and Bayesian inference using KL divergence. Citing research by Giffin & Caticha, it points out that the **method of Maximum _Relative_ Entropy (ME)** generalizes both vanilla MaxEnt and Bayes' rule.
-
-The blog demonstrates that when you receive new evidence, updating your prior to the posterior by **maximizing relative entropy $S_{rel}(P, P_\{\text{old}}) = -\int P \log(P/P_\{\text{old}})\,dx$** (i.e., minimizing KL divergence to the prior) yields exactly the Bayesian posterior.
-
-In other words, Bayes' theorem can be derived as the distribution change that **minimizes KL divergence from the prior while fitting the data**. The post provides an intuitive interpretation: relative entropy $D(P\|P_\{\text{old}})$ is the _additional information required_ to go from the old distribution to the new.
-
-It underscores that both Bayes and MaxEnt are driven by the same information-theoretic principle of keeping your distribution as "broad" (high entropy) as possible until forced to sharpen it by new constraints. This resource is valuable for readers interested in the theoretical unity of inference and information theory.
-
-### KL-Divergence as an Objective Function <a id="kl-objective-function"></a>
-
-[**"KL-Divergence as an Objective Function" – _Tim Vieira's ML blog_ (2014)**](https://timvieira.github.io/blog/post/2014/10/06/kl-divergence-as-an-objective-function/)
-
-This blog post is aimed at practitioners who want to understand how KL divergence is used in **model fitting and variational inference**. It provides a **"cheat sheet" for KL's two directions**, often denoted $D_{KL}(P\|Q)$ versus $D_{KL}(Q\|P)$.
-
-Vieira explains that minimizing $D_{KL}(P\|Q)$ (also called the **inclusive KL**) tries to make $Q$ cover all high-probability regions of $P$ – it is "mean-seeking" and will use a broad $Q$ to avoid missing any mass that $P$ has.
-
-In contrast, minimizing $D_{KL}(Q\|P)$ (the **exclusive KL**) is "mode-seeking" – it will focus $Q$ on one mode of $P$ if that yields lower divergence. He gives a memorable mnemonic: _"When the truth comes first, you get the whole truth"_, meaning $KL(P\|Q)$ forces the approximation to account for the true distribution's support.
-
-The post then delves into the calculus: deriving gradients for each KL direction and discussing computational issues. For instance, inclusive KL requires expectation under $P$ (often intractable if $P$ is the true distribution), whereas exclusive KL requires expectation under $Q$ (easier if $Q$ is your model).
-
-This has practical consequences: **variational inference** typically minimizes $D_{KL}(Q\|P)$ (e.g., in VAEs, where $Q$ is the approximate posterior) because it's easier to sample from $Q$, while **maximum likelihood** can be seen as minimizing $D_{KL}(P\|Q)$ in the limit of infinite data.
-
-## Applications in Modern Machine Learning <a id="applications-ml"></a>
-
-These resources focus on practical applications of KL divergence in modern machine learning models.
-
-### Variational Inference & Deep Learning <a id="variational-inference"></a>
-
-[**"Variational Autoencoders" – _John Aslanides's weblog_ (2019)**](https://aslanides.io/blog/vae)
-
-KL divergence is a key ingredient in modern deep learning algorithms, especially those involving latent-variable models. For example, **Variational Autoencoders (VAEs)** use KL divergence in their loss function.
-
-This tutorial on VAEs clearly derives the Evidence Lower Bound (ELBO) objective, which includes a **KL term $D_{KL}(q(z|x)\,\|\,p(z))$** measuring how the learned encoder ($q$) diverges from the prior over latent variables. This term serves as a regularizer, encouraging the model's latent distribution to stay close to a simple prior while the reconstruction term encourages fidelity to the data.
-
-The inclusion of KL divergence in ELBO connects **variational inference** to deep learning: effectively, training a VAE is an application of **Bayesian inference via KL minimization**. The tutorial provides both theoretical understanding and practical examples with code and visualizations.
-
-### Reinforcement Learning Applications <a id="reinforcement-learning"></a>
-
-[**"Trust Region Policy Optimization" – _OpenAI Spinning Up documentation_**](https://spinningup.openai.com/en/latest/algorithms/trpo.html)
-
-In reinforcement learning, KL divergence is used to ensure stable updates and to incorporate prior knowledge. A prominent example is **Trust Region Policy Optimization (TRPO)**, an algorithm that improves a policy gradually by constraining the KL divergence between the new policy and the old policy at each step.
-
-The intuition is that policies are probability distributions (over actions), and TRPO limits how "far" the new policy can deviate in distribution space, measured by KL – preventing large, destabilizing changes.
-
-This use of KL as a regularizer or constraint is also seen in **policy gradient methods with entropy/KL bonuses** (to encourage exploration) and in **reinforcement learning from human feedback**, where a KL penalty keeps the learned policy close to an original model to avoid drifts.
-
-In effect, KL divergence in RL acts as an **information-theoretic trust measure**, connecting to the idea of keeping updates **small in information space**.
 
 ## Next Steps <a id="next-steps"></a>
 
-There are no more next steps! But if you have read all of it, please leave us a comment!
+Anything we should add to the list? Let us know! 

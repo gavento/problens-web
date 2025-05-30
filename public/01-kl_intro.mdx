@@ -40,14 +40,15 @@ This is not rocket science -- if you multiply both sides by $P(\textrm{heads})$,
 
 But I like to think of it a bit differently and in my head, I write it as this:
 
-<Math displayMode={true} math='\frac{P(\textrm{fair} | \textrm{heads})}{P(\textrm{biased} | \textrm{heads})} = \frac{P(\textrm{fair})}{P(\textrm{biased})} \cdot \frac{P(\textrm{heads} | \textrm{fair})}{P(\textrm{heads} | biased)}' />
+<Math displayMode={true} math='\frac{P(\textrm{fair} | \textrm{heads})}{P(\textrm{biased} | \textrm{heads})} = \frac{P(\textrm{fair})}{P(\textrm{biased})} \cdot \frac{P(\textrm{heads} | \textrm{fair})}{P(\textrm{heads} | \textrm{biased})}' />
 
 You can check that the two formulas are the same by yourself. <Footnote>To see this, use the first formula both for $P(\textrm{fair} | \textrm{heads})$ and $P(\textrm{biased} | \textrm{heads})$, and divided them. </Footnote> To understand this rephrasing, it's good to think in terms of [odds](https://en.wikipedia.org/wiki/Odds). This is how people in the gambling industry sometimes use probabilities: instead of saying $1/3$ probability of this and $2/3$ of that, they say that odds are 1:2. Odds are like probabilities, but they don't sum up to one -- odds 1:2 are the same as 2:4. This way of thinking about probabilities is actually quite useful: Often, you don't want to bother thinking about how to normalize probabilities so that they sum up to one, so you just think in terms of odds.
 
-Using odds, the Bayes' formula from equation ?? now makes a plenty of sense! It describes a very simple way to go from the old odds to the new odds. We just need to multiply the old odds by <Math math = "\frac{P(\textrm{heads} | \textrm{fair})}{P(\textrm{heads} | biased)}" />, i.e., the ratio of how likely heads are under each hypothesis. 
-Probability expressions of the type <Math math = "P(\textrm{something happens} | \textrm{particular hypothesis})" /> are called [_likelihoods_](https://en.wikipedia.org/wiki/Likelihood_function), so this is also called the likelihood ratio.
+Using odds, the Bayes' formula from equation ?? now makes a plenty of sense! It describes a very simple way to go from the old odds to the new odds. We just need to multiply the old odds by <Math math = "\frac{P(\textrm{heads} | \textrm{fair})}{P(\textrm{heads} | \textrm{biased})}" />, i.e., the ratio of how likely heads are under each hypothesis. 
+Conditional probability expressions of the type <Math math = "P(\textrm{event} | \textrm{hypothesis})" /> are called [_likelihoods_](https://en.wikipedia.org/wiki/Likelihood_function), so this is also called the likelihood ratio.
 
-In picture:
+In picture: <Footnote>Understanding Bayes' rule will be important. If we failed to make it clear, read more e.g. [here](https://www.lesswrong.com/w/bayes-rule). </Footnote>
+
 ![Bayes' theorem using odds](01-kl_intro/bayes_theorem.png)
 
 {/*Bayes' theorem simply says we should do the simplest thing possible with the two relevant ratios -- multiply them -- to arrive at the posterior odds $P(\textrm{fair} | \textrm{heads}) : P(\textrm{biased} | \textrm{heads})$ .*/}
