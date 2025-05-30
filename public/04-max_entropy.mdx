@@ -120,7 +120,7 @@ If we believe that the mean is an important parameter of a distribution (as we u
 <Math displayMode={true} math = "p(x) \propto e^{-\lambda x}"/>
 
 
-This kind of distribution is known under many names, depending on what is the underlying ground set over which we define it. Let's see some cases:
+This kind of distribution is known under several names, depending on what is the underlying ground set over which we define it. Let's see some cases:
 
 #### Bernoulli distribution & Logits <a id = "logit"></a>
 
@@ -136,21 +136,19 @@ What we can still learn from ?? is how to convert numbers into probabilities -- 
 
 The function $\sigma(x) = 1/(1 + e^{-x})$ is called the logistic function<Footnote>Or maybe a sigmoid function. Apparently, [sigmoid function](https://en.wikipedia.org/wiki/Sigmoid_function) is a bit more general term. </Footnote> and the parameter $x$ is typically called a logit. So, ?? is telling us that if you want to talk about probabilities, but you want to talk about general real numbers instead of numbers from $[0,1]$, you should talk about logits and use the logistic transformation to convert them to probabilities. The choice of $\lambda$ then corresponds to choosing your favorite base of the logarithm function. 
 
-Example:
-Remember the Bayesian hero from the [first chapter](01-kl_intro)? It was easier for us to talk about her using the language of odds and their logarithms -- which is pretty much the logits. 
+<Expand headline = "Elo system">
+The Elo system is the system used to assign ratings to players. The basic idea of it is that when you have two players with Elos $E_1$ and $E_2$, you can estimate the probability that the first one wins from the difference $D = E_1 - E_2$. As we know, max-entropy principle suggests that converting numbers to probabilities should be done via the logistic function. 
 
-Example: 
-The Elo system is the system used to assign ratings to e.g. chess players. The basic idea of it is that when you have two players with Elos $E_1$ and $E_2$, you can estimate the probability that the first one wins from the difference $D = E_1 - E_2$. As we know, max-entropy principle suggests that converting numbers to probabilities should be done via the logistic function. 
+This is indeed how Elo system was designed; the interpretation of the chess Elo number is that the probability that the first player wins should be <Math math = "\frac{1}{1 + 10^{D / 400}}" />. <Footnote>It's more precisely the expected score of the first player due to the existence of draws. </Footnote> This is the logistic function with $\lambda = 1/400 \cdot \ln 10$. 
 
-This is indeed how Elo system was designed; the interpretation of chess Elo is that the probability that the first player<Footnote>Due to the existence of draws, it's actually the expected score of the first player</Footnote> wins should be <Math math = "\frac{1}{1 + 10^{D / 400}}" />. This is the logistic function with $\lambda = 1/400 \cdot \ln 10$. 
+Notice that without knowing the value of $\lambda$, the information "the Elo difference between these two players is 200" is meaningless -- we don't know how Elo is scaled. Yet, even without knowing $\lambda$, we understand the system pretty well: if the chance of an upset (i.e., the lower-rated player wins) is $p$ for $D = 200$, then for $D=400$ it's roughly $p^2$, for $D=600$ it's roughly $p^3$ and so on. 
+</Expand>
 
-Notice that without knowing the value of $\lambda$, the information "the Elo difference between these two players is 200" is meaningless -- we don't know how Elo is scaled. Yet, even without knowing $\lambda$, we know a lot: if the chance of an upset (i.e., the lower-rated player wins) is $p$ for $D = 200$, then for $D=400$ it's roughly $p^2$, for $D=600$ it's roughly $p^3$ and so on. 
+<Expand headline="Logistic activation function">
+In the beginnings of the deep learning field, the logistic function was used as a so-called [activation function](https://en.wikipedia.org/wiki/Activation_function) -- it was used to convert aggregated inputs to a neuron to its output. We can now give a probabilistic rationale to this operation: this way of handling neurons corresponds to modelling them as "each neuron aggregates its inputs and then it decides whether to fire or not". 
 
-<Footnote>
-We will see an application of logits in a minute, and also later in logistic regression, but let me mention another (in)famous application -- the neural net sigmoid [activation function](https://en.wikipedia.org/wiki/Activation_function). In the beginnings of the field, the logistic function was used to convert aggregated inputs to a neuron to its output. We can now give a probabilistic rationale to this operation -- this way of handling neurons corresponds to modelling them as "each neuron aggregates its inputs and then it decides whether to fire or not". 
-
-It is possible that this is a good way of understanding how our brain works, but during the development of the field, researchers understood that the nets work better if instead if sigmoids, one uses the ReLU activation function. That activation function corresponds to neurons that not only contemplate whether to send any signal or none, but also send out a stronger output signal if they got strong input. 
-</Footnote>
+Unfortunately, this function does not seem to be too great in practice. During the development of the field, researchers understood that it's better if instead if sigmoids, one uses the [ReLU]() activation function (or [something similar]()). That activation function corresponds to neurons that not only contemplate _whether_ to send any signal or none, but also send out a stronger output signal if they got strong input. 
+</Expand>
 
 [TODO logit widget]
 
@@ -161,34 +159,42 @@ A more general instantiation of ?? is when our distribution is over some arbitra
 <Math displayMode={true} math = "p_i \propto e^{\lambda a_i}. "/>
 
 
-You can think about the softmax function as the generalization of the logistic function above -- it's _the right way_ of how to convert numbers to probabilities. In fact, the numbers $a_i$ are often also called logits. 
+You can think about the softmax function (or softmin if $\lambda < 0$) as the generalization of the logistic function above -- it's _the right way_ to convert numbers to probabilities. The numbers $a_i$ are still often called logits. 
 
+The parameter $1/|\lambda|$ is often called temperature because it kind of works like that -- in small temperatures, softmax is very orderly and behaves just like max, whereas for high temperatures, the distribution gets more chaotic, ultimately approaching the uniform distribution. 
+
+TODO playing-with-temperature-widget
+
+<Expand headline = "logits in neural nets">
 Example: Typical neural networks output probabilites. For example, a typical neural network classifying images in fact outputs the whole probability distribution that a given picture is a dog/cat/horse/... instead of outputting a single prediction. 
 The problem with this is that usually, most of these probabilities are extremely small, e.g. of order of $10^{-10}$. That's because given a picture of a dog, the neural net is typically pretty sure it's not an octopus. 
 
 This makes it awkward to work with the probabilities directly inside the net -- there are all kinds of numerical and stability issues with this. So the neural nets are instead trying to predit logits, and the conversion to probabilities is just the final layer of the network. 
 
+Example: A nice bonus to this example is that if you train the network using softmax with $\lambda = 1$, you can change the parameter $\lambda$ after the training. For example, setting $\lambda$ to infinity (temperature goes to zero) is equivalent to just choosing the most probable option -- this way you make the output of the model deterministic which is often useful at deployment. 
 
-Example: A nice bonus to the previous example is that if you train the network using softmax with $\lambda = 1$, you can change the parameter $\lambda$ after the training. For example, setting $\lambda$ to infinity in ?? is equivalent to just choosing the most probable option -- this way you make the output of the model deterministic which can be useful at deployment. The parameter $1/\lambda$ is analogous to temperature in physics, so this is often described as "running the model at 0 temperature". 
+{/*There are also application for higher temperatures. For example, if you want to use LLM to solve a hard math problem, you might want to run it a million times to increase the probability the net solving it. But then you should probably run it at higher temperatures to make sure you want get the same thought process a million times in a row.  
 
-There are also application for higher temperatures. For example, if you want to use LLM to solve a hard math problem, you might want to run it a million times to increase the probability the net solving it. But then you should probably run it at higher temperatures to make sure you want get the same thought process a million times in a row.  
-
-Notice how softmax allowed us to elegantly solve a problem that's so fuzzy that it's otherwise pretty hard to approach -- given a probability distribution $p$, how do we find distributions $p'$ that preserve as much as possible from $p$, yet they are more or less concentrated on the most probable values. 
-
-TODO playing-with-temperature-widget
+Notice how softmax allowed us to elegantly solve a problem that's so fuzzy that it's otherwise pretty hard to approach -- given a probability distribution $p$, how do we find distributions $p'$ that preserve as much as possible from $p$, yet they are more or less concentrated on the most probable values. */}
+</Expand>
 
 
-Example: Modelling in economy (rational inattention)
+<Expand headline = "Probabilities vs logits">
+Probabilities are cool, but sometimes, it's easier to work with their logarithms -- for us this was the case when we analyzed the Bayesian hero from the [first chapter](01-kl_intro). Whenever this happens, we can say that we work "in the logit space".  
+</Expand>
+
+
+<Expand headline = "Modelling pasta consumption">
 
 ![Types of pasta -- from https://suttachaibar.com/15-types-of-pasta-shapes-to-know-and-love/](04-max_entropy/pasta.webp)
 
-Theoretical economy tries to understand setups like this: Say there are $k$ replacable products competing on the market -- perhaps different shapes of pasta. We can observe how well each shape sells, but to make some conclusions out of this data, we should have some kind of model of them. The basic model of rational customers is that each product $i$ has a certain utility $a_i$ and each customer simply buys the product with highest utility. The problem of this model is that it predicts that people should keep buying a single product! (E.g. everybody buys spaghetti, nobody buys anything else).
+Theoretical economy tries to understand setups like this: Say there are $k$ replacable products competing on the market -- perhaps different shapes of pasta. We can observe how well each shape sells, but to make some conclusions out of this data, we should have some kind of underlying model for what's happening. The basic model of rational customers is that each product $i$ has a certain utility $a_i$ and each customer simply buys the product with highest utility. The problem of this model is that it predicts that people should keep buying a single product -- the one with largest $a_i$. 
 
 How should we adapt the model to allow nontrivial probability distributions? Well, we have seen that the natural soft generalization of taking maximum is the softmax function, and this is indeed the function that economists use to model this kind of situation. There are more possible justifications for using this more complicated model -- each customer has slightly different utility function, doesn't like repretition in her diet, etc. The parameter $\lambda$ in this model (the inverse temperature) then measures the strength of all these aspects.
 
 However, it should be said that one of the popular interpretations of softmax in behavioral economy is more sophisticated than "softmax seems natural, so let's go with it, whatever". The approach of the theory of rational inattention is that even if all agents are perfectly rational and have same utilities, they still have to spend a nontrivial amount of time comparing the different options and estimating their utility (at this point stop thinking about pasta and think about buying a flat/car instead). If you think about customers as solving an optimization problem that takes this into account, you end up with a type of optimization problem similar to [our derivation of max-entropy distributions](); under reasonable<Footnote>I.e., I forgot them. </Footnote> circumstances you can derive the softmax distribution as the distribution of observed purchases.
 
-
+</Expand>
 
 
 #### Exponential and Geometrical distribution

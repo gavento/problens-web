@@ -10,7 +10,7 @@ We will go through the examples in the following table (feel free to skip exampl
 
 ![Examples](05-machine-learning/table)
 
-## Example: Estimating mean and variance <a id="application-to-statistics-riddle"></a>
+<Expand headline = "Estimating mean and variance"> <a id="application-to-statistics-riddle"></a>
 
 Our [basic statistics riddle](00-introduction/statistics) was like this: We have some numbers $X_1, \dots, X_n$ and we want to estimate their mean and variance. 
 
@@ -27,8 +27,8 @@ In this case, the optimization problem has a closed-form formula $\hat\mu_{MLE} 
 
 What I want to stress is how the only assumption we made about the data was at the very beginning, where we said "we have a bunch of numbers, we care about their mean and variance". The rest came automatically from our understanding of KL divergence. In particular, at no point we argued about central limit theorem.
 
-
-## Linear Regression <a id="linear-regression"></a>
+</Expand>
+<Expand headline = "Linear Regression"> <a id="linear-regression"></a>
 
 Suppose we are given a list of pairs $(x_1, y_1), \dots, (x_n, y_n)$; we think that the data are roughly linearly dependent, meaning that there are some $a,b$ such that $y_i \approx a\cdot x_i + b$. The task is to find $a,b$. Let's do it in four stages. What we said about the data so far is the first step. 
 
@@ -50,7 +50,7 @@ So, we may forget $\sigma^2$ again<Footnote>Statistical software like R or Pytho
 
 The fourth step is to turn the optimization problem from ?? into an algorithm. In this case, the problem is still sufficiently nice so that there is a formula, though this formula contains matrix inversion so in practice it's going to be solved by some kind of gradient descent. 
 
-Advanced:
+<Expand headline = "Variants of linear regression">
 
 Notice how our approach is pretty flexible so that if we have additional information about the data, we can add it to the model.
 
@@ -61,9 +61,10 @@ As another example, consider the more general case where we have many predictors
 <Math displayMode={true} math = "\min_{S \subseteq \\{1, \dots, k\\}, |S|=pk} \sum_{i=1}^n \|a\cdot x_i - y_i\|^2" />
 
 The only problem is that optimizing this function is hard (in fact, NP-hard) -- we have to try all possible subsets of nonzero coefficients and fit each one of them which takes exponential time. Some more complicated math shows though, that optimizing a different objective, called Lasso, often solves this complicated problem<Footnote>See e.g. [10.6 here](https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-book.html) or [this book](https://link.springer.com/book/10.1007/978-3-642-20192-9)</Footnote>. So, you should think of Lasso as an attempt to solve our probabilistic model.
+</Expand>
+</Expand>
 
-
-### Logistic Regression <a id="logistic-regression"></a>
+<Expand headline = "Logistic Regression"> <a id="logistic-regression"></a>
 
 This time, we get red and blue points in a plane and we want to find the best line separating them. Ideally, we would like all the red points on one side and all the blue ones on the other, but that's not always possible. In that case, how do we find the best line? 
 
@@ -84,8 +85,9 @@ Once we have a model, we can use the max likelihood principle to find its parame
 <Math displayMode = {true} math = "\argmin_{\theta, \delta, \lambda} \sum_{i = 1}^n \ell_i \log \sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)) + (1-\ell_i) \log (1-\sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)))"/>
 
 where $\ell_i$ is the indicator (i.e. $\ell_i \in \{0,1\}$) for whether the point $(x_i,y_i)$ is red. This problem known as the [logistic regression](https://en.wikipedia.org/wiki/Logistic_regression) is hard to solve exactly, but gradient descent usually works pretty well. 
+</Expand>
 
-### K-means Clustering <a id="k-means-clustering"></a>
+<Expand headline = "K-means Clustering"> <a id="k-means-clustering"></a>
 
 We are given a set of points $x_1, \dots, x_n$ on, say, 2D plane. We want to group them into $k$ clusters. 
 
@@ -110,8 +112,8 @@ In practice, people don't care that much about this; knowing the closest cluster
 <Math displayMode = {true} math = "\argmin_{\substack{\mu_1, \dots, \mu_k}} \sum_{i = 1}^n \min_{j = 1}^k ||x_i-\mu_j||^2"/>
 
 The problem of finding $\mu_1, \dots, \mu_k$ that minimize this expression is called [$k$-means](https://en.wikipedia.org/wiki/K-means_clustering). 
-
-### Classification by neural nets <a id = "neural-nets"></a>
+</Expand>
+<Expand headline = "Classification by neural nets"> <a id = "neural-nets"></a>
 
 We are given a huge number of images, and each one has one of $k$ possible labels (a dog, a muffin, ...). We want to optimize a neural net that takes an image on the input and outputs a probability distribution over the $k$ possible classes. 
 
@@ -121,10 +123,11 @@ Next, the maximum-likelihood principle says that we should maximize the log-like
 <Math displayMode={true} math = "\argmax_{\substack{\textrm{neural net}\\\textrm{parameters}} \sum_{i = 1}^n \log p_{\ell_i}(X_i)"/>
 
 [As we know](03-minimizing/mle), maximizing log-likelihood is pretty much the same as minimizing cross-entropy, so in this case, this is usually called _minimizing the cross-entropy loss_ <Math math = "\sum_{i = 1}^n \log 1/p_{\ell_i}(X_i)" />. 
-
-### Variational Autoencoders <a id="variational-autoencoders"></a>
+</Expand>
+<Expand headline = "Variational Autoencoders"> <a id="variational-autoencoders"></a>
 
 [todo example series of pictures interpolating in the latent space]
+[nebo widget kde můžu prohnat obrázek zašuměním + odšuměním]
 
 Here's an observation that's also relevant to the previous example. When we store images on hard drive, we do that pixel by pixel, i.e., in the _pixel space_. But in our brain, we store them very differently, perhaps we remember that "it was a picture of a brown dog that looked like a muffin" or something like that. This corresponds to using the so-called _latent space_. This is a hypothesised space where two images are close if they refer to similar objects. For example, two images are close in the latent space even though in the pixel space they might be extremely far. 
 
@@ -147,7 +150,7 @@ The encoder corresponds to the factorization $p(x,y) = p(x) \cdot p(y | x)$: Fir
 The decoder gives us a second way to model the data where we first sample a random latent-space representation and then decode it to the image -- i.e. $p(x,y) = p(y) \cdot p(x|y)$. We have to be more creative though to turn the decoder into this probabilistic model. For start, we don't know the marginal distribution $p(y)$; so we will just model it with a gaussian -- $q(y) = N(0, I)$ ($I$ stands for unit matrix). How should we model $p(x|y)$? Using $Dec(y)$ is a good start, but we should also add some randomness, so let's add the gaussian noise $N(0,1)$ to every pixel of the final image. We have arrived for a different probabilistic model of $p(x,y)$:
 <Math displayMode={true} math="p(x,y) = N(Dec(N(0, I)), I)"/>
 
-
+</Expand>
 
 ## What's next
 

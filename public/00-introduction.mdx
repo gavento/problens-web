@@ -90,9 +90,7 @@ The question is, which expert is the best one?
 2. Expert 2
 3. Expert 3
 
-Answer: It depends! In practice, people use one of two scoring rules, the Brier score or log-score. The two scores penalize you differently if you claim that an event probably won't happen, but it does -- see e.g. the ?? column. Brier does not care much whether your guess was 1%, 0.1%, or even 0% but log score does. In fact, if you estimate that an event has 0% probability and then it happens, log-score says you are infinitely bad!
-
-We will see how KL divergence explains why log-score is natural and what it stands for.
+Answer: It's hard to say since we have only 8 questions. Later, we will see how KL divergence can be used to derive the so-called log-score used in forecasting tournaments. 
 </Expand>
 
 
@@ -192,7 +190,7 @@ Marcus Hutter is an AI researcher who started [the following challenge](http://p
 2 around 10MB
 3 around 100MB
 
-It's around 100MB. But more interestingly, why does an *AI* researcher cares about this topic? We will discuss it more in connection with [entropy](02-crossentropy/coding) and Kolmogorov complexity. 
+It's around 100MB. But more interestingly, why does an *AI* researcher cares about this topic? We will discuss it more in connection with [entropy](02-crossentropy/coding) and [Kolmogorov complexity](?). 
 
 </Expand>
 
