@@ -75,7 +75,7 @@ Given this new information, how should I choose a better model? I claim that amo
 
 Why? Intuitively, I want to find a (true) distribution <Math math="p" /> so that <Math math="q" /> is as good model of it as possible, and this is what KL stands for. Admittedly, this time it's not clear why this should be the right thing to do, so see the footnote for a detailed derivation of this from Bayes' rule.
 
-<Expand headline="Detailed discussion of how this follows from Bayes">
+<Expand headline="Detailed discussion of how this follows from Bayes' rule">
 Remember how at the top of this chapter, we were able to argue that <Math math="\min_{q \in Q} D(p,q)" /> is a good methodology by "compiling it down" to a simple argument about Bayes' theorem? We will do the same here, using a version of so-called [Wallis derivation](https://en.wikipedia.org/wiki/Principle_of_maximum_entropy#The_Wallis_derivation). The reasoning is going to be a bit more involved.
 
 Here is how we formulate our setup to turn this into an application of Bayes' theorem. Imagine that we start with some distribution $q$ and keep sampling from it $N$ times. We use $\hat{q}$ to denote the empirical distribution we get. Now we observe that $\hat{q}$ belongs to some family of distributions $P$ (e.g., all distributions with average 15). What is our current knowledge about $\hat{q}$?
