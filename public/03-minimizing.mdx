@@ -10,19 +10,21 @@ Let's see the details!
 
 ## Minimizing KL & Maximum Likelihood Estimation (MLE) <a id="mle"></a>
 
-Suppose we are given some data—say, the 16 foot length measurements $X_1, \dots, X_{16}$ from our statistics riddle. Assuming the order of the data is irrelevant, it's handy to think about those data as an empirical distribution $p$ that assigns each outcome a probability of $1/16$. This is also called an _empirical distribution_. In some sense, this empirical distribution is the "best fit" of our data. In another sense, it is a horrible model of it -- it assigns zero probability to outcomes that are not in the data, although if we look at length of the foot of the 17th guy, it'l like to be outside the data. So, we need another model.
+Suppose we are given some data—say, the 16 foot length measurements $X_1, \dots, X_{16}$ from [our statistics riddle](00-introduction/statistics). Assuming the order of the data is irrelevant, it's handy to think about those data as an empirical distribution $p$ that assigns each outcome a probability of $1/16$. This is also called an _empirical distribution_. In some sense, this empirical distribution is the "best fit" of our data. In another sense, it is a horrible model of it -- it assigns zero probability to outcomes that are not in the data, although if we look at length of the foot of the 17th guy, it'l like to be outside the data. So, we need another model.
 
-One way to approach this is to first find a family of distributions $Q$ that we think are a good model for the data. For example, we might think that the distribution of foot lengths is Gaussian.<Footnote>Why Gaussians? We will see soon...</Footnote> So, we can take $Q$ to be the set of all Gaussian distributions with different means and variances. Visually, you could think about the potato representing all possible distributions -- $p$ is a point in the potato, and $Q$ is a subset of it, that kind of looks like a half-plane as it is parameterized by two parameters $\mu$ and $\sigma^2$.
+![fit](03-minimizing/fit.png)
+
+One way to approach this is to first find a family of distributions $Q$ that we think are a good model for the data. For example, we might think that the distribution of foot lengths is Gaussian.<Footnote>Why Gaussians? We will see soon.</Footnote> So, we can take $Q$ to be the set of all Gaussian distributions with different means and variances. Visually, you could think about the potato representing all possible distributions -- $p$ is a point in the potato, and $Q$ is a subset of it, that kind of looks like a half-plane as it is parameterized by two parameters $\mu$ and $\sigma^2$.
 
 ![KL divergence potato](03-minimizing/potato_mle.png)
 
 Now, suppose we believe that a normal distribution is a good model for these data. How do we choose the best parameters $\mu$ and $\sigma^2$ to match the empirical distribution? KL divergence offers a natural answer: Choose $\mu$ and $\sigma$ to minimize $D(p, N(\mu,\sigma^2))$<Footnote> $N(\mu, \sigma^2)$ denotes the gaussian with mean $\mu$ and variance $\sigma^2$. </Footnote>. More generally, if we have a set of candidate distributions $Q$ (e.g., all Gaussians), select the $q\in Q$ that minimizes $D(p,q)$.
 
-Why does this methodology make sense? Remember, KL is supposed to measure how well the model $q$ approximates the data $p$, so minimizing KL really just means picking the best fitting model in $Q$. If you still remember the [first chapter](01-kl_intro), you may even "compile" KL down to Bayes' theorem: choosing $q$ to minimize $D(p,q)$ really means choosing $q$ that takes the longest time to distinguish from the truth $p$ by a Bayesian. Very reasonable!
+Why does this methodology make sense? Remember, KL is supposed to measure how well the model $q$ approximates the data $p$, so minimizing KL really just means picking the best fitting model in $Q$. If you still remember the [first chapter](01-kl_intro), you may even "compile" this argument down to Bayes' theorem: choosing $q$ to minimize $D(p,q)$ really means choosing $q$ that takes the longest time to distinguish from the truth $p$ by a Bayesian. Very reasonable!
 
 ### Maximum Likelihood principle <a id="mle"></a>
 
-Let's take a closer look at our minimize-KL approach. Let's focus on the most common case, where $p$ is literally the empirical distribution over $X_1, \dots, X_n$. To avoid cluttered notation, let's assume all $X_i$ are distinct<Footnote>Feel free to check that the general case is the same. </Footnote>. In that case, we can write the KL divergence we are minimizing as:
+Let's take a closer look at our approach of minimizing $D(p, q)$. Let's focus on the most common case, where $p$ is literally the empirical distribution over $X_1, \dots, X_n$. To avoid cluttered notation, let's assume all $X_i$ are distinct<Footnote>The general case is very similar. </Footnote>. In that case, we can write the KL divergence we are minimizing as:
 
 <Math displayMode={true} math="D(p,q) = \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1/n}{q(X_i)}" />
 
@@ -42,16 +44,17 @@ This expression has very clear meaning: it is the conditional probability of see
 
 So what's the conclusion? Our approach of minimizing KL divergence is equivalent (at least for empirical distributions) to maximizing the likelihood of the data under the model $q$. The latter is in fact a very common approach in statistics, and it is called the maximum likelihood estimation (MLE) principle. We just derived it from the KL divergence perspective!
 
-<Expand headline = "Maximum likelihood for normal distribution">
+<Expand headline = "Example: Maximum likelihood for normal distribution">
 <a id = "mle_for_mean_sigma"></a>
 
 Let's say that we are given data $X_1, \dots, X_N$ (that we represent by its empirical distribution $p$) and want to find the best fitting Gaussian $N(\mu, \sigma^2)$. How should we choose $\hat\mu$ and $\hat\sigma^2$?
 
 Here's what Maximum likelihood principle recommends: We should maximize the likelihood, or more conveniently, maximize the so-called log-likelihood / minimize cross-entropy:
 
-<Math displayMode={true} math="\hat\mu, \hat\sigma^2 = \argmax_{\mu, \sigma^2} \sum_{i = 1}^N \log\left( \frac{1}{2\pi\sigma^2} e^{-\frac{(X_i-\mu)^2}{\sigma^2}} \right) = \argmin_{\mu, \sigma^2} 2N \cdot \log \sigma + \sum_{i = 1}^N \frac{(X_i-\mu)^2}{\sigma^2}"/>
+<Math displayMode={true} math="\hat\mu, \hat\sigma^2 = \argmax_{\mu, \sigma^2} \sum_{i = 1}^N \log\left( \frac{1}{2\pi\sigma^2} e^{-\frac{(X_i-\mu)^2}{2\sigma^2}} \right) 
+= \argmin_{\mu, \sigma^2} 2N \cdot \log \sigma + \sum_{i = 1}^N \frac{(X_i-\mu)^2}{2\sigma^2}"/>
 
-There are several ways to solve this optimization problem. Probably the cleanest is differentiation: If we define $\mathcal{L}$ to be the above expression, then:
+There are several ways to solve this optimization problem. The cleanest one is probably differentiation: If we define $\mathcal{L}$ to be the above expression, then:
 <Math displayMode={true} math = "\frac{\partial \mathcal{L}}{\partial \mu} = \frac{1}{\sigma^2} \sum_{i = 1}^N 2(X_i - \mu) "/>
 
 Setting <Math displayMode={false} math="\frac{\partial \mathcal{L}}{\partial \mu} = 0"/> then leads to $\hat\mu = \frac{1}{N} \sum_{i = 1}^N X_i$.
@@ -67,18 +70,26 @@ Setting <Math displayMode={false} math="\frac{\partial \mathcal{L}}{\partial \si
 So, minimizing <Math math="\min_{q \in Q} D(p,q)" /> is pretty useful, what aboutn the other direction <Math math="\min_{p \in P} D(p,q)" />? This is also extremely useful, so let's see an example of what it means.
 
 
-Let's say I want a probability distribution for how long it takes me to eat lunch. Maybe my first (very crappy) model of this is a uniform distribution between <Math math="0" /> and <Math math="600" /> minutes.
+Let's say I want a probability distribution for how long it takes me to eat lunch. Maybe my first (very crappy) model of this is a uniform distribution $q$ between <Math math="0" /> and <Math math="60" /> minutes.
 
 How do I improve this model? I should get my hands on some empirical data, so let's say that I will observe my lunch times for a while. Recording the whole empirical distribution sounds like too much work, so let's say I just record the average time it takes me to eat lunch -- say, 15 minutes.
 
-Given this new information, how should I choose a better model? I claim that among all distributions <Math math="p" /> with average of 15, I should pick <Math math="\arg\min_{p \in P} D(p,q)" />, where <Math math="q" /> is my original model (the uniform distribution).
+Given this new information, how should I choose a better model? 
 
-Why? Intuitively, I want to find a (true) distribution <Math math="p" /> so that <Math math="q" /> is as good model of it as possible, and this is what KL stands for. Admittedly, this time it's not clear why this should be the right thing to do, so see the footnote for a detailed derivation of this from Bayes' rule.
+![max-ent](03-minimizing/max_ent_example.png)
+
+I claim that among all distributions <Math math="p" /> with average of 15, I should pick the distribution <Math math = "p_{\textrm{new}}" /> with 
+<Math displayMode={true} math="\arg\min_{p \in P} D(p,q)," /> 
+where <Math math="q" /> is my original model (the uniform distribution).
+
+Why? Intuitively, I want to find a (true) distribution <Math math="p" /> so that <Math math="q" /> is as good model of it as possible. This is what we find by minimizing KL divergence. 
+
+Admittedly, this reasoning is a bit shaky, since in KL, we would always like $p$ to stand for the true distribution, while here it's just a new, hopefully better model distribution. Expand for a detailed derivation from Bayes' rule.
 
 <Expand headline="Detailed discussion of how this follows from Bayes' rule">
 Remember how at the top of this chapter, we were able to argue that <Math math="\min_{q \in Q} D(p,q)" /> is a good methodology by "compiling it down" to a simple argument about Bayes' theorem? We will do the same here, using a version of so-called [Wallis derivation](https://en.wikipedia.org/wiki/Principle_of_maximum_entropy#The_Wallis_derivation). The reasoning is going to be a bit more involved.
 
-Here is how we formulate our setup to turn this into an application of Bayes' theorem. Imagine that we start with some distribution $q$ and keep sampling from it $N$ times. We use $\hat{q}$ to denote the empirical distribution we get. Now we observe that $\hat{q}$ belongs to some family of distributions $P$ (e.g., all distributions with average 15). What is our current knowledge about $\hat{q}$?
+Here is how we formulate our setup to turn this into an application of Bayes' theorem. Imagine that we start with some distribution $q$ and keep sampling from it $N$ times. We use $\hat{q}$ to denote the empirical distribution of the samples. Now we observe that $\hat{q}$ belongs to some family of distributions $P$ (e.g., all distributions with average 15). What is our current knowledge about $\hat{q}$?
 
 Bayes' theorem is clear on this: we should start with the prior distribution over $\hat{q}$, and then condition on the fact that $\hat{q}$ belongs to $P$ to get the posterior distribution over $\hat{q}$. We will argue the following claim: as $N$ goes to infinity, the posterior distribution is going to be concentrated on the distribution $p \in P$ that minimizes $D(p,q)$. This is the justification for our minimize-KL approach -- our methodology is basically equivalent to "passing from $q$ to $p$ by conditioning on the fact that the distribution belongs to $P$".
 
