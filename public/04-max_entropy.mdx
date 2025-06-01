@@ -100,6 +100,26 @@ and the same formula is also the solution if the probability distribution is con
 Now this formula is not the full solution to our problem, because it involves some magical constants $\lambda_1, \dots, \lambda_m$ that we don't know. To find their values, we have to go back to our constraints -- do you still remember that there were $m$ numbers $\alpha_1, \dots, \alpha_m$ there? We can use the conditions $E[f_j(x)] = \alpha_j$ to work out the precise shape of the distribution. 
 </Expand>
 
+<Expand headline = "Working with continuous distributions">
+
+Sometimes we have to use entropy and KL divergence for continuous distributions. For KL divergence, not much changes. We just have to replace sum by integral and write 
+<Math displayMode={true} math = "D(p, q) = \int_x p(x) \log \frac{p(x)}{q(x)} dx. " />
+
+For entropy it's a bit more tricky. To understand what's happening, let's remember what integral intuitively stands for. For example, continuous uniform distribution over interval $[0,1]$ is in some sense just a limit of discrete distributions, where $n$-th distribution in the sequence is the uniform distribution over <Math math = "\{\frac{1}{n}, \dots, \frac{n}{n}}"/>. When we use the integral formulas like the formula ?? above for KL divergence, it's justified by _convergence_: If we discretize real line into buckets of length $1/n$ and compute KL divergence after that, then as we keep making $n$ larger, the discretized results will converge to the value of the integral in ?? (unless $p,q$ are some wild functions). 
+
+![uniform](04-max_entropy/unif.png)
+
+The problem with entropy is that it does not converge. Indeed, the entropy of uniform distribution with $n$ options is $\log n$, so the entropy of continuous uniform distribution is infinite. This makes sense! If I sample a real number from continuous uniform distribution, this number is going to have infinitely many bits. 
+
+So, strictly speaking, it does not make much sense to talk about entropy of continuous random variables. Fortunately, it still does make sense to talk about KL divergence -- since this is the _relative_ entropy between two distributions, the infinities "cancel out" and, as we discussed, we get convergence and sensible numbers. 
+
+What does it mean for the principle of maximum entropy? If this principle was really purely about entropy, we would be in trouble but, fortunately, we understand from [the previous chapter](03-minimizing) that this principle is fundamentally about minimizing KL divergence between $p$ and a model distribution which, in case of max entropy principle, is the uniform distribution. 
+
+If we write down the formula for KL between $p$ and uniform distribution, <Footnote>Let's assume we integrate over interval $[0,1]$ so that it's well-defined</Footnote> we get <Math math = "D(p, q_{uniform}) = \int p(x) \log \frac{p(x)}{1} dx = \int p(x) \log p(x) dx" />. That is, in the continuous case, the maximum entropy principle says we should maximize the expression $\int p(x) \log \frac{1}{p(x)} dx$ called [differential entropy](https://en.wikipedia.org/wiki/Differential_entropy). 
+
+So after all this discussion, generalizing our technique to continuous distribution still amounts to replacing $\sum$ by $\int$. This makes it a bit hard to appreciate that actually, a lot of stuff's happening under the hood. In particular, the reason everything works out is that ultimately, our argument is about _relative_ entropy. 
+</Expand>
+
 
 ## Catalogue of examples
 
@@ -109,9 +129,9 @@ Here's a catalogue of some max entropy distributions.
 
 ### No constraints
 
-In case of no constraints, we have $p(x) \propto e^{0}$, i.e., the distribution is uniform. This is the principle of indifference that we [already discussed]() as a special case of the max entropy principle. 
+In case of no constraints, we have $p(x) \propto e^{0}$, i.e., the max entropy distribution is uniform. In other words, maximum entropy principle is really an extension of the [the principle of indifference](03-minimizing/maximum-entropy-principle) that we discussed in the previous chapter. 
 
-One issue to keep in mind is that the uniform distribution does not always exist -- in particular there's no uniform distribution over real numbers. 
+One issue to keep in mind is that the uniform distribution does not always exist -- in particular, there's no uniform distribution over real numbers. 
 
 ### Fixing $E[X]$
 
