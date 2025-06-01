@@ -11,30 +11,30 @@ The question we would like to understand is: If we consider only a set of distri
 
 Let's see some examples first. If we consider distributions with $E[X] = \mu$ (and the domain is nonnegative real numbers), the maximum entropy distribution is the exponential distribution. This is the distribution with <Math math = "p(x) \propto e^{-\lambda x}" />. Here, $\lambda$ is some parameter -- fixing $E[X]$ to have different values leads to different $\lambda$s. <Footnote>In this particular case, the precise shape of the distribution is <Math math = "p(x) = \frac{1}{\mu} e^{- x/\mu}" />, but it will help if we don't worry about constants. </Footnote>
 
-Another example: If we fix both $E[X]$ and $E[X^2]$ to be equal to some values, the maximum entropy distribution is the normal distribution where <Math math = "p(x) \propto e^{-(x-\mu)^2/\sigma^2}." />. Perhaps more simply, we can write down its shape as <Math math = "p(x) \propto e^{-\lambda_1 x - \lambda_2 x^2}." /> for some constants $\lambda_1, \lambda_2$. 
+Another example: If we fix both $E[X]$ and $E[X^2]$ to be equal to some values, the maximum entropy distribution is the normal distribution where <Math math = "p(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-(x-\mu)^2/(2\sigma^2)}." />. To avoid unnecessary clutter, we can rewrite down its shape as <Math math = "p(x) \propto e^{-\lambda_1 x - \lambda_2 x^2}." /> for some constants $\lambda_1, \lambda_2$. 
 
 Can you spot a pattern? 
 
+<Block headline= "General form of max entropy distributions">
 Here's the general form of maximum entropy distributions: Let's say that we are given a bunch of constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$. Then, among all the distributions that satisfy the constraints, the distribution $p$ with maximum entropy has the shape: 
 <Math displayMode = {true} math = "p(x) \propto e^{\lambda_1 f_1(X) + \dots + \lambda_m f_m(X)}"/>
-The constants $\lambda_1, \dots, \lambda_m$ has to be chosen based on the values $\alpha_1, \dots, \alpha_m$. But I advise you not to focus on $\alpha$s and $\lambda$s too much. The point is that the maximum entropy distribution looks like an exponential with the stuff we care about  i.e. the functions $f_1, \dots, f_m$ -- in the exponent. 
+for some constants $\lambda_1, \dots, \lambda_m$. 
+</Block>
+Notice that this general recipe does not tell us what the values $\lambda_1, \dots, \lambda_m$ are supposed to be. Those have to be chosen dependeing on the values $\alpha_1, \dots, \alpha_m$ (note that whatever is the value of $\alpha$s the shape stays the same). But I advise you not to focus on $\alpha$s and $\lambda$s too much. The point is that the maximum entropy distribution looks like an exponential with the stuff we care about, i.e. the functions $f_1, \dots, f_m$, in the exponent. 
 
-## Why? <a id = "intuition"></a>
+### Why? <a id = "intuition"></a>
 
-But I want to give you a concrete intuition. Remember, we understand from [the previous chapter](03-minimizing) that the max-entropy principle is really about finding a distribution that is close to being uniform, in the sense of minimizing KL divergence. 
+Here's an intuition. Remember, we understand from [the previous chapter](03-minimizing) that the max-entropy principle is really about finding a distribution that is close to being uniform, in the sense of minimizing KL divergence. 
 
 So, in which sense are max-entropy distributions close to being uniform? Let's see it on the example of exponential distribution $p(x) \propto e^{-x}$. Let's say that I independently sample two numbers from it $x_1$ and $x_2$. Here's a riddle: Is it more probable that I sample $x_1 = 10, x_2 = 20$ or that I sample $x_1' = 15, x_2' = 15$? 
 
-The answer is that both have the same probability since $p(x_1)\cdot p(x_2) = e^{-x_1 - x_2}$ and we have in our riddle that $x_1 + x_2 = x_1' + x_2'$. In other words, in this density graph, the lines with the same sum $x_1 + x_2$ have uniform density. 
+The answer is that both options have the same probability. That's because $p(x_1)\cdot p(x_2) = e^{-x_1 - x_2}$ and we have in our riddle that $x_1 + x_2 = x_1' + x_2'$ so both possibilities have density proportional to $e^{-30}$. In other words, in the following density graph, the points on the black line of the same sum $x_1 + x_2 = 0.7$ have the same density. Put differently, the conditional distribution on the line is uniform. 
 
 ![Exponential distribution](04-max_entropy/exponential.png)
 
-This is not specific only to the exponential distribution, but works for all max-entropy distributions with the shape from ??. In general, consider some distribution of the shape <Math math = "p(x) \propto e^{\lambda_1 f_1(x) + \dots + \lambda_m f_m(x)}" /> and think of independently sampling a few points $x_1, \dots, x_k$ from that distribution. Now if you tell me what are the average values $a_1 = \frac{1}{k} \sum_{i = 1}^k f_1(x_i), \dots, a_m = \frac{1}{k} \sum_{i = 1}^k f_m(x_i)$ and I condition on this information, the conditional distribution over $x_1, \dots, x_k$ is actually uniform! That's because the occurence probability of any such tuple under our distribution $p$ is the same and equal to <Math math = "p(x_1, \dots, x_k) \propto e^{k(\lambda_1 a_1 + \dots + \lambda_m a_m)}$" />.  
+This is not specific only to the exponential distribution, but it works for all max-entropy distributions with the shape from our formula ??. In general, consider some distribution of the shape <Math math = "p(x) \propto e^{\lambda_1 f_1(x) + \dots + \lambda_m f_m(x)}" /> and think of independently sampling a few points $x_1, \dots, x_k$ from that distribution. Now if you tell me the values of the averages $a_1 = \frac{1}{k} \sum_{i = 1}^k f_1(x_i), \dots, a_m = \frac{1}{k} \sum_{i = 1}^k f_m(x_i)$ and I condition on this information, the conditional distribution over $x_1, \dots, x_k$ is actually uniform! That's because the occurence probability of any such tuple under our distribution $p$ is the same and equal to <Math math = "p(x_1, \dots, x_k) \propto e^{k(\lambda_1 a_1 + \dots + \lambda_m a_m)}" />.  
 
-So what should we take of it? If you sample from max-entropy distributions, the experience is actually pretty similar to sampling from the uniform distribution! After you measure the empirical averages of $f_1, \dots, f_m$ of your sample, it's distribution is uniform. This is a very concrete sense in which max-entropy distributions are close to the uniform distributions. 
-<Footnote>
-Even better, using the law of large numbers, if you sample a large sample of $k$ samples, you know that with high probability, the empirical averages $\frac{1}{k} \sum_{i = 1}^k f_j(x_i)$ are going to be close to $E[f_j(X)]$. Thus, sampling from maximum entropy distribution feels like sampling from the uniform distribution over "typical" instances. 
-</Footnote>
+So what should we take of it? If you sample from max-entropy distributions, the experience is actually pretty similar to sampling from the uniform distribution! After you measure the empirical averages of functions $f_1, \dots, f_m$ of your sample, the conditional distribution over the possible options with those averages is uniform. This is a very concrete sense in which max-entropy distributions are close to the uniform distributions. <Footnote> Even better, using the law of large numbers, if you sample a large sample of $k$ samples, you know that with high probability, the empirical averages $\frac{1}{k} \sum_{i = 1}^k f_j(x_i)$ are going to be close to $E[f_j(X)]$. Thus, sampling many samples from maximum entropy distribution feels like sampling from the uniform distribution over "typical" instances. </Footnote>
 
 
 There's also an elegant derivation of the shape of max-entropy distribution using Lagrange multipliers. Feel free to skip if you don't know how those work.  
@@ -42,28 +42,26 @@ There's also an elegant derivation of the shape of max-entropy distribution usin
 We will only consider discrete distributions, let's say those with support $\{1, \dots, K\}$. 
 This is an optimization problem for $K$ variables $p_1, \dots, p_K$:
 
-$$
-VARIABLES: p_1, \dots, p_K
-MAXIMIZE: \sum_{i = 1}^K p_i \log 1/p_i
-CONSTRAINTS:
-\sum_{i = 1}^K p_i \cdot f_1(i) = \alpha_1
-...
-\sum_{i = 1}^K p_i \cdot f_m(i) = \alpha_m
-\sum_{i = 1}^K p_i = 1
-$$
+<Math displayMode={true} math = "VARIABLES: p_1, \dots, p_K \
+MAXIMIZE: \sum_{i = 1}^K p_i \log 1/p_i\
+CONSTRAINTS:\
+\sum_{i = 1}^K p_i \cdot f_1(i) = \alpha_1\
+\dots \
+\sum_{i = 1}^K p_i \cdot f_m(i) = \alpha_m\
+\sum_{i = 1}^K p_i = 1\
+" />
 
 If there were no constraints, the problem would be simple to solve! We would just take the expression to maximize (the entropy) and set all partial derivates by $p_1, \dots, p_K$ to be zero.
 
 Fortunately, there's a technique called [Lagrange multipliers](https://en.wikipedia.org/wiki/Lagrange_multiplier) that will help us here. It involves turning _hard_ constraints (as in our problem) into _soft_ constraints. A soft-constraint variant of our problem would be:
 
-$$
-VARIABLES: p_1, \dots, p_K
-MAXIMIZE: \sum_{i = 1}^K p_i \log 1/p_i
-- \lambda_1 (\sum_{i = 1}^K p_i \cdot f_1(i) - \alpha_1)
-- ... -
-- \lambda_m (\sum_{i = 1}^K p_i \cdot f_m(i) - \alpha_m)
-- \lambda_{m+1} (\sum_{i = 1}^K p_i - 1)
-$$
+<Math displayMode={true} math = "VARIABLES: p_1, \dots, p_K\
+MAXIMIZE: \sum_{i = 1}^K p_i \log 1/p_i\
+- \lambda_1 (\sum_{i = 1}^K p_i \cdot f_1(i) - \alpha_1)\
+- \dots -\
+- \lambda_m (\sum_{i = 1}^K p_i \cdot f_m(i) - \alpha_m)\
+- \lambda_{m+1} (\sum_{i = 1}^K p_i - 1)\
+"/>
 
 What happens is that instead of requiring that the solution has to exactly satisfy all the constraints, we just say that we have to pay some additional cost for being off the target. The constants $\lambda_1, \dots, \lambda_{m+1}$ are kind of telling us how important each constraint is -- large $\lambda_j$ means that $\sum_{i = 1}^K p_i \cdot f_m(i) - \alpha_m$ should better be small! (In fact, we are not just paying for $\sum_{i = 1}^K p_i \cdot f_m(i) - \alpha_m$ being larger than 0. In this soft constraint formulation, we are even getting paid if it is less than 0! With negative $\lambda_i$, it would be the other way around. )
 
@@ -100,12 +98,14 @@ and the same formula is also the solution if the probability distribution is con
 Now this formula is not the full solution to our problem, because it involves some magical constants $\lambda_1, \dots, \lambda_m$ that we don't know. To find their values, we have to go back to our constraints -- do you still remember that there were $m$ numbers $\alpha_1, \dots, \alpha_m$ there? We can use the conditions $E[f_j(x)] = \alpha_j$ to work out the precise shape of the distribution. 
 </Expand>
 
+We will work a lot with continuous distributions. This leads to some technical issues that we disccus in the next Expand box. 
+
 <Expand headline = "Working with continuous distributions">
 
 Sometimes we have to use entropy and KL divergence for continuous distributions. For KL divergence, not much changes. We just have to replace sum by integral and write 
 <Math displayMode={true} math = "D(p, q) = \int_x p(x) \log \frac{p(x)}{q(x)} dx. " />
 
-For entropy it's a bit more tricky. To understand what's happening, let's remember what integral intuitively stands for. For example, continuous uniform distribution over interval $[0,1]$ is in some sense just a limit of discrete distributions, where $n$-th distribution in the sequence is the uniform distribution over <Math math = "\{\frac{1}{n}, \dots, \frac{n}{n}}"/>. When we use the integral formulas like the formula ?? above for KL divergence, it's justified by _convergence_: If we discretize real line into buckets of length $1/n$ and compute KL divergence after that, then as we keep making $n$ larger, the discretized results will converge to the value of the integral in ?? (unless $p,q$ are some wild functions). 
+For entropy it's a bit more tricky. To understand what's happening, let's remember what integral intuitively stands for. For example, continuous uniform distribution over interval $[0,1]$ is in some sense just a limit of discrete distributions, where $n$-th distribution in the sequence is the uniform distribution over <Math math = "\{\frac{1}{n}, \dots, \frac{n}{n}\}"/>. When we use the integral formulas like the formula ?? above for KL divergence, it's justified by _convergence_: If we discretize real line into buckets of length $1/n$ and compute KL divergence after that, then as we keep making $n$ larger, the discretized results will converge to the value of the integral in ?? (unless $p,q$ are some wild functions). 
 
 ![uniform](04-max_entropy/unif.png)
 
@@ -123,7 +123,9 @@ So after all this discussion, generalizing our technique to continuous distribut
 
 ## Catalogue of examples
 
-It turns out that many distributions you encountered are maximum entropy distributions for some choice of functions $f_1, \dots f_m$. That's not so suprising -- after all, in the case of discrete distributions over e.g. $\{1, \dots, K\}$, literally any distribution is a maximum entropy distribution for certain $K$ constraints.<Footnote>For example, for your favorite distribution $p_1, \dots, p_K$, choose the $j$-th constraint to be $E[\mathbb{1}_j(i)] = p_j$ where $\mathbb{1}_j$ returns 1 for $i$ and 0 otherwise. </Footnote> So, when you encounter a distribution, the right approach is not really to ask the question "Is this a max entropy distribution?". It's more "For what parameters is this a max entropy distribution?" For example, you can forget the formula for Gaussian distribution -- suffices to remember that if you use it, it means that you believe that the mean and the variance are the important parameters to look at. 
+It turns out that many distributions you encountered are maximum entropy distributions for some choice of functions $f_1, \dots f_m$. 
+
+So, when you encounter a distribution, the right approach is not really to ask the question "Is this a max entropy distribution?". It's more "For what parameters is this a max entropy distribution?" For example, you can forget the formula for Gaussian distribution -- suffices to remember that if you use it, it means that you believe that the mean and the variance are the important parameters to look at. 
 
 Here's a catalogue of some max entropy distributions. 
 
@@ -191,7 +193,7 @@ The problem with this is that usually, most of these probabilities are extremely
 
 This makes it awkward to work with the probabilities directly inside the net -- there are all kinds of numerical and stability issues with this. So the neural nets are instead trying to predit logits, and the conversion to probabilities is just the final layer of the network. 
 
-Example: A nice bonus to this example is that if you train the network using softmax with $\lambda = 1$, you can change the parameter $\lambda$ after the training. For example, setting $\lambda$ to infinity (temperature goes to zero) is equivalent to just choosing the most probable option -- this way you make the output of the model deterministic which is often useful at deployment. 
+A nice bonus is that if you train the network using softmax with $\lambda = 1$, you can change the parameter $\lambda$ after the training. For example, setting $\lambda$ to infinity (temperature goes to zero) is equivalent to just choosing the most probable option -- this way you make the output of the model deterministic which is often useful at deployment. 
 
 {/*There are also application for higher temperatures. For example, if you want to use LLM to solve a hard math problem, you might want to run it a million times to increase the probability the net solving it. But then you should probably run it at higher temperatures to make sure you want get the same thought process a million times in a row.  
 
@@ -220,18 +222,18 @@ However, it should be said that one of the popular interpretations of softmax in
 #### Exponential and Geometrical distribution
 
 If the domain of the probability distribution is nonnegative integers/reals, then we get the so-called [geometric](https://en.wikipedia.org/wiki/Geometric_distribution)/[exponential](https://en.wikipedia.org/wiki/Exponential_distribution) distribution -- another very basic and useful distribution. 
-You should think about this distribution as _the most natural_ distribution to model positive numbers. 
+You should think about this distribution as _the most natural_ distribution on the domain of positive numbers. 
 
-Here's an example. Let's say you told me that you measured how long it took you to eat your lunch during the past year and I am to guess how the data looks like. My approach would be to first guess the average time (15 minutes? 30 minutes?) and use the exponential distribution with that mean. 
-Only after this first model, I would actually start thinking about whether there's something specific on "eating the lunch" and your personality to add into the model. 
+In the [previous chapter](03-minimizing) we discussed the example of modelling how long I take my lunch. The expected length of it is a natural parameter, hence modelling it by the exponential distribution is a natural choice. 
 
+{/*
 <Footnote>
 In practice, my guess would probably not have tail $p(x) \propto e^{-x}$, but a heavier tail, like <Math displayMode={false} math = "p(x) \propto e^{-\sqrt{x}}"/> or even $p(x) \propto 1/x^{C}$. Why? Well, notice how I am not sure about what the actual mean is. So, I should perhaps use a 2-layered model: 1) I sample your average lunch time $\mu$ from some distribution 2) I use exponential distribution with mean $\mu$. 
 
 How should I sample $\mu$ in the first step? Applying max-entropy principle again, perhaps I should sample it from exponential distribution, with mean being how long it takes me / average person to eat their lunch. If you crunch the numbers, the overall distribution that I will use as my input is going to have tails <Math displayMode={false} math = "p(x) \propto e^{-C\sqrt{x}}"/>. That is, the model is getting less sure that I won't see some really large numbers. Using power-law distribution in step 1) would lead to $p(x) \propto 1/x^{C}$. 
 
 This discussion is mostly meant to show what I love on the max entropy principle -- it enables us to rapidly operationalize and concretize our thought processes. Modelling real life is hard, but now we have a powerful tool that automatically builds concrete probabilistic models from vague thoughts like "there's two types of randomness, first in the average lunch time, and second in the variation around that average". 
-</Footnote>
+</Footnote>*/}
 
 There still an elephant in the room though -- exponential distribution can't be normalized if the data are general real numbers. 
 
@@ -247,17 +249,22 @@ I think this is a good (partial) explanation of "why is there $x^2$ in Gaussian"
 
 You should view the normal distribution as _the right distribution_ if what you care is mean and variance. A related view is that this is the simplest possible distribution on real numbers -- Neither the uniform distribution nor the exponential distribution can be normalized there, so we can try to salvage this by fixing the first two moments. 
 
-#### Central limit theorem
-The normal distribution is extremely important because of the [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem).  Roughly speaking: If you keep adding some random variables $X_1, \dots, X_N$, each with mean $\mu$ and variance $\sigma^2$, then the value of <Math math = "\frac{X_1 + \dots + X_N - N\mu}{\sqrt{N\sigma^2}}"/> is going to be distributed like $N(0,1)$. 
+<Expand headline = "Maximum entropy & Central limit theorem">
 
-Here's how the max entropy principle can help you think about this theorem: For the theorem, the mean and the variance are clearly important parameters. Thus, max entropy principle kind of suggests that if there is a single distribution that the sums are converging to, the guassian is a natural candidate. 
-<Footnote>
-In fact, here's how one proof the central limit theorem works: We keep track of the entropy of <Math math = "S_N = \frac{X_1 + \dots + X_N - N\mu}{\sqrt{N\sigma^2}}"/>. We prove that the operation of adding random variables -- called convolution -- has smearing-out properties that increase the entropy of the $S_N$ at least a little bit. This is actually the hard part -- Although it is simple to argue from the definition that $H(X+Y) \ge \max(H(X), H(Y))$ for any two random variables, the proof requires a stronger inequality called [entropy power inequality](https://en.wikipedia.org/wiki/Entropy_power_inequality). As the entropy of $S_N$ keeps converging to the entropy of $N(0,1)$, we argue that the distribution of $S_N$ also has to keep looking more and more similar to the distribution of $N(0,1)$, thus proving the central limit theorem. 
-</Footnote>
+The normal distribution has two important properties. First, it's maximum entropy for mean and variance. Second, it's the distribution from the [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem).  Roughly speaking: If you keep adding some random variables $X_1, \dots, X_N$, each with mean $\mu$ and variance $\sigma^2$, then the value of <Math math = "\frac{X_1 + \dots + X_N - N\mu}{\sqrt{N\sigma^2}}"/> is going to be distributed like $N(0,1)$. 
 
-Example: One of the running examples we used was [measuring of feet](00-introduction/statistics). Why should we model the data using the normal distribution? The typical reasoning is that the length of my foot is a random variable that can probably be modelled as a sum of many small and relatively independent random variables. Thus, using central limit theorem, the normal distribution is a good fit. 
+Here's how the max entropy principle can help you think about this theorem: For the theorem, the mean and the variance are clearly important parameters. Thus, max entropy principle suggests that if there is a single distribution that the sums are converging to, the guassian is a natural candidate. 
 
-We could also try to approach this modelling problem purely from the max-entropy perspective. Since the data is positive, the simplest model for it is the exponential distribution (see above). But that seems to predict that we will e.g. see many people with feet length twice the average, which does not seem to be a great feature of the model. So, we can do better if we also take into account that the typical deviation of the distribution from the mean is probably quite a bit smaller than the mean. The max entropy distribution if we now consider both the mean and the variance (that represents the scale) is going to be the normal distribution. <Footnote>More precisely, since the domain is _positive_ real numbers, the max entropy distribution is a Gaussian that is clipped to zero for negative numbers and rescaled to sum up to 1. </Footnote> 
+The connection between the two is deeper. In fact, [one of the proofs]() of central limit theorem works roughly like this: The operation of adding random variables (convolution) has smearing-out properties that increase the entropy of the sum (there are [inequalities](https://en.wikipedia.org/wiki/Entropy_power_inequality) that can measure this increase). After a bit of math this implies that the distribution of the sum of random variables with normalized variance must look closer and closer to the distribution of the maximum entropy distribution with normalized variance, i.e., Gaussian. 
+</Expand>
+
+<Expand headline = "Application: measuring feet">
+One of the running examples we used was [measuring of feet](00-introduction/statistics). Why should we model the data using the normal distribution? One way to reason about this is that the length of my foot is a random variable that can probably be modelled as a sum of many small and relatively independent random variables. Thus, using central limit theorem, the normal distribution is a good fit. 
+
+We could also try to approach this modelling problem purely from the max-entropy perspective. Since the data is positive, the simplest model for it is the exponential distribution. But that seems to predict that we will e.g. see many people with feet length twice the average, which does not seem to match reality. 
+
+The next better model takes into account that the typical deviation of the distribution from the mean is probably quite a bit smaller than the mean. The max entropy distribution if we now consider both the mean and the variance (that represents the scale) is going to be the normal distribution. <Footnote>More precisely, since the domain is _positive_ real numbers, the max entropy distribution is a Gaussian that is clipped to zero for negative numbers and rescaled to sum up to 1. </Footnote> 
+</Expand>
 
 ### Other Examples
 
@@ -270,6 +277,7 @@ The implication for the max-entropy principle is this: Imagine that you work wit
 
 Whenever people model stuff by probability distributions, they assume that some distributions are independent whenever they don't know how the dependence between them would look like (i.e., they make this assumption all the time). We can think of it as a special case of using the maximum entropy principle.
 
+![independence](04-max_entropy/independence.png)
 
 </Expand>
 <Expand headline ="Power law distributions">
@@ -290,17 +298,17 @@ But look at our Bayesian hero from [the first chapter](01-kl_intro). She didn't 
 </Expand>
 <Expand headline ="Exponential family">
 
-We already discussed that in case of distributions on a finite domain, any distribution is maximum entropy for a clever choice of functions. But with infinite domain (like distribution over real numbers), if you have only finitely many functions $f_1, \dots, f_m$, then only a small proportion of distributions are max-entropy for something. 
 
-Exponential family is a family of distributions that you can define from maximum entropy principle. So, any distribution with finite domain is in exponential family. Any distribution we discussed so far (exponential, geometrical, normal, power-law, beta) are in the exponential family. [Wikipedia](https://en.wikipedia.org/wiki/Exponential_family) contains a long list of distributions in that family, many of which I've never heard about. 
-<Footnote>
-It would be more precise to say that exponential family are those distributions that minimize $D(p,q)$ from some distribution $q$, given some constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$. In particular, $q$ does not have to be uniform. 
+In the case of discrete distributions over e.g. $\{1, \dots, K\}$, literally any distribution is a maximum entropy distribution for certain $K$ constraints. For example, for your favorite distribution $p = (p_1, \dots, p_K)$, choose the $j$-th constraint to be $E[\mathbb{1}_j(i)] = p_j$ where $\mathbb{1}_j$ returns 1 for $i$ and 0 otherwise; the max entropy distribution for these $K$ constraints is $p$. 
 
-Example: Take the domain $\{0, 1, \dots, n\}$ and consider the constraint $f(X) = X$. We have already seen that this leads to the exponential distribution, given we start with uniform $q$. Now, consider $q$ with <Math math = "q_i = {n \choose i} / 2^n"/> instead. The new solution is the distribution $p$ with <Math math = "p_i \propto {n \choose i} \cdot e^{\lambda i}"/>. This may not look familiar, but if we substitute $\lambda = \log p/(1-p)$, we get the formula for the binomial distribution. Thus, binomial distribution belongs to the exponential family using $f(X) = X$, even though it's not max-entropy distribution for that $f$. 
-</Footnote>
+However, for distributions over real numbers and finitely many functions $f_1, \dots, f_m$, only a small proportion of distributions are max-entropy for some family of functions. 
+
+Exponential family is the elite family of distributions that are maximum entropy distributions for some functions $f_1, \dots, f_m$. <Footnote> More precisely, it's the family of distributions that are "min KL distributions" for some $q$: A distribution from that family minimizes $D(p,q)$ from some not necesserily uniform distribution $q$, given some constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$. As an example, take the domain $\{0, 1, \dots, n\}$ and consider the constraint $f(X) = X$. We have already seen that this leads to the exponential distribution, given we start with uniform $q$. Now, consider $q$ with <Math math = "q_i = {n \choose i} / 2^n"/> instead. The new solution is the distribution $p$ with <Math math = "p_i \propto {n \choose i} \cdot e^{\lambda i}"/>. After we substitute $\lambda = \log p/(1-p)$, we get the formula for the binomial distribution. Thus, binomial distribution belongs to the exponential family using $f(X) = X$, even though it's not max-entropy distribution for that $f$.</Footnote>
+So, any distribution with finite domain is in the exponential family. Any distribution we discussed so far (exponential, geometrical, normal, power-law, beta) are in the exponential family. [Wikipedia](https://en.wikipedia.org/wiki/Exponential_family) contains a long list of distributions in that family, many of which I've never heard about. 
+
 The importance of this family is that the distributions from it have a bunch of nice and intuitive properties. 
-<Footnote>
-Here's one of the nice properties which is actually quite relevant in the next chapter but perhaps too obscure to appreciate on the first read of this. 
+<Expand headline="A theoretically nice property of exponential-family distributions">
+Here's one of the nice properties which is relevant for the next chapter but perhaps too obscure to appreciate on the first read of this. 
 
 Suppose that you have some data with mean $\mu$ and variance $\sigma^2$ and you want to fit it with a distribution. There are two ways to go about this. 
 
@@ -310,8 +318,8 @@ Suppose that you have some data with mean $\mu$ and variance $\sigma^2$ and you 
 
 Both approaches gave the same answer, but it's not a priori clear that this should be the case! Perhaps MLE could have decided that $N(\mu, \frac{n-1}{n} \sigma^2)$ is a better fit for the data. 
 
-Fortunately, the distributions in the exponential family have the nice property that if you settle the parameters of the distribution by MLE, they turn out to be what they should be. Formally, if your destribution is defined by constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$, then <Math math = "\hat\alpha_{1, MLE} = \alpha_1, \dots, \hat\alpha_{m,MLE} = \alpha_m" />.
-</Footnote>
+Fortunately, the distributions in the exponential family have the nice property that both approaches give the same answer. I.e., if you settle the parameters of the distribution by MLE, they turn out to be what they should be. Formally, if your destribution is defined by constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$, then <Math math = "\hat\alpha_{1, MLE} = \alpha_1, \dots, \hat\alpha_{m,MLE} = \alpha_m" />.
+</Expand>
 
 
 </Expand>
@@ -336,6 +344,9 @@ For example, even though $\pi$ has infinitely many digits, its Kolmogorov comple
 In some abstract theories (like [Solomonoff induction](https://en.wikipedia.org/wiki/Solomonoff%27s_theory_of_inductive_inference) or [Tegmark multiverse](https://en.wikipedia.org/wiki/Multiverse)), we want to have a distribution over all Turing machines (i.e., algorithms) or over all mathematical objects (whatever that means). We then choose the max-entropy distribution, i.e., <Math math = "p(x) \propto e^{-\lambda K(x)}" />. This is called the Solomonoff prior. 
 </Expand>
 
+### Applications
+
+Let's see some applications of this to our riddles. 
 
 <Expand headline ="Application: XKCD joke">
 
@@ -368,7 +379,7 @@ Let's return to our financial mathematics riddle [from the intro](00-introductio
 
 We observed that the normal distribution is a better fit for more recent data, and Laplace distribution with  better models more long-term data.  Also, Laplace fits Bitcoin better than S&P. <Footnote>How do we formalize the claim "the distribution X fits the data $p$ better than the distribution Y"? Of course by measuring $D(p, X)$ and $D(p, Y)$! In our case for example, it says that Laplace starts to be a better fit for S&P for at least ?? days. </Footnote>
 
-Laplace distribution has the shape $p(x) \propto e^\{-\lambda |x-\mu|}$. What's the meaning of this formula? We could think of it as the max entropy distribution for fixing the value $E[|X-\mu|]$, but there's another illuminating way to understand it. The Laplace distribution can be viewed as the result of the following process:<Footnote>I actually don't know any way observing this fact directly. Let me know if you know a way to do that. The fact can be verified algebraically, but it's not so easy. </Footnote>
+Laplace distribution has the shape <Math math = "p(x) \propto e^\{-\lambda |x-\mu|}" />. What's the meaning of this formula? We could think of it as the max entropy distribution for fixing the value $E[|X-\mu|]$, but there's another illuminating way to understand it. The Laplace distribution can be viewed as the result of the following process:<Footnote>I actually don't know any way observing this fact directly. Let me know if you know a way to do that. The fact can be verified algebraically, but it's not so easy. </Footnote>
 
 1. Sample a variance $\sigma^2$ from the exponential distribution
 2. Output a sample from $N(\mu, \sigma^2)$
@@ -381,11 +392,8 @@ To understand how this helps to explain our financial data, consider the followi
 
 Perhaps we should try a more advanced two-layered model predicting the shape of our data: Maybe each month, we sample $\sigma^2$ -- the volatility for that month. Let's sample it from the max-entropy distribution, i.e., exponential. Next, the rest of the month, we sample from the Gaussian with that variance. As we mentioned above, this two-layered process actually samples from the Laplace distribution. 
 
-Put differently, while Gaussian fit is claiming "I am pretty sure about today's volatility and unsure about the fluctuation around the mean" and Laplace is saying "I am uncertain both about the volatility, and the actual fluctuation of the day." This explains why Gaussian fits near-term data (volatility of the time period stays roughly the same), while more long-term data starts looking more like Laplace. 
-<Footnote>
-Laplace distribution is not necessarily a good practical model. As far as I know, one standard way of modelling financial data is the Student-t distribution. I will not bore you with its formula, but let you know that it is the distribution that you get from the similar process as how we arrived at Laplace; but instead of sampling $\sigma^2$ from the exponential distribution, you sample it from the so-called inverse gamma distribution. Gamma distribution is itself max-entropy distribution for fixing $E[X]$ and $E[\log X]$ (and inverse gamma distribution means we measure volatility by $1/\sigma^2$ instead of $\sigma^2$). 
-That is, Student-t distribution takes our model a bit further and adds uncertainty about the _scale_ of the volatility. For example, maybe if you take into large enough past, you start seeing some extreme events like world wars/the Great Depression/industrial revolution, so perhaps we should be open to power-law fits instead of exponential ones. 
-</Footnote>
+Put differently, while Gaussian fit is claiming "I am pretty sure about today's volatility and unsure about the fluctuation around the mean" and Laplace is saying "I am uncertain both about the volatility, and the actual fluctuation of the day." This explains why Gaussian fits near-term data (volatility of the time period stays roughly the same), while more long-term data starts looking more like Laplace. <Footnote>Laplace distribution is not necessarily a good practical model. As far as I know, more standard way of modelling financial data is the Student-t distribution. I will not bore you with its formula, but let you know that it is the distribution that you get from the similar process as how we arrived at Laplace; but instead of sampling $\sigma^2$ from the exponential distribution, you sample it from the so-called inverse gamma distribution. Gamma distribution is itself max-entropy distribution for fixing $E[X]$ and $E[\log X]$ (and inverse gamma distribution means we measure volatility by $1/\sigma^2$ instead of $\sigma^2$). 
+That is, Student-t distribution takes our model a bit further and adds uncertainty about the _scale_ of the volatility. For example, maybe if you take into large enough past, you start seeing some extreme events like world wars/the Great Depression/industrial revolution, so perhaps we should be open to power-law fits instead of exponential ones. </Footnote>
 
 I like this example because I think it nicely shows the strength of the max-entropy principle. Notice how maximum entropy allows us to focus only on the important aspects of our model (do we fix volatility or is it itself a random variable?) All the algebraic details are filled in automatically by max entropy reasoning. Or if we take it from the other side -- when we see a concrete formula, like a fit by Laplace distribution, max entropy enables us to see through it and understand what the formula stands for. 
 </Expand>
