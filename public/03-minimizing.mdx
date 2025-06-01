@@ -78,18 +78,23 @@ Given this new information, how should I choose a better model?
 
 ![max-ent](03-minimizing/max_ent_example.png)
 
-I claim that among all distributions <Math math="p" /> with average of 15, I should pick the distribution <Math math = "p_{\textrm{new}}" /> with 
-<Math displayMode={true} math="\arg\min_{p \in P} D(p,q)," /> 
-where <Math math="q" /> is my original model (the uniform distribution).
+I claim that among all distributions <Math math="p" /> with average of 15, I should pick the distribution <Math math = "p_{\textrm{new}} = \arg\min_{p: E_p[X]=15} D(p,q)"/> where <Math math="q" /> is my original model (the uniform distribution). In general, if I have a model distribution $q$ and learn that the true distribution is in some set $P$ (e.g. the set of distributions with mean 15), I claim that I should replace the model $q$ by a new model <Math math = "p_{\textrm{new}}"/>:
 
-Why? Intuitively, I want to find a (true) distribution <Math math="p" /> so that <Math math="q" /> is as good model of it as possible. This is what we find by minimizing KL divergence. 
+<Math displayMode={true} math="p_{\textrm{new}} = \arg\min_{p \in P} D(p,q)," /> 
 
-Admittedly, this reasoning is a bit shaky, since in KL, we would always like $p$ to stand for the true distribution, while here it's just a new, hopefully better model distribution. Expand for a detailed derivation from Bayes' rule.
+Why? Intuitively, I want to find a distribution <Math math="p \in P" /> so that <Math math="q" /> is as good model of it as possible. This is what we find by minimizing KL divergence. 
+
+Admittedly, this reasoning is a bit shaky, since when using KL divergence, we typically like $p$ to stand for the "true" distribution, while here it's just a new, hopefully better model.  
+
+But we can also argue that this approach makes sense directly from Bayes' rule. Remember how we discussed above that using maximum likelihood really means "choose a model $q$ that's hardest to distinguish from $p$ by Bayes' rule"? Equation ?? can be similarly justified as "update $q$ to account for new evidence using Bayes' rule". 
+Reasoning behind this intuition is a bit more involved and so left in an expand box. 
 
 <Expand headline="Detailed discussion of how this follows from Bayes' rule">
-Remember how at the top of this chapter, we were able to argue that <Math math="\min_{q \in Q} D(p,q)" /> is a good methodology by "compiling it down" to a simple argument about Bayes' theorem? We will do the same here, using a version of so-called [Wallis derivation](https://en.wikipedia.org/wiki/Principle_of_maximum_entropy#The_Wallis_derivation). The reasoning is going to be a bit more involved.
+The following argument is a version of so-called [Wallis derivation](https://en.wikipedia.org/wiki/Principle_of_maximum_entropy#The_Wallis_derivation) of the maximum entropy principle. 
 
-Here is how we formulate our setup to turn this into an application of Bayes' theorem. Imagine that we start with some distribution $q$ and keep sampling from it $N$ times. We use $\hat{q}$ to denote the empirical distribution of the samples. Now we observe that $\hat{q}$ belongs to some family of distributions $P$ (e.g., all distributions with average 15). What is our current knowledge about $\hat{q}$?
+We reformulate our setup to view ?? as an application of Bayes' theorem. 
+
+Imagine that we start with some distribution $q$ and keep sampling from it $N$ times. We use $\hat{q}$ to denote the empirical distribution of the samples. Now we observe that $\hat{q}$ belongs to some family of distributions $P$ (e.g., all distributions with average 15). What is our current knowledge about $\hat{q}$?
 
 Bayes' theorem is clear on this: we should start with the prior distribution over $\hat{q}$, and then condition on the fact that $\hat{q}$ belongs to $P$ to get the posterior distribution over $\hat{q}$. We will argue the following claim: as $N$ goes to infinity, the posterior distribution is going to be concentrated on the distribution $p \in P$ that minimizes $D(p,q)$. This is the justification for our minimize-KL approach -- our methodology is basically equivalent to "passing from $q$ to $p$ by conditioning on the fact that the distribution belongs to $P$".
 
@@ -114,24 +119,24 @@ Whatever road you preferred, we can now continue. While the distribution of $\ha
 
 Let's take a closer look at our approach. A seemingly important problem of it is that it only enables us to change an original model $q$ to a better model $p$. But how did we choose the original model $q$? It's a bit of a chicken-and-egg problem.
 
-Fortunately, there's usually a very natural choice for the simplest possible model $q$ -- the uniform distribution. This is the unique distribution that assigns the same probability to each outcome. In some sense, it is the most "uninformative" distribution we can have. There's even a so-called [principle of indifference](https://en.wikipedia.org/wiki/Principle_of_indifference) that states that in case of no additional information, we should opt for the uniform distribution.
+Fortunately, there's usually a very natural choice for the simplest possible model $q$ -- the uniform distribution. This is the unique distribution that assigns the same probability to each outcome. In some sense, it is the most "uninformative" distribution we can have. This argument about uniform distribution is called the [principle of indifference](https://en.wikipedia.org/wiki/Principle_of_indifference). 
 
-So, it would be very interesting to understand what happens when we start with the uniform distribution $q$ (let's say over a discrete set $\{1, \dots, k\}$) and find a better model $p \in P$ by minimizing KL divergence. Let's write it down:
+So, it would be very interesting to understand what happens when we start with the uniform distribution $q$ (let's say over a discrete set $\{1, \dots, k\}$) and find a better model <Math math = "p_{new} \in P" /> by minimizing KL divergence. Let's write it down:
 
-<Math displayMode={true} math="D(p,q_{uniform}) = \sum_{i = 1}^k p_i \log \frac{p_i}{ 1/k}" />
+<Math displayMode={true} math="p_{new} = \argmin_{p \in P} D(p,q_{uniform}) = \sum_{i = 1}^k p_i \log \frac{p_i}{ 1/k}" />
 
-Using our splitting of KL divergence into entropy and cross-entropy, we can rewrite this as:
+After splitting KL divergence into entropy and cross-entropy, we rewrite this as:
 
 <Math displayMode={true} math="D(p,q_\text{uniform}) = \sum_{i = 1}^k p_i\log p_i - \sum_i p_i\log (1/k)" />
 
-Since the second term is a constant (and in fact equal to $-\log (1/k) = \log(k)$), minimizing KL divergence is equivalent to maximizing the negative of the first term, which is the entropy of $p$:
+Since the second term is a constant (and in fact equal to $-\log (1/k) = \log(k)$), minimizing KL divergence is equivalent to maximizing minus the first term, which is the entropy of $p$:
 
-<Math displayMode={true} math="\argmin_{p \in P} D(p, q_{uniform}) = \argmax_{p\in P} H(p)" />
+<Math displayMode={true} math="p_{new} = \argmin_{p \in P} D(p, q_{uniform}) = \argmax_{p\in P} H(p)" />
 
-We derived what's known as the maximum entropy principle: given a set $P$ of distributions to choose from, we should opt for the $p\in P$ that maximizes the entropy $H(p)$.
+We derived what's known as the [maximum entropy principle](https://en.wikipedia.org/wiki/Principle_of_maximum_entropy): given a set $P$ of distributions to choose from, we should opt for the $p\in P$ that maximizes the entropy $H(p)$.
 
-### An example
 
+<Expand headline = "Example: Gaussian distribution">
 Here's an example of how we can use maximum entropy principle. Let's say that we want to model some data that are real numbers and have certain mean $E_p[X] = \mu$ and variance $E_p[(X-\mu)^2] = \sigma^2$.
 We want to pick a distribution that models the data in the absence of any other evidence. Then, maximum entropy principle suggests we should choose the set $P$ to be all distributions with mean $\mu$ and variance $\sigma$ and pick the maximum entropy distribution $p$ in $P$.
 
@@ -140,7 +145,25 @@ As we will discuss in [later](05-machine_learning), this distribution $p$ is the
 It is often useful to think about this principle a bit more abstractly. Imagine that we don't even know the precise value of $\mu, \sigma^2$, we just believe that the mean and the variance are important parameters to know. Then, maximum entropy principle is telling us that we should model the data by some Gaussian. In other words, we conclude that the family of Gaussians is the *right* family to represent numerical data, if what we care about is their mean and variance. This is a very useful conclusion!
 
 ![potato](03-minimizing/potato_maxent.png)
+</Expand>
 
+
+One more advanced point. We have already seen that KL divergence is very closely related to the philosophy of updating your beliefs by Bayes' theorem. This relatioship actually goes both ways; more in the Expand box.
+
+<Expand headline = "Relation with Bayes goes both ways">
+We've already derived KL divergence and why it makes sense to minimize it from the philosophy of using Bayes' rule. This relationship goes both ways; let's see how. 
+
+Consider the generic problem solved by Bayes' theorem: We have a joint distribution  <Math math = "p_{old}" /> over two random variables $X$ (that we are interested in) and $Y$ (possible evidences we might see). 
+Then we observe some evidence $Y=y$. We want to compute the new distribution <Math math = "p_{new}" /> that takes this into account. The Bayes' rule is just a formula, but taken more philosophically, it's about understand what <Math math = "p_{new}" /> should be: It says that <Math math = "p_{new}" /> should be $0$ for $Y \not= y$ and for $Y = y$ it should be the conditional distribution of $p$ for $Y = y$. 
+
+The observation we can now make is that <Math math="p_{new} = \argmin_{p \in P} D(p, p_{old})" />, where $P$ is the set of distributions where $P(Y = y') = 0$ for $y' \ne y$<Footnote>The proof of the observation requires some rewritings but in essence, it's about the fact that the distribution closest in KL to $p$ conditioned on $Y = y$ is ... the same distribution. Really, nothing complicated is happening here, we are just saying that the new distribution should look like the old one, only rescaled so that probabilities sum up to one. </Footnote>
+
+So, we can think of the philosophy of updating by Bayes' theorem as a special case of the philosophy of minimizing KL divergence. This is all very circular and fuzzy, but the point is that minimizing KL is basically Bayes on steroids. 
+
+{/*not only the philosophy of minimize-KL-whenever-you-can-ism can be derived from the philosophy of argue-everything-from-Bayes-rule-ism, but we can also derive the philosophy of argue-everything-from-Bayes-rule-ism from the philosophy of minimize-KL-whenever-you-can-ism. Thus it is said that minimize-KL-whenever-you-can-ism is argue-everything-from-Bayes-rule-ism-complete (and vice versa).*/}
+</Expand>
+
+{/*
 ### A few more observations <a id="a-few-observations"></a>
 
 We will spend the whole next chapter discussing all the applications of the maximum entropy principle, but let's already make two observations about it. Those observations correspond to two important properties of entropy.
@@ -153,19 +176,8 @@ This is called [subadditivity of entropy](01-kl_intro/information-theory). Why i
 </Footnote>
 The implication for the max-entropy principle is this: Imagine that you work with a joint distribution and you know its two marginals $p,q$. Then, the maximum entropy principle tells us that the joint distribution with these two marginals that maximizes the entropy is the one where they are independent.
 Whenever people model stuff by probability distributions, they assume that two distributions are independent all the time. We can think of this assumption as a special case of the maximum entropy principle.
-
-One more point. We have already seen that KL divergence is very closely related to the philosophy of updating your beliefs by Bayes' theorem. This relatioship goes both ways; more in the footnote.
-
-<Expand headline = "Relation with Bayes' goes both ways">
-We've already derived KL divergence and its application from the philosophy of using Bayes' rule. This relationship goes both ways; let's see how. <Footnote></Footnote>
-
-Consider the generic problem solved by Bayes' theorem: We have a joint distribution $(X,Y)$ over two random variables $X$ (that we are interested in) and $Y$ (possible evidences we might see). Then we observe some evidence $Y=y$. We want to know the distribution of $X$ given $Y=y$. The Bayes' rule allows us to compute the conditional distribution $P(X|Y=y)$. This is not rocket science: If you imagine the original joint distribution as a table, you can just zero out the rows that do not correspond to $Y=y$ and normalize the remaining row to get the posterior distribution.
-
-The observation you can make is that <Math math="r = \argmin_{p \in P} D(p, (X,Y))" />, where $P$ is the set of distributions where $P(Y = y') = 0$ for $y' \ne y$. That's because after some rewritings, this minimization problem is equivalent to claiming that $P(X | Y=y) = \argmin_{p} D(p, P(X|Y=y))$ which is true.
-
-So, we can think of the philosophy of using the Bayes' theorem as a special case of the philosophy of minimizing KL divergence. This is all very circular and fuzzy, but the point is that not only the philosophy of minimize-KL-whenever-you-can-ism can be derived from the philosophy of argue-everything-from-Bayes-rule-ism, but we can also derive the philosophy of argue-everything-from-Bayes-rule-ism from the philosophy of minimize-KL-whenever-you-can-ism. Thus it is said that minimize-KL-whenever-you-can-ism is argue-everything-from-Bayes-rule-ism-complete (and vice versa).
-</Expand>
+*/}
 
 ## Next Steps <a id="next-steps"></a>
 
-In the next part, we'll explore more concrete modeling applications of these principles. We'll see how they apply to various fields like machine learning, statistical modeling, and information theory.
+In the [next chapter](04-max_entropy), we'll explore more concrete modeling applications of these principles. We'll see how they apply to various fields like machine learning, statistical modeling, and information theory.

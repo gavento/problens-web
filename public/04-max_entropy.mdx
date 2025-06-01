@@ -263,7 +263,16 @@ We could also try to approach this modelling problem purely from the max-entropy
 
 Here are a few more examples you might have encountered. Feel free to skip whatever doesn't ring a bell. 
 
-#### Power law distributions
+<Expand headline ="Assuming independence">
+An important property of entropy is that if you have a joint distribution $(p,q)$, then $H((p,q)) \le H(p) + H(q)$, with equality if and only if $p$ and $q$ are independent. <Footnote>This is called [subadditivity of entropy](https://math.stackexchange.com/questions/3326158/proof-of-sub-additivity-for-shannon-entropy). Why is it subadditive? If you still remember [our discussion of mutual information](01-kl_intro/information-theory), the mutual information is defined as $D((p,q), p \otimes q)$. You can rewrite this expression as $H(p) + H(q) - H((p,q))$ (try it!), so subadditivity of entropy is equivalent to mutual information being nonnegative. </Footnote>
+
+The implication for the max-entropy principle is this: Imagine that you work with a joint distribution and you know its two marginals $p,q$. Then, the maximum entropy principle tells us that the joint distribution with these two marginals that maximizes the entropy is the one where they are independent.
+
+Whenever people model stuff by probability distributions, they assume that some distributions are independent whenever they don't know how the dependence between them would look like (i.e., they make this assumption all the time). We can think of it as a special case of using the maximum entropy principle.
+
+
+</Expand>
+<Expand headline ="Power law distributions">
 Sometimes we care about random variables that range over large range of values. For example, the median US city has population about 2400, but there are a bunch of cities with more than million inhabitants (see the picture). 
 
 ![US cities](04-max_entropy/cities.png)
@@ -272,12 +281,14 @@ These situations are typically modelled by power-law distributions where $p(x) \
 
 That is, whenever you use a power-law distribution, you are implicitly saying "The important thing to look at is not $X$, but $\log X$". In the case of cities for example, it feels more sensible to classify them in log-scale (10^4 -- small, 10^5 -- medium, 10^6 -- large, 10^7 -- megacity) instead of normal scale (10^5 -- small, 2*10^5 -- medium, ... ). Power-law distribution is then just the exponential into which we plug in $\log X$ instead of $X$. 
 
-#### [Beta distribution](https://en.wikipedia.org/wiki/Beta_distribution)
-This is a family of distributions on $[0,1]$ that are max-entropy if we fix $E[\log X]$ and $E[\log 1-X]$. You might have encountered beta distribution in Bayesian statistics, where it is used since it behaves very nicely with respect to Bayesian updates. 
+</Expand>
+<Expand headline ="Beta distribution">
+[Beta distributions](https://en.wikipedia.org/wiki/Beta_distribution) are a family of distributions on $[0,1]$ that are max-entropy if we fix $E[\log X]$ and $E[\log 1-X]$. You might have encountered beta distribution in Bayesian statistics, where it is used since it behaves very nicely with respect to Bayesian updates. 
 
 But look at our Bayesian hero from [the first chapter](01-kl_intro). She didn't really work with the probabilities of the two hypotheses directly, she instead dealt with the logits $\ell_1, \ell_2$. Caring about logits means that if $X$ represents probability, you care about $\log X$ and $\log (1-X)$. So, maximum entropy principle suggests that using Beta distribution means that we believe that counting logits is natural. 
 
-#### Exponential family
+</Expand>
+<Expand headline ="Exponential family">
 
 We already discussed that in case of distributions on a finite domain, any distribution is maximum entropy for a clever choice of functions. But with infinite domain (like distribution over real numbers), if you have only finitely many functions $f_1, \dots, f_m$, then only a small proportion of distributions are max-entropy for something. 
 
@@ -303,7 +314,8 @@ Fortunately, the distributions in the exponential family have the nice property 
 </Footnote>
 
 
-#### Boltzmann distribution
+</Expand>
+<Expand headline ="Boltzmann distribution">
 
 We have many particles in a box, each particle $i$ having some energy $E_i$. What's the distribution of the energies? Maximum entropy principle suggests that the energies are going to be distributed according to the formula <Math math = "p_i \propto e^{-\lambda E_i}" />. This is indeed typically the case.  
 <Footnote>
@@ -314,15 +326,18 @@ Now the meaning of max-entropy distribution is that after we single out two part
 More technical explanation would have to go into Markov chains and use physical law reversibility, see [this](??). 
 </Footnote>
 
-#### Solomonoff prior
+</Expand>
+<Expand headline ="Solomonoff prior">
 
 Given an algorithm, the most basic measure of its complexity is its length. Given a mathematical object, the most basic measure of its complexity is the length of the shortest algorithm that describes that object. This is called Kolmogorov complexity $K(x)$. 
 
 For example, even though $\pi$ has infinitely many digits, its Kolmogorov complexity is small because there's a small Turing machine that keeps printing its digits. 
 
 In some abstract theories (like [Solomonoff induction](https://en.wikipedia.org/wiki/Solomonoff%27s_theory_of_inductive_inference) or [Tegmark multiverse](https://en.wikipedia.org/wiki/Multiverse)), we want to have a distribution over all Turing machines (i.e., algorithms) or over all mathematical objects (whatever that means). We then choose the max-entropy distribution, i.e., <Math math = "p(x) \propto e^{-\lambda K(x)}" />. This is called the Solomonoff prior. 
+</Expand>
 
-## Application: XKCD joke
+
+<Expand headline ="Application: XKCD joke">
 
 After four chapters of developing the theory of KL divergence, we are finally ready to [dissect](https://www.goodreads.com/quotes/440683-explaining-a-joke-is-like-dissecting-a-frog-you-understand) the XKCD joke from [the list of riddles](00-introduction/xkcd). 
 
@@ -342,6 +357,8 @@ The graph on the right shows what happens after we condition that the last digit
 First of all, almost all the probability is now concentrated on a single outcome -- $x_0 = 2382$. That makes sense: in the prior, it had probability $p(x_0) = 1/x_0 \approx 5 \cdot 10^{-4}$, while the next most likely outcome -- $x_1 = 100002382$ has probability $p(x_1) = 1/x_1 \approx 10^{-8}$. 
 
 You can also notice how the binned distribution still looks uniform for numbers $>10^9$. This again makes sense -- for large numbers, their last few digits are a coin change, learning them does not make much change. The whole point is that max-entropy principle leads us to the prior that puts more weight into small numbers. The upshot is that we are not necessarily fine. 
+</Expand>
+
 
 <Expand headline="Understanding Financial Data"> <a id="application-understanding-financial-data"></a>
 
