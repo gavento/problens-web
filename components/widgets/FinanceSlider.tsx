@@ -1,39 +1,37 @@
+// components/widgets/FinanceSlider.tsx
 import React, { useState, useEffect } from "react";
 
-("use client");
+type ImageItem = {
+  src: string;
+  index: number;
+};
 
-// Dynamically load all SAP and BTC plot images from the `public/images` folder (or wherever you store them).
-// Adjust the path to your image folder as needed.
-const importAll = (r) =>
-  r.keys().map((key) => ({
-    // Extract the numeric part (XXXX) for sorting
-    src: r(key).default,
-    index: parseInt(key.match(/\d+(?=\.png$)/)[0], 10),
+const importAll = (r: any): ImageItem[] =>
+  r.keys().map((key: string) => ({
+    src: r(key).default as string,
+    index: parseInt(key.match(/\d+(?=\.png$)/)![0], 10),
   }));
 
-// Note: adjust the relative path "./sap_plots" and "./btc_plots" to match where your images live.
-// In many setups, placing images in `public/images/sap_plots` and `public/images/btc_plots` is common.
-const sapImages = importAll(require.context("../public/images/sap_plots", false, /sap_plot\d+\.png$/)).sort(
-  (a, b) => a.index - b.index,
-);
+// Obrázky jsou teď ve složce `../../code/financial` (relativně k tomuto souboru)
+const sapImages: ImageItem[] = importAll(
+  (require as any).context("../../code/financial", false, /sap_plot\d+\.png$/),
+).sort((a: ImageItem, b: ImageItem) => a.index - b.index);
 
-const btcImages = importAll(require.context("../public/images/btc_plots", false, /btc_plot\d+\.png$/)).sort(
-  (a, b) => a.index - b.index,
-);
+const btcImages: ImageItem[] = importAll(
+  (require as any).context("../../code/financial", false, /btc_plot\d+\.png$/),
+).sort((a: ImageItem, b: ImageItem) => a.index - b.index);
 
-const ImageSliderWidget = () => {
+const FinanceSlider: React.FC = () => {
   const [mode, setMode] = useState<"sap" | "btc">("sap");
-  const [currentIdx, setCurrentIdx] = useState(0);
+  const [currentIdx, setCurrentIdx] = useState<number>(0);
 
-  // Determine which array to use based on toggle
-  const images = mode === "sap" ? sapImages : btcImages;
-
-  // If switching mode, reset index to 0
+  // Po přepnutí modu se vrátí index na 0
   useEffect(() => {
     setCurrentIdx(0);
   }, [mode]);
 
-  // If there are no images, render a fallback message
+  const images = mode === "sap" ? sapImages : btcImages;
+
   if (images.length === 0) {
     return (
       <div className="p-4 bg-red-50 rounded-md text-red-700">No {mode === "sap" ? "SAP" : "Bitcoin"} plots found.</div>
@@ -42,7 +40,7 @@ const ImageSliderWidget = () => {
 
   return (
     <div className="p-4 bg-gray-50 rounded-lg space-y-4">
-      {/* Toggle between SAP and BTC */}
+      {/* Toggle mezi SAP a Bitcoin */}
       <div className="flex justify-center space-x-4">
         <button
           onClick={() => setMode("sap")}
@@ -64,7 +62,7 @@ const ImageSliderWidget = () => {
         </button>
       </div>
 
-      {/* Display current image */}
+      {/* Zobrazený obrázek */}
       <div className="flex justify-center">
         <img
           src={images[currentIdx].src}
@@ -76,7 +74,6 @@ const ImageSliderWidget = () => {
       {/* Slider */}
       <div className="space-y-2">
         <div className="text-center text-sm text-gray-700">
-          {/* Show the actual filename or index above the slider */}
           {mode.toUpperCase()} Plot: <strong>{images[currentIdx].index}</strong>
         </div>
         <input
@@ -93,11 +90,4 @@ const ImageSliderWidget = () => {
   );
 };
 
-export default ImageSliderWidget;
-
-// In your MDX page, simply import and render <ImageSliderWidget /> where you want it to appear.
-// Example:
-//
-// import ImageSliderWidget from "./components/ImageSliderWidget.mdx";
-//
-// <ImageSliderWidget />
+export default FinanceSlider;
