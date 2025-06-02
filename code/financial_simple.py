@@ -13,14 +13,14 @@ import requests
 ##############################################################################
 max_months = 999
 # Choose which asset to analyze: 'BTC' or 'SAP'
-ASSET_TO_ANALYZE = 'SAP'  # Change this to 'SAP' to analyze S&P instead
+ASSET_TO_ANALYZE = 'BTC'  # Change this to 'SAP' to analyze S&P instead
 # Number of standard deviations to cover in the histogram
 STD_RANGE = 3  # Shows data within ±3 standard deviations
 
 ##############################################################################
 # CREATE OUTPUT AND CACHE DIRECTORIES
 ##############################################################################
-output_dir = 'financial'
+output_dir = '../public/fig/financial'
 cache_dir = 'financial_cache'
 os.makedirs(output_dir, exist_ok=True)
 os.makedirs(cache_dir, exist_ok=True)

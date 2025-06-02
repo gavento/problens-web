@@ -16,11 +16,11 @@ const importAll = (r: any): ImageItem[] =>
 
 // Obrázky jsou ve složce ../../code/financial (relativně k tomuto souboru)
 const sapImages: ImageItem[] = importAll(
-  (require as any).context("../../code/financial", false, /sap_plot\d+\.png$/),
+  (require as any).context("../../public/fig/financial", false, /sap_plot\d+\.png$/),
 ).sort((a: ImageItem, b: ImageItem) => a.index - b.index);
 
 const btcImages: ImageItem[] = importAll(
-  (require as any).context("../../code/financial", false, /btc_plot\d+\.png$/),
+  (require as any).context("../../public/fig/financial", false, /btc_plot\d+\.png$/),
 ).sort((a: ImageItem, b: ImageItem) => a.index - b.index);
 
 const FinanceSlider: React.FC = () => {
