@@ -1,4 +1,6 @@
 // components/widgets/FinanceSlider.tsx
+"use client";
+
 import React, { useState, useEffect } from "react";
 
 type ImageItem = {
@@ -12,7 +14,7 @@ const importAll = (r: any): ImageItem[] =>
     index: parseInt(key.match(/\d+(?=\.png$)/)![0], 10),
   }));
 
-// Obrázky jsou teď ve složce `../../code/financial` (relativně k tomuto souboru)
+// Obrázky jsou ve složce ../../code/financial (relativně k tomuto souboru)
 const sapImages: ImageItem[] = importAll(
   (require as any).context("../../code/financial", false, /sap_plot\d+\.png$/),
 ).sort((a: ImageItem, b: ImageItem) => a.index - b.index);
@@ -25,7 +27,7 @@ const FinanceSlider: React.FC = () => {
   const [mode, setMode] = useState<"sap" | "btc">("sap");
   const [currentIdx, setCurrentIdx] = useState<number>(0);
 
-  // Po přepnutí modu se vrátí index na 0
+  // Když se změní režim (SAP/BTC), vrátíme idx na 0
   useEffect(() => {
     setCurrentIdx(0);
   }, [mode]);
