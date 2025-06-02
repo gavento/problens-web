@@ -10,6 +10,7 @@ import { Cite, References } from "@/components/content/Citations";
 import { Footnote } from "@/components/content/Footnotes";
 import { Footnotes } from "@/components/content/Footnotes";
 import EvidenceAccumulationSimulator from "@/components/widgets/EvidenceAccumulationSimulator";
+import FinanceImageSliderWidget from "@/components/widgets/FinanceSlider";
 import { compile, evaluate } from "@mdx-js/mdx";
 import chalk from "chalk";
 import * as runtime from "react/jsx-runtime";
@@ -106,7 +107,7 @@ export async function getMdxContent(path: string) {
       errorOutput +=
         "\n\n" +
         chalk.cyan(
-          "Hint: Unlike plain MD, MDX uses {...} for JSX expressions. To get literal curly braces, use \\{ and \\}"
+          "Hint: Unlike plain MD, MDX uses {...} for JSX expressions. To get literal curly braces, use \\{ and \\}",
         );
     }
 
@@ -123,6 +124,7 @@ export async function getMdxContent(path: string) {
       Footnotes: Footnotes,
       Footnote: Footnote,
       EvidenceAccumulationSimulator: EvidenceAccumulationSimulator,
+      FinanceImageSliderWidget: FinanceImageSliderWidget,
       Math: KatexMath,
       Block: Block,
       Expand: Expand,

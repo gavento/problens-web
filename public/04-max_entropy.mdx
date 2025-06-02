@@ -187,7 +187,7 @@ The parameter $1/|\lambda|$ is often called temperature because it kind of works
 
 TODO playing-with-temperature-widget
 
-<Expand headline = "logits in neural nets">
+<Expand headline = "Logits in neural nets">
 Example: Typical neural networks output probabilites. For example, a typical neural network classifying images in fact outputs the whole probability distribution that a given picture is a dog/cat/horse/... instead of outputting a single prediction. 
 The problem with this is that usually, most of these probabilities are extremely small, e.g. of order of $10^{-10}$. That's because given a picture of a dog, the neural net is typically pretty sure it's not an octopus. 
 
@@ -379,7 +379,7 @@ Let's return to our financial mathematics riddle [from the intro](00-introductio
 
 We observed that the normal distribution is a better fit for more recent data, and Laplace distribution with  better models more long-term data.  Also, Laplace fits Bitcoin better than S&P. <Footnote>How do we formalize the claim "the distribution X fits the data $p$ better than the distribution Y"? Of course by measuring $D(p, X)$ and $D(p, Y)$! In our case for example, it says that Laplace starts to be a better fit for S&P for at least ?? days. </Footnote>
 
-Laplace distribution has the shape <Math math = "p(x) \propto e^\{-\lambda |x-\mu|}" />. What's the meaning of this formula? We could think of it as the max entropy distribution for fixing the value $E[|X-\mu|]$, but there's another illuminating way to understand it. The Laplace distribution can be viewed as the result of the following process:<Footnote>I actually don't know any way observing this fact directly. Let me know if you know a way to do that. The fact can be verified algebraically, but it's not so easy. </Footnote>
+Laplace distribution has the shape <Math math = "p(x) \propto e^{-\lambda |x-\mu|}" />. What's the meaning of this formula? We could think of it as the max entropy distribution for fixing the value $E[|X-\mu|]$, but there's a more illuminating way to understand it. The Laplace distribution can be viewed as the result of the following process:<Footnote>I actually don't know any way observing this fact directly. Let me know if you know a way to do that. The fact can be verified algebraically, but it's not so easy. </Footnote>
 
 1. Sample a variance $\sigma^2$ from the exponential distribution
 2. Output a sample from $N(\mu, \sigma^2)$
