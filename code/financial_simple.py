@@ -20,7 +20,7 @@ STD_RANGE = 3  # Shows data within ±3 standard deviations
 ##############################################################################
 # CREATE OUTPUT AND CACHE DIRECTORIES
 ##############################################################################
-output_dir = '../public/fig/financial'
+output_dir = '../components/widgets/financial'
 cache_dir = 'financial_cache'
 os.makedirs(output_dir, exist_ok=True)
 os.makedirs(cache_dir, exist_ok=True)
