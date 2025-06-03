@@ -325,23 +325,20 @@ Fortunately, the distributions in the exponential family have the nice property 
 </Expand>
 <Expand headline ="Boltzmann distribution">
 
-We have many particles in a box, each particle $i$ having some energy $E_i$. What's the distribution of the energies? Maximum entropy principle suggests that the energies are going to be distributed according to the formula <Math math = "p_i \propto e^{-\lambda E_i}" />. This is indeed typically the case.  
-<Footnote>
-The reason for this is essentially [our intuition](04-max_entropy/intuition): When you have many particles in a box, every now and then two particles fly close to each other and exchange energies. Basically, the particles first have energies $E_1, E_2$, then some interesting physics happens, and then they have energies $E_1', E_2'$. What's important is that $E_1 + E_2 = E_1' + E_2'$; that's conservation of energy. 
+We have many particles in a box, each particle $i$ having some energy $E_i$. What's the distribution of the energies? Maximum entropy principle suggests that the energies are going to be distributed according to the formula <Math math = "p_i \propto e^{-\lambda E_i}" />. 
 
-Now the meaning of max-entropy distribution is that after we single out two particles with total energy $E$, we are guessing that the distribution of possible pairs $E_1, E_2$ is uniform. This seems to be a reasonable guess!
+This is indeed a good guess. Here's (roughly) why. When you have many particles in a box, every now and then two particles fly close to each other and exchange energies. Basically, the particles first have energies $E_1, E_2$, then some interesting physics happens, and then they have energies $E_1', E_2'$. What's important is that $E_1 + E_2 = E_1' + E_2'$; that's the conservation of energy. 
 
-More technical explanation would have to go into Markov chains and use physical law reversibility, see [this](??). 
-</Footnote>
-
+So, the conditional distribution of energies of two random particals of total energy $E$ should, intuitively, be uniform. But remember [our intuition](04-max_entropy/intuition) about max-entropy distributions: This is exactly the property of max-entropy distribution. 
 </Expand>
+
 <Expand headline ="Solomonoff prior">
 
-Given an algorithm, the most basic measure of its complexity is its length. Given a mathematical object, the most basic measure of its complexity is the length of the shortest algorithm that describes that object. This is called Kolmogorov complexity $K(x)$. 
+Given an algorithm, the most basic measure of its complexity is its length. Given a mathematical object $x$, the most basic measure of its complexity is the length of the shortest algorithm that describes that object. This is called Kolmogorov complexity $K(x)$. 
 
-For example, even though $\pi$ has infinitely many digits, its Kolmogorov complexity is small because there's a small Turing machine that keeps printing its digits. 
+For example, even though $\pi$ has infinitely many digits, its Kolmogorov complexity is small because there's [a short algorithm](https://www.quora.com/Whats-an-easy-algorithm-to-generate-digits-of-%CF%80) that keeps printing its digits. 
 
-In some abstract theories (like [Solomonoff induction](https://en.wikipedia.org/wiki/Solomonoff%27s_theory_of_inductive_inference) or [Tegmark multiverse](https://en.wikipedia.org/wiki/Multiverse)), we want to have a distribution over all Turing machines (i.e., algorithms) or over all mathematical objects (whatever that means). We then choose the max-entropy distribution, i.e., <Math math = "p(x) \propto e^{-\lambda K(x)}" />. This is called the Solomonoff prior. 
+In some abstract theories (like [Solomonoff induction](https://en.wikipedia.org/wiki/Solomonoff%27s_theory_of_inductive_inference) or [Tegmark multiverse](https://en.wikipedia.org/wiki/Multiverse)), we want to have a distribution over all mathematical objects (whatever that means). We then choose the max-entropy distribution, i.e., <Math math = "p(x) \propto e^{-\lambda K(x)}" />. This is called the Solomonoff prior. 
 </Expand>
 
 ### Applications
@@ -354,20 +351,22 @@ After four chapters of developing the theory of KL divergence, we are finally re
 
 ![Are the odds in our favor?](00-introduction/countdown.png)
 
-It's all about how to choose a prior for the number on the wall. The most natural prior is simply the uniform one, i.e., before looking at the wall, we think the number is a uniform random number with 14 decimal digits. After observing the right 8 digits, the first 6 are still uniformly random (modulo the fact we also partially observed the first digit). So, the probability that all 6 digits are zero is $1/10^6$ -- we are probably fine. 
+It's all about how to choose a prior for the number on the wall. The most natural prior is simply the uniform one, i.e., before looking at the wall, we think the number is a uniform random number with 14 decimal digits. After observing the right 8 digits, the first 6 are still uniformly random <Footnote>We actually also see a small piece of the left-most digit in the comic, but let's forget this for simplicity. </Footnote>. So, for that prior, the probability that all 6 digits are zero is $1/10^6$ -- we are probably fine. 
 
 Let's try to think of a better model though. We have seen that for distributions over numbers, max-entropy principle suggests that the exponential distribution <Math math = "p(x) \propto e^{-\lambda x}" /> or the power-law distribution $p(x) \propto x^{-C}$ are pretty reasonable. 
 
-In this case, I would argue for choosing the distribution $p(x) \propto 1/x$ because I am very uncertain about the scale in this example. I chose $C = 1$ in the power-law fit because this is the most natural constant -- it corresponds to uniform distribution over the scales -- see the left graph below. <Footnote>Technically speaking, this distribution satisfies <Math math = "\int_{10^1}^{10^2} \frac{1}{x} dx = \int_{10^2}^{10^3} \frac{1}{x} dx = \dots " />. </Footnote> The only problem with $1/x$ is that we can't normalize this distribution if the domain is real numbers, but now the domain is integers between $0$ and $10^{14}$, so it's OK. 
+In this case, I would argue for choosing the distribution $p(x) \propto 1/x$ because I am very uncertain about the scale in this example. I chose $C = 1$ in the power-law fit because this is the most natural constant - it corresponds to uniform distribution over the scales<Footnote>By this, I mean that this distribution satisfies <Math math = "\int_{10^1}^{10^2} \frac{1}{x} dx = \int_{10^2}^{10^3} \frac{1}{x} dx = \int_{10^3}^{10^4} \frac{1}{x} dx = \dots " />. </Footnote>  (see the left graph below). The only problem with $1/x$ is that we can't normalize this distribution if the domain is real numbers, but in our case, the domain is integers between $0$ and $10^{14}$, so it's OK. 
 
+
+Below, the graph on the right shows what happens after we start with this prior (on the left) and condition on the last digits of $x$ being "00002382". We grouped $x$-values to bins between $10^1, 10^{1.5}, 10^2, \dots$
 
 ![xkcd posterior](04-max_entropy/xkcd.png)
 
-The graph on the right shows what happens after we condition that the last digits of $x$ are "00002382" and group $x$-values to bins between $10^1, 10^{1.5}, 10^2, \dots$
+Notice that almost all the probability is now concentrated on a single outcome -- $x_0 = 2382$. That makes sense: in the prior, it had probability $p(x_0) \propto 1/x_0 \approx 5 \cdot 10^{-4}$, while the next most likely outcome -- $x_1 = 100002382$ had probability $p(x_1) \propto 1/x_1 \approx 10^{-8}$. I.e., the probability of $x_1$ was $10^{-4}$ times smaller in the prior. 
 
-First of all, almost all the probability is now concentrated on a single outcome -- $x_0 = 2382$. That makes sense: in the prior, it had probability $p(x_0) = 1/x_0 \approx 5 \cdot 10^{-4}$, while the next most likely outcome -- $x_1 = 100002382$ has probability $p(x_1) = 1/x_1 \approx 10^{-8}$. 
+Another thing to notice is that the posterior distribution still looks uniform for numbers $>10^9$. This again makes sense -- for large numbers, their last few digits are a coin change, learning them does not make much change and thus the posterior is still uniform there. 
 
-You can also notice how the binned distribution still looks uniform for numbers $>10^9$. This again makes sense -- for large numbers, their last few digits are a coin change, learning them does not make much change. The whole point is that max-entropy principle leads us to the prior that puts more weight into small numbers. The upshot is that we are not necessarily fine. 
+The whole point is that max-entropy principle leads us to the prior that puts more weight into small numbers. Using it only assumes that $E[X]$ is a value of interest which it arguably is. We conclude that we are not fine. 
 </Expand>
 
 
@@ -375,9 +374,9 @@ You can also notice how the binned distribution still looks uniform for numbers 
 
 Let's return to our financial mathematics riddle [from the intro](00-introduction/financial-mathematics). 
 
-[Widget]
+<FinanceImageSliderWidget />
 
-We observed that the normal distribution is a better fit for more recent data, and Laplace distribution with  better models more long-term data.  Also, Laplace fits Bitcoin better than S&P. <Footnote>How do we formalize the claim "the distribution X fits the data $p$ better than the distribution Y"? Of course by measuring $D(p, X)$ and $D(p, Y)$! In our case for example, it says that Laplace starts to be a better fit for S&P for at least ?? days. </Footnote>
+We observed that the Laplace distribution seems to fit the data better than the normal distribution. <Footnote>How do we formalize the claim "the distribution X fits the data $p$ better than the distribution Y"? Of course by measuring $D(p, X)$ and $D(p, Y)$! In our case for example, it says that Laplace starts to be a better fit for S&P for data from at least 1-2 months. </Footnote>
 
 Laplace distribution has the shape <Math math = "p(x) \propto e^{-\lambda |x-\mu|}" />. What's the meaning of this formula? We could think of it as the max entropy distribution for fixing the value $E[|X-\mu|]$, but there's a more illuminating way to understand it. The Laplace distribution can be viewed as the result of the following process:<Footnote>I actually don't know any way observing this fact directly. Let me know if you know a way to do that. The fact can be verified algebraically, but it's not so easy. </Footnote>
 
@@ -395,9 +394,9 @@ Perhaps we should try a more advanced two-layered model predicting the shape of 
 Put differently, while Gaussian fit is claiming "I am pretty sure about today's volatility and unsure about the fluctuation around the mean" and Laplace is saying "I am uncertain both about the volatility, and the actual fluctuation of the day." This explains why Gaussian fits near-term data (volatility of the time period stays roughly the same), while more long-term data starts looking more like Laplace. <Footnote>Laplace distribution is not necessarily a good practical model. As far as I know, more standard way of modelling financial data is the Student-t distribution. I will not bore you with its formula, but let you know that it is the distribution that you get from the similar process as how we arrived at Laplace; but instead of sampling $\sigma^2$ from the exponential distribution, you sample it from the so-called inverse gamma distribution. Gamma distribution is itself max-entropy distribution for fixing $E[X]$ and $E[\log X]$ (and inverse gamma distribution means we measure volatility by $1/\sigma^2$ instead of $\sigma^2$). 
 That is, Student-t distribution takes our model a bit further and adds uncertainty about the _scale_ of the volatility. For example, maybe if you take into large enough past, you start seeing some extreme events like world wars/the Great Depression/industrial revolution, so perhaps we should be open to power-law fits instead of exponential ones. </Footnote>
 
-I like this example because I think it nicely shows the strength of the max-entropy principle. Notice how maximum entropy allows us to focus only on the important aspects of our model (do we fix volatility or is it itself a random variable?) All the algebraic details are filled in automatically by max entropy reasoning. Or if we take it from the other side -- when we see a concrete formula, like a fit by Laplace distribution, max entropy enables us to see through it and understand what the formula stands for. 
+I like this example because I think it nicely shows the strength of the max-entropy principle. Notice how maximum entropy allows us to focus only on the important aspects of our model (do we fix volatility or is it itself a random variable?) The algebraic details are filled in automatically by max entropy reasoning. Or if we take it from the other side -- when we see a concrete formula, like a fit by Laplace distribution, max entropy enables us to see through it and understand what the formula stands for. 
 </Expand>
 
 ## Next Steps <a id="next-steps"></a>
 
-In the next part, we will reach the punchline of this minicourse -- How KL divergence explains the choice of loss functions optimized in machine learning. 
+In the [next chapter](05-machine_learning), we will see how KL divergence explains the choice of loss functions used in machine learning. 

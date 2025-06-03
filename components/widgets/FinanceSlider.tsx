@@ -14,7 +14,6 @@ const importAll = (r: any): ImageItem[] =>
     index: parseInt(key.match(/\d+(?=\.png$)/)![0], 10),
   }));
 
-// Obrázky jsou ve složce ../../code/financial (relativně k tomuto souboru)
 const sapImages: ImageItem[] = importAll((require as any).context("./financial", false, /sap_plot\d+\.png$/)).sort(
   (a: ImageItem, b: ImageItem) => a.index - b.index,
 );
