@@ -162,9 +162,9 @@ We will optimize our variational autoencoder by minimizing the KL divergence bet
 <Math displayMode={true} math = "D\left( p(x) \cdot p'(x | y), q(y) \cdot q(y|x)\right)" />
 
 Finishing the job now reduces to algebra left to an Expand box:
-<Expand>
+<Expand headline = "Algebra part">
 Let's call our KL loss function $\mathcal L$. We can split it into two parts, called the reconstruction loss and regularization term like this:  
-<Math displayMode = {true} math = "\mathcal L = \underbrace{\sum_{x,y} p(x) p'(y|x) \log \frac{p(x)}{q(x|y)}}_{\textrm{Reconstruction loss} \mathcal L_1} + \underbrace{\sum_{x,y} p(x) p'(y|x) \log \frac{p'(y|x)}{q(y)}}_{\textrm{Regularization term} \mathcal L_2} "/>
+<Math displayMode = {true} math = "\mathcal L = \underbrace{\sum_{x,y} p(x) p'(y|x) \log \frac{p(x)}{q(x|y)}}_{\textrm{Reconstruction loss } \mathcal L_1} + \underbrace{\sum_{x,y} p(x) p'(y|x) \log \frac{p'(y|x)}{q(y)}}_{\textrm{Regularization term } \mathcal L_2} "/>
 
 Let's analyze the two terms in turn, starting with the reconstruction loss. 
 
@@ -174,34 +174,37 @@ We can split the term $\mathcal L_1$ further like this:
 The first term is simply the entropy of the distribution $p(x)$. In our case, $p(x)$ is uniform distribution over $N$ images $X_1, \dots, X_N$, so it's equal to $\log N$. In any case, this term is a constant independent of all the parameters we optimize, so we can as well forget it. Thus, minimizing $\mathcal L_1$ amounts to minimizing the other term which we will now interpret. 
 
 To do this, recall that $q(x|y)$ runs the decoder on $y$ and adds gaussian noise $N(0,1)$ to the result; we thus have 
-<Math displayMode={true} math = "q(x | y) \prop e^{-\| x - Dec(y)\|^2}{2d}"/> 
+<Math displayMode={true} math = "q(x | y) \propto e^{-\| x - Dec(y)\|^2}{2d}"/> 
 and hence, up to additive constant that does not play a role in our optimization problem, we have
-<Math displayMode={true} math = "\log q(x | y) = -frac{\| x - Dec(y)\|^2}{2d}"/> 
+<Math displayMode={true} math = "\log q(x | y) = -\frac{\| x - Dec(y)\|^2}{2d}"/> 
 
 So, if we were in the setup of a regular autoencoder where $p'(y|x)$ is a deterministic encoding $Enc(x)$, minimizing the term $\mathcal L_1$ would boil down to minimizing the mean square _reconstruction_ loss 
-<Math displayMode={true} math = "\sum_{i = 1}^N frac{\| X_i - Dec(Enc(X_i))\|^2}{2d}" />. 
+<Math displayMode={true} math = "\frac{1}{N}\sum_{i = 1}^N \frac{\| X_i - Dec(Enc(X_i))\|^2}{2d}. " /> 
 
-Our case is more complicated, because the loss function involves $p'(y|x)$ that samples from <Math math = "N(Enc_\mu(x), Enc_{\sigma^2}(x))" /> instead of being a deterministic encoding. We will discuss in the end how to estimate this part of the loss function. 
+Our case is more complicated, we have to minimize this:
+<Math displayMode={true} math = "\frac{1}{N}\sum_{i = 1}^N \sum_{y} p'(y|X_i) \frac{\| X_i - Dec(y)\|^2}{2d}. " /> 
+
+The term $p'(y|x)$ that samples from <Math math = "N(Enc_\mu(x), Enc_{\sigma^2}(x))" /> instead of being a deterministic encoding is problematic to compute. We will discuss in the end how to estimate this part of the loss function. 
 
 ### Regularization term
 
 Let's analyze the term <Math math = "\mathcal L_2 = \sum_{x,y} p(x) p'(y|x) \log \frac{p'(y|x)}{q(y)}" />. Remember, $p(x)$ is just a uniform distribution over our image dataset, so we can rewrite this as
-<Math displayMode={true} math = "\sum_{i = 1}^N \frac{1}{N} \sum_y p'(y|x) \log \frac{p'(y|x)}{q(y)} = \sum_{i = 1}^N \frac{1}{N} D(p'(y|x), q(y))"/>
+<Math displayMode={true} math = "\mathcal L_2 = \sum_{i = 1}^N \frac{1}{N} \sum_y p'(y|x) \log \frac{p'(y|x)}{q(y)} = \sum_{i = 1}^N \frac{1}{N} D(p'(y|x), q(y))"/>
 So, minimizing this term boils down to minimizing the sum of KL divergences between $p'(y|X_i)$ and $q(y)$ over our dataset $X_1, \dots, X_N$. 
 
-The first distribution $p'(y |X_i)$ is simply a gaussian with mean $Enc_\mu(X_i)$ and and variance being the diagonal matrix with entries <Math math = "Enc_{\sigma^2}(X_i)" />. The second distribution $q(y)$ is literally the gaussian $N(0,1)$. Now, it is a [fact](https://leenashekhar.github.io/2019-01-30-KL-Divergence/) that there's a simple formula for the KL divergence between two gaussians. It looks like this:
-<Math math = "D(N(\mu, \sigma^2), N(0, 1)) = \frac12 \sum_{i = 1}^d \mu_i^2 + \sigma_i^2 - 1 - \log\sigma_i^2"/>
+The first distribution $p'(y |X_i)$ is simply a gaussian with mean $Enc_\mu(X_i)$ and variance being the diagonal matrix with entries <Math math = "Enc_{\sigma^2}(X_i)" />. The second distribution $q(y)$ is literally the gaussian $N(0,1)$. There's a [simple formula](https://leenashekhar.github.io/2019-01-30-KL-Divergence/) for the KL divergence between two gaussians that looks like this:
+<Math displayMode = {true} math = "D(N(\mu, \sigma^2), N(0, 1)) = \frac12 \sum_{i = 1}^d \left( \mu_i^2 + \sigma_i^2 - 1 - \log\sigma_i^2\right) "/>
 
 Plugging it to $\mathcal L_2$, we get that we have to minimize the expression 
-<Math displayMode = {true} math = "\frac{1}{N} \sum_{i = 1}^N \left( \frac12 \sum_{j = 1}^d Enc_{\mu, j}(X_i)^2 + Enc_{\sigma^2, j}(X_i) - \log Enc_{\sigma^2, j} \right)"/>
-
+<Math displayMode = {true} math = "\frac{1}{N} \sum_{i = 1}^N \left( \frac12 \sum_{j = 1}^d Enc_{\mu, j}(X_i)^2 + Enc_{\sigma^2, j}(X_i) - \log Enc_{\sigma^2, j}(X_i) \right)"/>
 </Expand>
 
 After we do the algebra, we end up with the loss function
-<Math displayMode={true} math = "\frac{1}{N} \sum_{i = 1}^N \left( \sum_y p'(y | x) frac{\| X_i - Dec(y)\|^2}{2d} \,+\, \left( \frac12 \sum_{j = 1}^d Enc_{\mu, j}(X_i)^2 + Enc_{\sigma^2, j}(X_i) - \log Enc_{\sigma^2, j} \right)\right)"/>
+<Math displayMode={true} math = "\frac{1}{N} \sum_{i = 1}^N \left( \sum_y p'(y | x) frac{\| X_i - Dec(y)\|^2}{2d} \,+\, \left( \frac12 \sum_{j = 1}^d Enc_{\mu, j}(X_i)^2 + Enc_{\sigma^2, j}(X_i) - \log Enc_{\sigma^2, j}(X_i) \right)\right)"/>
 
-In general, computing the expression <Math math = "\sum_{i = 1}^N \sum_y p'(y | x) frac{\| X_i - Dec(y)\|^2}{2d}"/> is incredibly hard since we would have to iterate overall the whole range of $p'(y|x)$. In practice, this expression can be estimated well-enough by the Monte Carlo method. That is, in practice we just sample a few times from $p'(y|x)$ and compute the reconstruction loss $\| X_i - Dec(y)\|^2$ for them. We also add a few more regularization terms that make sure that the our variational autoencoder does not set $\sigma_i^2 = 0$ to become a vanilla autoencoder. 
+In general, computing the expression <Math math = "\sum_{i = 1}^N \sum_y p'(y | x) \frac{\| X_i - Dec(y)\|^2}{2d}"/> is incredibly hard since we would have to iterate overall the whole range of $p'(y|x)$. In practice, this expression can be estimated well-enough by the Monte Carlo method. 
 
+That is, in practice we can optimize this loss function. For each image $X_i$, we just sample a few times from $p'(y|X_i)$ and compute the reconstruction loss $\| X_i - Dec(y)\|^2$ for them. We also add the regularization term involving the mean and variance spit out by the decoder; this is to make sure that our variational autoencoder does not set $\sigma_i^2 = 0$ to become a vanilla autoencoder. 
 </Expand>
 
 ## What's next
