@@ -46,7 +46,7 @@ Let's now start the third step of our recipe and use the max likelihood principl
 
 As is usual, it's easier to think about the log-likelihood (or crossentropy):
 
-<Math displayMode={true} math = "\log P(\text{data} | \text{parameters}) = -\frac{n}{2}\log(2\pi\sigma^2) - \frac{1}{2\sigma^2} \sum_{i=1}^n (a\cdot x_i + b - y_i)^2"/>
+<Math displayMode={true} math = "\log P(\text{data} | \text{parameters}) = -\frac{n}{2}\ln(2\pi\sigma^2) - \frac{1}{2\sigma^2} \sum_{i=1}^n (a\cdot x_i + b - y_i)^2"/>
 
 This is pretty complicated, but we notice that whatever value $\sigma^2$ we fix, the optimization problem for $a,b$ becomes to minimize:
 
@@ -62,7 +62,7 @@ For example, maybe we think that the parameters $a$ and $b$ are small. Our frame
 
 As another example, consider the more general case where we have many predictors $x^1, \dots, x^k$, but we believe that only a small fraction of them, let's say $0 < p < 1$, are actually useful. For the rest, the corresponding coefficient $a_i$ is equal to zero. Our framework suggests that we should optimize:
 
-<Math displayMode={true} math = "\min_{\substack{S \subseteq \{1, \dots, k\}, \\ |S|=pk}} \sum_{i=1}^n \|\sum_{j \in S} a_j\cdot x_i^j - y_i\|^2" />
+<Math displayMode={true} math = "\min_{\substack{S \subseteq \{1, \dots, k\}, \\ |S|=pk}} \sum_{i=1}^n \left| \sum_{j \in S} a_j\cdot x_i^j - y_i\right|^2" />
 
 The problem is that optimizing this function is hard (in fact, NP-hard) -- trying all possible subsets of nonzero coefficients and fitting each one of them takes exponential time. Some more complicated math shows though, that optimizing a different objective, called Lasso, often solves this complicated problem<Footnote>See e.g. [10.6 here](https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-book.html) or [this book](https://link.springer.com/book/10.1007/978-3-642-20192-9)</Footnote>. So, you should think of Lasso as an attempt to solve our probabilistic model with the assumption that "only a fraction of variables are relevant". 
 </Expand>
@@ -72,17 +72,17 @@ The problem is that optimizing this function is hard (in fact, NP-hard) -- tryin
 
 This time, we get red and blue points in a plane and we want to find the best line separating them. Ideally, we would like all the red points on one side and all the blue ones on the other, but that's not always possible. In that case, how do we find the best line? 
 
-It will be more helpful to represent the line not as $y = ax+b$, but using the normal vector $\theta$ orthogonal to that line, and the distance $\delta$ of the origin from the line. <Footnote>Specifically, $\theta = \frac{1}{a^2+1} (a, -1)$ and $\delta = |b|/\sqrt{a^2+1}$, but let's not worry about that. </Footnote>
+It will be more helpful to represent the line not as $y = ax+b$, but using the normal vector $\theta$ orthogonal to that line, and the distance $\delta$ of the origin from the line, as in the picture below. <Footnote>Specifically, $\theta = \frac{1}{a^2+1} (a, -1)$ and $\delta = |b|/\sqrt{a^2+1}$, but let's not worry about that. </Footnote>
 
 ![Logistic regression](05-machine_learning/logistic.png)
 
 Given a point $(x, y)$, the relevant quantity is the distance of that point from our line. This can be computed using the dot product as $\theta \cdot (x, y) + \delta$. 
 
 Now, using the max entropy principle, we construct the probabilistic model that converts this distance into color probability. We use the [logistic function](04-max_entropy/logit). That is, our model is
-<Math displayMode={true} math = "p(red | (x, y)) = \sigma\left( \lambda (\theta \cdot (x, y) + \delta) \right)"/>
-where $\sigma$ is the logistic function $\sigma(x) = e^x / (1+e^x)$. Of course, we also have $p(blue | (x, y)) = 1 - p(red | (x, y))$. 
+<Math displayMode={true} math = "p(\textrm{red} | (x, y)) = \sigma\left( \lambda (\theta \cdot (x, y) + \delta) \right)"/>
+where $\sigma$ is the logistic function $\sigma(x) = e^x / (1+e^x)$. Of course, we also have <Math displayMode={false} math = "p(\textrm{blue} | (x, y)) = 1 - p(\textrm{red} | (x, y)). " /> 
 
-The constant $\lambda$ is a new parameter of our model that max-entropy principle suggest we add to it. That is, we will have to optimize three parameters -- $a,b, \lambda$. The parameter $\lambda$ captures our confidence about the classification. This is handy because if a new point comes after we find the best line, we can not only color the point red/blue based on which side of the line it is on, but also use equation ?? to compute how certain we are about our classification. 
+The constant $\lambda$ is a new parameter of our model that max-entropy principle forces us to add to our probabilistic model. Fortunately, it's pretty useful parameter - it captures our confidence about the classification. This is handy because if we want to classify a new point in the future, we can not only color the point red/blue based on which side of the line it is on, but also use the equation ?? to compute how certain we are about our classification. 
 
 Once we have a model, we can use the max likelihood principle to find its parameters. The principle tells us to find $a,b,\lambda$ that minimize the following expression:
 

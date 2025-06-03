@@ -135,35 +135,44 @@ In case of no constraints, we have $p(x) \propto e^{0}$, i.e., the max entropy d
 
 One issue to keep in mind is that the uniform distribution does not always exist -- in particular, there's no uniform distribution over real numbers. 
 
-### Fixing $E[X]$
+### Fixing $E[X]$ (logits)
 
 If we believe that the mean is an important parameter of a distribution (as we usually do), the max entropy principle says that the right family of distributions to work with are those with the shape
 
-<Math displayMode={true} math = "p(x) \propto e^{-\lambda x}"/>
+<Math displayMode={true} math = "p(x) \propto e^{\lambda x}"/>
+
+This kind of distribution is known under several names, depending on what is the underlying ground set over which we define it. Let's first understand it in the simplest possible case when our distribution is supported only on two possible outcomes $a_1, a_2$. Then, the max-entropy distribution takes the form of 
+
+<Math displayMode={true} math = "p(a_1) = \frac{1}{e^{- \lambda a_1} + e^{- \lambda a_2}},\;\;\; p(a_2) = \frac{e^{-\lambda}}{e^{- \lambda a_1} + e^{- \lambda a_2}}"/>
+
+But really, it's better to write it like this:
+
+<Math displayMode={true} math = "p(a_1) = \frac{1}{1 + e^{- \lambda (a_1 - a_2)}},\;\;\; p(a_2) = \frac{e^{-\lambda (a_1 - a_2)}}{1 + e^{- \lambda(a_1 - a_2)}}"/>
+
+The function $\sigma(x) = 1/(1 + e^{-x})$ is called the [logistic function](https://en.wikipedia.org/wiki/Logistic_function)<Footnote>Or sometimes a sigmoid function. Apparently, [sigmoid function](https://en.wikipedia.org/wiki/Sigmoid_function) is a bit more general term. </Footnote> and the parameter $x$ is typically called a [logit](https://en.wikipedia.org/wiki/Logit). Using this function, our max-entropy distribution can be written like this:
+
+<Math displayMode={true} math = "p(a_1) = \sigma(\lambda (a_1 - a_2)),\;\;\; p(a_2) = 1 - \sigma(\lambda (a_1 - a_2))"/>
+
+Here's how I interpret this: if you want to talk about probabilities, but you want to talk about general real numbers instead of numbers from $[0,1]$, you should talk about logits and use the logistic transformation to convert them to probabilities. The parameter $\lambda$ in the formula corresponds to the choice of units in which we measure. For example, I usually like to use the binary logarithm, which corresponds to measuring logits in bits. 
 
 
-This kind of distribution is known under several names, depending on what is the underlying ground set over which we define it. Let's see some cases:
-
-#### Bernoulli distribution & Logits <a id = "logit"></a>
-
-If we are talking about distributions over $\{0, 1\}$, then the shape from ?? takes form
-
-<Math displayMode={true} math = "p(0) = \frac{1}{1 + e^{- \lambda}}, p(1) = \frac{e^{-\lambda x}}{1 + e^{- \lambda}}"/>
-
-Remember that $\lambda$ is some kind of parameter that defines a family of distributions. This family of distributions is simply all the Bernoulli distributions, i.e., all distributions of type $\{p, 1-p\}$, i.e., literally all possible distributions one can define over the set $\{0, 1\}$. 
-
-You can probably appreciate the usefulness of Bernoulli distributions even without reading this KL divergence pean, so what to take of it? 
-
-What we can still learn from ?? is how to convert numbers into probabilities -- The equation says that (after choosing some $\lambda$) there is a single most natural way of converting real numbers into probabilities -- exponentiating + normalizing them. 
-
-The function $\sigma(x) = 1/(1 + e^{-x})$ is called the logistic function<Footnote>Or maybe a sigmoid function. Apparently, [sigmoid function](https://en.wikipedia.org/wiki/Sigmoid_function) is a bit more general term. </Footnote> and the parameter $x$ is typically called a logit. So, ?? is telling us that if you want to talk about probabilities, but you want to talk about general real numbers instead of numbers from $[0,1]$, you should talk about logits and use the logistic transformation to convert them to probabilities. The choice of $\lambda$ then corresponds to choosing your favorite base of the logarithm function. 
+<Block headline = "Logistic function">
+The logistic function $\sigma(x) = 1/(1 + e^{-x})$ is the right function to convert between numbers and probabilities. 
+</Block>
+[TODO logit widget]
 
 <Expand headline = "Elo system">
-The Elo system is the system used to assign ratings to players. The basic idea of it is that when you have two players with Elos $E_1$ and $E_2$, you can estimate the probability that the first one wins from the difference $D = E_1 - E_2$. As we know, max-entropy principle suggests that converting numbers to probabilities should be done via the logistic function. 
+The Elo system is the system used to assign ratings to players. The basic idea of it is that when you have two players with Elos $E_1$ and $E_2$, you can estimate the probability that the first one wins from the difference $D = E_1 - E_2$. As we just discussed, the softmax function for $E_1, E_2$ is equivalent to mapping $D$ to a probability via the logistic function. 
 
-This is indeed how Elo system was designed; the interpretation of the chess Elo number is that the probability that the first player wins should be <Math math = "\frac{1}{1 + 10^{D / 400}}" />. <Footnote>It's more precisely the expected score of the first player due to the existence of draws. </Footnote> This is the logistic function with $\lambda = 1/400 \cdot \ln 10$. 
+This is indeed how Elo system was designed; the interpretation of the chess Elo number is that the probability that the first player wins should be <Math math = "\frac{1}{1 + 10^{D / 400}}" />. <Footnote>It's more precisely the expected score of the first player due to the existence of draws. </Footnote> This is the logistic function for $\lambda = 1/400 \cdot \ln 10$. 
 
 Notice that without knowing the value of $\lambda$, the information "the Elo difference between these two players is 200" is meaningless -- we don't know how Elo is scaled. Yet, even without knowing $\lambda$, we understand the system pretty well: if the chance of an upset (i.e., the lower-rated player wins) is $p$ for $D = 200$, then for $D=400$ it's roughly $p^2$, for $D=600$ it's roughly $p^3$ and so on. 
+</Expand>
+
+<Expand headline = "Probabilities vs logits">
+Probabilities are cool, but sometimes, it's easier to work with their logarithms -- for us this was the case when we analyzed the Bayesian hero from the [first chapter](01-kl_intro). Whenever this happens, we can say that we work "in the logit space". 
+
+Since in our example, there were just two hypotheses, we subtracted the two relevant surprisals and worked with "log-odds", a very intuitive term that says what the numbers are. In this case, we could also call the log-odds number the logit, these are basically synonyms. As far as I know, when there are more then two hypotheses, people stick with the language of using "logits".  
 </Expand>
 
 <Expand headline="Logistic activation function">
@@ -172,23 +181,20 @@ In the beginnings of the deep learning field, the logistic function was used as 
 Unfortunately, this function does not seem to be too great in practice. During the development of the field, researchers understood that it's better if instead if sigmoids, one uses the [ReLU]() activation function (or [something similar]()). That activation function corresponds to neurons that not only contemplate _whether_ to send any signal or none, but also send out a stronger output signal if they got strong input. 
 </Expand>
 
-[TODO logit widget]
+### Fixing E[X] (Softmax) <a id = "softmax"></a>
 
-#### Categorical distribution & Softmax <a id = "softmax"></a>
-
-A more general instantiation of ?? is when our distribution is over some arbitrary set of numbers $\{a_1, \dots, a_k\}$ -- these are also called categorical distributions. In that case, the max entropy distribution is what's called a softmax (or softmin) distribution -- each number $a_i$ is chosen with probability 
+Let's stay with the max-entropy distribution for $E[X]$, but now let's look at the more general case where the where our distribution is supported on a set of numbers $\{a_1, \dots, a_k\}$ -- these distributions are often called [categorical distributions](https://en.wikipedia.org/wiki/Categorical_distribution). In that case, the max entropy distribution is what's called a softmax (or softmin) distribution -- each number $a_i$ is chosen with probability 
 
 <Math displayMode={true} math = "p_i \propto e^{\lambda a_i}. "/>
 
-
-You can think about the softmax function (or softmin if $\lambda < 0$) as the generalization of the logistic function above -- it's _the right way_ to convert numbers to probabilities. The numbers $a_i$ are still often called logits. 
+You can think about the softmax function (or softmin if $\lambda < 0$) as the generalization of the logistic function above -- it's _the right way_ to convert a bunch of numbers to probabilities. The numbers $a_i$ are still often called logits. 
 
 The parameter $1/|\lambda|$ is often called temperature because it kind of works like that -- in small temperatures, softmax is very orderly and behaves just like max, whereas for high temperatures, the distribution gets more chaotic, ultimately approaching the uniform distribution. 
 
 TODO playing-with-temperature-widget
 
 <Expand headline = "Logits in neural nets">
-Example: Typical neural networks output probabilites. For example, a typical neural network classifying images in fact outputs the whole probability distribution that a given picture is a dog/cat/horse/... instead of outputting a single prediction. 
+Typical neural networks output probabilites. For example, a typical neural network classifying images in fact outputs the whole probability distribution that a given picture is a dog/cat/horse/... instead of outputting a single prediction. 
 The problem with this is that usually, most of these probabilities are extremely small, e.g. of order of $10^{-10}$. That's because given a picture of a dog, the neural net is typically pretty sure it's not an octopus. 
 
 This makes it awkward to work with the probabilities directly inside the net -- there are all kinds of numerical and stability issues with this. So the neural nets are instead trying to predit logits, and the conversion to probabilities is just the final layer of the network. 
@@ -201,9 +207,6 @@ Notice how softmax allowed us to elegantly solve a problem that's so fuzzy that 
 </Expand>
 
 
-<Expand headline = "Probabilities vs logits">
-Probabilities are cool, but sometimes, it's easier to work with their logarithms -- for us this was the case when we analyzed the Bayesian hero from the [first chapter](01-kl_intro). Whenever this happens, we can say that we work "in the logit space".  
-</Expand>
 
 
 <Expand headline = "Modelling pasta consumption">
@@ -218,11 +221,9 @@ However, it should be said that one of the popular interpretations of softmax in
 
 </Expand>
 
+### Fixing E[X] (Exponential/Geometric distribution) <a id = "exponential"></a>
 
-#### Exponential and Geometrical distribution
-
-If the domain of the probability distribution is nonnegative integers/reals, then we get the so-called [geometric](https://en.wikipedia.org/wiki/Geometric_distribution)/[exponential](https://en.wikipedia.org/wiki/Exponential_distribution) distribution -- another very basic and useful distribution. 
-You should think about this distribution as _the most natural_ distribution on the domain of positive numbers. 
+If the domain of the probability distribution is nonnegative integers/reals, then we get the so-called [geometric](https://en.wikipedia.org/wiki/Geometric_distribution)/[exponential](https://en.wikipedia.org/wiki/Exponential_distribution) distribution -- another very basic and useful distribution. You should think about this distribution as _the most natural_ distribution on the domain of positive numbers (either integers or reals). 
 
 In the [previous chapter](03-minimizing) we discussed the example of modelling how long I take my lunch. The expected length of it is a natural parameter, hence modelling it by the exponential distribution is a natural choice. 
 
