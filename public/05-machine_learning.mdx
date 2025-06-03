@@ -137,26 +137,70 @@ Maximizing the log-likelihood is the same as minimizing cross-entropy ([as we di
 
 Here's an observation that's also relevant to the previous example. When we store images on hard drive, we do that pixel by pixel, i.e., in the _pixel space_. But in our brain, we store them very differently, perhaps we remember that "it was a picture of a brown dog that looked like a muffin" or something like that. This corresponds to using the so-called _latent space_. This is a hypothesised space where two images are close if they refer to similar objects. For example, two images are close in the latent space even though in the pixel space they might be extremely far. 
 
-Being able to represent the latent space is the key to any interesting work on images. In fact, the reasons why we were able to separate dogs and muffins in the previous example was that the inner layers of the network were able to access concepts in the latent space. 
+Being able to represent the latent space is the key to any interesting work on images. In fact, the reasons why we were able to separate dogs and muffins in the previous example was that the inner layers of the network were able to access concepts in the latent space like "are there ears on the picture". 
 
-As the next step, we now want a system that can not only classify images, but also generate new ones from scratch (think DALLE or Midjourney). The basic approach to do that is called _autoencoders_. 
+As the next step, we now want a system that can not only classify images, but also generate new ones from scratch (think DALLE or Midjourney) or do the cool trick above where we interpolate between two images _in the latent space_. The basic approach to do that is called _autoencoders_. 
 
-Autoencoder is a neural network architecture that feeds an input image $x$ through an encoder $Enc(x)$ and compresses it to a smaller list of numbers $y$. Then, we use the decoder $Dec(y)$ that tries to reconstruct the original image $x$. The hope is that due to the bottleneck in the middle, $y$ represents the important aspects of the image $x$, and forgets the less important ones. In other words, the hope is that encoder is encoding the image into the latent space. 
+Autoencoder (see below) is a neural network architecture that feeds an input image $x$ through an encoder $Enc(x)$ and compresses it to a smaller list of numbers $y$. Then, we use the decoder $Dec(y)$ that tries to reconstruct the original image $x$. The hope is that due to the bottleneck in the middle, $y$ represents the important aspects of the image $x$, and forgets the less important ones. In other words, the hope is that encoder is encoding the image into the latent space. 
 
-One problem of autoencoders is that they often learn a "hash function": The decoder memorizes all images $x_1, x_2, \dots$ and the encoder & decoder decides on "names" of the images. Then encoder just converts an input image to its name, and the decoder outputs the image with that name. To fight this problem, practitioners use _variational autoencoders_. These are autoencoders where the encoder outputs two lists $\mu_1, \dots, \mu_k$ and $\sigma^2_1, \dots, \sigma^2_k$. The input to the decoder are $k$ samples from $N(\mu_1, \sigma_1^2), \dots, N(\mu_k, \sigma_k^2)$. By adding the noise in the middle of the architecture, it gets harder for it to cheat by storing all images. 
+One problem of autoencoders is that they often learn a "hash function": The decoder memorizes all images $x_1, x_2, \dots$ and the encoder & decoder decides on "names" of the images. Then encoder just converts an input image to its name, and the decoder outputs the image with that name. To fight this problem, practitioners use _variational autoencoders_. These are autoencoders where the encoder outputs two lists $\mu_1, \dots, \mu_d$ and $\sigma^2_1, \dots, \sigma^2_d$. The input to the decoder are $d$ samples from $N(\mu_1, \sigma_1^2), \dots, N(\mu_d, \sigma_d^2)$. By adding the noise in the middle of the architecture, it gets harder for the net to cheat by storing all images. 
 
 ![vae](05-machine_learning/vae.png "image from https://en.wikipedia.org/wiki/Variational_autoencoder#/media/File:VAE_Basic.png")
 
 The big question is: How do we now optimize the variational autoencoder? In particular, what's the loss function to optimize? Let's try to derive it! It's going to be harder than previous examples, so it will hopefully showcase what we learned in this minicourse!
 
-How do we start? The first item on our todo list is to come up with a probabilistic model of our data. In this example, we are interested in the joint distribution $p(x, y)$ over images -- the first variable $x$ represents that image in the pixel space, and $y$ represents it in the latent space. 
+How do we start? The first item on our todo list is to come up with a probabilistic model of our data. In this example, we are interested in the joint distribution $p(x, y)$ over images -- the first variable $x$ represents that image in the pixel space, and $y$ represents it in the latent space. Notice that we work with a probability distribution - a particular $y$ corresponds to a whole distribution over images that capture the concept $y$, it's not just one image. 
 
-Now, the encoder and the decoder represents two ways in which we can factorise the joint distribution. 
-The encoder corresponds to the factorization $p(x,y) = p(x) \cdot p(y | x)$: First sample a random image and then encode it to the latent space. More precisely, we can model $p(x,y)$ as 
-<Math displayMode={true} math="p(x,y) = N(Enc_\mu(x), Enc_{\sigma^2}(x))"/>
+Now, the encoder and the decoder represent two ways in which we can factorise the joint distribution. 
+The encoder corresponds to the factorization $p(x,y) = p(x) \cdot p(y | x)$: First sample a random image and then encode it to the latent space. The distribution $p(x)$ is known to us: it's the empirical distribution over a large dataset of images that we collected to train our autoencoder. 
+The distribution $p(y | x)$ is unfortunately not known, but the encoder tries to represent it. More precisely, the distribution $p(y | x)$ is approximated by the distribution <Math math = "p'(y | x) = N(Enc_\mu(x), Enc_{\sigma^2}(x)" />. 
 
-The decoder gives us a second way to model the data where we first sample a random latent-space representation and then decode it to the image -- i.e. $p(x,y) = p(y) \cdot p(x|y)$. We have to be more creative though to turn the decoder into this probabilistic model. For start, we don't know the marginal distribution $p(y)$; so we will just model it with a gaussian -- $q(y) = N(0, I)$ ($I$ stands for unit matrix). How should we model $p(x|y)$? Using $Dec(y)$ is a good start, but we should also add some randomness, so let's add the gaussian noise $N(0,1)$ to every pixel of the final image. We have arrived for a different probabilistic model of $p(x,y)$:
-<Math displayMode={true} math="p(x,y) = N(Dec(N(0, I)), I)"/>
+The decoder gives us a second way to model the data: We first sample a random latent-space representation and then decode it to the image, i.e., $p(x,y) = p(y) \cdot p(x|y)$. We have to be more creative though to turn this idea into a concrete probabilistic model. For start, we don't know the marginal distribution $p(y)$; so we will just model it with a gaussian model $q(y) = N(0, I)$ ($I$ stands for unit matrix). How should we model $p(x|y)$? Using $Dec(y)$ is a good start, but we should also add some randomness, so let's add the gaussian noise $N(0,1)$ to every pixel of the final image and model it as $q(x|y) = N(Dec(y), I)$. We have arrived at a different probabilistic model of $p(x,y) = q(y) \cdot q(x|y)$. 
+
+We will optimize our variational autoencoder by minimizing the KL divergence between these two models of $p(x,y)$. When we use KL divergence, we like to have the first parameter correspond to the "truth" and the other is a model of it. This time, both distributions are models that we are going to train in unison. But the first model $p(x,y) = p(x) \cdot p'(x|y)$ is closer to the truth, since it contains the actual data $p(x)$, while the second model is just a heap of parameters we want to optimize. So, we will train our net by minimizing this: 
+
+<Math displayMode={true} math = "D\left( p(x) \cdot p'(x | y), q(y) \cdot q(y|x)\right)" />
+
+Finishing the job now reduces to algebra left to an Expand box:
+<Expand>
+Let's call our KL loss function $\mathcal L$. We can split it into two parts, called the reconstruction loss and regularization term like this:  
+<Math displayMode = {true} math = "\mathcal L = \underbrace{\sum_{x,y} p(x) p'(y|x) \log \frac{p(x)}{q(x|y)}}_{\textrm{Reconstruction loss} \mathcal L_1} + \underbrace{\sum_{x,y} p(x) p'(y|x) \log \frac{p'(y|x)}{q(y)}}_{\textrm{Regularization term} \mathcal L_2} "/>
+
+Let's analyze the two terms in turn, starting with the reconstruction loss. 
+
+### Reconstruction Loss
+We can split the term $\mathcal L_1$ further like this: 
+<Math displayMode={true} math = "\mathcal L_1 = \sum_x p(x) \log p(x) - \sum_{x,y} p(x) p'(y|x) \log q(x|y)"/>
+The first term is simply the entropy of the distribution $p(x)$. In our case, $p(x)$ is uniform distribution over $N$ images $X_1, \dots, X_N$, so it's equal to $\log N$. In any case, this term is a constant independent of all the parameters we optimize, so we can as well forget it. Thus, minimizing $\mathcal L_1$ amounts to minimizing the other term which we will now interpret. 
+
+To do this, recall that $q(x|y)$ runs the decoder on $y$ and adds gaussian noise $N(0,1)$ to the result; we thus have 
+<Math displayMode={true} math = "q(x | y) \prop e^{-\| x - Dec(y)\|^2}{2d}"/> 
+and hence, up to additive constant that does not play a role in our optimization problem, we have
+<Math displayMode={true} math = "\log q(x | y) = -frac{\| x - Dec(y)\|^2}{2d}"/> 
+
+So, if we were in the setup of a regular autoencoder where $p'(y|x)$ is a deterministic encoding $Enc(x)$, minimizing the term $\mathcal L_1$ would boil down to minimizing the mean square _reconstruction_ loss 
+<Math displayMode={true} math = "\sum_{i = 1}^N frac{\| X_i - Dec(Enc(X_i))\|^2}{2d}" />. 
+
+Our case is more complicated, because the loss function involves $p'(y|x)$ that samples from <Math math = "N(Enc_\mu(x), Enc_{\sigma^2}(x))" /> instead of being a deterministic encoding. We will discuss in the end how to estimate this part of the loss function. 
+
+### Regularization term
+
+Let's analyze the term <Math math = "\mathcal L_2 = \sum_{x,y} p(x) p'(y|x) \log \frac{p'(y|x)}{q(y)}" />. Remember, $p(x)$ is just a uniform distribution over our image dataset, so we can rewrite this as
+<Math displayMode={true} math = "\sum_{i = 1}^N \frac{1}{N} \sum_y p'(y|x) \log \frac{p'(y|x)}{q(y)} = \sum_{i = 1}^N \frac{1}{N} D(p'(y|x), q(y))"/>
+So, minimizing this term boils down to minimizing the sum of KL divergences between $p'(y|X_i)$ and $q(y)$ over our dataset $X_1, \dots, X_N$. 
+
+The first distribution $p'(y |X_i)$ is simply a gaussian with mean $Enc_\mu(X_i)$ and and variance being the diagonal matrix with entries <Math math = "Enc_{\sigma^2}(X_i)" />. The second distribution $q(y)$ is literally the gaussian $N(0,1)$. Now, it is a [fact](https://leenashekhar.github.io/2019-01-30-KL-Divergence/) that there's a simple formula for the KL divergence between two gaussians. It looks like this:
+<Math math = "D(N(\mu, \sigma^2), N(0, 1)) = \frac12 \sum_{i = 1}^d \mu_i^2 + \sigma_i^2 - 1 - \log\sigma_i^2"/>
+
+Plugging it to $\mathcal L_2$, we get that we have to minimize the expression 
+<Math displayMode = {true} math = "\frac{1}{N} \sum_{i = 1}^N \left( \frac12 \sum_{j = 1}^d Enc_{\mu, j}(X_i)^2 + Enc_{\sigma^2, j}(X_i) - \log Enc_{\sigma^2, j} \right)"/>
+
+</Expand>
+
+After we do the algebra, we end up with the loss function
+<Math displayMode={true} math = "\frac{1}{N} \sum_{i = 1}^N \left( \sum_y p'(y | x) frac{\| X_i - Dec(y)\|^2}{2d} \,+\, \left( \frac12 \sum_{j = 1}^d Enc_{\mu, j}(X_i)^2 + Enc_{\sigma^2, j}(X_i) - \log Enc_{\sigma^2, j} \right)\right)"/>
+
+In general, computing the expression <Math math = "\sum_{i = 1}^N \sum_y p'(y | x) frac{\| X_i - Dec(y)\|^2}{2d}"/> is incredibly hard since we would have to iterate overall the whole range of $p'(y|x)$. In practice, this expression can be estimated well-enough by the Monte Carlo method. That is, in practice we just sample a few times from $p'(y|x)$ and compute the reconstruction loss $\| X_i - Dec(y)\|^2$ for them. We also add a few more regularization terms that make sure that the our variational autoencoder does not set $\sigma_i^2 = 0$ to become a vanilla autoencoder. 
 
 </Expand>
 
