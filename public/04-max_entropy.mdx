@@ -143,7 +143,7 @@ If we believe that the mean is an important parameter of a distribution (as we u
 
 This kind of distribution is known under several names, depending on what is the underlying ground set over which we define it. Let's first understand it in the simplest possible case when our distribution is supported only on two possible outcomes $a_1, a_2$. Then, the max-entropy distribution takes the form of 
 
-<Math displayMode={true} math = "p(a_1) = \frac{1}{e^{- \lambda a_1} + e^{- \lambda a_2}},\;\;\; p(a_2) = \frac{e^{-\lambda}}{e^{- \lambda a_1} + e^{- \lambda a_2}}"/>
+<Math displayMode={true} math = "p(a_1) = \frac{e^{- \lambda a_1}}{e^{- \lambda a_1} + e^{- \lambda a_2}},\;\;\; p(a_2) = \frac{e^{-\lambda a_2}}{e^{- \lambda a_1} + e^{- \lambda a_2}}"/>
 
 But really, it's better to write it like this:
 
@@ -153,7 +153,7 @@ The function $\sigma(x) = 1/(1 + e^{-x})$ is called the [logistic function](http
 
 <Math displayMode={true} math = "p(a_1) = \sigma(\lambda (a_1 - a_2)),\;\;\; p(a_2) = 1 - \sigma(\lambda (a_1 - a_2))"/>
 
-Here's how I interpret this: if you want to talk about probabilities, but you want to talk about general real numbers instead of numbers from $[0,1]$, you should talk about logits and use the logistic transformation to convert them to probabilities. The parameter $\lambda$ in the formula corresponds to the choice of units in which we measure. For example, I usually like to use the binary logarithm, which corresponds to measuring logits in bits. 
+Here's how I interpret this: if you want to talk about probabilities, but for whatever reason you want to work with general real numbers instead of numbers from $[0,1]$, you should talk about logits and use the logistic transformation to convert them to probabilities. The parameter $\lambda$ in the formula corresponds to the choice of units in which we measure those logits. For example, I usually like to use the binary logarithm, which corresponds to measuring logits in bits. 
 
 
 <Block headline = "Logistic function">
@@ -170,9 +170,9 @@ Notice that without knowing the value of $\lambda$, the information "the Elo dif
 </Expand>
 
 <Expand headline = "Probabilities vs logits">
-Probabilities are cool, but sometimes, it's easier to work with their logarithms -- for us this was the case when we analyzed the Bayesian hero from the [first chapter](01-kl_intro). Whenever this happens, we can say that we work "in the logit space". 
+When we analyzed the Bayesian hero from the [first chapter](01-kl_intro), it was easier to work with logarithms of odds, instead of odds themselves. Whenever this happens, we can say that we work "in the logit space". 
 
-Since in our example, there were just two hypotheses, we subtracted the two relevant surprisals and worked with "log-odds", a very intuitive term that says what the numbers are. In this case, we could also call the log-odds number the logit, these are basically synonyms. As far as I know, when there are more then two hypotheses, people stick with the language of using "logits".  
+Since in our example, there were just two hypotheses, we subtracted the two relevant surprisals and worked with so-called "log-odds". We could as well call the log-odds number the logit, these are basically synonyms in a sense. As far as I know, when there are more then two hypotheses, people stick with the language of using "logits".  
 </Expand>
 
 <Expand headline="Logistic activation function">
@@ -238,17 +238,19 @@ This discussion is mostly meant to show what I love on the max entropy principle
 
 There still an elephant in the room though -- exponential distribution can't be normalized if the data are general real numbers. 
 
-### Normal distribution <a id = "normal"></a>
+### Fixing both $E[X]$ & $E[X^2]$ (Normal distribution) <a id = "normal"></a>
 
 If we believe that both mean and the variance are interesting, max entropy principle suggests that we should choose the function that has a quadratic function of $x$ in the exponent. That means it has the shape
 <Math displayMode={true} math = "p(x) \propto e^{-\lambda_1 x^2 - \lambda_2 x}"/>
-This gets more familiar if we rewrite the equation like this:
+
+{/*This gets more familiar if we rewrite the equation like this:
 <Math displayMode={true} math = "p(x) = A e^{-B(x-C)^2}"/>
-where $A,B,C$ are some constants chosen so that $p(x)$ integrates to $1$. This is the family of [normal (or Gaussian) distributions](https://en.wikipedia.org/wiki/Normal_distribution), and the density formula is usually written more precisely as <Math math = "p(x) = \frac{1}{2\pi\sigma^2} e^{-(x-\mu)^2/\sigma^2}" /> <Footnote>For a finite domain, the probability function from ??could also look like $P(x) \propto e^{x^2}$, i.e., it could have the smallest probabilities in the middle and large probabilities at the edges. However, this is not normalizable to 1 if the domain is real numbers. There, the only possible solution is the familiar bell-shaped curve. </Footnote> 
+where $A,B,C$ are some constants chosen so that $p(x)$ integrates to $1$.*/} 
+This is the family of [normal (or Gaussian) distributions](https://en.wikipedia.org/wiki/Normal_distribution), and the density formula is usually written more precisely as <Math math = "p(x) = \frac{1}{2\pi\sigma^2} e^{-(x-\mu)^2/\sigma^2}" /> <Footnote>For a finite domain, the probability function from ?? could also look like $P(x) \propto e^{x^2}$, i.e., it could have the smallest probabilities in the middle and large probabilities at the edges. However, this is not normalizable to 1 if the domain is real numbers. There, the only possible solution is the familiar bell-shaped curve. </Footnote> 
 
-I think this is a good (partial) explanation of "why is there $x^2$ in Gaussian"? It simply means that Gaussian is the *right* distribution to work with if you care about the first two moments. If you cared about the first four moments, the right family of distributions would be those with four-degree polynomials in the exponent. 
+I think this is a good (partial) explanation of "why is there $x^2$ in Gaussian"? It simply means that Gaussian is the *right* distribution to work with if you care about the mean and the variance. If you cared about the first four [moments](https://en.wikipedia.org/wiki/Moment_(mathematics)), the right family of distributions would be those with four-degree polynomials in the exponent. 
 
-You should view the normal distribution as _the right distribution_ if what you care is mean and variance. A related view is that this is the simplest possible distribution on real numbers -- Neither the uniform distribution nor the exponential distribution can be normalized there, so we can try to salvage this by fixing the first two moments. 
+Often, I like to think about the Gaussian as the simplest possible distribution on real numbers - Neither the uniform distribution nor the exponential distribution can be normalized there, so we salvage this by fixing the first two moments. 
 
 <Expand headline = "Maximum entropy & Central limit theorem">
 

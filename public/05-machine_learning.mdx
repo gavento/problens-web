@@ -95,23 +95,23 @@ where $\ell_i$ is the indicator (i.e. $\ell_i \in \{0,1\}$) for whether the poin
 
 We are given a set of points $x_1, \dots, x_n$ on, say, 2D plane. We want to group them into $k$ clusters. 
 
-Let's turn this into a probabilistic model. Let's use $\mu_1, \dots, \mu_k$ to denote centers of the clusters. The meaning of those points is that if a point $x_i$ belongs to the cluster $j$, then the distance $||x_i - \mu_j||_2$ should be small. 
+Let's turn this into a probabilistic model. Let's use $\mu_1, \dots, \mu_k$ to denote centers of the clusters. The meaning of those points is that if a point $x_i$ belongs to the cluster $j$, then their Euclidean distance $||x_i - \mu_j||$ should be small. 
 
 As before, we can use the max entropy distribution to turn this into a concrete model. Exponential function does not normalize, so we will use the normal distribution:
 
-<Math displayMode={true} math = "p(x | \mu_j) \propto e^{-\frac{||x-\mu_j||^2}{\sigma^2}}"/>
+<Math displayMode={true} math = "p(x | \mu_j) \propto e^{-\frac{||x-\mu_j||^2}{2\sigma^2}}"/>
 
 The notation $p(x | \mu_j)$ means that this is only our model distribution of points coming from the $j$-th cluster. We want a full probabilistic model $p(x)$ though. We can get it by putting a prior on how likely each cluster is. The maximum entropy prior is the uniform distribution, so we will choose:
 
 <Math displayMode={true} math = "p(x) = \frac{1}{k} \sum_{i = 1}^k p(x | \mu_j)"/>
 
-We now have a probabilistic model generating data $x$ from a distribution $p$. It is parameterized by $k+1$ numbers: $\mu_1, \dots, \mu_k, \sigma^2$. We will use maximum likelihood to find those parameters. The principle tells us that we should maximize this expression:
+We now have a probabilistic model generating data $x$ from a distribution $p$. It is parameterized by $k+1$ numbers: $\mu_1, \dots, \mu_k, \sigma^2$. We will use maximum likelihood to find those parameters. The principle tells us that we should maximize the following log-likelihood:
 
 <Math displayMode = {true} math = "\argmax_{\substack{\mu_1, \dots, \mu_k \\ \sigma^2}} -n \log \left( k\sqrt{2\pi\sigma^2}\right) + \sum_{i = 1}^n  \log \sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{\sigma^2}}"/>
 
 Optimizing this expression corresponds to an algorithm known as [soft $k$-means](https://en.wikipedia.org/wiki/Fuzzy_clustering) (TODO check). The word "soft" is there because the parameter $\sigma$ enables us to output a distribution for each point $x$ telling us how likely it is that $x$ comes from each cluster. 
 
-In practice, people don't care that much about this; knowing the closest cluster is enough. This corresponds to being interested in the limit $\sigma \rightarrow 0$. In this limit, the beastly expression ?? simplifies pretty nicely. In particular, we can replace the summation <Math math = "\sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{\sigma^2}}" /> by <Math math = "\max_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{\sigma^2}}" /> since all other terms in the sum are simply negligible. The expression ?? simplifies to this:
+In practice, people don't care that much about this; knowing the closest cluster is enough. This corresponds to being interested in the limit $\sigma \rightarrow 0$. In this limit, the beastly expression ?? simplifies pretty nicely. In particular, we can replace the summation <Math math = "\sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{2\sigma^2}}" /> by <Math math = "\max_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{2\sigma^2}}" /> since all other terms in the sum expect the largest one are simply negligible if we think of $\sigma \rightarrow 0$. The expression ?? simplifies to this:
 
 <Math displayMode = {true} math = "\argmin_{\substack{\mu_1, \dots, \mu_k}} \sum_{i = 1}^n \min_{j = 1}^k ||x_i-\mu_j||^2"/>
 
@@ -121,12 +121,14 @@ The problem of finding $\mu_1, \dots, \mu_k$ that minimize this expression is ca
 
 We are given a huge number of images, and each one has one of $k$ possible labels (a dog, a muffin, ...). We want to optimize a neural net that takes an image on the input and outputs a probability distribution over the $k$ possible classes. 
 
-Coming up with an architecture of a neural net is a very tricky problem. Maximum entropy helps a little bit there -- [we already discussed](04-max-entropy/softmax) that it suggests that the last layer should convert logits into probabilities by softmax. That is, if we build a neural net that transforms input image $X$ to $k$ numbers $NN_1(X), \dots, NN_k(X)$, we should map them into probabilities as <Math math = "p_j(X) \propto e^{-\lambda NN_j(X)}" />. The constant $\lambda$ can be optimized together with the network, or just hardcoded to $1$.  
+![dogs](dogs.png "taken from https://www.freecodecamp.org/news/chihuahua-or-muffin-my-search-for-the-best-computer-vision-api-cbda4d6b425d/")
+
+Coming up with an architecture of a neural net is a very tricky problem that we cannot hope to "solve" just by using our tools. But maximum entropy helps at least a little bit: [we already discussed](04-max-entropy/softmax) that the last layer of the network is typically just converting logits into probabilities by softmax. That is, if we build a neural net that transforms input image $X$ to $k$ numbers $NN_1(X), \dots, NN_k(X)$, we should map them into probabilities as <Math math = "p_j(X) \propto e^{-\lambda NN_j(X)}" />. The constant $\lambda$ can be optimized together with the network, or just hardcoded to $1$.  
 
 Next, the maximum-likelihood principle says that we should maximize the log-likelihood, i.e., if on image $X_i$ with label $\ell_i$ the net outputs a distribution $p_1(X_i), \dots, p_k(X_i)$, we should try to maximize
-<Math displayMode={true} math = "\argmax_{\substack{\textrm{neural net}\\\textrm{parameters}} \sum_{i = 1}^n \log p_{\ell_i}(X_i)"/>
+<Math displayMode={true} math = "\argmax_{\substack{\textrm{neural net \\ weights}}} \sum_{i = 1}^n \log p_{\ell_i}(X_i)"/>
 
-[As we know](03-minimizing/mle), maximizing log-likelihood is pretty much the same as minimizing cross-entropy, so in this case, this is usually called _minimizing the cross-entropy loss_ <Math math = "\sum_{i = 1}^n \log 1/p_{\ell_i}(X_i)" />. 
+Maximizing the log-likelihood is the same as minimizing cross-entropy ([as we discussed in this chapter](03-minimizing/mle)), so in this case, we usually talk about this as "we train the network by minimizing the cross-entropy loss <Math math = "\sum_{i = 1}^n \log 1/p_{\ell_i}(X_i)" />". 
 </Expand>
 <Expand headline = "Variational Autoencoders"> <a id="variational-autoencoders"></a>
 
@@ -142,6 +144,8 @@ As the next step, we now want a system that can not only classify images, but al
 Autoencoder is a neural network architecture that feeds an input image $x$ through an encoder $Enc(x)$ and compresses it to a smaller list of numbers $y$. Then, we use the decoder $Dec(y)$ that tries to reconstruct the original image $x$. The hope is that due to the bottleneck in the middle, $y$ represents the important aspects of the image $x$, and forgets the less important ones. In other words, the hope is that encoder is encoding the image into the latent space. 
 
 One problem of autoencoders is that they often learn a "hash function": The decoder memorizes all images $x_1, x_2, \dots$ and the encoder & decoder decides on "names" of the images. Then encoder just converts an input image to its name, and the decoder outputs the image with that name. To fight this problem, practitioners use _variational autoencoders_. These are autoencoders where the encoder outputs two lists $\mu_1, \dots, \mu_k$ and $\sigma^2_1, \dots, \sigma^2_k$. The input to the decoder are $k$ samples from $N(\mu_1, \sigma_1^2), \dots, N(\mu_k, \sigma_k^2)$. By adding the noise in the middle of the architecture, it gets harder for it to cheat by storing all images. 
+
+![vae](05-machine_learning/vae.png "image from https://en.wikipedia.org/wiki/Variational_autoencoder#/media/File:VAE_Basic.png")
 
 The big question is: How do we now optimize the variational autoencoder? In particular, what's the loss function to optimize? Let's try to derive it! It's going to be harder than previous examples, so it will hopefully showcase what we learned in this minicourse!
 
