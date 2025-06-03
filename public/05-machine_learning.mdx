@@ -12,6 +12,8 @@ We will go through the examples in the following table (feel free to skip some) 
 
 ![Examples](05-machine-learning/table)
 
+## A catalogue of examples <a id = "examples"></a>
+
 <Expand headline = "Estimating mean and variance"> <a id="application-to-statistics-riddle"></a>
 
 Our [basic statistics riddle](00-introduction/statistics) was like this: We have some numbers $X_1, \dots, X_n$ and we want to estimate their mean and variance. 
@@ -141,7 +143,7 @@ Being able to represent the latent space is the key to any interesting work on i
 
 As the next step, we now want a system that can not only classify images, but also generate new ones from scratch (think DALLE or Midjourney) or do the cool trick above where we interpolate between two images _in the latent space_. The basic approach to do that is called _autoencoders_. 
 
-Autoencoder (see below) is a neural network architecture that feeds an input image $x$ through an encoder $Enc(x)$ and compresses it to a smaller list of numbers $y$. Then, we use the decoder $Dec(y)$ that tries to reconstruct the original image $x$. The hope is that due to the bottleneck in the middle, $y$ represents the important aspects of the image $x$, and forgets the less important ones. In other words, the hope is that encoder is encoding the image into the latent space. 
+Autoencoder (see below) is a neural network architecture that feeds an input image $x$ through an encoder $\textrm{Enc}(x)$ and compresses it to a smaller list of numbers $y$. Then, we use the decoder $\textrm{Dec}(y)$ that tries to reconstruct the original image $x$. The hope is that due to the bottleneck in the middle, $y$ represents the important aspects of the image $x$, and forgets the less important ones. In other words, the hope is that encoder is encoding the image into the latent space. 
 
 One problem of autoencoders is that they often learn a "hash function": The decoder memorizes all images $x_1, x_2, \dots$ and the encoder & decoder decides on "names" of the images. Then encoder just converts an input image to its name, and the decoder outputs the image with that name. To fight this problem, practitioners use _variational autoencoders_. These are autoencoders where the encoder outputs two lists $\mu_1, \dots, \mu_d$ and $\sigma^2_1, \dots, \sigma^2_d$. The input to the decoder are $d$ samples from $N(\mu_1, \sigma_1^2), \dots, N(\mu_d, \sigma_d^2)$. By adding the noise in the middle of the architecture, it gets harder for the net to cheat by storing all images. 
 
@@ -153,9 +155,9 @@ How do we start? The first item on our todo list is to come up with a probabilis
 
 Now, the encoder and the decoder represent two ways in which we can factorise the joint distribution. 
 The encoder corresponds to the factorization $p(x,y) = p(x) \cdot p(y | x)$: First sample a random image and then encode it to the latent space. The distribution $p(x)$ is known to us: it's the empirical distribution over a large dataset of images that we collected to train our autoencoder. 
-The distribution $p(y | x)$ is unfortunately not known, but the encoder tries to represent it. More precisely, the distribution $p(y | x)$ is approximated by the distribution <Math math = "p'(y | x) = N(Enc_\mu(x), Enc_{\sigma^2}(x)" />. 
+The distribution $p(y | x)$ is unfortunately not known, but the encoder tries to represent it. More precisely, the distribution $p(y | x)$ is approximated by the distribution <Math math = "p'(y | x) = N(\textrm{Enc}_\mu(x), \textrm{Enc}_{\sigma^2}(x)" />. 
 
-The decoder gives us a second way to model the data: We first sample a random latent-space representation and then decode it to the image, i.e., $p(x,y) = p(y) \cdot p(x|y)$. We have to be more creative though to turn this idea into a concrete probabilistic model. For start, we don't know the marginal distribution $p(y)$; so we will just model it with a gaussian model $q(y) = N(0, I)$ ($I$ stands for unit matrix). How should we model $p(x|y)$? Using $Dec(y)$ is a good start, but we should also add some randomness, so let's add the gaussian noise $N(0,1)$ to every pixel of the final image and model it as $q(x|y) = N(Dec(y), I)$. We have arrived at a different probabilistic model of $p(x,y) = q(y) \cdot q(x|y)$. 
+The decoder gives us a second way to model the data: We first sample a random latent-space representation and then decode it to the image, i.e., $p(x,y) = p(y) \cdot p(x|y)$. We have to be more creative though to turn this idea into a concrete probabilistic model. For start, we don't know the marginal distribution $p(y)$; so we will just model it with a gaussian model $q(y) = N(0, I)$ ($I$ stands for unit matrix). How should we model $p(x|y)$? Using $\textrm{Dec}(y)$ is a good start, but we should also add some randomness, so let's add the gaussian noise $N(0,1)$ to every pixel of the final image and model it as $q(x|y) = N(\textrm{Dec}(y), I)$. We have arrived at a different probabilistic model of $p(x,y) = q(y) \cdot q(x|y)$. 
 
 We will optimize our variational autoencoder by minimizing the KL divergence between these two models of $p(x,y)$. When we use KL divergence, we like to have the first parameter correspond to the "truth" and the other is a model of it. This time, both distributions are models that we are going to train in unison. But the first model $p(x,y) = p(x) \cdot p'(x|y)$ is closer to the truth, since it contains the actual data $p(x)$, while the second model is just a heap of parameters we want to optimize. So, we will train our net by minimizing this: 
 
@@ -174,17 +176,17 @@ We can split the term $\mathcal L_1$ further like this:
 The first term is simply the entropy of the distribution $p(x)$. In our case, $p(x)$ is uniform distribution over $N$ images $X_1, \dots, X_N$, so it's equal to $\log N$. In any case, this term is a constant independent of all the parameters we optimize, so we can as well forget it. Thus, minimizing $\mathcal L_1$ amounts to minimizing the other term which we will now interpret. 
 
 To do this, recall that $q(x|y)$ runs the decoder on $y$ and adds gaussian noise $N(0,1)$ to the result; we thus have 
-<Math displayMode={true} math = "q(x | y) \propto e^{-\| x - Dec(y)\|^2}{2d}"/> 
+<Math displayMode={true} math = "q(x | y) \propto e^{-\| x - \textrm{Dec}(y)\|^2}{2d}"/> 
 and hence, up to additive constant that does not play a role in our optimization problem, we have
-<Math displayMode={true} math = "\log q(x | y) = -\frac{\| x - Dec(y)\|^2}{2d}"/> 
+<Math displayMode={true} math = "\log q(x | y) = -\frac{\| x - \textrm{Dec}(y)\|^2}{2d}"/> 
 
-So, if we were in the setup of a regular autoencoder where $p'(y|x)$ is a deterministic encoding $Enc(x)$, minimizing the term $\mathcal L_1$ would boil down to minimizing the mean square _reconstruction_ loss 
-<Math displayMode={true} math = "\frac{1}{N}\sum_{i = 1}^N \frac{\| X_i - Dec(Enc(X_i))\|^2}{2d}. " /> 
+So, if we were in the setup of a regular autoencoder where $p'(y|x)$ is a deterministic encoding $\textrm{Enc}(x)$, minimizing the term $\mathcal L_1$ would boil down to minimizing the mean square _reconstruction_ loss 
+<Math displayMode={true} math = "\frac{1}{N}\sum_{i = 1}^N \frac{\| X_i - \textrm{Dec}(\textrm{Enc}(X_i))\|^2}{2d}. " /> 
 
 Our case is more complicated, we have to minimize this:
-<Math displayMode={true} math = "\frac{1}{N}\sum_{i = 1}^N \sum_{y} p'(y|X_i) \frac{\| X_i - Dec(y)\|^2}{2d}. " /> 
+<Math displayMode={true} math = "\frac{1}{N}\sum_{i = 1}^N \sum_{y} p'(y|X_i) \frac{\| X_i - \textrm{Dec}(y)\|^2}{2d}. " /> 
 
-The term $p'(y|x)$ that samples from <Math math = "N(Enc_\mu(x), Enc_{\sigma^2}(x))" /> instead of being a deterministic encoding is problematic to compute. We will discuss in the end how to estimate this part of the loss function. 
+The term $p'(y|x)$ that samples from <Math math = "N(\textrm{Enc}_\mu(x), \textrm{Enc}_{\sigma^2}(x))" /> instead of being a deterministic encoding is problematic to compute. We will discuss in the end how to estimate this part of the loss function. 
 
 ### Regularization term
 
@@ -192,23 +194,21 @@ Let's analyze the term <Math math = "\mathcal L_2 = \sum_{x,y} p(x) p'(y|x) \log
 <Math displayMode={true} math = "\mathcal L_2 = \sum_{i = 1}^N \frac{1}{N} \sum_y p'(y|x) \log \frac{p'(y|x)}{q(y)} = \sum_{i = 1}^N \frac{1}{N} D(p'(y|x), q(y))"/>
 So, minimizing this term boils down to minimizing the sum of KL divergences between $p'(y|X_i)$ and $q(y)$ over our dataset $X_1, \dots, X_N$. 
 
-The first distribution $p'(y |X_i)$ is simply a gaussian with mean $Enc_\mu(X_i)$ and variance being the diagonal matrix with entries <Math math = "Enc_{\sigma^2}(X_i)" />. The second distribution $q(y)$ is literally the gaussian $N(0,1)$. There's a [simple formula](https://leenashekhar.github.io/2019-01-30-KL-Divergence/) for the KL divergence between two gaussians that looks like this:
+The first distribution $p'(y |X_i)$ is simply a gaussian with mean $\textrm{Enc}_\mu(X_i)$ and variance being the diagonal matrix with entries <Math math = "\textrm{Enc}_{\sigma^2}(X_i)" />. The second distribution $q(y)$ is literally the gaussian $N(0,1)$. There's a [simple formula](https://leenashekhar.github.io/2019-01-30-KL-Divergence/) for the KL divergence between two gaussians that looks like this:
 <Math displayMode = {true} math = "D(N(\mu, \sigma^2), N(0, 1)) = \frac12 \sum_{i = 1}^d \left( \mu_i^2 + \sigma_i^2 - 1 - \log\sigma_i^2\right) "/>
 
 Plugging it to $\mathcal L_2$, we get that we have to minimize the expression 
-<Math displayMode = {true} math = "\frac{1}{N} \sum_{i = 1}^N \left( \frac12 \sum_{j = 1}^d Enc_{\mu, j}(X_i)^2 + Enc_{\sigma^2, j}(X_i) - \log Enc_{\sigma^2, j}(X_i) \right)"/>
+<Math displayMode = {true} math = "\frac{1}{N} \sum_{i = 1}^N \left( \frac12 \sum_{j = 1}^d \textrm{Enc}_{\mu, j}(X_i)^2 + \textrm{Enc}_{\sigma^2, j}(X_i) - \log \textrm{Enc}_{\sigma^2, j}(X_i) \right)"/>
 </Expand>
 
 After we do the algebra, we end up with the loss function
-<Math displayMode={true} math = "\frac{1}{N} \sum_{i = 1}^N \left( \sum_y p'(y | x) frac{\| X_i - Dec(y)\|^2}{2d} \,+\, \left( \frac12 \sum_{j = 1}^d Enc_{\mu, j}(X_i)^2 + Enc_{\sigma^2, j}(X_i) - \log Enc_{\sigma^2, j}(X_i) \right)\right)"/>
+<Math displayMode={true} math = "\frac{1}{N} \sum_{i = 1}^N \left( \sum_y p'(y | x) \frac{\| X_i - \textrm{Dec}(y)\|^2}{2d} \,+\, \left( \frac12 \sum_{j = 1}^d \textrm{Enc}_{\mu, j}(X_i)^2 + \textrm{Enc}_{\sigma^2, j}(X_i) - \log \textrm{Enc}_{\sigma^2, j}(X_i) \right)\right)"/>
 
-In general, computing the expression <Math math = "\sum_{i = 1}^N \sum_y p'(y | x) \frac{\| X_i - Dec(y)\|^2}{2d}"/> is incredibly hard since we would have to iterate overall the whole range of $p'(y|x)$. In practice, this expression can be estimated well-enough by the Monte Carlo method. 
+In general, computing the expression <Math math = "\sum_{i = 1}^N \sum_y p'(y | x) \frac{\| X_i - \textrm{Dec}(y)\|^2}{2d}"/> is incredibly hard since we would have to iterate overall the whole range of $p'(y|x)$. In practice, this expression can be estimated well-enough by the Monte Carlo method. 
 
-That is, in practice we can optimize this loss function. For each image $X_i$, we just sample a few times from $p'(y|X_i)$ and compute the reconstruction loss $\| X_i - Dec(y)\|^2$ for them. We also add the regularization term involving the mean and variance spit out by the decoder; this is to make sure that our variational autoencoder does not set $\sigma_i^2 = 0$ to become a vanilla autoencoder. 
+That is, in practice we can optimize this loss function. For each image $X_i$, we just sample a few times from $p'(y|X_i)$ and compute the reconstruction loss $\| X_i - \textrm{Dec}(y)\|^2$ for them. We also add the regularization term involving the mean and variance spit out by the decoder; this is to make sure that our variational autoencoder does not set $\sigma_i^2 = 0$ to become a vanilla autoencoder. 
 </Expand>
 
 ## What's next
 
-Deriving the loss function for variational autoencoder was meant to be the culmination of this minicourse. We have used all the intuition, understanding, and technology developed thus far!
-
-This means you are finished reading the main part, congrats! If you want to continue, we cover a few more bits and pieces next. You can also check out [Resources](/resources), the [About](/about) page.
+You are the master of KL, congrats! If you want to continue, we cover a few more bits and pieces [in the next chapters](06-algorithms). You can also check out [Resources](/resources) or leave us feedback at the [About](/about) page.
