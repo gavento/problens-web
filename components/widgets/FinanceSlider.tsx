@@ -2,17 +2,33 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image"; // <--- ADD THIS LINE
 
 type ImageItem = {
   src: string;
   index: number;
+  // You might not need width/height if using fill, or if Next.js can infer from static import
+  // For dynamic 'src', you might still need to provide them or use a custom loader config.
+  // Let's assume for now Next.js can infer if `require.context` works as a static-like import.
+  // If not, you'll need to define width/height for each image or use a loader.
 };
 
 const importAll = (r: any): ImageItem[] =>
-  r.keys().map((key: string) => ({
-    src: r(key).default as string,
-    index: parseInt(key.match(/\d+(?=\.png$)/)![0], 10),
-  }));
+  r.keys().map((key: string) => {
+    // When using next/image, `r(key)` directly might be sufficient,
+    // or you might still need `.default` depending on your webpack/Next.js config.
+    // `.default` is safer if you're not sure how context resolves.
+    return {
+      src: r(key).default as string,
+      index: parseInt(key.match(/\d+(?=\.png$)/)![0], 10),
+    };
+  });
+
+// Note: `require.context` works best in webpack environments.
+// If you're using Next.js 13+ with the App Router and SWC (which is the default),
+// `require.context` might behave slightly differently or require specific
+// Next.js configurations for static assets. However, for local files,
+// Next.js's `Image` component typically handles them well.
 
 const sapImages: ImageItem[] = importAll((require as any).context("./financial", false, /sap_plot\d+\.png$/)).sort(
   (a: ImageItem, b: ImageItem) => a.index - b.index,
@@ -38,6 +54,12 @@ const FinanceSlider: React.FC = () => {
       <div className="p-4 bg-red-50 rounded-md text-red-700">No {mode === "sap" ? "SAP" : "Bitcoin"} plots found.</div>
     );
   }
+
+  // Define width and height for the Image component.
+  // You'll need to know the dimensions of your images, or decide on a fixed size for the display.
+  // If your images have varying sizes, you might need a more dynamic approach or use `fill`.
+  const imageWidth = 800; // Example width
+  const imageHeight = 600; // Example height (adjust as needed, maintain aspect ratio)
 
   return (
     <div className="p-4 bg-gray-50 rounded-lg space-y-4">
@@ -65,10 +87,19 @@ const FinanceSlider: React.FC = () => {
 
       {/* Zobrazený obrázek */}
       <div className="flex justify-center">
-        <img
+        {/* <img // <--- REMOVE THIS
           src={images[currentIdx].src}
           alt={`${mode.toUpperCase()} Plot ${images[currentIdx].index}`}
           className="max-w-full h-auto border rounded-md shadow"
+        /> */}
+        <Image // <--- USE NEXT.JS IMAGE COMPONENT
+          src={images[currentIdx].src}
+          alt={`${mode.toUpperCase()} Plot ${images[currentIdx].index}`}
+          width={imageWidth} // <--- ADD WIDTH
+          height={imageHeight} // <--- ADD HEIGHT
+          className="max-w-full h-auto border rounded-md shadow"
+          // Consider adding `priority` if this image is above the fold
+          // priority={true}
         />
       </div>
 
