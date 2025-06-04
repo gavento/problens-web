@@ -1,405 +1,408 @@
 # Max Entropy Distributions <a id="max-entropy-distributions"></a>
 
-In the [previous chapter](03-minimizing) we've seen how minimizing KL divergence generalizes two important statistical principles -- maximum likelihood & maximum entropy. 
+In the [previous chapter](03-minimizing), we saw how minimizing KL divergence generalizes two vital statistical concepts: **maximum likelihood** and **maximum entropy**.
 
-Let's now discuss maximum entropy a bit more in depth. In particular, we will try to understand how do maximum entropy distributions look like. For such a general question, it turns out the answer is surprisingly simple!
+Let's now dive a bit deeper into maximum entropy. Specifically, we'll try to understand what maximum entropy distributions actually look like. For such a broad question, the answer turns out to be surprisingly straightforward!
 
+---
 
-## General form of maximum entropy distributions
+## General Form of Maximum Entropy Distributions
 
-The question we would like to understand is: If we consider only a set of distributions $P$ that have some properties, how does the maximum entropy distribution in $P$ look like? 
+The core question we want to address is this: If we limit ourselves to a set of distributions $P$ that possess specific properties, what is the form of the maximum entropy distribution within that set?
 
-Let's see some examples first. If we consider distributions with $E[X] = \mu$ (and the domain is nonnegative real numbers), the maximum entropy distribution is the exponential distribution. This is the distribution with <Math math = "p(x) \propto e^{-\lambda x}" />. Here, $\lambda$ is some parameter -- fixing $E[X]$ to have different values leads to different $\lambda$s. <Footnote>In this particular case, the precise shape of the distribution is <Math math = "p(x) = \frac{1}{\mu} e^{- x/\mu}" />, but it will help if we don't worry about constants. </Footnote>
+Let's start with a couple of examples. If we consider distributions with a fixed expectation $E[X] = \mu$ (and the domain is non-negative real numbers), the maximum entropy distribution is the **exponential distribution**. This distribution has the form <Math math = "p(x) \propto e^{-\lambda x}" />. Here, $\lambda$ is a parameter—different values of $E[X]$ lead to different $\lambda$s. <Footnote>In this particular case, the precise shape of the distribution is <Math math = "p(x) = \frac{1}{\mu} e^{- x/\mu}" />, but let's not worry too much about constants for now.</Footnote>
 
-Another example: If we fix both $E[X]$ and $E[X^2]$ to be equal to some values, the maximum entropy distribution is the normal distribution where <Math math = "p(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-(x-\mu)^2/(2\sigma^2)}." />. To avoid unnecessary clutter, we can rewrite down its shape as <Math math = "p(x) \propto e^{-\lambda_1 x - \lambda_2 x^2}." /> for some constants $\lambda_1, \lambda_2$. 
+Another example: If we fix both $E[X]$ and $E[X^2]$ to certain values, the maximum entropy distribution is the **normal distribution**, where <Math math = "p(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-(x-\mu)^2/(2\sigma^2)}." /> To keep things clean, we can rewrite its shape as <Math math = "p(x) \propto e^{-\lambda_1 x - \lambda_2 x^2}." /> for some constants $\lambda_1, \lambda_2$.
 
-Can you spot a pattern? 
+Spot a pattern?
 
-<Block headline= "General form of max entropy distributions">
-Here's the general form of maximum entropy distributions: Let's say that we are given a bunch of constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$. Then, among all the distributions that satisfy the constraints, the distribution $p$ with maximum entropy has the shape: 
+<Block headline= "General Form of Max Entropy Distributions">
+Here's the general form of maximum entropy distributions: Suppose we have a set of constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$. Then, among all distributions that satisfy these constraints, the distribution $p$ with maximum entropy has the following shape:
 <Math displayMode = {true} math = "p(x) \propto e^{\lambda_1 f_1(X) + \dots + \lambda_m f_m(X)}"/>
-for some constants $\lambda_1, \dots, \lambda_m$. 
+for some constants $\lambda_1, \dots, \lambda_m$.
 </Block>
-Notice that this general recipe does not tell us what the values $\lambda_1, \dots, \lambda_m$ are supposed to be. Those have to be chosen dependeing on the values $\alpha_1, \dots, \alpha_m$ (note that whatever is the value of $\alpha$s the shape stays the same). But I advise you not to focus on $\alpha$s and $\lambda$s too much. The point is that the maximum entropy distribution looks like an exponential with the stuff we care about, i.e. the functions $f_1, \dots, f_m$, in the exponent. 
+Notice that this general recipe doesn't tell us the exact values of $\lambda_1, \dots, \lambda_m$. Those depend on the specific values of $\alpha_1, \dots, \alpha_m$ (though the general shape remains the same regardless of the $\alpha$ values). But don't get too hung up on the $\alpha$s and $\lambda$s. The key takeaway is that the maximum entropy distribution looks like an exponential, with the "stuff we care about"—the functions $f_1, \dots, f_m$—in the exponent.
 
 ### Why? <a id = "intuition"></a>
 
-Here's an intuition. Remember, we understand from [the previous chapter](03-minimizing) that the max-entropy principle is really about finding a distribution that is close to being uniform, in the sense of minimizing KL divergence. 
+Let's build some intuition for this. Remember from [the previous chapter](03-minimizing) that the max-entropy principle is essentially about finding a distribution that is as close to uniform as possible, in the sense of minimizing KL divergence.
 
-So, in which sense are max-entropy distributions close to being uniform? Let's see it on the example of exponential distribution $p(x) \propto e^{-x}$. Let's say that I independently sample two numbers from it $x_1$ and $x_2$. Here's a riddle: Is it more probable that I sample $x_1 = 10, x_2 = 20$ or that I sample $x_1' = 15, x_2' = 15$? 
+So, in what way are max-entropy distributions "close" to being uniform? Let's use the exponential distribution $p(x) \propto e^{-x}$ as an example. Say I independently sample two numbers from it, $x_1$ and $x_2$. Here's a little riddle: Is it more probable that I sample $x_1 = 10, x_2 = 20$ or that I sample $x_1' = 15, x_2' = 15$?
 
-The answer is that both options have the same probability. That's because $p(x_1)\cdot p(x_2) = e^{-x_1 - x_2}$ and we have in our riddle that $x_1 + x_2 = x_1' + x_2'$ so both possibilities have density proportional to $e^{-30}$. In other words, in the following density graph, the points on the black line of the same sum $x_1 + x_2 = 0.7$ have the same density. Put differently, the conditional distribution on the line is uniform. 
+The answer is that both options have the same probability. That's because $p(x_1)\cdot p(x_2) = e^{-x_1 - x_2}$. In our riddle, $x_1 + x_2 = x_1' + x_2'$, so both possibilities have a density proportional to $e^{-30}$. In other words, on the density graph below, points on the black line with the same sum $x_1 + x_2 = 0.7$ have identical density. Stated differently, the conditional distribution *on that line* is uniform.
 
 ![Exponential distribution](04-max_entropy/exponential.png)
 
-This is not specific only to the exponential distribution, but it works for all max-entropy distributions with the shape from our formula ??. In general, consider some distribution of the shape <Math math = "p(x) \propto e^{\lambda_1 f_1(x) + \dots + \lambda_m f_m(x)}" /> and think of independently sampling a few points $x_1, \dots, x_k$ from that distribution. Now if you tell me the values of the averages $a_1 = \frac{1}{k} \sum_{i = 1}^k f_1(x_i), \dots, a_m = \frac{1}{k} \sum_{i = 1}^k f_m(x_i)$ and I condition on this information, the conditional distribution over $x_1, \dots, x_k$ is actually uniform! That's because the occurence probability of any such tuple under our distribution $p$ is the same and equal to <Math math = "p(x_1, \dots, x_k) \propto e^{k(\lambda_1 a_1 + \dots + \lambda_m a_m)}" />.  
+This isn't exclusive to the exponential distribution; it holds for all max-entropy distributions that fit the form given by our formula ??. In general, consider a distribution of the shape <Math math = "p(x) \propto e^{\lambda_1 f_1(x) + \dots + \lambda_m f_m(x)}" />. Now, imagine independently sampling a few points $x_1, \dots, x_k$ from that distribution. If you then tell me the values of the averages $a_1 = \frac{1}{k} \sum_{i = 1}^k f_1(x_i), \dots, a_m = \frac{1}{k} \sum_{i = 1}^k f_m(x_i)$, and I condition on this information, the conditional distribution over $x_1, \dots, x_k$ is actually **uniform**! This is because the occurrence probability of any such tuple under our distribution $p$ is the same, equal to <Math math = "p(x_1, \dots, x_k) \propto e^{k(\lambda_1 a_1 + \dots + \lambda_m a_m)}" />. 
 
-So what should we take of it? If you sample from max-entropy distributions, the experience is actually pretty similar to sampling from the uniform distribution! After you measure the empirical averages of functions $f_1, \dots, f_m$ of your sample, the conditional distribution over the possible options with those averages is uniform. This is a very concrete sense in which max-entropy distributions are close to the uniform distributions. <Footnote> Even better, using the law of large numbers, if you sample a large sample of $k$ samples, you know that with high probability, the empirical averages $\frac{1}{k} \sum_{i = 1}^k f_j(x_i)$ are going to be close to $E[f_j(X)]$. Thus, sampling many samples from maximum entropy distribution feels like sampling from the uniform distribution over "typical" instances. </Footnote>
+You can imagine this as a generalization of the picture above. There's a super complicated space of all possible outcomes I can get by sampling $N$ times from my distribution. The max-entropy property says that if I draw a "contour" through outcomes that share the same empirical averages of the functions $f_1, \dots, f_m$, the conditional distribution is uniform on this contour. 
 
+So, what's the takeaway? When you sample from max-entropy distributions, the experience is actually quite similar to sampling from a uniform distribution! <Footnote>If we think of the number $n$ of samples as being very large, it gets even better. Due to the law of large numbers, we then know that with high probability, the empirical averages $\frac{1}{n} \sum_{i = 1}^n f_j(x_i)$ are going to be close to $E[f_j(X)]$. So, sampling many samples from max-entropy distributions is like sampling from the uniform distribution over all the instances that satisfy constraints $\frac{1}{n} \sum_{i = 1}^n f_j(x_i) \approx E[f_j(X)]$ that we imposed at the distribution. </Footnote>
 
-There's also an elegant derivation of the shape of max-entropy distribution using Lagrange multipliers. Feel free to skip if you don't know how those work.  
-<Expand headline = "Derivation by Lagrange multipliers">
-We will only consider discrete distributions, let's say those with support $\{1, \dots, K\}$. 
-This is an optimization problem for $K$ variables $p_1, \dots, p_K$:
+There's also an elegant derivation of the shape of max-entropy distributions using Lagrange multipliers. Feel free to skip this if you're not familiar with how they work.
 
-<Math displayMode={true} math = "VARIABLES: p_1, \dots, p_K \
-MAXIMIZE: \sum_{i = 1}^K p_i \log 1/p_i\
-CONSTRAINTS:\
-\sum_{i = 1}^K p_i \cdot f_1(i) = \alpha_1\
-\dots \
-\sum_{i = 1}^K p_i \cdot f_m(i) = \alpha_m\
-\sum_{i = 1}^K p_i = 1\
-" />
+<Expand headline = "Derivation by Lagrange Multipliers">
+We'll only consider discrete distributions, say those with support $\{1, \dots, K\}$. This is an optimization problem for $K$ variables $p_1, \dots, p_K$:
 
-If there were no constraints, the problem would be simple to solve! We would just take the expression to maximize (the entropy) and set all partial derivates by $p_1, \dots, p_K$ to be zero.
-
-Fortunately, there's a technique called [Lagrange multipliers](https://en.wikipedia.org/wiki/Lagrange_multiplier) that will help us here. It involves turning _hard_ constraints (as in our problem) into _soft_ constraints. A soft-constraint variant of our problem would be:
-
-<Math displayMode={true} math = "VARIABLES: p_1, \dots, p_K\
-MAXIMIZE: \sum_{i = 1}^K p_i \log 1/p_i\
-- \lambda_1 (\sum_{i = 1}^K p_i \cdot f_1(i) - \alpha_1)\
-- \dots -\
-- \lambda_m (\sum_{i = 1}^K p_i \cdot f_m(i) - \alpha_m)\
-- \lambda_{m+1} (\sum_{i = 1}^K p_i - 1)\
+[todo fix]
+{/*
+<Math displayMode={true} math = "VARIABLES: p_1, \dots, p_K \\
+MAXIMIZE: \sum_{i = 1}^K p_i \log \frac{1}{p_i}\\
+CONSTRAINTS:\\
+\sum_{i = 1}^K p_i \cdot f_1(i) = \alpha_1\\
+\dots \\
+\sum_{i = 1}^K p_i \cdot f_m(i) = \alpha_m\\
+\sum_{i = 1}^K p_i = 1\\
 "/>
 
-What happens is that instead of requiring that the solution has to exactly satisfy all the constraints, we just say that we have to pay some additional cost for being off the target. The constants $\lambda_1, \dots, \lambda_{m+1}$ are kind of telling us how important each constraint is -- large $\lambda_j$ means that $\sum_{i = 1}^K p_i \cdot f_m(i) - \alpha_m$ should better be small! (In fact, we are not just paying for $\sum_{i = 1}^K p_i \cdot f_m(i) - \alpha_m$ being larger than 0. In this soft constraint formulation, we are even getting paid if it is less than 0! With negative $\lambda_i$, it would be the other way around. )
+If there were no constraints, the problem would be simple! We'd just take the expression to maximize (the entropy) and set all partial derivatives with respect to $p_1, \dots, p_K$ to zero.
 
-Long story short, Lagrange tells us that if somebody gives him a solution to our problem satisfying all the $m+1$ _hard_ constraints, then he can find $m+1$ numbers $\lambda_1, \dots, \lambda_{m+1}$ so that the solution also solves the soft-constraints variant. That's neat! We can now implement our plan of solving by smashing it with the power of differentiation. 
+Fortunately, a technique called [Lagrange multipliers](https://en.wikipedia.org/wiki/Lagrange_multiplier) helps us here. It involves turning _hard_ constraints (like those in our problem) into _soft_ constraints. A soft-constraint version of our problem would be:
+{/*
+<Math displayMode={true} math = "VARIABLES: p_1, \dots, p_K\\
+MAXIMIZE: \sum_{i = 1}^K p_i \log \frac{1}{p_i}\\
+- \lambda_1 \left(\sum_{i = 1}^K p_i \cdot f_1(i) - \alpha_1\right)\\
+- \dots -\\
+- \lambda_m \left(\sum_{i = 1}^K p_i \cdot f_m(i) - \alpha_m\right)\\
+- \lambda_{m+1} \left(\sum_{i = 1}^K p_i - 1\right)\\
+"/>*/}
+
+What happens is that instead of requiring the solution to *exactly* satisfy all the constraints, we just say that we have to pay an additional cost for deviating from the target. The constants $\lambda_1, \dots, \lambda_{m+1}$ essentially tell us how important each constraint is—a large $\lambda_j > 0$ means that $\sum_{i = 1}^K p_i \cdot f_j(i) - \alpha_j$ had better be small! <Footnote>In fact, in this soft constraint formulation, we even get "paid" if <Math math = "\lambda_j \left( \sum_{i = 1}^K p_i \cdot f_j(i) - \alpha_j \right) < 0" />! </Footnote>
+
+Long story short, Lagrange's method tells us that if someone provides a solution to our problem satisfying all $m+1$ _hard_ constraints, then we can find $m+1$ numbers $\lambda_1, \dots, \lambda_{m+1}$ such that this solution also solves the soft-constrained version. That's neat! We can now implement our plan of solving this by differentiation.
 
 More precisely, let's use $\mathcal{L}$ for the soft-constrained objective:
 $$
-\mathcal{L}(p_1, \dots, p_K) = \sum_{i = 1}^K p_i \log 1/p_i
-- \lambda_1 (\sum_{i = 1}^K p_i \cdot f_1(i) - \alpha_1)
-- ... -
-- \lambda_m (\sum_{i = 1}^K p_i \cdot f_m(i) - \alpha_m)
-- \lambda_{m+1} (\sum_{i = 1}^K p_i - 1)
+\mathcal{L}(p_1, \dots, p_K) = \sum_{i = 1}^K p_i \log \frac{1}{p_i}
+- \lambda_1 \left(\sum_{i = 1}^K p_i \cdot f_1(i) - \alpha_1\right)
+- \dots -
+- \lambda_m \left(\sum_{i = 1}^K p_i \cdot f_m(i) - \alpha_m\right)
+- \lambda_{m+1} \left(\sum_{i = 1}^K p_i - 1\right)
 $$
 
-We compute the derivative with respect to some $p_i$. Using the fact that $(p \log 1/p)' = -(p\log p)' = -\log p - 1$, we conclude that
+We compute the derivative with respect to some $p_i$. Using the fact that $(p \log 1/p)' = -(p\log p)' = -\log p - 1$, we find that:
 
+<Math displayMode={true} math = "\frac{\partial \mathcal L}{\partial p_i} = -\log p_i - 1 - \lambda_1 f_1(i) - \dots - \lambda_m f_m(i) - \lambda_{m+1}"/>
 
-<Math displayMode={true} math = "\frac{\partial \mathcal L}{\partial p_i} = -\log p_i - 1 + \lambda_1 f_1(i) + \dots + \lambda_m f_m(i) + \lambda_{m+1}"/>
-
-
-That's stellar! If we now set <Math math = "\frac{\partial \mathcal L}{\partial p_i} = 0"/>, we get a formula for $p_i$:
+That's fantastic! If we now set <Math math = "\frac{\partial \mathcal L}{\partial p_i} = 0"/>, we get a formula for $p_i$:
 <Math displayMode={true} math = "p_i = e^{ -1 - \lambda_1 f_1(i) - \dots - \lambda_m f_m(i) - \lambda_{m+1}}"/>
-I find it more helpful to rewrite like this:
+I find it more helpful to rewrite this as:
 <Math displayMode={true} math = "p_i \propto e^{ - \lambda_1 f_1(i) - \dots - \lambda_m f_m(i)}"/>
 
-I just swept some proportionality constants under the rug: if we remember that probabilities have to sum up to 1, we have arrived at a shockingly simple formula!
+I've just swept some proportionality constants under the rug: if we remember that probabilities have to sum up to 1, we've arrived at a shockingly simple formula!
 
-We could of course generalize the formula to other discrete sets than $\{1, \dots, K\}$, we would then have:
+We could, of course, generalize this formula to other discrete sets beyond $\{1, \dots, K\}$, yielding:
 
 <Math displayMode={true} math = "p(x) \propto e^{ - \lambda_1 f_1(x) - \dots - \lambda_m f_m(x)}"/>
 
-and the same formula is also the solution if the probability distribution is continuous, except of discrete. The only difference is that $p(x)$ is then technically not probability, but probability density. Also the right buzzword is no longer Lagrange multipliers, but it is its generalization called [calculus of variations](https://en.wikipedia.org/wiki/Calculus_of_variations) (You also have to spend a few more years of your life trying to understand under which conditions it can be used. I am not sure what those are even in the Lagrange multiplier case -- even there we have just found local extrema and saddle points, not necessarily the maximizer, so one has to be careful. )
+This is the general form of max-entropy distributions (except we formulated it with $+\lambda_j$ instead of $-\lambda_j$). 
 
-Now this formula is not the full solution to our problem, because it involves some magical constants $\lambda_1, \dots, \lambda_m$ that we don't know. To find their values, we have to go back to our constraints -- do you still remember that there were $m$ numbers $\alpha_1, \dots, \alpha_m$ there? We can use the conditions $E[f_j(x)] = \alpha_j$ to work out the precise shape of the distribution. 
+The same formula also holds when the probability distribution is continuous, except that $p(x)$ is then technically a probability density. Also, the correct buzzword is no longer Lagrange multipliers, but its generalization called [calculus of variations](https://en.wikipedia.org/wiki/Calculus_of_variations). <Footnote>You also have to spend a few more years trying to understand the conditions under which it can be used. Even the Lagrange multiplier case is more tricky—for example, we've only found local extrema and saddle points, not necessarily the maximizer. In our case, we are fortunate that we minimize convex function over convex domain, where the local minimum is also the global minimum. </Footnote>
+
+Now, this formula isn't the complete solution to our problem because it involves some magical constants $\lambda_1, \dots, \lambda_m$ that we don't know. To find their values, we have to go back to our constraints—remember those $m$ numbers $\alpha_1, \dots, \alpha_m$? We can use the conditions $E[f_j(x)] = \alpha_j$ to work out the precise shape of the distribution.
 </Expand>
 
-We will work a lot with continuous distributions. This leads to some technical issues that we disccus in the next Expand box. 
+---
 
-<Expand headline = "Working with continuous distributions">
+We'll be working a lot with continuous distributions. This leads to some technical issues that we discuss in the next Expand box.
 
-Sometimes we have to use entropy and KL divergence for continuous distributions. For KL divergence, not much changes. We just have to replace sum by integral and write 
+<Expand headline = "Working with Continuous Distributions">
+
+Sometimes we need to use entropy and KL divergence for continuous distributions. For KL divergence, not much changes. We just replace the sum with an integral and write:
 <Math displayMode={true} math = "D(p, q) = \int_x p(x) \log \frac{p(x)}{q(x)} dx. " />
 
-For entropy it's a bit more tricky. To understand what's happening, let's remember what integral intuitively stands for. For example, continuous uniform distribution over interval $[0,1]$ is in some sense just a limit of discrete distributions, where $n$-th distribution in the sequence is the uniform distribution over <Math math = "\{\frac{1}{n}, \dots, \frac{n}{n}\}"/>. When we use the integral formulas like the formula ?? above for KL divergence, it's justified by _convergence_: If we discretize real line into buckets of length $1/n$ and compute KL divergence after that, then as we keep making $n$ larger, the discretized results will converge to the value of the integral in ?? (unless $p,q$ are some wild functions). 
+For entropy, it's a bit trickier. To understand what's happening, let's remember what an integral intuitively represents. For example, a continuous uniform distribution over the interval $[0,1]$ is, in some sense, a limit of discrete distributions, where the $n$-th distribution in the sequence is the uniform distribution over <Math math = "\{\frac{1}{n}, \dots, \frac{n}{n}\}"/>. When we use integral formulas like the one above for KL divergence, it's justified by _convergence_: If we discretize the real line into buckets of length $1/n$ and compute KL divergence, then as $n$ increases, the discretized results will converge to the integral's value (unless $p,q$ are some wild functions).
 
 ![uniform](04-max_entropy/unif.png)
 
-The problem with entropy is that it does not converge. Indeed, the entropy of uniform distribution with $n$ options is $\log n$, so the entropy of continuous uniform distribution is infinite. This makes sense! If I sample a real number from continuous uniform distribution, this number is going to have infinitely many bits. 
+The problem with entropy is that it doesn't converge. Indeed, the entropy of a uniform distribution with $n$ options is $\log n$, so the entropy of a continuous uniform distribution is infinite. This makes sense! If I sample a real number from a continuous uniform distribution, this number will effectively have infinitely many bits of information.
 
-So, strictly speaking, it does not make much sense to talk about entropy of continuous random variables. Fortunately, it still does make sense to talk about KL divergence -- since this is the _relative_ entropy between two distributions, the infinities "cancel out" and, as we discussed, we get convergence and sensible numbers. 
+So, strictly speaking, it doesn't make much sense to talk about the entropy of continuous random variables. Fortunately, it *still* makes sense to talk about KL divergence—since this is the _relative_ entropy between two distributions, the infinities "cancel out," and as we discussed, we get convergence and sensible numbers.
 
-What does it mean for the principle of maximum entropy? If this principle was really purely about entropy, we would be in trouble but, fortunately, we understand from [the previous chapter](03-minimizing) that this principle is fundamentally about minimizing KL divergence between $p$ and a model distribution which, in case of max entropy principle, is the uniform distribution. 
+What does this mean for the principle of maximum entropy? If this principle were purely about entropy, we'd be in trouble. But, thankfully, we understand from [the previous chapter](03-minimizing) that this principle is fundamentally about minimizing KL divergence between $p$ and a model distribution, which, in the case of the max entropy principle, is the uniform distribution.
 
-If we write down the formula for KL between $p$ and uniform distribution, <Footnote>Let's assume we integrate over interval $[0,1]$ so that it's well-defined</Footnote> we get <Math math = "D(p, q_{uniform}) = \int p(x) \log \frac{p(x)}{1} dx = \int p(x) \log p(x) dx" />. That is, in the continuous case, the maximum entropy principle says we should maximize the expression $\int p(x) \log \frac{1}{p(x)} dx$ called [differential entropy](https://en.wikipedia.org/wiki/Differential_entropy). 
+If we write out the formula for KL between $p$ and a uniform distribution<Footnote>Let's assume we integrate over the interval $[0,1]$ so that it's well-defined.</Footnote>, we get <Math math = "D(p, q_{uniform}) = \int p(x) \log \frac{p(x)}{1} dx = \int p(x) \log p(x) dx" />. That is, in the continuous case, the maximum entropy principle tells us to maximize the expression $\int p(x) \log \frac{1}{p(x)} dx$, which is called **differential entropy**.
 
-So after all this discussion, generalizing our technique to continuous distribution still amounts to replacing $\sum$ by $\int$. This makes it a bit hard to appreciate that actually, a lot of stuff's happening under the hood. In particular, the reason everything works out is that ultimately, our argument is about _relative_ entropy. 
+So, after all this discussion, generalizing our technique to continuous distributions still boils down to replacing $\sum$ with $\int$. This makes it a bit hard to appreciate that actually, a lot of stuff's happening under the hood. In particular, the reason everything works out is that ultimately, our argument is about _relative_ entropy and the differential entropy only makes sense in the context of _relative entropy_ (KL divergence), not entropy itself which is infinite. 
 </Expand>
 
+---
 
-## Catalogue of examples
+## Catalogue of Examples
 
-It turns out that many distributions you encountered are maximum entropy distributions for some choice of functions $f_1, \dots f_m$. 
+Let's go through the list of maximum-entropy distributions you might have encountered. In fact, most distributions used in practice are maximum entropy distributions for some specific choice of functions $f_1, \dots f_m$.
 
-So, when you encounter a distribution, the right approach is not really to ask the question "Is this a max entropy distribution?". It's more "For what parameters is this a max entropy distribution?" For example, you can forget the formula for Gaussian distribution -- suffices to remember that if you use it, it means that you believe that the mean and the variance are the important parameters to look at. 
+So, when you come across a distribution, the right question isn't really "Is this a max entropy distribution?" It's more like, "**For what parameters is this a max entropy distribution?**" For example, you can forget the exact formula for the Gaussian distribution—it's enough to remember that using it implies you believe the mean and variance are the most important parameters to consider.
 
-Here's a catalogue of some max entropy distributions. 
+Let's go through the examples with this in mind. 
 
-### No constraints
+### No Constraints
 
-In case of no constraints, we have $p(x) \propto e^{0}$, i.e., the max entropy distribution is uniform. In other words, maximum entropy principle is really an extension of the [the principle of indifference](03-minimizing/maximum-entropy-principle) that we discussed in the previous chapter. 
+In the absence of any constraints, we have $p(x) \propto e^{0}$, which means the max entropy distribution is **uniform**. In other words, the maximum entropy principle is truly an extension of [the principle of indifference](03-minimizing/maximum-entropy-principle) that we discussed in the previous chapter.
 
-One issue to keep in mind is that the uniform distribution does not always exist -- in particular, there's no uniform distribution over real numbers. 
+One thing to keep in mind is that a uniform distribution doesn't always exist—specifically, there's no uniform distribution over all real numbers.
 
-### Fixing $E[X]$ (logits)
+### Fixing $E[X]$ (Logits)
 
-If we believe that the mean is an important parameter of a distribution (as we usually do), the max entropy principle says that the right family of distributions to work with are those with the shape
+If we believe the mean is an important parameter of a distribution (as we usually do), the max entropy principle states that the right family of distributions to work with are those with the shape:
 
 <Math displayMode={true} math = "p(x) \propto e^{\lambda x}"/>
 
-This kind of distribution is known under several names, depending on what is the underlying ground set over which we define it. Let's first understand it in the simplest possible case when our distribution is supported only on two possible outcomes $a_1, a_2$. Then, the max-entropy distribution takes the form of 
+This kind of distribution is known by several names, depending on the underlying set over which it's defined. Let's first understand it in the simplest possible case: when our distribution is supported on only two outcomes, $a_1, a_2$. Then, the max-entropy distribution takes the form:
 
 <Math displayMode={true} math = "p(a_1) = \frac{e^{- \lambda a_1}}{e^{- \lambda a_1} + e^{- \lambda a_2}},\;\;\; p(a_2) = \frac{e^{-\lambda a_2}}{e^{- \lambda a_1} + e^{- \lambda a_2}}"/>
 
-But really, it's better to write it like this:
+But it's actually better to write it like this:
 
 <Math displayMode={true} math = "p(a_1) = \frac{1}{1 + e^{- \lambda (a_1 - a_2)}},\;\;\; p(a_2) = \frac{e^{-\lambda (a_1 - a_2)}}{1 + e^{- \lambda(a_1 - a_2)}}"/>
 
-The function $\sigma(x) = 1/(1 + e^{-x})$ is called the [logistic function](https://en.wikipedia.org/wiki/Logistic_function)<Footnote>Or sometimes a sigmoid function. Apparently, [sigmoid function](https://en.wikipedia.org/wiki/Sigmoid_function) is a bit more general term. </Footnote> and the parameter $x$ is typically called a [logit](https://en.wikipedia.org/wiki/Logit). Using this function, our max-entropy distribution can be written like this:
+The function $\sigma(x) = 1/(1 + e^{-x})$ is called the [logistic function](https://en.wikipedia.org/wiki/Logistic_function)<Footnote>Or sometimes a sigmoid function. Apparently, [sigmoid function](https://en.wikipedia.org/wiki/Sigmoid_function) is a bit more general term.</Footnote> and the parameter $x$ is typically called a [logit](https://en.wikipedia.org/wiki/Logit). Using this function, our max-entropy distribution can be written as:
 
 <Math displayMode={true} math = "p(a_1) = \sigma(\lambda (a_1 - a_2)),\;\;\; p(a_2) = 1 - \sigma(\lambda (a_1 - a_2))"/>
 
-Here's how I interpret this: if you want to talk about probabilities, but for whatever reason you want to work with general real numbers instead of numbers from $[0,1]$, you should talk about logits and use the logistic transformation to convert them to probabilities. The parameter $\lambda$ in the formula corresponds to the choice of units in which we measure those logits. For example, I usually like to use the binary logarithm, which corresponds to measuring logits in bits. 
+Here's my interpretation: if you want to talk about probabilities, but for some reason you prefer to work with general real numbers instead of numbers in $[0,1]$, you should use logits and apply the logistic transformation to convert them to probabilities. The parameter $\lambda$ in the formula corresponds to the choice of units in which we measure those logits. For instance, I often prefer to use the binary logarithm, which means measuring logits in bits.
 
-
-<Block headline = "Logistic function">
-The logistic function $\sigma(x) = 1/(1 + e^{-x})$ is the right function to convert between numbers and probabilities. 
+<Block headline = "Logistic Function">
+The logistic function $\sigma(x) = 1/(1 + e^{-x})$ is the appropriate function to convert between real numbers (logits) and probabilities.
 </Block>
 [TODO logit widget]
 
-<Expand headline = "Elo system">
-The Elo system is the system used to assign ratings to players. The basic idea of it is that when you have two players with Elos $E_1$ and $E_2$, you can estimate the probability that the first one wins from the difference $D = E_1 - E_2$. As we just discussed, the softmax function for $E_1, E_2$ is equivalent to mapping $D$ to a probability via the logistic function. 
+<Expand headline = "Elo System">
+The Elo system is used to assign ratings to players. Its fundamental idea is that when you have two players with Elos $E_1$ and $E_2$, you can estimate the probability that the first one wins from their difference $D = E_1 - E_2$. As we just discussed, the softmax function for $E_1, E_2$ is equivalent to mapping $D$ to a probability using the logistic function.
 
-This is indeed how Elo system was designed; the interpretation of the chess Elo number is that the probability that the first player wins should be <Math math = "\frac{1}{1 + 10^{D / 400}}" />. <Footnote>It's more precisely the expected score of the first player due to the existence of draws. </Footnote> This is the logistic function for $\lambda = 1/400 \cdot \ln 10$. 
+This is precisely how the Elo system was designed; the interpretation of a chess Elo number is that the probability that the first player wins should be <Math math = "\frac{1}{1 + 10^{D / 400}}" />. <Footnote>It's more precisely the expected score of the first player due to the existence of draws.</Footnote> This is the logistic function with $\lambda = \frac{1}{400} \cdot \ln 10$.
 
-Notice that without knowing the value of $\lambda$, the information "the Elo difference between these two players is 200" is meaningless -- we don't know how Elo is scaled. Yet, even without knowing $\lambda$, we understand the system pretty well: if the chance of an upset (i.e., the lower-rated player wins) is $p$ for $D = 200$, then for $D=400$ it's roughly $p^2$, for $D=600$ it's roughly $p^3$ and so on. 
+Notice that without knowing the value of $\lambda$, the statement "the Elo difference between these two players is 200" is meaningless—we don't know how Elo is scaled. Yet, even without knowing $\lambda$, we understand the system pretty well: if the chance of an upset (i.e., the lower-rated player wins) is $p$ for $D = 200$, then for $D=400$ it's roughly $p^2$, for $D=600$ it's roughly $p^3$, and so on.
 </Expand>
 
-<Expand headline = "Probabilities vs logits">
-When we analyzed the Bayesian hero from the [first chapter](01-kl_intro), it was easier to work with logarithms of odds, instead of odds themselves. Whenever this happens, we can say that we work "in the logit space". 
+<Expand headline = "Probabilities vs. Logits">
+When we analyzed the Bayesian hero from the [first chapter](01-kl_intro), it was easier to work with logarithms of odds rather than the odds themselves. Whenever this happens, we can say we're working "in the logit space."
 
-Since in our example, there were just two hypotheses, we subtracted the two relevant surprisals and worked with so-called "log-odds". We could as well call the log-odds number the logit, these are basically synonyms in a sense. As far as I know, when there are more then two hypotheses, people stick with the language of using "logits".  
+Since in our example there were just two hypotheses, we subtracted the two relevant surprisals and worked with "log-odds." We could also call the log-odds number the logit; these are basically synonyms. As far as I know, when there are more than two hypotheses, people tend to stick with the language of "logits."
 </Expand>
 
-<Expand headline="Logistic activation function">
-In the beginnings of the deep learning field, the logistic function was used as a so-called [activation function](https://en.wikipedia.org/wiki/Activation_function) -- it was used to convert aggregated inputs to a neuron to its output. We can now give a probabilistic rationale to this operation: this way of handling neurons corresponds to modelling them as "each neuron aggregates its inputs and then it decides whether to fire or not". 
+<Expand headline="Logistic Activation Function">
+In the early days of deep learning, the logistic function was used as an [activation function](https://en.wikipedia.org/wiki/Activation_function)—it converted aggregated inputs to a neuron's output. We can now provide a probabilistic rationale for this: this way of handling neurons corresponds to modeling them as devices where "each neuron aggregates its inputs and then decides whether to fire or not."
 
-Unfortunately, this function does not seem to be too great in practice. During the development of the field, researchers understood that it's better if instead if sigmoids, one uses the [ReLU]() activation function (or [something similar]()). That activation function corresponds to neurons that not only contemplate _whether_ to send any signal or none, but also send out a stronger output signal if they got strong input. 
+Unfortunately, this function doesn't seem to perform too well in practice. As the field evolved, researchers realized it's better to use the [ReLU](https://en.wikipedia.org/wiki/Rectifier_(neural_networks)) activation function (or [something similar](https://en.wikipedia.org/wiki/Activation_function#Comparison_of_activation_functions)) instead of sigmoids. That activation function corresponds to neurons that not only contemplate *whether* to send any signal or none, but also send out a stronger output signal if they receive strong input.
 </Expand>
 
-### Fixing E[X] (Softmax) <a id = "softmax"></a>
+### Fixing $E[X]$ (Softmax) <a id = "softmax"></a>
 
-Let's stay with the max-entropy distribution for $E[X]$, but now let's look at the more general case where the where our distribution is supported on a set of numbers $\{a_1, \dots, a_k\}$ -- these distributions are often called [categorical distributions](https://en.wikipedia.org/wiki/Categorical_distribution). In that case, the max entropy distribution is what's called a softmax (or softmin) distribution -- each number $a_i$ is chosen with probability 
+Let's stick with the max-entropy distribution for $E[X]$, but now consider the more general case where our distribution is supported on a set of numbers $\{a_1, \dots, a_k\}$—these distributions are often called [categorical distributions](https://en.wikipedia.org/wiki/Categorical_distribution). In this scenario, the max entropy distribution is what's known as a **softmax** (or softmin) distribution—each number $a_i$ is chosen with probability:
 
 <Math displayMode={true} math = "p_i \propto e^{\lambda a_i}. "/>
 
-You can think about the softmax function (or softmin if $\lambda < 0$) as the generalization of the logistic function above -- it's _the right way_ to convert a bunch of numbers to probabilities. The numbers $a_i$ are still often called logits. 
+You can think of the softmax function (or softmin if $\lambda < 0$) as the generalization of the logistic function we just discussed—it's **the right way** to convert a bunch of numbers into probabilities. The numbers $a_i$ are still often referred to as logits.
 
-The parameter $1/|\lambda|$ is often called temperature because it kind of works like that -- in small temperatures, softmax is very orderly and behaves just like max, whereas for high temperatures, the distribution gets more chaotic, ultimately approaching the uniform distribution. 
+The parameter $1/|\lambda|$ is frequently called "temperature" because it behaves that way: at low temperatures, softmax is very orderly and acts much like the `max` function, whereas for high temperatures, the distribution becomes more chaotic, ultimately approaching a uniform distribution.
 
 TODO playing-with-temperature-widget
 
-<Expand headline = "Logits in neural nets">
-Typical neural networks output probabilites. For example, a typical neural network classifying images in fact outputs the whole probability distribution that a given picture is a dog/cat/horse/... instead of outputting a single prediction. 
-The problem with this is that usually, most of these probabilities are extremely small, e.g. of order of $10^{-10}$. That's because given a picture of a dog, the neural net is typically pretty sure it's not an octopus. 
+<Expand headline = "Logits in Neural Networks">
+Typical neural networks output probabilities. For example, a common neural network classifying images will output an entire probability distribution indicating whether a given picture is a dog/cat/horse/... instead of just a single prediction.
+The issue with this is that often, most of these probabilities are extremely small, perhaps on the order of $10^{-10}$. That's because, given a picture of a dog, the neural network is usually quite certain it's not an octopus.
 
-This makes it awkward to work with the probabilities directly inside the net -- there are all kinds of numerical and stability issues with this. So the neural nets are instead trying to predit logits, and the conversion to probabilities is just the final layer of the network. 
+This makes it awkward to work directly with probabilities inside the network—it leads to all sorts of numerical and stability issues while running it (float precision) and even more while training it (vanishing gradients). So, neural networks instead try to predict **logits**, and the conversion to probabilities is simply the final layer of the network.
 
-A nice bonus is that if you train the network using softmax with $\lambda = 1$, you can change the parameter $\lambda$ after the training. For example, setting $\lambda$ to infinity (temperature goes to zero) is equivalent to just choosing the most probable option -- this way you make the output of the model deterministic which is often useful at deployment. 
+A nice bonus is that if you train the network using softmax with $\lambda = 1$, you can change the $\lambda$ parameter *after* training. For instance, setting $\lambda$ to infinity (temperature goes to zero) is equivalent to simply choosing the most probable option—this makes the model's output deterministic, which is often useful during deployment.
 
-{/*There are also application for higher temperatures. For example, if you want to use LLM to solve a hard math problem, you might want to run it a million times to increase the probability the net solving it. But then you should probably run it at higher temperatures to make sure you want get the same thought process a million times in a row.  
+{/*There are also application for higher temperatures. For example, if you want to use LLM to solve a hard math problem, you might want to run it a million times to increase the probability the net solving it. But then you should probably run it at higher temperatures to make sure you want get the same thought process a million times in a row.
 
 Notice how softmax allowed us to elegantly solve a problem that's so fuzzy that it's otherwise pretty hard to approach -- given a probability distribution $p$, how do we find distributions $p'$ that preserve as much as possible from $p$, yet they are more or less concentrated on the most probable values. */}
 </Expand>
 
-
-
-
-<Expand headline = "Modelling pasta consumption">
+<Expand headline = "Modeling Pasta Consumption">
 
 ![Types of pasta -- from https://suttachaibar.com/15-types-of-pasta-shapes-to-know-and-love/](04-max_entropy/pasta.webp)
 
-Theoretical economy tries to understand setups like this: Say there are $k$ replacable products competing on the market -- perhaps different shapes of pasta. We can observe how well each shape sells, but to make some conclusions out of this data, we should have some kind of underlying model for what's happening. The basic model of rational customers is that each product $i$ has a certain utility $a_i$ and each customer simply buys the product with highest utility. The problem of this model is that it predicts that people should keep buying a single product -- the one with largest $a_i$. 
+Theoretical economics tries to understand setups like this: Imagine there are $k$ substitutable products competing in the market—perhaps different shapes of pasta. We can observe how well each shape sells, but to draw conclusions from this data, we need some underlying model of what's happening. The basic model of rational consumers assumes each product $i$ has a certain utility $a_i$, and each customer simply buys the product with the highest utility. The problem with this model is that it predicts people should consistently buy only a single product—the one with the largest $a_i$.
 
-How should we adapt the model to allow nontrivial probability distributions? Well, we have seen that the natural soft generalization of taking maximum is the softmax function, and this is indeed the function that economists use to model this kind of situation. There are more possible justifications for using this more complicated model -- each customer has slightly different utility function, doesn't like repretition in her diet, etc. The parameter $\lambda$ in this model (the inverse temperature) then measures the strength of all these aspects.
+How should we adapt this model to allow for non-trivial probability distributions? Well, we've seen that the natural "soft" generalization of taking a maximum is the softmax function, and this is indeed the function economists use to model such situations. There are more possible justifications for using this more complicated model—each customer might have a slightly different utility function, dislike repetition in their diet, etc. The parameter $\lambda$ in this model (the inverse temperature) then measures the strength of all these factors.
 
-However, it should be said that one of the popular interpretations of softmax in behavioral economy is more sophisticated than "softmax seems natural, so let's go with it, whatever". The approach of the theory of rational inattention is that even if all agents are perfectly rational and have same utilities, they still have to spend a nontrivial amount of time comparing the different options and estimating their utility (at this point stop thinking about pasta and think about buying a flat/car instead). If you think about customers as solving an optimization problem that takes this into account, you end up with a type of optimization problem similar to [our derivation of max-entropy distributions](); under reasonable<Footnote>I.e., I forgot them. </Footnote> circumstances you can derive the softmax distribution as the distribution of observed purchases.
+However, it's worth noting that one popular interpretation of softmax in behavioral economics is more sophisticated than "softmax seems natural, so let's go with it, whatever." The approach of the **theory of rational inattention** suggests that even if all agents are perfectly rational and have the same utilities, they still need to spend a non-trivial amount of time comparing different options and estimating their utility (at this point, stop thinking about pasta and instead consider buying a flat or a car). If you think about customers as solving an optimization problem that accounts for this, you end up with a type of optimization problem similar to [our derivation of max-entropy distributions](); under reasonable<Footnote>I.e., I forgot them.</Footnote> circumstances, you can derive the softmax distribution as the distribution of observed purchases.
 
 </Expand>
 
-### Fixing E[X] (Exponential/Geometric distribution) <a id = "exponential"></a>
+### Fixing $E[X]$ (Exponential/Geometric Distribution) <a id = "exponential"></a>
 
-If the domain of the probability distribution is nonnegative integers/reals, then we get the so-called [geometric](https://en.wikipedia.org/wiki/Geometric_distribution)/[exponential](https://en.wikipedia.org/wiki/Exponential_distribution) distribution -- another very basic and useful distribution. You should think about this distribution as _the most natural_ distribution on the domain of positive numbers (either integers or reals). 
+If the domain of the probability distribution is non-negative integers or reals, then we get the so-called [geometric](https://en.wikipedia.org/wiki/Geometric_distribution) / [exponential](https://en.wikipedia.org/wiki/Exponential_distribution) distribution—another very basic and useful distribution. You should think of this as **the most natural** distribution on the domain of positive numbers (whether integers or reals).
 
-In the [previous chapter](03-minimizing) we discussed the example of modelling how long I take my lunch. The expected length of it is a natural parameter, hence modelling it by the exponential distribution is a natural choice. 
+In the [previous chapter](03-minimizing), we discussed the example of modeling how long I take for lunch. The expected length is a natural parameter, so modeling it with the exponential distribution is a natural choice.
 
 {/*
 <Footnote>
-In practice, my guess would probably not have tail $p(x) \propto e^{-x}$, but a heavier tail, like <Math displayMode={false} math = "p(x) \propto e^{-\sqrt{x}}"/> or even $p(x) \propto 1/x^{C}$. Why? Well, notice how I am not sure about what the actual mean is. So, I should perhaps use a 2-layered model: 1) I sample your average lunch time $\mu$ from some distribution 2) I use exponential distribution with mean $\mu$. 
+In practice, my guess would probably not have tail $p(x) \propto e^{-x}$, but a heavier tail, like <Math displayMode={false} math = "p(x) \propto e^{-\sqrt{x}}"/> or even $p(x) \propto 1/x^{C}$. Why? Well, notice how I am not sure about what the actual mean is. So, I should perhaps use a 2-layered model: 1) I sample your average lunch time $\mu$ from some distribution 2) I use exponential distribution with mean $\mu$.
 
-How should I sample $\mu$ in the first step? Applying max-entropy principle again, perhaps I should sample it from exponential distribution, with mean being how long it takes me / average person to eat their lunch. If you crunch the numbers, the overall distribution that I will use as my input is going to have tails <Math displayMode={false} math = "p(x) \propto e^{-C\sqrt{x}}"/>. That is, the model is getting less sure that I won't see some really large numbers. Using power-law distribution in step 1) would lead to $p(x) \propto 1/x^{C}$. 
+How should I sample $\mu$ in the first step? Applying max-entropy principle again, perhaps I should sample it from exponential distribution, with mean being how long it takes me / average person to eat their lunch. If you crunch the numbers, the overall distribution that I will use as my input is going to have tails <Math displayMode={false} math = "p(x) \propto e^{-C\sqrt{x}}"/>. That is, the model is getting less sure that I won't see some really large numbers. Using power-law distribution in step 1) would lead to $p(x) \propto 1/x^{C}$.
 
-This discussion is mostly meant to show what I love on the max entropy principle -- it enables us to rapidly operationalize and concretize our thought processes. Modelling real life is hard, but now we have a powerful tool that automatically builds concrete probabilistic models from vague thoughts like "there's two types of randomness, first in the average lunch time, and second in the variation around that average". 
+This discussion is mostly meant to show what I love on the max entropy principle -- it enables us to rapidly operationalize and concretize our thought processes. Modelling real life is hard, but now we have a powerful tool that automatically builds concrete probabilistic models from vague thoughts like "there's two types of randomness, first in the average lunch time, and second in the variation around that average".
 </Footnote>*/}
 
-There still an elephant in the room though -- exponential distribution can't be normalized if the data are general real numbers. 
+There's still an elephant in the room, though—the exponential distribution can't be normalized if the domain are _unbounded_ real numbers (i.e., both positive and negative).
 
-### Fixing both $E[X]$ & $E[X^2]$ (Normal distribution) <a id = "normal"></a>
+### Fixing both $E[X]$ & $E[X^2]$ (Normal Distribution) <a id = "normal"></a>
 
-If we believe that both mean and the variance are interesting, max entropy principle suggests that we should choose the function that has a quadratic function of $x$ in the exponent. That means it has the shape
+If we believe that both the mean and the variance are interesting, the max entropy principle suggests that we should choose the function that has a quadratic function of $x$ in the exponent. This means it has the shape:
 <Math displayMode={true} math = "p(x) \propto e^{-\lambda_1 x^2 - \lambda_2 x}"/>
 
 {/*This gets more familiar if we rewrite the equation like this:
 <Math displayMode={true} math = "p(x) = A e^{-B(x-C)^2}"/>
-where $A,B,C$ are some constants chosen so that $p(x)$ integrates to $1$.*/} 
-This is the family of [normal (or Gaussian) distributions](https://en.wikipedia.org/wiki/Normal_distribution), and the density formula is usually written more precisely as <Math math = "p(x) = \frac{1}{2\pi\sigma^2} e^{-(x-\mu)^2/\sigma^2}" /> <Footnote>For a finite domain, the probability function from ?? could also look like $P(x) \propto e^{x^2}$, i.e., it could have the smallest probabilities in the middle and large probabilities at the edges. However, this is not normalizable to 1 if the domain is real numbers. There, the only possible solution is the familiar bell-shaped curve. </Footnote> 
+where $A,B,C$ are some constants chosen so that $p(x)$ integrates to $1$.*/}
+This is the family of [normal (or Gaussian) distributions](https://en.wikipedia.org/wiki/Normal_distribution), and the density formula is usually written more precisely as <Math math = "p(x) = \frac{1}{2\pi\sigma^2} e^{-(x-\mu)^2/\sigma^2}" /> <Footnote>Notice that for a bounded domain, the probability function from ?? could also look like $p(x) \propto e^{x^2}$. That is, the distribution with the smallest probabilities in the middle and large probabilities at the edges is also a perfectly fine max-entropy distribution. However, a distribution with this shape is not normalizable to 1 if the domain is all real numbers. There, the only possible solution is the familiar bell-shaped curve. </Footnote>
 
-I think this is a good (partial) explanation of "why is there $x^2$ in Gaussian"? It simply means that Gaussian is the *right* distribution to work with if you care about the mean and the variance. If you cared about the first four [moments](https://en.wikipedia.org/wiki/Moment_(mathematics)), the right family of distributions would be those with four-degree polynomials in the exponent. 
+I think this provides a good (partial) explanation for "why is there $x^2$ in Gaussian?" It simply means that the Gaussian is the **right** distribution to work with if you care about the mean and the variance. If you cared about the first four [moments](https://en.wikipedia.org/wiki/Moment_(mathematics)), the appropriate family of distributions would be those with four-degree polynomials in the exponent.
 
-Often, I like to think about the Gaussian as the simplest possible distribution on real numbers - Neither the uniform distribution nor the exponential distribution can be normalized there, so we salvage this by fixing the first two moments. 
+Often, I like to think about the Gaussian as the simplest possible distribution on real numbers. Neither the uniform distribution nor the exponential distribution can be normalized over the entire real line, so we salvage this by fixing the first two moments.
 
-<Expand headline = "Maximum entropy & Central limit theorem">
+<Expand headline = "Maximum Entropy & Central Limit Theorem">
 
-The normal distribution has two important properties. First, it's maximum entropy for mean and variance. Second, it's the distribution from the [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem).  Roughly speaking: If you keep adding some random variables $X_1, \dots, X_N$, each with mean $\mu$ and variance $\sigma^2$, then the value of <Math math = "\frac{X_1 + \dots + X_N - N\mu}{\sqrt{N\sigma^2}}"/> is going to be distributed like $N(0,1)$. 
+The normal distribution has two important properties. First, it's the maximum entropy distribution for a given mean and variance. Second, it's the distribution from the [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem). Roughly speaking: If you keep adding some random variables $X_1, \dots, X_N$, each with mean $\mu$ and variance $\sigma^2$, then the value of <Math math = "\frac{X_1 + \dots + X_N - N\mu}{\sqrt{N\sigma^2}}"/> will be distributed like $N(0,1)$.
 
-Here's how the max entropy principle can help you think about this theorem: For the theorem, the mean and the variance are clearly important parameters. Thus, max entropy principle suggests that if there is a single distribution that the sums are converging to, the guassian is a natural candidate. 
+Here's how the max entropy principle can help you think about this theorem: For the theorem, the mean and variance are clearly important parameters. Thus, the max entropy principle suggests that if there's a single distribution to which sums are converging, the Gaussian is a natural candidate.
 
-The connection between the two is deeper. In fact, [one of the proofs]() of central limit theorem works roughly like this: The operation of adding random variables (convolution) has smearing-out properties that increase the entropy of the sum (there are [inequalities](https://en.wikipedia.org/wiki/Entropy_power_inequality) that can measure this increase). After a bit of math this implies that the distribution of the sum of random variables with normalized variance must look closer and closer to the distribution of the maximum entropy distribution with normalized variance, i.e., Gaussian. 
+The connection between the two is deeper. In fact, [one of the proofs](https://en.wikipedia.org/wiki/Entropy_power_inequality) of the central limit theorem works roughly like this: The operation of adding random variables - [convolution](https://en.wikipedia.org/wiki/Convolution) - has ["smearing-out" properties](https://en.wikipedia.org/wiki/Kernel_(image_processing)) that increase the entropy of the sum (there are [inequalities](https://en.wikipedia.org/wiki/Entropy_power_inequality) that can measure this increase). After a bit of math, this implies that the distribution of the sum of random variables with normalized variance must look closer and closer to the distribution of the appropriate maximum entropy distribution, i.e., the Gaussian.
 </Expand>
 
-<Expand headline = "Application: measuring feet">
-One of the running examples we used was [measuring of feet](00-introduction/statistics). Why should we model the data using the normal distribution? One way to reason about this is that the length of my foot is a random variable that can probably be modelled as a sum of many small and relatively independent random variables. Thus, using central limit theorem, the normal distribution is a good fit. 
+<Expand headline = "Application: Measuring Feet">
+One of the running examples we used was [measuring of feet](00-introduction/statistics). Why should we model the data using the normal distribution? One way to reason about this is that the length of a foot is a random variable that can probably be modeled as a sum of many small and relatively independent random variables. Thus, using the central limit theorem, the normal distribution is a good fit.
 
-We could also try to approach this modelling problem purely from the max-entropy perspective. Since the data is positive, the simplest model for it is the exponential distribution. But that seems to predict that we will e.g. see many people with feet length twice the average, which does not seem to match reality. 
+We could also try to approach this modeling problem purely from the max-entropy perspective. Since the data is positive, the simplest model for it is the exponential distribution. But that seems to predict, for example, that we'll see many people with foot lengths twice the average, which doesn't seem to match reality.
 
-The next better model takes into account that the typical deviation of the distribution from the mean is probably quite a bit smaller than the mean. The max entropy distribution if we now consider both the mean and the variance (that represents the scale) is going to be the normal distribution. <Footnote>More precisely, since the domain is _positive_ real numbers, the max entropy distribution is a Gaussian that is clipped to zero for negative numbers and rescaled to sum up to 1. </Footnote> 
+The next better model takes into account that the typical deviation of the distribution from the mean is probably quite a bit smaller than the mean. The max entropy distribution if we now consider both the mean and the variance (which represents the scale) is going to be the normal distribution. <Footnote>More precisely, since the domain is _positive_ real numbers, the max entropy distribution is a Gaussian that is clipped to zero for negative numbers and rescaled to sum up to 1.</Footnote>
 </Expand>
 
 ### Other Examples
 
-Here are a few more examples you might have encountered. Feel free to skip whatever doesn't ring a bell. 
+Here are a few more examples you might have encountered. Feel free to skip whatever doesn't ring a bell.
 
-<Expand headline ="Assuming independence">
-An important property of entropy is that if you have a joint distribution $(p,q)$, then $H((p,q)) \le H(p) + H(q)$, with equality if and only if $p$ and $q$ are independent. <Footnote>This is called [subadditivity of entropy](https://math.stackexchange.com/questions/3326158/proof-of-sub-additivity-for-shannon-entropy). Why is it subadditive? If you still remember [our discussion of mutual information](01-kl_intro/information-theory), the mutual information is defined as $D((p,q), p \otimes q)$. You can rewrite this expression as $H(p) + H(q) - H((p,q))$ (try it!), so subadditivity of entropy is equivalent to mutual information being nonnegative. </Footnote>
+<Expand headline ="Assuming Independence">
+An important property of entropy is that if you have a joint distribution $(p,q)$, then $H((p,q)) \le H(p) + H(q)$, with equality if and only if $p$ and $q$ are independent. <Footnote>This is called [subadditivity of entropy](https://math.stackexchange.com/questions/3326158/proof-of-sub-additivity-for-shannon-entropy). Why is it subadditive? If you still remember [our discussion of mutual information](01-kl_intro/information-theory), mutual information is defined as $D((p,q), p \otimes q)$. You can rewrite this expression as $H(p) + H(q) - H((p,q))$ (try it!), so subadditivity of entropy is equivalent to mutual information being non-negative.</Footnote>
 
-The implication for the max-entropy principle is this: Imagine that you work with a joint distribution and you know its two marginals $p,q$. Then, the maximum entropy principle tells us that the joint distribution with these two marginals that maximizes the entropy is the one where they are independent.
+The implication for the max-entropy principle is this: Imagine you're working with a joint distribution and you know its two marginals $p,q$. Then, the maximum entropy principle tells us that the joint distribution with these two marginals that maximizes entropy is the one where they are independent.
 
-Whenever people model stuff by probability distributions, they assume that some distributions are independent whenever they don't know how the dependence between them would look like (i.e., they make this assumption all the time). We can think of it as a special case of using the maximum entropy principle.
+Whenever people model things using probability distributions, they often assume that certain distributions are independent if they don't know what the dependence between them looks like (i.e., they make this assumption all the time). We can think of this as a special case of using the maximum entropy principle.
 
 ![independence](04-max_entropy/independence.png)
 
 </Expand>
-<Expand headline ="Power law distributions">
-Sometimes we care about random variables that range over large range of values. For example, the median US city has population about 2400, but there are a bunch of cities with more than million inhabitants (see the picture). 
+<Expand headline ="Power Law Distributions">
+Sometimes we care about random variables that span a large range of values. For example, the median US city has a population of about 2,400, but there are many cities with more than a million inhabitants (see the picture).
 
 ![US cities](04-max_entropy/cities.png)
 
-These situations are typically modelled by power-law distributions where $p(x) \propto 1/x^C$ for some constant $C$. On above picture, such a distribution would correspond to a straight line so it would fit the city populations pretty well. From the perspective of maximum entropy, these distributions are simply max-entropy distributions when we fix $E[\log X]$. 
+These situations are typically modeled by **power-law distributions**, where $p(x) \propto 1/x^C$ for some constant $C$. In the picture above, such a distribution would correspond to a straight line, so it would fit city populations quite well. From the perspective of maximum entropy, these distributions are simply max-entropy distributions when we fix $E[\log X]$.
 
-That is, whenever you use a power-law distribution, you are implicitly saying "The important thing to look at is not $X$, but $\log X$". In the case of cities for example, it feels more sensible to classify them in log-scale (10^4 -- small, 10^5 -- medium, 10^6 -- large, 10^7 -- megacity) instead of normal scale (10^5 -- small, 2*10^5 -- medium, ... ). Power-law distribution is then just the exponential into which we plug in $\log X$ instead of $X$. 
-
-</Expand>
-<Expand headline ="Beta distribution">
-[Beta distributions](https://en.wikipedia.org/wiki/Beta_distribution) are a family of distributions on $[0,1]$ that are max-entropy if we fix $E[\log X]$ and $E[\log 1-X]$. You might have encountered beta distribution in Bayesian statistics, where it is used since it behaves very nicely with respect to Bayesian updates. 
-
-But look at our Bayesian hero from [the first chapter](01-kl_intro). She didn't really work with the probabilities of the two hypotheses directly, she instead dealt with the logits $\ell_1, \ell_2$. Caring about logits means that if $X$ represents probability, you care about $\log X$ and $\log (1-X)$. So, maximum entropy principle suggests that using Beta distribution means that we believe that counting logits is natural. 
+That is, whenever you use a power-law distribution, you're implicitly saying, "The important thing to look at is not $X$, but $\log X$." In the case of cities, for example, it feels more sensible to classify them on a log-scale ($10^4$ – small, $10^5$ – medium, $10^6$ – large, $10^7$ – megacity) instead of a normal scale ($10^5$ – small, $2 \cdot 10^5$ – medium, ...). A power-law distribution is then just the exponential into which we plug in $\log X$ instead of $X$.
 
 </Expand>
-<Expand headline ="Exponential family">
+<Expand headline ="Beta Distribution">
+[Beta distributions](https://en.wikipedia.org/wiki/Beta_distribution) are a family of distributions on $[0,1]$ that are max-entropy if we fix $E[\log X]$ and $E[\log (1-X)]$. You might have encountered the beta distribution in Bayesian statistics, where it's used because it behaves very nicely with respect to Bayesian updates.
 
-
-In the case of discrete distributions over e.g. $\{1, \dots, K\}$, literally any distribution is a maximum entropy distribution for certain $K$ constraints. For example, for your favorite distribution $p = (p_1, \dots, p_K)$, choose the $j$-th constraint to be $E[\mathbb{1}_j(i)] = p_j$ where $\mathbb{1}_j$ returns 1 for $i$ and 0 otherwise; the max entropy distribution for these $K$ constraints is $p$. 
-
-However, for distributions over real numbers and finitely many functions $f_1, \dots, f_m$, only a small proportion of distributions are max-entropy for some family of functions. 
-
-Exponential family is the elite family of distributions that are maximum entropy distributions for some functions $f_1, \dots, f_m$. <Footnote> More precisely, it's the family of distributions that are "min KL distributions" for some $q$: A distribution from that family minimizes $D(p,q)$ from some not necesserily uniform distribution $q$, given some constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$. As an example, take the domain $\{0, 1, \dots, n\}$ and consider the constraint $f(X) = X$. We have already seen that this leads to the exponential distribution, given we start with uniform $q$. Now, consider $q$ with <Math math = "q_i = {n \choose i} / 2^n"/> instead. The new solution is the distribution $p$ with <Math math = "p_i \propto {n \choose i} \cdot e^{\lambda i}"/>. After we substitute $\lambda = \log p/(1-p)$, we get the formula for the binomial distribution. Thus, binomial distribution belongs to the exponential family using $f(X) = X$, even though it's not max-entropy distribution for that $f$.</Footnote>
-So, any distribution with finite domain is in the exponential family. Any distribution we discussed so far (exponential, geometrical, normal, power-law, beta) are in the exponential family. [Wikipedia](https://en.wikipedia.org/wiki/Exponential_family) contains a long list of distributions in that family, many of which I've never heard about. 
-
-The importance of this family is that the distributions from it have a bunch of nice and intuitive properties. 
-<Expand headline="A theoretically nice property of exponential-family distributions">
-Here's one of the nice properties which is relevant for the next chapter but perhaps too obscure to appreciate on the first read of this. 
-
-Suppose that you have some data with mean $\mu$ and variance $\sigma^2$ and you want to fit it with a distribution. There are two ways to go about this. 
-
-1. Use maximum entropy principle to work out that you want to model it by a normal distribution. Then use maximum likelihood to find the best parameters <Math math = "\hat{\mu}, \hat{\sigma^2}" /> of this general model -- it turns that <Math math = "\hat\mu_{MLE} = \mu, \hat\sigma^2_{MLE} = \sigma^2"/>. 
-
-2. Use maximum entropy principle directly -- the max entropy distribution with mean $\mu$ and variance $\sigma^2$ is $N(\mu, \sigma^2)$. 
-
-Both approaches gave the same answer, but it's not a priori clear that this should be the case! Perhaps MLE could have decided that $N(\mu, \frac{n-1}{n} \sigma^2)$ is a better fit for the data. 
-
-Fortunately, the distributions in the exponential family have the nice property that both approaches give the same answer. I.e., if you settle the parameters of the distribution by MLE, they turn out to be what they should be. Formally, if your destribution is defined by constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$, then <Math math = "\hat\alpha_{1, MLE} = \alpha_1, \dots, \hat\alpha_{m,MLE} = \alpha_m" />.
-</Expand>
-
+But let's look at our Bayesian hero from [the first chapter](01-kl_intro). She didn't really work with the probabilities of the two hypotheses directly; she instead dealt with the logits $\ell_1, \ell_2$. Caring about logits means that if $X$ represents probability, you care about $\log X$ and $\log (1-X)$. So, the maximum entropy principle suggests that using a Beta distribution implies we believe that working with logits is natural.
 
 </Expand>
-<Expand headline ="Boltzmann distribution">
+<Expand headline ="Exponential Family">
 
-We have many particles in a box, each particle $i$ having some energy $E_i$. What's the distribution of the energies? Maximum entropy principle suggests that the energies are going to be distributed according to the formula <Math math = "p_i \propto e^{-\lambda E_i}" />. 
+In the case of discrete distributions over, say, $\{1, \dots, K\}$, literally any distribution is a maximum entropy distribution for certain $K$ constraints. For example, for your favorite distribution $p = (p_1, \dots, p_K)$, choose the $j$-th constraint to be $E[\mathbb{1}_j(i)] = p_j$ where $\mathbb{1}_j$ returns 1 for $i=j$ and 0 otherwise; the max entropy distribution for these $K$ constraints is exactly $p$.
 
-This is indeed a good guess. Here's (roughly) why. When you have many particles in a box, every now and then two particles fly close to each other and exchange energies. Basically, the particles first have energies $E_1, E_2$, then some interesting physics happens, and then they have energies $E_1', E_2'$. What's important is that $E_1 + E_2 = E_1' + E_2'$; that's the conservation of energy. 
+However, for distributions over real numbers and finitely many functions $f_1, \dots, f_m$, only a small proportion of distributions are max-entropy for some family of functions.
 
-So, the conditional distribution of energies of two random particals of total energy $E$ should, intuitively, be uniform. But remember [our intuition](04-max_entropy/intuition) about max-entropy distributions: This is exactly the property of max-entropy distribution. 
+The **exponential family** is the elite group of distributions that are maximum entropy distributions for some functions $f_1, \dots, f_m$. <Footnote> More precisely, it's the family of distributions that are "min KL distributions" for some $q$: A distribution from that family minimizes $D(p,q)$ from some not necessarily uniform distribution $q$, given some constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$. As an example, take the domain $\{0, 1, \dots, n\}$ and consider the constraint $f(X) = X$. We have already seen that this leads to the exponential distribution, given we start with uniform $q$. Now, consider $q$ with <Math math = "q_i = {n \choose i} / 2^n"/> instead. The new solution is the distribution $p$ with <Math math = "p_i \propto {n \choose i} \cdot e^{\lambda i}"/>. After we substitute $\lambda = \log p/(1-p)$, we get the formula for the binomial distribution. Thus, binomial distribution belongs to the exponential family using $f(X) = X$, even though it's not a max-entropy distribution for that $f$.</Footnote>
+So, any distribution with a finite domain is in the exponential family. Any distribution we've discussed so far (exponential, geometric, normal, power-law, beta) is in the exponential family. [Wikipedia](https://en.wikipedia.org/wiki/Exponential_family) contains a long list of distributions in that family, many of which I've never heard of.
+
+The importance of this family is that its distributions have a bunch of nice and intuitive properties.
+<Expand headline="A Theoretically Nice Property of Exponential-Family Distributions">
+Here's one of the nice properties that's relevant for the next chapter but perhaps too obscure to fully appreciate on a first read.
+
+Suppose you have some data with mean $\mu$ and variance $\sigma^2$ and you want to fit it with a distribution. There are two ways to approach this:
+
+1.  Use the maximum entropy principle to deduce that you should model it with a normal distribution. Then use maximum likelihood to find the best parameters <Math math = "\hat{\mu}, \hat{\sigma^2}" /> for this general model—it turns out that <Math math = "\hat\mu_{MLE} = \mu, \hat\sigma^2_{MLE} = \sigma^2"/>.
+
+2.  Use the maximum entropy principle directly—the max entropy distribution with mean $\mu$ and variance $\sigma^2$ is $N(\mu, \sigma^2)$.
+
+Both approaches yield the same answer, but it's not clear a priori that this should be the case! Perhaps MLE could have determined that $N(\mu, \frac{n-1}{n} \sigma^2)$ is a better fit for the data.
+
+Fortunately, distributions in the exponential family have the nice property that both approaches give the same answer. That is, if you determine the parameters of the distribution using MLE, they turn out to be what they "should" be. Formally, if your distribution is defined by constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$, then <Math math = "\hat\alpha_{1, MLE} = \alpha_1, \dots, \hat\alpha_{m,MLE} = \alpha_m" />.
 </Expand>
 
-<Expand headline ="Solomonoff prior">
-
-Given an algorithm, the most basic measure of its complexity is its length. Given a mathematical object $x$, the most basic measure of its complexity is the length of the shortest algorithm that describes that object. This is called Kolmogorov complexity $K(x)$. 
-
-For example, even though $\pi$ has infinitely many digits, its Kolmogorov complexity is small because there's [a short algorithm](https://www.quora.com/Whats-an-easy-algorithm-to-generate-digits-of-%CF%80) that keeps printing its digits. 
-
-In some abstract theories (like [Solomonoff induction](https://en.wikipedia.org/wiki/Solomonoff%27s_theory_of_inductive_inference) or [Tegmark multiverse](https://en.wikipedia.org/wiki/Multiverse)), we want to have a distribution over all mathematical objects (whatever that means). We then choose the max-entropy distribution, i.e., <Math math = "p(x) \propto e^{-\lambda K(x)}" />. This is called the Solomonoff prior. 
 </Expand>
+<Expand headline ="Boltzmann Distribution">
+
+Imagine many particles in a box, each particle $i$ having some energy $E_i$. What's the distribution of these energies? The maximum entropy principle suggests that the energies will be distributed according to the formula <Math math = "p_i \propto e^{-\lambda E_i}" />.
+
+This is indeed a good guess. Here's (roughly) why. When you have many particles in a box, every now and then two particles fly close to each other and exchange energies. Basically, the particles first have energies $E_1, E_2$, then some interesting physics happens, and then they have energies $E_1', E_2'$. What's important is that $E_1 + E_2 = E_1' + E_2'$; that's the conservation of energy.
+
+So, the conditional distribution of energies of two random particles with total energy $E$ should, intuitively, be uniform. But remember [our intuition](04-max_entropy/intuition) about max-entropy distributions: this is exactly the property of a max-entropy distribution.
+</Expand>
+
+<Expand headline ="Solomonoff Prior">
+
+Given an algorithm, the most basic measure of its complexity is its length. Given a mathematical object $x$, the most basic measure of its complexity is the length of the shortest algorithm that describes that object. This is called **Kolmogorov complexity** $K(x)$.
+
+For example, even though $\pi$ has infinitely many digits, its Kolmogorov complexity is small because there's [a short algorithm](https://www.quora.com/Whats-an-easy-algorithm-to-generate-digits-of-%CF%80) that keeps printing its digits.
+
+In some abstract theories (like [Solomonoff induction](https://en.wikipedia.org/wiki/Solomonoff%27s_theory_of_inductive_inference) or [Tegmark's multiverse](https://en.wikipedia.org/wiki/Multiverse)), we want a distribution over all mathematical objects (whatever that means). We then choose the max-entropy distribution, i.e., <Math math = "p(x) \propto e^{-\lambda K(x)}" />. This is called the **Solomonoff prior**.
+</Expand>
+
+---
 
 ### Applications
 
-Let's see some applications of this to our riddles. 
+Let's look at some applications of this to our riddles.
 
-<Expand headline ="Application: XKCD joke">
+<Expand headline ="Application: XKCD Joke">
 
-After four chapters of developing the theory of KL divergence, we are finally ready to [dissect](https://www.goodreads.com/quotes/440683-explaining-a-joke-is-like-dissecting-a-frog-you-understand) the XKCD joke from [the list of riddles](00-introduction/xkcd). 
+After four chapters developing the theory of KL divergence, we're finally ready to [dissect](https://www.goodreads.com/quotes/440683-explaining-a-joke-is-like-dissecting-a-frog-you-understand) the XKCD joke from [the list of riddles](00-introduction/xkcd).
 
 ![Are the odds in our favor?](00-introduction/countdown.png)
 
-It's all about how to choose a prior for the number on the wall. The most natural prior is simply the uniform one, i.e., before looking at the wall, we think the number is a uniform random number with 14 decimal digits. After observing the right 8 digits, the first 6 are still uniformly random <Footnote>We actually also see a small piece of the left-most digit in the comic, but let's forget this for simplicity. </Footnote>. So, for that prior, the probability that all 6 digits are zero is $1/10^6$ -- we are probably fine. 
+It's all about how to choose a prior for the number on the wall. The most natural prior is simply the **uniform one**; that is, before looking at the wall, we think the number is a uniform random number with 14 decimal digits. After observing the right 8 digits, the first 6 are still uniformly random <Footnote>We actually also see a small piece of the leftmost digit in the comic, but let's forget this for simplicity.</Footnote>. So, for that prior, the probability that all 6 digits are zero is $1/10^6$—we are probably fine.
 
-Let's try to think of a better model though. We have seen that for distributions over numbers, max-entropy principle suggests that the exponential distribution <Math math = "p(x) \propto e^{-\lambda x}" /> or the power-law distribution $p(x) \propto x^{-C}$ are pretty reasonable. 
+Let's try to think of a better model, though. We've seen that for distributions over numbers, the max-entropy principle suggests that the exponential distribution <Math math = "p(x) \propto e^{-\lambda x}" /> or the power-law distribution $p(x) \propto x^{-C}$ are pretty reasonable.
 
-In this case, I would argue for choosing the distribution $p(x) \propto 1/x$ because I am very uncertain about the scale in this example. I chose $C = 1$ in the power-law fit because this is the most natural constant - it corresponds to uniform distribution over the scales<Footnote>By this, I mean that this distribution satisfies <Math math = "\int_{10^1}^{10^2} \frac{1}{x} dx = \int_{10^2}^{10^3} \frac{1}{x} dx = \int_{10^3}^{10^4} \frac{1}{x} dx = \dots " />. </Footnote>  (see the left graph below). The only problem with $1/x$ is that we can't normalize this distribution if the domain is real numbers, but in our case, the domain is integers between $0$ and $10^{14}$, so it's OK. 
+In this case, I'd argue for choosing the distribution $p(x) \propto 1/x$ because I'm very uncertain about the scale. I chose $C = 1$ in the power-law fit because this is the most natural constant—it corresponds to a uniform distribution over the scales<Footnote>By this, I mean that this distribution satisfies <Math math = "\int_{10^1}^{10^2} \frac{1}{x} dx = \int_{10^2}^{10^3} \frac{1}{x} dx = \int_{10^3}^{10^4} \frac{1}{x} dx = \dots " />. This is also called the [log-uniform distribution](https://en.wikipedia.org/wiki/Reciprocal_distribution). </Footnote> (see the left graph below). The only problem with $1/x$ is that we can't normalize this distribution if the domain is all real numbers, but in our case, the domain is integers between $0$ and $10^{14}$, so it's fine.
 
-
-Below, the graph on the right shows what happens after we start with this prior (on the left) and condition on the last digits of $x$ being "00002382". We grouped $x$-values to bins between $10^1, 10^{1.5}, 10^2, \dots$
+Below, the graph on the right shows what happens after we start with this prior (on the left) and condition on the last digits of $x$ being "00002382". We grouped $x$-values into bins between $10^1, 10^{1.5}, 10^2, \dots$
 
 ![xkcd posterior](04-max_entropy/xkcd.png)
 
-Notice that almost all the probability is now concentrated on a single outcome -- $x_0 = 2382$. That makes sense: in the prior, it had probability $p(x_0) \propto 1/x_0 \approx 5 \cdot 10^{-4}$, while the next most likely outcome -- $x_1 = 100002382$ had probability $p(x_1) \propto 1/x_1 \approx 10^{-8}$. I.e., the probability of $x_1$ was $10^{-4}$ times smaller in the prior. 
+Notice that almost all the probability is now concentrated on a single outcome—$x_0 = 2382$. That makes sense: in the prior, it had probability $p(x_0) \propto 1/x_0 \approx 5 \cdot 10^{-4}$, while the next most likely outcome—$x_1 = 100002382$ had probability $p(x_1) \propto 1/x_1 \approx 10^{-8}$. That is, the probability of $x_1$ was $10^{-4}$ times smaller in the prior.
 
-Another thing to notice is that the posterior distribution still looks uniform for numbers $>10^9$. This again makes sense -- for large numbers, their last few digits are a coin change, learning them does not make much change and thus the posterior is still uniform there. 
+Another thing to notice is that the posterior distribution still looks uniform for numbers $>10^9$. This also makes sense—for large numbers, their last few digits are like a coin flip, so learning them doesn't significantly change things, and thus the posterior remains uniform there.
 
-The whole point is that max-entropy principle leads us to the prior that puts more weight into small numbers. Using it only assumes that $E[X]$ is a value of interest which it arguably is. We conclude that we are not fine. 
+The whole point is that the max-entropy principle leads us to a prior that puts more weight on small numbers. Using it only assumes that $E[X]$ is a value of interest, which it arguably is. We conclude that we are **not** fine.
 </Expand>
-
 
 <Expand headline="Understanding Financial Data"> <a id="application-understanding-financial-data"></a>
 
-Let's return to our financial mathematics riddle [from the intro](00-introduction/financial-mathematics). 
+Let's revisit our financial mathematics riddle [from the intro](00-introduction/financial-mathematics).
 
 <FinanceImageSliderWidget />
 
-We observed that the Laplace distribution seems to fit the data better than the normal distribution. <Footnote>How do we formalize the claim "the distribution X fits the data $p$ better than the distribution Y"? Of course by measuring $D(p, X)$ and $D(p, Y)$! In our case for example, it says that Laplace starts to be a better fit for S&P for data from at least 1-2 months. </Footnote>
+We observed that the Laplace distribution seems to fit the data better than the normal distribution. <Footnote>How do we formalize the claim "the distribution X fits the data $p$ better than the distribution Y"? Of course by measuring $D(p, X)$ and $D(p, Y)$! In our case, for example, it says that Laplace starts to be a better fit for S&P for data from at least 1-2 months.</Footnote>
 
-Laplace distribution has the shape <Math math = "p(x) \propto e^{-\lambda |x-\mu|}" />. What's the meaning of this formula? We could think of it as the max entropy distribution for fixing the value $E[|X-\mu|]$, but there's a more illuminating way to understand it. The Laplace distribution can be viewed as the result of the following process:<Footnote>I actually don't know any way observing this fact directly. Let me know if you know a way to do that. The fact can be verified algebraically, but it's not so easy. </Footnote>
+The Laplace distribution has the shape <Math math = "p(x) \propto e^{-\lambda |x-\mu|}" />. What's the meaning of this formula? We could think of it as the max entropy distribution for fixing the value $E[|X-\mu|]$, but there's a more illuminating way to understand it. The Laplace distribution can be viewed as the result of the following process:<Footnote>I actually don't know any way to observe this fact directly. Let me know if you know a way to do that. The fact can be verified algebraically, but it's not so easy.</Footnote>
 
-1. Sample a variance $\sigma^2$ from the exponential distribution
-2. Output a sample from $N(\mu, \sigma^2)$
+1.  Sample a variance $\sigma^2$ from the exponential distribution.
+2.  Output a sample from $N(\mu, \sigma^2)$.
 
-To understand how this helps to explain our financial data, consider the following two stories for price fluctuations:
+To understand how this helps explain our financial data, consider the following two stories for price fluctuations:
 
--- For the S&P index, which represents an average of many large companies, there is some variance in the daily change mostly because many (somewhat independent) trades happen that day, each making the value of the index slightly higher or lower. This is the setup for the  central limit theorem which predicts that the data is going to look approximately Gaussian.
+* For the S&P index, which represents an average of many large companies, there's some variance in the daily change mostly because many (somewhat independent) trades happen that day, each making the value of the index slightly higher or lower. This is the setup for the central limit theorem, which predicts that the data will look approximately Gaussian.
 
--- However, now consider looking at Bitcoin which is more volatile than the S&P. Or consider S&P, but longer time period. Then the above simplified model is perhaps too simple. There are definitely periods in time where not much happens, but also periods with large volatility. <Footnote> For example: US elections, financial crisis, pandemic hits, war starts, Bitcoin-related laws are passed etc.</Footnote>
+* However, now consider looking at Bitcoin, which is more volatile than the S&P. Or consider the S&P, but over a longer time period. Then the simplified model above might be too basic. There are definitely periods where not much happens, but also periods with large volatility. <Footnote> For example: US elections, financial crisis, pandemic hits, war starts, Bitcoin-related laws are passed, etc.</Footnote>
 
-Perhaps we should try a more advanced two-layered model predicting the shape of our data: Maybe each month, we sample $\sigma^2$ -- the volatility for that month. Let's sample it from the max-entropy distribution, i.e., exponential. Next, the rest of the month, we sample from the Gaussian with that variance. As we mentioned above, this two-layered process actually samples from the Laplace distribution. 
+Perhaps we should try a more advanced two-layered model to predict the shape of our data: Maybe each month, we sample $\sigma^2$—the volatility for that month. Let's sample it from the max-entropy distribution, i.e., exponential. Next, for the rest of the month, we sample from a Gaussian with that variance. As we mentioned, this two-layered process actually samples from the Laplace distribution.
 
-Put differently, while Gaussian fit is claiming "I am pretty sure about today's volatility and unsure about the fluctuation around the mean" and Laplace is saying "I am uncertain both about the volatility, and the actual fluctuation of the day." This explains why Gaussian fits near-term data (volatility of the time period stays roughly the same), while more long-term data starts looking more like Laplace. <Footnote>Laplace distribution is not necessarily a good practical model. As far as I know, more standard way of modelling financial data is the Student-t distribution. I will not bore you with its formula, but let you know that it is the distribution that you get from the similar process as how we arrived at Laplace; but instead of sampling $\sigma^2$ from the exponential distribution, you sample it from the so-called inverse gamma distribution. Gamma distribution is itself max-entropy distribution for fixing $E[X]$ and $E[\log X]$ (and inverse gamma distribution means we measure volatility by $1/\sigma^2$ instead of $\sigma^2$). 
-That is, Student-t distribution takes our model a bit further and adds uncertainty about the _scale_ of the volatility. For example, maybe if you take into large enough past, you start seeing some extreme events like world wars/the Great Depression/industrial revolution, so perhaps we should be open to power-law fits instead of exponential ones. </Footnote>
+Put differently, while a Gaussian fit implies "I'm pretty sure about today's volatility and unsure about the fluctuation around the mean," Laplace is saying, "I'm uncertain both about the volatility and the actual fluctuation of the day." This explains why Gaussian fits near-term data (volatility of the time period stays roughly the same), while more long-term data starts looking more like Laplace. <Footnote>Laplace distribution isn't necessarily a good practical model. As far as I know, a more standard way of modeling financial data is the Student-t distribution. I won't bore you with its formula, but I'll tell you it's the distribution you get from a similar process to how we arrived at Laplace; but instead of sampling $\sigma^2$ from the exponential distribution, you sample it from the so-called inverse gamma distribution. The Gamma distribution is itself a max-entropy distribution for fixing $E[X]$ and $E[\log X]$ (and inverse gamma distribution means we measure volatility by $1/\sigma^2$ instead of $\sigma^2$).
+That is, the Student-t distribution takes our model a bit further and adds uncertainty about the _scale_ of the volatility. For example, maybe if you look far enough into the past, you start seeing some extreme events like world wars/the Great Depression/industrial revolution, so perhaps we should be open to power-law fits instead of exponential ones.</Footnote>
 
-I like this example because I think it nicely shows the strength of the max-entropy principle. Notice how maximum entropy allows us to focus only on the important aspects of our model (do we fix volatility or is it itself a random variable?) The algebraic details are filled in automatically by max entropy reasoning. Or if we take it from the other side -- when we see a concrete formula, like a fit by Laplace distribution, max entropy enables us to see through it and understand what the formula stands for. 
+I like this example because I think it nicely shows the strength of the max-entropy principle. Notice how maximum entropy allows us to focus only on the important aspects of our model (do we fix volatility or is it itself a random variable?). The algebraic details are filled in automatically by max entropy reasoning. Or, if we take it from the other side—when we see a concrete formula, like a fit by a Laplace distribution, max entropy enables us to see through it and understand what the formula stands for.
 </Expand>
+
+---
 
 ## Next Steps <a id="next-steps"></a>
 
-In the [next chapter](05-machine_learning), we will see how KL divergence explains the choice of loss functions used in machine learning. 
+In the [next chapter](05-machine_learning), we'll see how KL divergence explains the choice of loss functions used in machine learning.
