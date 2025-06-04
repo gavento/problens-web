@@ -160,11 +160,9 @@ The function $\sigma(x) = 1/(1 + e^{-x})$ is called the [logistic function](http
 
 <Math displayMode={true} math = "p(a_1) = \sigma(\lambda (a_1 - a_2)),\;\;\; p(a_2) = 1 - \sigma(\lambda (a_1 - a_2))"/>
 
-Here's my interpretation: if you want to talk about probabilities, but for some reason you prefer to work with general real numbers instead of numbers in $[0,1]$, you should use logits and apply the logistic transformation to convert them to probabilities. The parameter $\lambda$ in the formula corresponds to the choice of units in which we measure those logits. For instance, I often prefer to use the binary logarithm, which means measuring logits in bits.
+Here's my interpretation: if you want to talk about probabilities, but for some reason you prefer to work with general real numbers instead of numbers in $[0,1]$, you should use logits and apply the logistic transformation to convert them to probabilities. 
 
-<Block headline = "Logistic Function">
-The logistic function $\sigma(x) = 1/(1 + e^{-x})$ is the appropriate function to convert between real numbers (logits) and probabilities.
-</Block>
+The parameter $\lambda$ in the formula corresponds to the choice of units in which we measure those logits. For instance, I often prefer to use the binary logarithm, which means measuring logits in bits.
 
 <LogisticWidget 
   title="Sigmoid Function" 
@@ -172,6 +170,11 @@ The logistic function $\sigma(x) = 1/(1 + e^{-x})$ is the appropriate function t
   minLambda={-5}
   maxLambda={5}
 />
+
+<Block headline = "Logistic Function">
+The logistic function $\sigma(x) = 1/(1 + e^{-x})$ is the appropriate function to convert between real numbers (logits) and probabilities.
+</Block>
+
 
 <Expand headline = "Elo System">
 The Elo system is used to assign ratings to players. Its fundamental idea is that when you have two players with Elos $E_1$ and $E_2$, you can estimate the probability that the first one wins from their difference $D = E_1 - E_2$. As we just discussed, the softmax function for $E_1, E_2$ is equivalent to mapping $D$ to a probability using the logistic function.
