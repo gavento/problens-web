@@ -57,7 +57,7 @@ $$
 There's also a stronger version called monotonicity. We won't really use it, so feel free to skip. 
 
 <Expand headline="Monotonicity explanation">
-Say you've got two distributions $p,q$ over countries ({🇺🇸,🇨🇦,🇲🇽,🇯🇵,🇬🇧,🇮🇳,...}). Now zoom out and group them into continents ({North America, Europe, ...}). You can convert $p,q$ to this rougher grouping to get $p', q'$. Like: <Math math = "p'(\textrm{North America}) = p(🇺🇸) + p(🇨🇦) + p(🇲🇽)" />. Then:
+Say you've got two distributions $p,q$ over countries (\{🇺🇸,🇨🇦,🇲🇽,🇯🇵,🇬🇧,🇮🇳,...\}). Now zoom out and group them into continents (\{North America, Europe, ...\}). You can convert $p,q$ to this rougher grouping to get $p', q'$. Like: <Math math = "p'(\textrm{North America}) = p(🇺🇸) + p(🇨🇦) + p(🇲🇽)" />. Then:
 
 $$
 D(p, q) \ge D(p', q')
@@ -80,7 +80,7 @@ We actually used this implicitly before—it's just saying that when you're comp
 There's also a slightly fancier property called the _chain rule_. We won't use it much, so skip if you want. 
 
 <Expand headline="Chain rule explanation">
-Say I've got distributions $p,q$ for how I get to work ({🚶‍♀️, 🚲, 🚌}). But when I take the bus, I also track which line ({①, ②, ③}), with conditional distributions $p', q'$. Combining $p$ and $p'$ gives me an overall distribution <Math math = "p_{\textrm{overall}}" /> over {🚶‍♀️, 🚲, ①, ②, ③}. Like if $p=$\{🚶‍♀️: 0.3, 🚲: 0.3, 🚌: 0.4\} and $p'=$\{①: 0.5, ②: 0.25, ③: 0.25\}, then <Math math = "p_{\textrm{overall}}=" />\{🚶‍♀️: 0.3, 🚲: 0.3, ①: 0.2, ②: 0.1, ③: 0.1\}. 
+Say I've got distributions $p,q$ for how I get to work (\{🚶‍♀️, 🚲, 🚌\}). But when I take the bus, I also track which line (\{①, ②, ③\}), with conditional distributions $p', q'$. Combining $p$ and $p'$ gives me an overall distribution <Math math = "p_{\textrm{overall}}" /> over \{🚶‍♀️, 🚲, ①, ②, ③\}. Like if $p=$\{🚶‍♀️: 0.3, 🚲: 0.3, 🚌: 0.4\} and $p'=$\{①: 0.5, ②: 0.25, ③: 0.25\}, then <Math math = "p_{\textrm{overall}}=" />\{🚶‍♀️: 0.3, 🚲: 0.3, ①: 0.2, ②: 0.1, ③: 0.1\}. 
 
 The chain rule says:
 
@@ -126,9 +126,9 @@ These two pieces on the right are super important. Let's get a feel for what the
 ### Cross-entropy: 
 The term $H(p,q) = \sum_{i = 1}^n p_i \log 1 / q_i$ is called _cross-entropy_. Think of it as: how surprised are you on average when you see data from $p$ but you're modeling it as $q$? 
 
-Example time (check out the picture): You're flipping a fair coin, so $p =$ {H: 0.5, T: 0.5}. If your model matches reality, $q =$ {H: 0.5, T: 0.5}, then cross-entropy is 1. 
+Example time (check out the picture): You're flipping a fair coin, so $p =$ \{H: 0.5, T: 0.5\}. If your model matches reality, $q =$ \{H: 0.5, T: 0.5\}, then cross-entropy is 1. 
 
-But what if your model is way off, like $q =$ {H: 0.999, T: 0.001}? You're not surprised by heads at all, but every time you see tails, your surprisal shoots up to $\log 1/0.001 \approx 10$. So your average surprise—the cross-entropy—is about 5. That's way bigger! 
+But what if your model is way off, like $q =$ \{H: 0.999, T: 0.001\}? You're not surprised by heads at all, but every time you see tails, your surprisal shoots up to $\log 1/0.001 \approx 10$. So your average surprise—the cross-entropy—is about 5. That's way bigger! 
 
 ![cross-entropy](02-crossentropy/crossentropy.png)
 
@@ -243,7 +243,7 @@ KL divergence and entropy are deeply connected to coding theory. There are [tons
 
 <Expand headline = "Coding Theory Intuitions"> <a id="coding"></a>
 
-Say you've got a long DNA string over the alphabet {A,C,G,T}. You want to store it using as little disk space as possible.  
+Say you've got a long DNA string over the alphabet \{A,C,G,T\}. You want to store it using as little disk space as possible.  
 
 We'll make life easier by ignoring correlations between letters. Basically, we'll assume there's some distribution $p$ over the alphabet, and our string comes from sampling repeatedly from $p$.  
 
