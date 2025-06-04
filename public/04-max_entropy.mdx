@@ -195,9 +195,9 @@ Let's stick with the max-entropy distribution for $E[X]$, but now consider the m
 
 You can think of the softmax function (or softmin if $\lambda < 0$) as the generalization of the logistic function we just discussed—it's **the right way** to convert a bunch of numbers into probabilities. The numbers $a_i$ are still often referred to as logits.
 
-The parameter $1/|\lambda|$ is frequently called "temperature" because it behaves that way: at low temperatures, softmax is very orderly and acts much like the `max` function, whereas for high temperatures, the distribution becomes more chaotic, ultimately approaching a uniform distribution.
+The parameter $1/|\lambda|$ is frequently called "temperature" because it behaves that way: at low temperatures, softmax is very orderly and acts much like the `max` function, whereas for high temperatures, the distribution becomes more chaotic, ultimately approaching a uniform distribution. The chaos can be measured by entropy - you can see in the widget below how it decreases if you increase $|\lambda|$. 
 
-TODO playing-with-temperature-widget
+<ExampleSoftmaxWidget />
 
 <Expand headline = "Logits in Neural Networks">
 Typical neural networks output probabilities. For example, a common neural network classifying images will output an entire probability distribution indicating whether a given picture is a dog/cat/horse/... instead of just a single prediction.
