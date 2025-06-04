@@ -1,53 +1,52 @@
 # KL divergence & Bayes rule <a id="quantifying-information"></a>
 
-In this chapter, we will explain what KL divergence is and how it all goes back to Bayes theorem. Also, we'll discuss [one of our riddles](mutual-information).
+In this chapter, we'll break down what KL divergence is and how it's tied to Bayes' theorem. Plus, we'll solve [one of our riddles](mutual-information).
 
 ## Definition of KL Divergence <a id="definition-of-kl-divergence"></a>
 
-Here's what you need to know about KL divergence. <Footnote>KL stands for Kullback and Leibler, two clever guys who defined it in 1950's, very soon after Claude Shannon's [super important paper](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication) in which he defined a closely related notion of entropy.</Footnote>
+Here's the deal with KL divergence. <Footnote>KL stands for Kullback and Leibler, two smart cookies who came up with this in the 1950s, right after Claude Shannon dropped his [game-changing paper](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication) about entropy.</Footnote>
 
 <Block headline = "If there is one thing you remember from this minicourse...">
 KL divergence measures how well a distribution $p$ is fitted by a model distribution $q$.
 </Block>
 
-This means that the function is something like a distance function measuring how two distributions are close to each other.
+Think of it like a wonky distance measure between two distributions.
 
-The formula for discrete distributions $p_1, \dots, p_n$ and $q_1, \dots, q_n$ is:<Footnote> People typically use $D_{KL}(p||q)$ instead of $D(p,q)$. The two vertical lines are there to emphasize how $D_{KL}(p||q) \not= D_{KL}(q||p)$. We will use the simplified, less cluttered, notation since we are going to talk about this function a lot. 🙂 </Footnote><Footnote>Whenever we write $\log$, the base of the logarithm is $2$. </Footnote>
+Here's the formula for discrete distributions $p_1, \dots, p_n$ and $q_1, \dots, q_n$:<Footnote> Most people write $D_{KL}(p||q)$ instead of $D(p,q)$. The double bars are there to remind you that $D_{KL}(p||q) \not= D_{KL}(q||p)$. We'll keep it simple with $D(p,q)$ since we'll be using this a lot. 🙂 </Footnote><Footnote>When we write $\log$, we mean base-2 logarithm. </Footnote>
 
 $$
 D(p,q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}
 $$
 
-The meaning behind the formula is that if you keep sampling from the true distribution $p$, KL divergence tells you how quickly you are able to tell that you indeed sample from $p$, and not from some other distribution $q$. If it is small, this means that $q$ is a good, hard-to-distinguish model of $p$.
+What's this actually mean? When you keep sampling from the true distribution $p$, KL divergence tells you how fast you can figure out you're sampling from $p$ and not some other distribution $q$. Small KL = $q$ is a pretty good fake of $p$.
 
-I will try to explain this more precisely in this chapter.
+Let me break this down properly.
 
 ## Bayes' theorem
 
-Before we dive into our KL formula, here's a short recap of Bayes' theorem. This is a theorem about how to change your probability distributions in face of evidence. Here's an example:
+Before we dive into KL, let's refresh on Bayes' theorem—it's how you update your beliefs when you get new info. Example time:
 
-You have a coin which may or may not be biased. For simplicity, let's say there are only two options: either the coins is fair -- heads/tails with probabilities 50\%, 50\% -- or it gives heads with 40\% and tails otherwise.
+You've got a coin that might be rigged. To keep it simple, let's say there are only two options: it's either fair (50/50 for heads/tails) or it's biased toward tails (40% heads, 60% tails).
 
-To apply Bayes' theorem, you need a _prior_ on how likely each possibility is. Let's say we choose 2/3 fair, and 1/3 biased.
+To use Bayes, you need a starting guess (a _prior_) about which it is. Let's say you think there's a 2/3 chance it's fair and 1/3 chance it's biased.
 
-To gain evidence, you flip a coin; let's say you got Heads. This is an evidence towards the coin being fair, as the other case has smaller heads-probability. The question is, how to compute the new, _posterior_ probability that your coin is fair?
+You flip the coin—Heads! This is evidence for the fair coin (since heads are more likely with a fair coin). But how do we calculate the new probability (the _posterior_) that it's fair?
 
-Bayes' theorem can do that. The formula for it is typically written down as follows:
+Bayes' theorem to the rescue! The usual formula is:
 
 <Math displayMode={true} math='P(\textrm{fair} | \textrm{heads}) = \frac{P(\textrm{heads} | \textrm{fair}) \cdot P(\textrm{fair})}{P(\textrm{heads})}' />
 
-This is not rocket science -- if you multiply both sides by $P(\textrm{heads})$, both sides are just a different way of writing down the definition of $P(\textrm{fair} \cap \textrm{heads})$.
+No big deal—multiply both sides by $P(\textrm{heads})$ and you'll see both sides are just $P(\textrm{fair AND heads})$.
 
-But I like to think of it a bit differently and in my head, I write it as this:
+But I like to think about it differently:
 
 <Math displayMode={true} math='\frac{P(\textrm{fair} | \textrm{heads})}{P(\textrm{biased} | \textrm{heads})} = \frac{P(\textrm{fair})}{P(\textrm{biased})} \cdot \frac{P(\textrm{heads} | \textrm{fair})}{P(\textrm{heads} | \textrm{biased})}' />
 
-You can check that the two formulas are the same by yourself. <Footnote>To see this, use the first formula both for $P(\textrm{fair} | \textrm{heads})$ and $P(\textrm{biased} | \textrm{heads})$, and divided them. </Footnote> To understand this rephrasing, it's good to think in terms of [odds](https://en.wikipedia.org/wiki/Odds). This is how people in the gambling industry sometimes use probabilities: instead of saying $1/3$ probability of this and $2/3$ of that, they say that odds are 1:2. Odds are like probabilities, but they don't sum up to one -- odds 1:2 are the same as 2:4. This way of thinking about probabilities is actually quite useful: Often, you don't want to bother thinking about how to normalize probabilities so that they sum up to one, so you just think in terms of odds.
+You can check these are the same formula. <Footnote>Use the first formula for both $P(\textrm{fair} | \textrm{heads})$ and $P(\textrm{biased} | \textrm{heads})$, then divide 'em. </Footnote> To get this version, think in [odds](https://en.wikipedia.org/wiki/Odds) instead of probabilities. Gamblers love this—instead of "1/3 chance of this, 2/3 chance of that," they say "odds are 1:2." Odds don't need to add to one (1:2 is the same as 2:4), which is handy when you don't wanna mess with normalizing.
 
-Using odds, the Bayes' formula from equation ?? now makes a plenty of sense! It describes a very simple way to go from the old odds to the new odds. We just need to multiply the old odds by <Math math = "\frac{P(\textrm{heads} | \textrm{fair})}{P(\textrm{heads} | \textrm{biased})}" />, i.e., the ratio of how likely heads are under each hypothesis. 
-Conditional probability expressions of the type <Math math = "P(\textrm{event} | \textrm{hypothesis})" /> are called [_likelihoods_](https://en.wikipedia.org/wiki/Likelihood_function), so this is also called the likelihood ratio.
+With odds, Bayes' formula is super clean! You just multiply your prior odds by <Math math = "\frac{P(\textrm{heads} | \textrm{fair})}{P(\textrm{heads} | \textrm{biased})}" />—that's how much more likely heads are under each hypothesis. These conditional probabilities <Math math = "P(\textrm{event} | \textrm{hypothesis})" /> are called [_likelihoods_](https://en.wikipedia.org/wiki/Likelihood_function), so this ratio is the likelihood ratio.
 
-In picture: <Footnote>Understanding Bayes' rule will be important. If we failed to make it clear, read more e.g. [here](https://www.lesswrong.com/w/bayes-rule). </Footnote>
+Here's the picture: <Footnote>Getting Bayes' rule is super important. If this isn't clicking, check out [this explainer](https://www.lesswrong.com/w/bayes-rule). </Footnote>
 
 ![Bayes' theorem using odds](01-kl_intro/bayes_theorem.png)
 
@@ -55,122 +54,122 @@ In picture: <Footnote>Understanding Bayes' rule will be important. If we failed 
 
 ## Go forth and multiply
 
-KL divergence is about what happens if we keep flipping the coin. That is, what happens if our Bayesian hero keeps flipping a coin and after each flip, she applies Bayes' theorem to update her belief? If the flips are $\{H, T, T, H, T\}$, the picture you should have in mind is this:
+KL divergence is about what happens when you keep flipping. Picture our Bayesian hero flipping over and over, updating her beliefs each time using Bayes. If she gets $\{H, T, T, H, T\}$, here's what's happening:
 
 ![Repeated application of Bayes' theorem](01-kl_intro/repeated_bayes.png)
 
-That is, as our hero keeps flipping, she keeps applying Bayes' theorem to update how likely it is that the coin is fair. This amounts to continue multiplying her posterior by one of the two likelihood ratios: $5/4$ for each head, and $5/6$ for each tail.
+Every flip, she multiplies her odds by a likelihood ratio: $5/4$ for heads, $5/6$ for tails.
 
-In the above picture, three tails out of five flips point slightly towards the biased hypothesis. So, after we normalize the posterior odds to probabilities, we find out that the original prior of about $67\%$ for the coin being fair dropped by $3\%$ to about $64\%$. Clearly, we need many more flips to find out what the truth is.
+In this example, three tails out of five slightly favor the biased coin. After converting back to probabilities, her initial 67% belief in fairness drops to about 64%. Gonna need way more flips to know for sure!
 
 ## Measuring evidence in bits
 
-Before we try to understand what's going to happen in the long run, we will change our language a bit. <Footnote>No pun intended. </Footnote> We will basically take the logarithm of all our numbers so that we can talk about adding stuff instead of multiplying stuff.
+Before we see what happens long-term, let's switch gears. <Footnote>No pun intended. </Footnote> We'll take logs of everything so we can add instead of multiply.
 
-First, let's rewrite our table like this:
+First, let's rewrite our table:
 
 ![Repeated application of Bayes' theorem in log scale](01-kl_intro/repeated_bayes_log2.png)
 
-We really just rewrote all numbers as $2$ to the power of something, so that multiplications can be thought of as summations in the exponent.
+We just wrote everything as powers of 2, so multiplying becomes adding in the exponent.
 
-In fact, let's remove all the clutter and just write down the important stuff:
+Let's clean it up even more:
 
 ![Surprisal](01-kl_intro/repeated_bayes_surprisals.png)
 
-Basically, instead of writing down probabilities $p$ in each cell, we wrote down $\log 1/p$ instead. The formula $\log 1/p$ is called a _[surprisal](https://en.wikipedia.org/wiki/Information_content)_. That's because the intuition behind this number is that whenever an event happens, this tells you how surprised you are: If you flip heads and thought the probability of that is $1\%$, you are more surprised ($\log 1/0.01 \approx 6.6$) then if you though the probability is $50\%$ ($\log 1/0.5 = 1$).
+Instead of probability $p$ in each cell, we write $\log 1/p$. This $\log 1/p$ thing is called _[surprisal](https://en.wikipedia.org/wiki/Information_content)_. Makes sense—it measures how surprised you are when something happens. Getting heads when you thought it was 1% likely? Super surprising ($\log 1/0.01 \approx 6.6$). Getting heads on a fair coin? Meh ($\log 1/0.5 = 1$).
 
-Our table now becomes a kind of a balance sheet where we keep track of all the surprisals.
-If we subtract two surprisals in the same row, the result tells us how much evidence we gained towards one of the hypotheses. In our case, whenever we flip heads, we gain $0.32$ bits of evidence that the coin is fair, and whenever we flip tails, we gain $0.26$ bits of evidence that the coin is biased.
+Our table is now like a scorecard for surprisals.
+When you subtract surprisals in the same row, you get how much evidence you gained for each hypothesis. Here, heads give you 0.32 bits of evidence for fair, tails give 0.26 bits for biased.
 
-We get the final posterior probability by computing the total suprisal for both hypothesis and exponentiating it (we also have to add the prior to the equation).
+To get the final probability, add up all the surprisals for each hypothesis, exponentiate, and don't forget the prior.
 
-In our case, the total evidence we accumulated towards the coin being biased is
+In our example, the total evidence for biased is:
 
 $$
 3 \cdot 0.26 - 2 \cdot 0.32 \approx 0.15. 
 $$
 
-We started with one bit of evidence towards the fair hypothesis, so our posterior is $0.85$ bits towards the fair hypothesis. We can convert this number back to probabilities and get the number of $64\%$ for the fair hypothesis.
+We started with one bit favoring fair, so we end up with 0.85 bits for fair. Convert that back and you get 64% probability it's fair.
 
 ## Expected Distinguishing Evidence <a id="expected-distinguishing-evidence"></a>
 
-Let's say that in our scenario, the coin happens to be biased. To compute how quickly our Bayesian hero learns this fact, we can compute the expected number of bits she learns per flip. We've computed that heads means $0.26$ bits towards the fair hypothesis and tails means $0.32$ bits towards the biased hypothesis. So, on average, each flip we accumulate
+Let's say the coin actually is biased. How fast will our Bayesian hero figure this out? We can calculate the average bits learned per flip. Heads give -0.32 bits (negative 'cause it points the wrong way), tails give +0.26 bits. On average, each flip gives:
 
 $$
 0.4 \cdot (-0.32) + 0.6 \cdot 0.26 \approx 0.03
 $$
 
-bits of evidence towards the true hypothesis. This number is called KL divergence between the (true) hypothesis of 40\% / 60\% and the (model) hypothesis of 50\% / 50 \%.
+bits of evidence toward the truth. Boom—that's the KL divergence between the true 40%/60% distribution and the model 50%/50% distribution!
 
-What should we take from this number? It means that on average, we need about 33 flips to gain one bit of evidence. So, if we started with a prior of $2:1$ towards the coin being fair, after about 33 flips we will be about $1:1$. After another 33 flips, we will be $2:1$ towards the coin being biased. Then $4:1$ after another 33 flips and so on.
+What's this mean in practice? You need about 33 flips to get one bit of evidence. So if you start thinking 2:1 the coin is fair, after ~33 flips you'll be at 1:1. Another 33 flips gets you to 2:1 it's biased, then 4:1, and so on.
 
-The actual odds that our Bayesian hero keeps computing are going to fluctuate around this expected behavior. However, due to the law of large numbers, we know that as the number of flips $N$ gets larger, with high probability, the total number of accumulated bits is going to be around $0.03 \cdot N$. <Footnote> More precisely, it's around $0.03N \pm O(\sqrt{N})$. The fundamental reason why we took the logarithm of probabilities and why we talk about bits is that the law of large numbers holds if you keep summing stuff, but not if you keep multiplying stuff. </Footnote>
+The actual odds bounce around this average. But thanks to the law of large numbers, after $N$ flips the total evidence will be close to $0.03 \cdot N$. <Footnote> More precisely, it's $0.03N \pm O(\sqrt{N})$. We use logs and talk about bits because the law of large numbers works for adding stuff, not multiplying. </Footnote>
 
-Try what happens yourself in the widget!
+Try it yourself!
 
 <EvidenceAccumulationSimulator />
 
 ## KL divergence, in general
 
-KL divergence is simply the general formula for expected accumulated evidence. In the general case, let's say there are two distributions $p$ and $q$ where $p$ describes the true behavior of a random experiment. 
+KL divergence is just the general formula for expected evidence accumulation. Say you've got two distributions $p$ and $q$, where $p$ is what's really happening:
 
-We can repeat the experiment and play the Baysian game: Whenever we see the $i$-th outcome, we compare the two likelihoods of this outcome, $p_i$ and $q_i$, and update our posterior. In practice, this means adding $\log 1/p_i$ bits to the total surprise of $p$, and $\log 1/q_i$ bits to the total surprise of $q$. 
+You can repeat the experiment and play the Bayesian game: For each outcome $i$, compare the likelihoods $p_i$ and $q_i$ and update your beliefs. This means adding $\log 1/p_i$ bits to $p$'s surprise total and $\log 1/q_i$ bits to $q$'s. 
 
-On average, each sample from the true distribution $p$ gives us
+On average, each sample from the true distribution $p$ gives you:
 
 $$
 D(p,q) = \sum_{i = 1}^n p_i \cdot \log \frac{p_i}{q_i}
 $$
 
-bits of evidence towards the truth.
+bits of evidence toward the truth.
 
-In case this number is smaller than $1$, you can think intuitively of $1/D(p,q)$ as "how many samples are needed to gain one bit of evidence towards the truth". Here, one bit of evidence means that the posterior odds of the true hypothesis got multiplied by $2$. <Footnote>This is not the same as saying that your posterior probability got multiplied by $2$: For example changing $1:1$ to $2:1$ means that you go from 50% to 66.7%. But it is the case that if you have unbalanced odds like $1:1000$, getting a bit of evidence towards the first hypothesis (change to 2:1000) is almost the same as multiplying the corresponding probability by 2. And getting a bit of evidence towards the second hypothesis (it's now 1:2000) is almost the same as dividing the probability of the first hypothesis by 2. The upshot is that the probability of the truth goes up exponentially fast, until it's roughly the same as the probability of the other hypothesis. After that, the probability of the other hypothesis goes down exponentially fast. </Footnote>
+When this number is small (less than 1), you can think of $1/D(p,q)$ as "how many samples until I get one bit of evidence." One bit means the odds for the true hypothesis doubled. <Footnote>This isn't the same as doubling the probability. Going from 1:1 to 2:1 odds means 50% → 66.7% probability. But with lopsided odds like 1:1000, gaining a bit toward the underdog (making it 2:1000) almost doubles its probability. And gaining a bit the other way (1:2000) almost halves the underdog's probability. The truth's probability shoots up exponentially until it's comparable to the alternative, then the alternative's probability tanks exponentially. </Footnote>
 
-Notice how KL divergence is about the evidence, not the prior. It tells us the rate (speed) of how our prior shifts, regardless of where we started.
-I am mentioning this because if you like to divide statistics into Bayesian and frequentist one (don't worry if you don't know what that means), our Bayes-namedropping might suggest that we are firmly on the Bayesian-statistics ground. That's not the case, KL does not care about our petty divisions and is useful in both approaches to statistics. 
+Notice KL divergence is about the evidence, not your starting beliefs. It tells you how fast beliefs change, no matter where you start.
+Even though we've been all Bayesian here, KL divergence doesn't pick sides—it's useful whether you're a Bayesian or frequentist statistician.
 
 
 <Expand headline = "Riddle: How to train your LLM" > <a id="application-training-smaller-models"></a>
 
-Let's discuss [one of our riddles](00-introduction/deep-learning) from the introduction. We asked about how to train a smaller language model to mimic a larger one like GPT-4. In particular, we have a (true) distribution $p$ and a (model) distribution $q$ and want to come up with a function that measures how well the model fits the truth.
+Remember [our riddle](00-introduction/deep-learning) about training a smaller language model to copy a bigger one like GPT-4? We've got the true distribution $p$ and our model's guess $q$, and we need to measure how good the match is.
 
-That's exactly what KL divergence measures!
+That's literally what KL divergence does!
 
-What about other options, like minimizing the $\ell_1$ norm, i.e., $\sum |p_i - q_i|$? or $\ell_2$ norm, i.e., $\sum (p_i - q_i)^2$? Doing that would perhaps also work reasonably well, but there is something very uneasy about those approaches. Consider these two scenarios:
+What about using $\ell_1$ norm ($\sum |p_i - q_i|$) or $\ell_2$ norm ($\sum (p_i - q_i)^2$)? They might work okay, but they've got a big problem. Check these out:
 
 1. $p_i = 0.5, q_i = 0.49$
 2. $p_i = 0.01, q_i = 0.0$
 
-The standard geometrical norms ($\ell_1, \ell_2$) treat both of these situations as having similar magnitude of error. KL, though, understands that while in the first situation, the model approximates the truth pretty well, the second situation is total failure!
+Regular norms ($\ell_1, \ell_2$) think these errors are about the same size. But KL knows better—the first one's basically fine, but the second is a total disaster!
 </Expand>
 
 <Expand headline = "Riddle: Measuring distance from independence">
 <a id="information-theory"></a>
 
-Let's come back to one of our riddles: [How to measure the distance from independence](00-introduction/information-theory)?
+Back to our riddle: [How do you measure distance from independence](00-introduction/information-theory)?
 
-Remember, we have three possible joint distributions $p_1, p_2, p_3$:
+Remember our three joint distributions $p_1, p_2, p_3$:
 
 ![Which table is the "most" independent?](00-introduction/independence.png)
 
-All of them have the same marginal distributions, i.e., the row and column sums are the same. If the two marginal distributions were independent, we would have a so-called product distribution $q$ that looks like this:
+They all have the same marginals (same row and column totals). If the marginals were independent, we'd get this product distribution $q$:
 
 <img src = "00-introduction/independence2.png" style = "width : 34%;"/>
 
-Which one of our three distributions is the "most" independent?
+Which one's "most" independent?
 
-To solve this, we need to find a good definition of how to measure the disimilarity between one of the tables and the idealized, independent table. There are all kinds of formulas that we could try<Footnote>To give one example, in practice, this is often done by computing [correlation](https://en.wikipedia.org/wiki/Correlation). Unfortunately, that's not a super satisfactory solution. First, correlation can only be computed for random variables, i.e., distribution over numbers and not general distributions over \{☀️, ☁️\}, so it's unclear how to apply it to our case. Also, zero correlation does not imply that the two variables are independent. </Footnote>, but KL divergence really begs to be used here. Remember, to use KL, we have to have two distributions. One of them is the "truth" -- in our case, one of the three tables. The second one is the "model" -- in our case, it's the idealized independent table. Computing the KL between the two intuitively tells us how well the model match the reality. More technically, it tells us, how long it takes a Bayesian reasoner to find out that the data are really coming from the actual distribution, and not the model one.
+We need to measure how different each table is from the ideal independent one. There are tons of ways to do this<Footnote>People often use [correlation](https://en.wikipedia.org/wiki/Correlation), but that's not great. First, correlation only works for numbers, not general stuff like {☀️, ☁️}. Plus, zero correlation doesn't mean independence. </Footnote>, but KL divergence is perfect. We've got two distributions: the "truth" (one of our tables) and the "model" (the ideal independent table). The KL between them tells us how well the model matches reality—basically, how long until a Bayesian detective figures out the data isn't coming from the independent model.
 
-The KL divergences for tables $p_1, p_2, p_3$ turn to be as follows:
+The KL divergences for our tables:
 
 <Math displayMode = {true} math = "D(p_1, q) \approx 0.40, D(p_2, q) \approx 0.04,  D(p_3, q) \approx 0.21"/>
 
-In particular, the second table is "closest" to being independent.
+So table 2 is "closest" to independence!
 
-This computation can be done whenever you have a joint distribution $(r, s)$. The KL divergence between $(r, s)$ and the independent distribution $r \otimes s$ is called [mutual information](http://en.wikipedia.org/wiki/Mutual_information) between $r$ and $s$ and it's a crucial quantity in e.g. information and coding theory. The quantity tells us how many bits on average we learn about $r$ if we learn the outcome of $s$ (Or, symmetrically, how many bits we learn about $s$ if we learn the outcome of $r$. ) 
+This works for any joint distribution $(r, s)$. The KL divergence between $(r, s)$ and the independent version $r \otimes s$ is called [mutual information](http://en.wikipedia.org/wiki/Mutual_information) between $r$ and $s$—it's huge in information theory. It tells you how many bits you learn about $r$ when you find out $s$ (or vice versa—it's symmetric).
 
 </Expand>
 
 ## What's next?
 
-In the [next section](02-crossentropy), we will look more closely at the formula for KL divergence and see how it connects to entropy and crossentropy of distributions.
+In the [next section](02-crossentropy), we'll dig deeper into the KL formula and see how it connects to entropy and cross-entropy.

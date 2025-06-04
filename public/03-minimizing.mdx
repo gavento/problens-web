@@ -1,63 +1,63 @@
-# Minimizing KL divergence <a id="updating-beliefs"></a>
+# Minimizing KL Divergence <a id="updating-beliefs"></a>
 
-In this chapter, we will see what happens when we minimize KL divergence between two distributions. In fact, we will discuss two setups:
+In this chapter, we'll explore what happens when we minimize the KL divergence between two distributions. Specifically, we'll look at two distinct scenarios:
 
-1. We start with a distribution $p$ and want to find a simpler model of it from a family of distributions $Q$. We can do so by minimizing $D(p, q)$ over $q \in Q$. This corresponds to the maximum likelihood principle (MLE) in statistics.
+1.  We begin with a distribution $p$ and aim to find a simpler model for it from a family of distributions $Q$. This can be achieved by minimizing $D(p, q)$ over all $q \in Q$. This approach aligns with the maximum likelihood principle (MLE) in statistics.
 
-2. If we start with a distribution $q$ and want to find a better model of it from a family of distributions $P$, we do so by minimizing $D(p, q)$ over $p \in P$. This corresponds to the maximum entropy principle (MaxEnt) in statistics.
+2.  Alternatively, if we start with a distribution $q$ and seek a better model from a family of distributions $P$, we do so by minimizing $D(p, q)$ over all $p \in P$. This corresponds to the maximum entropy principle (MaxEnt) in statistics.
 
-Let's see the details!
+Let's dive into the details!
 
-## Minimizing KL & Maximum Likelihood Estimation (MLE) <a id="mle"></a>
+## Simplifying models by minimizing KL <a id="mle"></a>
 
-Suppose we are given some data—say, the 16 foot length measurements $X_1, \dots, X_{16}$ from [our statistics riddle](00-introduction/statistics). Assuming the order of the data is irrelevant, it's handy to think about those data as an empirical distribution $p$ that assigns each outcome a probability of $1/16$. This is also called an _empirical distribution_. In some sense, this empirical distribution is the "best fit" of our data. In another sense, it is a horrible model of it -- it assigns zero probability to outcomes that are not in the data, although if we look at length of the foot of the 17th guy, it'l like to be outside the data. So, we need another model.
+Imagine we have some data—for instance, the 16 foot length measurements $X_1, \dots, X_{16}$ from [our statistics riddle](00-introduction/statistics). Assuming the order of the data doesn't matter, it's convenient to represent these data as an empirical distribution $p$, where each outcome is assigned a probability of $1/16$. This is what we call an _empirical distribution_. In one sense, this empirical distribution is the "best fit" for our data. However, in another sense, it's a terrible model—it assigns zero probability to outcomes not present in the data, even though, if we were to measure the 17th person's foot, it would likely fall outside the initial 16 measurements. Therefore, we need a different model.
 
 ![fit](03-minimizing/fit.png)
 
-One way to approach this is to first find a family of distributions $Q$ that we think are a good model for the data. For example, we might think that the distribution of foot lengths is Gaussian.<Footnote>Why Gaussians? We will see soon.</Footnote> So, we can take $Q$ to be the set of all Gaussian distributions with different means and variances. Visually, you could think about the potato representing all possible distributions -- $p$ is a point in the potato, and $Q$ is a subset of it, that kind of looks like a half-plane as it is parameterized by two parameters $\mu$ and $\sigma^2$.
+One common approach is to first identify a family of distributions $Q$ that we believe would be a good model for the data. For example, we might suspect that foot lengths follow a Gaussian distribution.<Footnote>Why Gaussians? We'll see why soon.</Footnote> In this case, $Q$ would be the set of all Gaussian distributions with varying means and variances. Visually, you can think of a "potato" representing all possible distributions, with $p$ as a single point within it. $Q$ would then be a subset, perhaps resembling a half-plane, as it's parameterized by two values: $\mu$ and $\sigma^2$.
 
 ![KL divergence potato](03-minimizing/potato_mle.png)
 
-Now, suppose we believe that a normal distribution is a good model for these data. How do we choose the best parameters $\mu$ and $\sigma^2$ to match the empirical distribution? KL divergence offers a natural answer: Choose $\mu$ and $\sigma$ to minimize $D(p, N(\mu,\sigma^2))$<Footnote> $N(\mu, \sigma^2)$ denotes the gaussian with mean $\mu$ and variance $\sigma^2$. </Footnote>. More generally, if we have a set of candidate distributions $Q$ (e.g., all Gaussians), select the $q\in Q$ that minimizes $D(p,q)$.
+Now, let's assume we believe a normal distribution is a suitable model for this data. How do we pinpoint the optimal parameters $\mu$ and $\sigma^2$ to best match the empirical distribution? KL divergence offers a natural solution: Choose $\mu$ and $\sigma$ to minimize $D(p, N(\mu,\sigma^2))$<Footnote> $N(\mu, \sigma^2)$ denotes the Gaussian with mean $\mu$ and variance $\sigma^2$. </Footnote>. More broadly, if we have a collection of candidate distributions $Q$ (like all Gaussians), we select the $q\in Q$ that minimizes $D(p,q)$.
 
-Why does this methodology make sense? Remember, KL is supposed to measure how well the model $q$ approximates the data $p$, so minimizing KL really just means picking the best fitting model in $Q$. If you still remember the [first chapter](01-kl_intro), you may even "compile" this argument down to Bayes' theorem: choosing $q$ to minimize $D(p,q)$ really means choosing $q$ that takes the longest time to distinguish from the truth $p$ by a Bayesian. Very reasonable!
+Why does this method make sense? Recall that KL divergence is designed to measure how well a model $q$ approximates the true distribution $p$. So, minimizing KL simply means selecting the best-fitting model from $Q$. If you remember our [first chapter](01-kl_intro), you might even "compile" this argument down to Bayes' theorem: choosing $q$ to minimize $D(p,q)$ effectively means choosing the $q$ that would take a Bayesian the longest time to distinguish from the true distribution $p$. That's pretty reasonable!
 
-### Maximum Likelihood principle <a id="mle"></a>
+### Maximum Likelihood Principle <a id="mle"></a>
 
-Let's take a closer look at our approach of minimizing $D(p, q)$. Let's focus on the most common case, where $p$ is literally the empirical distribution over $X_1, \dots, X_n$. To avoid cluttered notation, let's assume all $X_i$ are distinct<Footnote>The general case is very similar. </Footnote>. In that case, we can write the KL divergence we are minimizing as:
+Let's examine our approach of minimizing $D(p, q)$ more closely. We'll focus on the most common scenario where $p$ is an empirical distribution derived from data points $X_1, \dots, X_n$. To keep the notation tidy, let's assume all $X_i$ are distinct, which means that $p$ is uniform distribution<Footnote>In the general case, $p$ is not necessarily uniform - the probability of each value $x$ is proportional to the count of $x$ in the data. This does not change the following argument. </Footnote>. In this situation, we can express the KL divergence we're minimizing as:
 
 <Math displayMode={true} math="D(p,q) = \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1/n}{q(X_i)}" />
 
-Splitting this into entropy and cross-entropy:
+Splitting this into entropy and cross-entropy terms:
 
 <Math displayMode={true} math="D(p,q) = \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1}{q(X_i)} - \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1}{n}" />
 
-Note that the entropy term (the second sum) is constant with respect to $q$. <Footnote> In this special case of $p$ being uniform distribution, we even have $\sum \frac{1}{n}\log n = \log n$, but the important part is that it's a constant independent of $q$. </Footnote> Thus, minimizing KL divergence is equivalent to minimizing the cross-entropy:
+Notice that the entropy term (the second sum) remains constant with respect to $q$. <Footnote> In this specific case, where $p$ is a uniform distribution, we even have $\sum \frac{1}{n}\log n = \log n$, but the key point is that it's a constant independent of $q$. </Footnote> Therefore, minimizing KL divergence is equivalent to minimizing the cross-entropy:
 
 <Math displayMode={true} math="\min_{q \in Q} \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1}{q(X_i)}" />
 
-Here, $q(X_i)$ is the probability (or probability density) that the model assigns to the data point $X_i$. Dropping the constant factor $1/n$ and using the identity $\log(1/x)=-\log x$, this is equivalent to maximizing the product:
+Here, $q(X_i)$ represents the probability (or probability density) that the model assigns to the data point $X_i$. If we drop the constant factor $1/n$ and use the identity $\log(1/x)=-\log x$, this minimization becomes equivalent to maximizing the product:
 
 <Math displayMode={true} math="\max_{q \in Q} \prod_{X_i} q(X_i)" />
 
-This expression has very clear meaning: it is the conditional probability of seeing the data $X_i$, provided that they have been sampled independently from the model distribution $q$. This kind of conditional probability is also called the "likelihood of $X$ under $q$".
+This expression has a very clear interpretation: it's the conditional probability of observing the data $X_i$, assuming they were sampled independently from the model distribution $q$. This type of conditional probability is also known as the "likelihood of $X$ under $q$".
 
-So what's the conclusion? Our approach of minimizing KL divergence is equivalent (at least for empirical distributions) to maximizing the likelihood of the data under the model $q$. The latter is in fact a very common approach in statistics, and it is called the maximum likelihood estimation (MLE) principle. We just derived it from the KL divergence perspective!
+So, what's the big takeaway? Our approach of minimizing KL divergence is equivalent (at least for empirical distributions) to maximizing the likelihood of the data under the model $q$. The latter is actually a very common technique in statistics, known as the maximum likelihood estimation (MLE) principle. We've just derived it from the perspective of KL divergence!
 
-<Expand headline = "Example: Maximum likelihood for normal distribution">
+<Expand headline = "Example: Maximum likelihood for Normal Distribution">
 <a id = "mle_for_mean_sigma"></a>
 
-Let's say that we are given data $X_1, \dots, X_N$ (that we represent by its empirical distribution $p$) and want to find the best fitting Gaussian $N(\mu, \sigma^2)$. How should we choose $\hat\mu$ and $\hat\sigma^2$?
+Suppose we are given data $X_1, \dots, X_N$ (which we represent by its empirical distribution $p$) and want to find the best-fitting Gaussian $N(\mu, \sigma^2)$. How should we choose $\hat\mu$ and $\hat\sigma^2$?
 
-Here's what Maximum likelihood principle recommends: We should maximize the likelihood, or more conveniently, maximize the so-called log-likelihood / minimize cross-entropy:
+The Maximum Likelihood Principle suggests that we should maximize the likelihood, or, more conveniently, maximize the log-likelihood (which is equivalent to minimizing the cross-entropy):
 
 <Math displayMode={true} math="\hat\mu, \hat\sigma^2 = \argmax_{\mu, \sigma^2} \sum_{i = 1}^N \log\left( \frac{1}{2\pi\sigma^2} e^{-\frac{(X_i-\mu)^2}{2\sigma^2}} \right) 
 = \argmin_{\mu, \sigma^2} 2N \cdot \log \sigma + \sum_{i = 1}^N \frac{(X_i-\mu)^2}{2\sigma^2}"/>
 
-There are several ways to solve this optimization problem. The cleanest one is probably differentiation: If we define $\mathcal{L}$ to be the above expression, then:
+There are several ways to solve this optimization problem. Differentiation is likely the cleanest: If we define $\mathcal{L}$ to be the expression above, then:
 <Math displayMode={true} math = "\frac{\partial \mathcal{L}}{\partial \mu} = \frac{1}{\sigma^2} \sum_{i = 1}^N 2(X_i - \mu) "/>
 
-Setting <Math displayMode={false} math="\frac{\partial \mathcal{L}}{\partial \mu} = 0"/> then leads to $\hat\mu = \frac{1}{N} \sum_{i = 1}^N X_i$.
+Setting <Math displayMode={false} math="\frac{\partial \mathcal{L}}{\partial \mu} = 0"/> leads to $\hat\mu = \frac{1}{N} \sum_{i = 1}^N X_i$.
 
 Similarly,
 <Math displayMode={true} math="\frac{\partial \mathcal{L}}{\partial \sigma} = 2N/\sigma -2  \sum_{i = 1}^N \frac{(X_i-\mu)^2}{\sigma^3}"/>
@@ -65,105 +65,107 @@ Similarly,
 Setting <Math displayMode={false} math="\frac{\partial \mathcal{L}}{\partial \sigma} = 0"/> then leads to <Math displayMode={false} math="\hat\sigma = \frac{1}{N} \sum_{i = 1}^N (X_i - \mu)^2"/>
 </Expand>
 
-## Finding a Better Model & Maximum Entropy Principle <a id="finding-better-model"></a>
+## Updating Models by Minimum Relative Entropy Principle <a id="finding-better-model"></a>
 
-So, minimizing <Math math="\min_{q \in Q} D(p,q)" /> is pretty useful, what aboutn the other direction <Math math="\min_{p \in P} D(p,q)" />? This is also extremely useful, so let's see an example of what it means.
+So, minimizing <Math math="\min_{q \in Q} D(p,q)" /> is quite useful. But what about the other direction, <Math math="\min_{p \in P} D(p,q)" />? This is also extremely valuable, so let's explore an example of what it signifies.
 
+Suppose I want to determine a probability distribution modelling the random variable $X$ of how long it takes me to eat lunch. My initial (and very crude) model of $X$ might be a uniform distribution $q$ between <Math math="0" /> and <Math math="60" /> minutes.
 
-Let's say I want a probability distribution for how long it takes me to eat lunch. Maybe my first (very crappy) model of this is a uniform distribution $q$ between <Math math="0" /> and <Math math="60" /> minutes.
+Starting with this model, I can try to get some new information and condition on it to get a better model $p$. 
 
-How do I improve this model? I should get my hands on some empirical data, so let's say that I will observe my lunch times for a while. Recording the whole empirical distribution sounds like too much work, so let's say I just record the average time it takes me to eat lunch -- say, 15 minutes.
+For example, let's say that after eating many lunches, I observe I always finish after 30 minutes. This corresponds to a new information that $0 \le X \le 30$. I can condition on this information:
 
-Given this new information, how should I choose a better model? 
+![conditioning](03-minimizing/condition.png)
+
+Let's try again. I eat many more lunches, but this time I keep recording the average time it takes me to eat lunch. Say, it turns out to be 15 minutes. How do I change $q$ to reflect this new information? The probability theory gives a clear answer.
+
+![syntax-error](03-minimizing/syntax_error.png)
+
+We simply can't do this. In probability theory, we can condition on events, like $X \le 30$, but now we would like to condition on $E[X] = 15$ which is not an event, just a fact that's true for some distributions. The good part is that we can use KL divergence to "condition on $E[X] = 15$. 
 
 ![max-ent](03-minimizing/max_ent_example.png)
 
-I claim that among all distributions <Math math="p" /> with average of 15, I should pick the distribution <Math math = "p_{\textrm{new}} = \arg\min_{p: E_p[X]=15} D(p,q)"/> where <Math math="q" /> is my original model (the uniform distribution). In general, if I have a model distribution $q$ and learn that the true distribution is in some set $P$ (e.g. the set of distributions with mean 15), I claim that I should replace the model $q$ by a new model <Math math = "p_{\textrm{new}}"/>:
+Here's how. I propose that, among all distributions <Math math="p" /> with an average of 15 minutes, I should select the distribution <Math math = "p_{\textrm{new}} = \arg\min_{p: E_p[X]=15} D(p,q)"/> where <Math math="q" /> is my original uniform model. In general, if I have an existing model distribution $q$ and discover that the true distribution belongs to some set $P$ (e.g., the set of distributions with a mean of 15), I claim that I should update my model $q$ to a new model <Math math = "p_{\textrm{new}}"/>:
 
 <Math displayMode={true} math="p_{\textrm{new}} = \arg\min_{p \in P} D(p,q)," /> 
 
-Why? Intuitively, I want to find a distribution <Math math="p \in P" /> so that <Math math="q" /> is as good model of it as possible. This is what we find by minimizing KL divergence. 
+This is sometimes called [the minimum relative entropy principle](resources). Why does this make sense? Intuitively, I want to find a distribution <Math math="p \in P" /> such that <Math math="q" /> remains as good a model of it as possible. This is precisely what we achieve by minimizing KL divergence.
 
-Admittedly, this reasoning is a bit shaky, since when using KL divergence, we typically like $p$ to stand for the "true" distribution, while here it's just a new, hopefully better model.  
+Admittedly, this line of reasoning can feel a bit shaky, as we typically prefer $p$ to represent the "true" distribution when using KL divergence, whereas here it's simply a new, improved, model.
 
-But we can also argue that this approach makes sense directly from Bayes' rule. Remember how we discussed above that using maximum likelihood really means "choose a model $q$ that's hardest to distinguish from $p$ by Bayes' rule"? Equation ?? can be similarly justified as "update $q$ to account for new evidence using Bayes' rule". 
-Reasoning behind this intuition is a bit more involved and so left in an expand box. 
+However, we can also justify the principle directly from Bayes' rule. Remember how we discussed that using maximum likelihood essentially means "choosing a model $q$ that's hardest to distinguish from $p$ by Bayes' rule"? Equation ?? can be similarly explained as "updating a model $q$ to incorporate new evidence that the model should be from $P$, using Bayes' rule."
+The reasoning behind this is a bit more involved, so it's placed in an expand box.
 
 <Expand headline="Detailed discussion of how this follows from Bayes' rule">
-The following argument is a version of so-called [Wallis derivation](https://en.wikipedia.org/wiki/Principle_of_maximum_entropy#The_Wallis_derivation) of the maximum entropy principle. 
+The following argument is a version of the so-called [Wallis derivation](https://en.wikipedia.org/wiki/Principle_of_maximum_entropy#The_Wallis_derivation). 
+We will reformulate our setup slighlty to sidestep the "syntax-error" issue and to be able to condition on facts of the type "our model distribution should come from the set $P$". 
 
-We reformulate our setup to view ?? as an application of Bayes' theorem. 
+Imagine we start with some distribution $q$ and sample from it $N$ times. We'll use $\hat{q}$ to denote the empirical distribution of these samples. The Wallis trick is to realize that $\hat{q}$ is no longer a simple distribution, it's a distribution over distribution (also called a mixture distribution). For $\hat{q}$, it now makes sense to ask questions such as whether $\hat{q}$ belongs to some family of distributions $P$ (e.g., all distributions with an average of 15). 
 
-Imagine that we start with some distribution $q$ and keep sampling from it $N$ times. We use $\hat{q}$ to denote the empirical distribution of the samples. Now we observe that $\hat{q}$ belongs to some family of distributions $P$ (e.g., all distributions with average 15). What is our current knowledge about $\hat{q}$?
 
-Bayes' theorem is clear on this: we should start with the prior distribution over $\hat{q}$, and then condition on the fact that $\hat{q}$ belongs to $P$ to get the posterior distribution over $\hat{q}$. We will argue the following claim: as $N$ goes to infinity, the posterior distribution is going to be concentrated on the distribution $p \in P$ that minimizes $D(p,q)$. This is the justification for our minimize-KL approach -- our methodology is basically equivalent to "passing from $q$ to $p$ by conditioning on the fact that the distribution belongs to $P$".
+Our plan is to imagine a very large $N$ and the process of generating $\hat{q}$ from $q$. We then condition the distribution of $\hat{q}$ on the fact that $\hat{q} \in P$ to obtain the posterior distribution. We will argue the following claim: _As $N$ approaches infinity, the posterior distribution will become concentrated on the distribution $p \in P$ that minimizes $D(p,q)$_. This provides the justification for the minimum relative entropy principle. The methodology is essentially equivalent to saying "If I keep my model $q$, but inexplicably, the data actually is from a set $P$, then I can as well model the data by <Math math = "\argmin_{p \in P} D(p,q) " />. 
 
 Let's prove the claim.
 
-First of all, this is all a bit confusing because we talk about the empirical distribution $\hat{q}$ which is actually a random variable depending on the $N$ samples we took from the space $P_0$ of all empirical distributions (technically, $P_0$ is the space of all distributions where probabilities are multiples of $1/N$ but let's not get bogged down in technicalities). This is technically called a mixture distribution. Here's a picture:
+First, a bit of notation: Think of $\hat{q}$ as a [random vector](https://en.wikipedia.org/wiki/Multivariate_random_variable) whose randomness stems from the choice of the $N$ samples from $q$. Let $P_0$ be the space of all random vectors <Footnote>More precisely, $P_0$ should be chosen as the space of all distributions where probabilities are multiples of $1/N$, but let's not get bogged down in technicalities.</Footnote> - we are given its subset $P$ from which the new model shall be picked. Here's a picture:
 
 ![Wallis derivation](03-minimizing/wallis.png)
 
-We should now understand what kind of distribution $\hat{q}$ has, i.e., we want to understand the probability $P(\hat{q} = p)$ for $p \in P_0$. There are two ways to do that.
+We now need to understand the distribution of $\hat{q}$, i.e., we want to understand the probability $P(\hat{q} = p)$ for $p \in P_0$. There are two ways to do this.
 
-1. We can write it down exactly (<Math math="P(\hat{q} = p) = {N \choose p_1N, \dots, p_kN}\cdot \prod_{i = 1}^k q_i ^ {p_i N}" />) and solve it (using Stirling approximation, we have <Math math="P(\hat{q} = p) \approx 2^{H(p)\cdot N}" /> and thus <Math math="P(\hat{q} = p) \approx 2^{-D(p,q)\cdot N}" />).
+1.  We can write it down exactly (<Math math="P(\hat{q} = p) = {N \choose p_1N, \dots, p_kN}\cdot \prod_{i = 1}^k q_i ^ {p_i N}" />) and solve it (using Stirling's approximation, we have <Math math="P(\hat{q} = p) \approx 2^{H(p)\cdot N}" /> and thus <Math math="P(\hat{q} = p) \approx 2^{-D(p,q)\cdot N}" />).
 
-2. If you like to see what's happening behind the algebra, we can also go back to the [first chapter](01-kl_intro) where our Bayesian friend was pretty much trying to compute the probability we now need. More concretely, if our friend got $N$ and the empirical distribution was $p$, all the evidence in a column of a hypothesis $q$ summed up to the value $N \cdot H(p, q)$. The meaning of the evidence is that the probability <Math math="P(\hat{q} = p)" /> has to be proportional to <Math math="2^{-N \cdot H(p, q)}" />, we just don't know the normalization constant.
+2.  If you prefer to see the underlying algebra, we can revisit the [first chapter](01-kl_intro) where our Bayesian friend was essentially trying to compute the probability we now need. More concretely, if our friend obtained $N$ samples and the empirical distribution was $p$, all the evidence supporting a hypothesis $q$ summed up to the value $N \cdot H(p, q)$. The meaning of this evidence is that the probability <Math math="P(\hat{q} = p)" /> must be proportional to <Math math="2^{-N \cdot H(p, q)}" />; we just don't know the normalization constant.
 
-Now, waving our hands a little, we can observe that the probability distribution of <Math math="\hat{q}" /> is going to be concentrated on the distribution <Math math="p" /> that minimizes <Math math="H(p,q)" />, as <Math math="N" /> goes to infinity. Thus, the right normalization is <Math math="P(\hat{q} = p) \approx 2^{-N \cdot H(p,q) + N \cdot H(p)} = 2^{-N \cdot D(p,q)}" />.
-
-Whatever road you preferred, we can now continue. While the distribution of $\hat{q}$ is concentrated around the value of $q$, there's nonzero probability that $\hat{q} \in P$. If that happens, we similarly have that the posterior distribution is concentrated around the value <Math math="\tilde{p} = \argmin_{p \in P} D(p,q)"/>. We conclude that in the limit of $N$ going to infinity, doing all the abstract mixture distributions and conditioning on the new evidence is pretty much equivalent to just replacing $q$ with <Math math="\argmin_{p \in P} D(p,q)"/>.
+Now, with a bit of hand-waving, we can observe that the probability distribution of <Math math="\hat{q}" /> will be concentrated around the value of $q$ as $N$ approaches infinity, even though there's a nonzero probability that $\hat{q} \in P$. If that happens, we similarly find that the posterior distribution is concentrated around the value <Math math="\tilde{p} = \argmin_{p \in P} D(p,q)"/>. We conclude that in the limit of $N$ going to infinity, working with mixture distributions and conditioning on it being from $P$ is equivalent to simply replacing $q$ with <Math math="\argmin_{p \in P} D(p,q)"/>.
 </Expand>
 
 ### The Maximum Entropy Principle <a id="maximum-entropy-principle"></a>
 
-Let's take a closer look at our approach. A seemingly important problem of it is that it only enables us to change an original model $q$ to a better model $p$. But how did we choose the original model $q$? It's a bit of a chicken-and-egg problem.
+Let's delve deeper into the minimum relative entropy principle. A seemingly significant issue is that it only allows us to refine an existing model $q$ into a better model $p$. But how did we choose the initial model $q$ in the first place? It feels a bit like a chicken-and-egg dilemma.
 
-Fortunately, there's usually a very natural choice for the simplest possible model $q$ -- the uniform distribution. This is the unique distribution that assigns the same probability to each outcome. In some sense, it is the most "uninformative" distribution we can have. This argument about uniform distribution is called the [principle of indifference](https://en.wikipedia.org/wiki/Principle_of_indifference). 
+Fortunately, there's usually a very natural choice for the simplest possible model $q$: the uniform distribution. This is the unique distribution that assigns the same probability to every outcome. In a sense, it's the most "uninformative" distribution we can possibly have. This argument for the uniform distribution is known as the [principle of indifference](https://en.wikipedia.org/wiki/Principle_of_indifference).
 
-So, it would be very interesting to understand what happens when we start with the uniform distribution $q$ (let's say over a discrete set $\{1, \dots, k\}$) and find a better model <Math math = "p_{new} \in P" /> by minimizing KL divergence. Let's write it down:
+So, it would be highly interesting to understand what happens when we start with the uniform distribution $q$ (say, over a discrete set $\{1, \dots, k\}$) and find a better model <Math math = "p_{new} \in P" /> by minimizing KL divergence. Let's write it out:
 
-<Math displayMode={true} math="p_{new} = \argmin_{p \in P} D(p,q_{uniform}) = \sum_{i = 1}^k p_i \log \frac{p_i}{ 1/k}" />
+<Math displayMode={true} math="p_{new} = \argmin_{p \in P} D(p,q_{\textrm{uniform}}) = \sum_{i = 1}^k p_i \log \frac{p_i}{ 1/k}" />
 
-After splitting KL divergence into entropy and cross-entropy, we rewrite this as:
+After splitting the KL divergence into entropy and cross-entropy, we can rewrite this as:
 
 <Math displayMode={true} math="D(p,q_\text{uniform}) = \sum_{i = 1}^k p_i\log p_i - \sum_i p_i\log (1/k)" />
 
-Since the second term is a constant (and in fact equal to $-\log (1/k) = \log(k)$), minimizing KL divergence is equivalent to maximizing minus the first term, which is the entropy of $p$:
+Since the second term is a constant (specifically, equal to $-\log (1/k) = \log(k)$), minimizing KL divergence is equivalent to maximizing the negative of the first term, which is simply the entropy of $p$:
 
-<Math displayMode={true} math="p_{new} = \argmin_{p \in P} D(p, q_{uniform}) = \argmax_{p\in P} H(p)" />
+<Math displayMode={true} math="p_{new} = \argmin_{p \in P} D(p, q_{\textrm{uniform}}) = \argmax_{p\in P} H(p)" />
 
-We derived what's known as the [maximum entropy principle](https://en.wikipedia.org/wiki/Principle_of_maximum_entropy): given a set $P$ of distributions to choose from, we should opt for the $p\in P$ that maximizes the entropy $H(p)$.
+We've just derived what's known as the [maximum entropy principle](https://en.wikipedia.org/wiki/Principle_of_maximum_entropy): given a set $P$ of distributions to choose from, we should opt for the $p\in P$ that maximizes its entropy $H(p)$.
 
+<Expand headline = "Example: Gaussian Distribution">
+Here's an example of how the maximum entropy principle can be applied. Let's say we want to model some real-valued data that is known to have a certain mean $E_p[X] = \mu$ and variance $E_p[(X-\mu)^2] = \sigma^2$.
+If we want to select a distribution that models this data in the absence of any other information, the maximum entropy principle suggests we should define the set $P$ as all distributions with mean $\mu$ and variance $\sigma^2$, and then choose the maximum entropy distribution $p$ from this set $P$.
 
-<Expand headline = "Example: Gaussian distribution">
-Here's an example of how we can use maximum entropy principle. Let's say that we want to model some data that are real numbers and have certain mean $E_p[X] = \mu$ and variance $E_p[(X-\mu)^2] = \sigma^2$.
-We want to pick a distribution that models the data in the absence of any other evidence. Then, maximum entropy principle suggests we should choose the set $P$ to be all distributions with mean $\mu$ and variance $\sigma$ and pick the maximum entropy distribution $p$ in $P$.
+As we'll discuss [later](05-machine_learning), this particular distribution $p$ turns out to be the Gaussian with mean $\mu$ and variance $\sigma^2$. So, the maximum entropy principle tells us that, without additional evidence, we should model such data as Gaussian, assuming the given mean and variance.
 
-As we will discuss in [later](05-machine_learning), this distribution $p$ is the Gaussian with mean $\mu$ and variance $\sigma^2$. So, maximum entropy principle tells us that in the absence of additional evidence, we should model data as Gaussian, with the same mean and variance.
-
-It is often useful to think about this principle a bit more abstractly. Imagine that we don't even know the precise value of $\mu, \sigma^2$, we just believe that the mean and the variance are important parameters to know. Then, maximum entropy principle is telling us that we should model the data by some Gaussian. In other words, we conclude that the family of Gaussians is the *right* family to represent numerical data, if what we care about is their mean and variance. This is a very useful conclusion!
+It's often helpful to think about this principle more abstractly. Imagine we don't even know the precise values of $\mu$ and $\sigma^2$; we just believe that the mean and variance are important parameters. In this scenario, the maximum entropy principle informs us that we should model the data using *some* Gaussian distribution. In other words, we conclude that the family of Gaussians is the *appropriate* family to represent numerical data when our primary concerns are their mean and variance. This is a very powerful insight!
 
 ![potato](03-minimizing/potato_maxent.png)
 </Expand>
 
+One more advanced point. We've already seen that KL divergence is intimately related to the philosophy of updating your beliefs via conditioning and using Bayes' theorem. 
+In fact, I like to view the minimum relative entropy principle as "Conditioning on steroids". While Bayes' theorem tells you how to update your probability distribution after seeing new evidence like $X \le 10$, the min relative entropy principle allows you to update your distribution based on "evidence" like $E[X] = 15$, which is a priori not sensible information to update from. 
 
-One more advanced point. We have already seen that KL divergence is very closely related to the philosophy of updating your beliefs by Bayes' theorem. This relatioship actually goes both ways; more in the Expand box.
+In the Expand box, we confirm that we can view classical updating as a special case of the min relative entropy principle, so this intuition of min-relative entropy _extending_ normal conditioning makes sense. 
 
-<Expand headline = "Relation with Bayes goes both ways">
-We've already derived KL divergence and why it makes sense to minimize it from the philosophy of using Bayes' rule. This relationship goes both ways; let's see how. 
+<Expand headline = "Min relative entropy implies Bayes' updating">
+Consider the general problem of updating after seeing evidence: We have a joint distribution <Math math = "p_{old}" /> over two random variables $X$ (which we're interested in) and $Y$ (representing possible evidence we might observe).
+Then, we observe some evidence $Y=y$. We want to compute the new distribution <Math math = "p_{new}" /> that incorporates this observation. The rules of conditional probability say that <Math math = "p_{new}" /> should be $0$ for $Y \not= y$ and, for $Y = y$, it should be the conditional distribution of $p$ given $Y = y$.
 
-Consider the generic problem solved by Bayes' theorem: We have a joint distribution  <Math math = "p_{old}" /> over two random variables $X$ (that we are interested in) and $Y$ (possible evidences we might see). 
-Then we observe some evidence $Y=y$. We want to compute the new distribution <Math math = "p_{new}" /> that takes this into account. The Bayes' rule is just a formula, but taken more philosophically, it's about understand what <Math math = "p_{new}" /> should be: It says that <Math math = "p_{new}" /> should be $0$ for $Y \not= y$ and for $Y = y$ it should be the conditional distribution of $p$ for $Y = y$. 
+The observation we can now make is that <Math math="p_{new} = \argmin_{p \in P} D(p, p_{old})" />, where $P$ is the set of distributions where $P(Y = y') = 0$ for $y' \ne y$<Footnote>The proof of this observation requires some rewriting, but in essence, it hinges on the fact that the distribution closest in KL to $p$ conditioned on $Y = y$ is... the same distribution. Really, nothing complicated is happening here; we are just saying that the new distribution should resemble the old one, merely rescaled so that probabilities sum to one.</Footnote>.
 
-The observation we can now make is that <Math math="p_{new} = \argmin_{p \in P} D(p, p_{old})" />, where $P$ is the set of distributions where $P(Y = y') = 0$ for $y' \ne y$<Footnote>The proof of the observation requires some rewritings but in essence, it's about the fact that the distribution closest in KL to $p$ conditioned on $Y = y$ is ... the same distribution. Really, nothing complicated is happening here, we are just saying that the new distribution should look like the old one, only rescaled so that probabilities sum up to one. </Footnote>
-
-So, we can think of the philosophy of updating by Bayes' theorem as a special case of the philosophy of minimizing KL divergence. This is all very circular and fuzzy, but the point is that minimizing KL is basically Bayes on steroids. 
-
-{/*not only the philosophy of minimize-KL-whenever-you-can-ism can be derived from the philosophy of argue-everything-from-Bayes-rule-ism, but we can also derive the philosophy of argue-everything-from-Bayes-rule-ism from the philosophy of minimize-KL-whenever-you-can-ism. Thus it is said that minimize-KL-whenever-you-can-ism is argue-everything-from-Bayes-rule-ism-complete (and vice versa).*/}
-</Expand>
 
 {/*
+So, we can think of the philosophy of updating via Bayes' theorem as a special case of the philosophy of minimizing KL divergence. This is all very circular and a bit fuzzy, but the key takeaway is that minimizing KL can be thought of as extension of Bayes' philosophy.
+
 ### A few more observations <a id="a-few-observations"></a>
 
 We will spend the whole next chapter discussing all the applications of the maximum entropy principle, but let's already make two observations about it. Those observations correspond to two important properties of entropy.
@@ -177,7 +179,8 @@ This is called [subadditivity of entropy](01-kl_intro/information-theory). Why i
 The implication for the max-entropy principle is this: Imagine that you work with a joint distribution and you know its two marginals $p,q$. Then, the maximum entropy principle tells us that the joint distribution with these two marginals that maximizes the entropy is the one where they are independent.
 Whenever people model stuff by probability distributions, they assume that two distributions are independent all the time. We can think of this assumption as a special case of the maximum entropy principle.
 */}
+</Expand>
 
 ## Next Steps <a id="next-steps"></a>
 
-In the [next chapter](04-max_entropy), we'll explore more concrete modeling applications of these principles. We'll see how they apply to various fields like machine learning, statistical modeling, and information theory.
+In the [next chapter](04-max_entropy), we'll explore more concrete modeling applications of the max entropy principle. We'll see how they apply to various fields like machine learning, statistical modeling, and elsewhere. 

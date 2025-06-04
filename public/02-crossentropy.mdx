@@ -1,50 +1,47 @@
 # KL properties & (Cross-)entropy
 
-In this chapter, we will discuss a few nice algebraic properties of KL divergence. Also, it's often very useful to split the formula into two terms called _cross-entropy_ and _entropy_. 
-
-
-We will also go through a few basic properties that these things have.
+In this chapter, we'll check out some nice algebraic properties of KL divergence. Also, it's often super useful to split the formula into two pieces called _cross-entropy_ and _entropy_. 
 
 ## Properties of KL divergence
 
-Let's go through several properties of KL divergence it's good to understand. Remember that KL divergence is algebraically defined like this:
+Let's go through some key properties of KL divergence you should know about. Remember, KL divergence is algebraically defined like this:
 
 $$
 D(p,q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}
 $$
 
-KL divergence can be infinite: this happens whenever $q_i \not= 0$ and $p_i = 0$ for some $i$. We also use convention $0 \cdot \log 0/0 = 0$ so that KL is always a well-defined number or $+\infty$.
+Heads up: KL divergence can be infinite! This happens when $q_i = 0$ but $p_i \neq 0$ for some $i$. We also use the convention $0 \cdot \log 0/0 = 0$ so that KL always gives us either a nice number or $+\infty$.
 
 ### Asymmetry
 
-The KL formula is not symmetrical -- in general, we don't have $D(p,q) = D(q,p)$. This is sometimes seen as a drawback, especially when you compare KL with (symmetrical) distance function like the $\ell_1$ or $\ell_2$ metric<Footnote> <Math math='d_1(p,q) = \sum_{i = 1}^n |p_i - q_i|'/>, <Math math='d_2(p,q) = \sqrt{\sum_{i = 1}^n (p_i - q_i)^2}'/></Footnote>. I want to stress that the asymmetry is by design! KL measures how well a distribution $p$ is fitted by a model $q$. This is an asymmetrical notion, so we need an asymetrical formula, nothing to be ashamed for here.
+The KL formula isn't symmetrical—in general, $D(p,q) \neq D(q,p)$. Some people see this as a bug, especially when comparing KL to nice symmetric distance functions like $\ell_1$ or $\ell_2$<Footnote> <Math math='d_1(p,q) = \sum_{i = 1}^n |p_i - q_i|'/>, <Math math='d_2(p,q) = \sqrt{\sum_{i = 1}^n (p_i - q_i)^2}'/></Footnote>. But I want to stress that the asymmetry is a feature, not a bug! KL measures how well a distribution $p$ is fitted by a model $q$. That's an asymmetrical thing by nature, so we need an asymmetrical formula—nothing to be embarrassed about.
 
-In fact, the word _divergence_ is used for things like KL that behave kind of like distances but are not really symmetrical. <Footnote>More on that in [one of the last chapters](06-algorithms)</Footnote>
+In fact, that's why we call it a _divergence_ instead of a distance—it acts kinda like a distance but isn't symmetric. <Footnote>More on that in [one of the last chapters](06-algorithms)</Footnote>
 
 <Expand headline = "Example">
-Imagine that the true probability distribution is 50\%/50\% (i.e., fair coin), and the model is $100\% / 0\%$. In that case, KL divergence is infinite. That's because if we flip a coin, we have 50\% chance of flipping tails, which the model distribution says should never happen. This means that we have 50\% chance of gaining infinitely many bits of information (whatever our prior on fair/biased was, the posterior should now be 100\% fair and 0\% biased) and hence the divergence is infinite.
+Imagine the true probability is 50%/50% (fair coin), but your model says 100%/0%. Boom—KL divergence is infinite. Why? Well, you've got a 50% chance of flipping tails, which your model says should never happen. So there's a 50% chance you'll gain infinitely many bits of information (your posterior will jump to 100% fair, 0% biased), making the divergence infinite.
 
-On the other hand, if the truth is $100\% / 0\%$ and the model is $50\% / 50\%$, then $D(p,q) = 1$. That's because each flip, we are going to flip heads and thus gain one bit of evidence towards the coin being fair. One bit is a lot and our probability of the coin being fair goes down really fast, but it's never zero. We simply have to account for the (exponentially unlikely) event that even if the coin is fair, all flips may have happenned to be heads.
+Now flip it around: truth is 100%/0%, model is 50%/50%. Then $D(p,q) = 1$. Every flip gives you heads, so you gain one bit of evidence that the coin is biased. One bit is a lot and your belief in fairness drops fast, but it never hits zero. You've gotta account for the (exponentially unlikely) possibility that a fair coin just happened to give all heads.
 </Expand>
 
 ### Nonnegativity
 
-If you plug in the same distribution twice into KL, you get
+If you plug the same distribution into KL twice, you get:
 
 $$
 D(p, p) = \sum_{i = 1}^n p_i \cdot \log \frac{p_i}{p_i} = 0
 $$
 
 because $\log 1 = 0$.
-This makes sense, you can never distinguish the truth from the truth. 🤷
+Makes sense—you can't tell the truth apart from the truth. 🤷
 
-Even better, KL divergence is always nonnegative. I think we got a pretty strong intuition why in the previous chapter. Just imagine that you have two distributions $p$ and $q$, but as you keep sampling from $p$, you gradually keep believing more and more that the distribuition actually is ... $q$? The world would be really, really messed up in that case! Feel free to check the formal proof below. 
+Even better, KL divergence is always nonnegative. I think we built up a pretty good intuition for this in the last chapter. Just imagine sampling from $p$ but Bayes' rule somehow convinces you more and more that you are sampling from some other distribution $q$. That would be really messed up! Check out the formal proof if you're curious.
 
 
 <Expand headline="Proof of nonnegativity">
-We will use the natural logarithm to make the proof a bit shorter, i.e., we want to prove that <Math math = "D(p,q) =  \sum_{i = 1}^n p_i \cdot \ln \frac{p_i}{q_i}  \ge 0" /> holds for any $p,q$. 
+We'll use natural logarithm to keep things short. We want to prove that <Math math = "D(p,q) =  \sum_{i = 1}^n p_i \cdot \ln \frac{p_i}{q_i}  \ge 0" /> for any $p,q$. 
 
-We will estimate the expression $\ln \frac{p_i}{q_i}$ inside the summation. Since we already know that the inequality is tight if all $p_i = q_i$, we should choose an estimate of logarithm which is tight around 1. The best approximation of logarithm around $1$ is $\ln (1+x) \le x$. We can use it like this:
+Let's estimate what's inside the sum: $\ln \frac{p_i}{q_i}$. Since we know the inequality is tight when $p_i = q_i$, we need an estimate that's tight around 1. The best linear approximation near 1 is $\ln (1+x) \le x$. Using this trick:
 
 $$
 -D(p,q)
@@ -57,64 +54,64 @@ $$
 </Expand>
 
 
-A bit stronger version of this fact is also called monotonicity. We won't really use it, so feel free to skip it. 
+There's also a stronger version called monotonicity. We won't really use it, so feel free to skip. 
 
 <Expand headline="Monotonicity explanation">
-Imagine that we have two distributions $p,q$, let's say they are over countries (\{🇺🇸,🇨🇦,🇲🇽,🇯🇵,🇬🇧,🇮🇳,...}). Then, we zoom out a little bit and consider a set of larger geographical areas (\{North America, Europe, ...}). We can convert $p,q$ to this rougher set to get distributions $p', q'$ -- e.g. we set <Math math = "p'(\textrm{North America}) = p(🇺🇸) + p(🇨🇦) + p(🇲🇽)" />. Then it's the case that
+Say you've got two distributions $p,q$ over countries ({🇺🇸,🇨🇦,🇲🇽,🇯🇵,🇬🇧,🇮🇳,...}). Now zoom out and group them into continents ({North America, Europe, ...}). You can convert $p,q$ to this rougher grouping to get $p', q'$. Like: <Math math = "p'(\textrm{North America}) = p(🇺🇸) + p(🇨🇦) + p(🇲🇽)" />. Then:
 
 $$
 D(p, q) \ge D(p', q')
 $$
 
-This makes sense! Remember that KL divergence tells us how hard it is to separate $p$ from $q$ using Bayes' theorem. This just says that for our Bayesian reasoner, it gets harder to distinguish $p$ from $q$, as we keep grouping different outcomes together. In the special case, we could group all the outcomes to a single outcome SOMETHING_HAPPENED -- the inequality would than reduce to $D(p,q) \ge 0$, i.e., nonnegativity is a special case of this.
+This totally makes sense! Remember, KL divergence tells us how hard it is to tell $p$ apart from $q$ using Bayes' theorem. When you group outcomes together, it gets harder for our Bayesian detective to spot the difference. In the extreme, you could group everything into SOMETHING_HAPPENED—then the inequality becomes $D(p,q) \ge 0$. So nonnegativity is just a special case of this!
 </Expand>
 
 ### Additivity
 
-Let's say that we have two distribution (the "truth" and the "model") $p, q$ and then another two distributions $p', q'$. It's true that
+Say you've got two distribution pairs $(p, q)$ and $(p', q')$. Then:
 
 $$
 D(p \otimes p', q \otimes q') = D(p, q) + D(p', q')
 $$
-where $p \otimes p'$ stands for the product distribution with marginals $p,p'$, i.e. the joint distribution where $p,p'$ are independent.
+where $p \otimes p'$ means the product distribution where $p,p'$ are independent.
 
-We have used this property implicitly in the previous chapter -- the property is really just saying that if you are computing the over KL divergence in the setup of flipping a coin many times, it's just sum of divergences for individual flips. 
+We actually used this implicitly before—it's just saying that when you're computing KL divergence for many coin flips, you add up the divergences from each flip. 
 
-In fact, a slightly stronger property called _chain rule_ is true. We won't really use it, so feel free to skip. 
+There's also a slightly fancier property called the _chain rule_. We won't use it much, so skip if you want. 
 
 <Expand headline="Chain rule explanation">
-Imagine that we have two distributions $p,q$ for how I commute to work (\{🚶‍♀️, 🚲, 🚌}). Later, I decide that when I take bus, I will also keep track of what line I took (\{①, ②, ③}); I again have two (so-called conditional) distributions $p', q'$ for that. Now, $p$ and $p'$ can be combined into an overall distribution <Math math = "p_{\textrm{overall}}" /> over the set \{🚶‍♀️, 🚲, ①, ②, ③}. For example, if $p=$\{🚶‍♀️: 0.3, 🚲: 0.3, 🚌: 0.2\} and $p'=$\{①: 0.5, ②: 0.25, ③: 0.25\}, then <Math math = "p_{\textrm{overall}}=" />\{🚶‍♀️: 0.3, 🚲: 0.3, 🚌①: 0.1, 🚌②: 0.05, 🚌③: 0.05\}. 
+Say I've got distributions $p,q$ for how I get to work ({🚶‍♀️, 🚲, 🚌}). But when I take the bus, I also track which line ({①, ②, ③}), with conditional distributions $p', q'$. Combining $p$ and $p'$ gives me an overall distribution <Math math = "p_{\textrm{overall}}" /> over {🚶‍♀️, 🚲, ①, ②, ③}. Like if $p=$\{🚶‍♀️: 0.3, 🚲: 0.3, 🚌: 0.4\} and $p'=$\{①: 0.5, ②: 0.25, ③: 0.25\}, then <Math math = "p_{\textrm{overall}}=" />\{🚶‍♀️: 0.3, 🚲: 0.3, ①: 0.2, ②: 0.1, ③: 0.1\}. 
 
-The chain rule property of KL divergence is the fact that
+The chain rule says:
 
 <Math displayMode={true} math="
 D(p_{\textrm{overall}}, q_{\textrm{overall}}) = D(p,q) + p_{\textrm{bus}} \cdot D(p',q')
 "/>
-Here, <Math math = "p_{\text{bus}}" /> is the probability of 🚌 according to the (true) distribution $p$. 
+where <Math math = "p_{\text{bus}}" /> is how often I take the bus according to $p$. 
 
-This property makes sense! First, notice that distinguishing the truth $p_{overall}$ from the model $q_{overall}$ gets easier than distinguishing $p$ from $p$. But the formula even says how much -- the additional refinement of the option 🚌  is helping us by $D(p', q')$ whenever it comes up, which happens with frequency <Math math = "p_{\textrm{bus}}" />. 
+This is pretty intuitive! First off, telling $p_{overall}$ apart from $q_{overall}$ is easier than just telling $p$ from $q$. But the formula even tells us how much easier: the bus refinement helps by $D(p', q')$ whenever it comes up, which is <Math math = "p_{\textrm{bus}}" /> of the time. 
 
-Try to derive this property or see how it implies additivity! 
+Try proving this yourself or see how it gives us additivity! 
 </Expand>
 
 
 ### Uniqueness
 
-As it turns out, any reasonable function that that has the monotonicity and chain rule properties already [has to be KL divergence](https://blog.alexalemi.com/kl.html).
+Here's something cool: any reasonable function with monotonicity and chain rule properties [has to be KL divergence](https://blog.alexalemi.com/kl.html).
 
-This is pretty cool and it helps us to appreciate that KL divergence is not at all arbitrary function. There's just one measure with the natural properties of KL divergence -- KL divergence itself.
+That's pretty awesome—it means KL divergence isn't some arbitrary formula someone cooked up. There's literally only one measure with these natural properties, and it's KL divergence.
 
 
 ## Relative entropy = Cross-entropy - Entropy
 
-First, a quick recap: In the [previous chapter](01-kl_intro), we've seen how KL divergence is really the result of repeatedly applying Bayes' theorem, using this table:
+Quick refresher: In the [previous chapter](01-kl_intro), we saw how KL divergence comes from repeatedly using Bayes' theorem with this table:
 
 ![Surprisal](01-kl_intro/repeated_bayes_surprisals.png)
 
-Each cell in this table holds a value of type $\log 1/p$ called the surprisal.
-Last time, we have been parsing this table "row-by-row". That is, we always subtracted two surprisals to compute how much evidence we got towards one of the two hypotheses. The Bayesian reasoner simply keeps summing up all those surprisal differences.
+Each cell has a value $\log 1/p$ called surprisal.
+Last time, we read this table row-by-row—subtracting surprisals to see how much evidence we got for each hypothesis. Our Bayesian detective just keeps adding up these differences.
 
-We can also try to understand the table "column-by-column". That is, the Bayesian reasoner can compute the total surprisal for both hypothesis, then convert those into the final posterior probability. This corresponds to rewriting the KL divergence as follows:
+But we can also read the table column-by-column. The detective could add up the total surprisal for each hypothesis, then convert that to posterior probabilities. This gives us a different way to write KL divergence:
 
 <Math displayMode={true} math='
 \underbrace{\sum_{i = 1}^n p_i \log \frac{p_i}{q_i}}_{D(p,q)}
@@ -124,54 +121,54 @@ We can also try to understand the table "column-by-column". That is, the Bayesia
 \underbrace{\sum_{i = 1}^n p_i \log 1 / p_i}_{H(p)}
 '/>
 
-The two expressions on the right hand side are important. We will try to get some intuition about them now. 
+These two pieces on the right are super important. Let's get a feel for what they mean. 
 
 ### Cross-entropy: 
-The term $H(p,q) = \sum_{i = 1}^n p_i \log 1 / q_i$ is called _cross-entropy_. You should think of this expression as telling you how surprised you are, on average, if you keep seeing data from $p$ and try to model them by $q$. 
+The term $H(p,q) = \sum_{i = 1}^n p_i \log 1 / q_i$ is called _cross-entropy_. Think of it as: how surprised are you on average when you see data from $p$ but you're modeling it as $q$? 
 
-For example (see the picture), let's say we keep flipping fair coin, so $p =$ \{H: 0.5, T: 0.5\}. If we use the same distribution as our model, i.e., $q =$ \{H: 0.5, T: 0.5\}, the cross-entropy is equal to 1. 
+Example time (check out the picture): You're flipping a fair coin, so $p =$ {H: 0.5, T: 0.5}. If your model matches reality, $q =$ {H: 0.5, T: 0.5}, then cross-entropy is 1. 
 
-On the other hand, what if $q =$ \{H: 0.999, T: 0.001\}? Although we are not surprised to see heads at all, each time we see a tail, our surprisal is equal to $\log 1/0.001 \approx 10$. So, our average surprisal -- cross-entropy -- is about 5 which is a good bit bigger. 
+But what if your model is way off, like $q =$ {H: 0.999, T: 0.001}? You're not surprised by heads at all, but every time you see tails, your surprisal shoots up to $\log 1/0.001 \approx 10$. So your average surprise—the cross-entropy—is about 5. That's way bigger! 
 
 ![cross-entropy](02-crossentropy/crossentropy.png)
 
-In general, better models are less surprised by the data, hence they have smaller cross-entropy. 
+Bottom line: better models are less surprised by the data, so they have smaller cross-entropy. 
 
 ### Entropy: 
 
-The term $H(p) = H(p, p) = \sum_{i = 1}^n p_i \log 1 / p_i$ is an important special case of cross-entropy called _entropy_. This is the best possible cross-entropy we can achieve for a distribution $p$ if we model it by $p$ itself.  
+The term $H(p) = H(p, p) = \sum_{i = 1}^n p_i \log 1 / p_i$ is a special case of cross-entropy called just plain _entropy_. It's the best possible cross-entropy you can get for distribution $p$—when you model it perfectly as itself.  
 
-Intuitively, entropy is telling us how much suprise or uncertainty is inherent for $p$. For example, even if we know that we are flipping a fair coin, we still don't know which side it lands on, so there is something to learn about the outcome of the experiment. The entropy of the fair coin flip is <Math math = "H(\{\textrm{H: }1/2, \textrm{T: }1/2\}) = 1" />. 
+Intuitively, entropy tells you how much surprise or uncertainty is baked into $p$. Like, even if you know you're flipping a fair coin, you still don't know which way it'll land. There's inherent uncertainty. The fair coin's entropy is <Math math = "H(\{\textrm{H: }1/2, \textrm{T: }1/2\}) = 1" />. 
 
-The entropy can get much smaller -- for example,<Math math = "H(\{\textrm{H: }0.001, \textrm{T: }0.999\}) = 0.01" />. This makes sense! Although seeing heads generates the surprise of $\log 1/0.001 \approx 10$, this is simply too rare to change the _average_ surprise dominated by the fact that most flips are easily predictable. The entropy can go down all the way to zero, if the distribution has 100\% chance of giving one outcome. 
+Entropy can get way smaller—like <Math math = "H(\{\textrm{H: }0.001, \textrm{T: }0.999\}) = 0.01" />. Makes sense! Sure, seeing heads is super surprising ($\log 1/0.001 \approx 10$), but it's so rare that the _average_ surprise stays tiny. Most flips are boringly predictable. Entropy hits zero when one outcome has 100% probability. 
 
 ![entropy](02-crossentropy/entropy.png)
 
-On the other hand, the entropy can also get much larger than 1 bit. For example, the entropy of throwing a die is equal to $\log_2(6) \approx 2.6$ bits and in general, the entropy of a uniform distribution over $k$ options is $\log_2 k$. The uniform distribution also has the largest entropy among distributions with $k$ options. This again makes sense -- there's most uncertainty if all the options are equally plausible.  
+But entropy can also get way bigger than 1 bit. Rolling a die has entropy $\log_2(6) \approx 2.6$ bits. In general, a uniform distribution over $k$ options has entropy $\log_2 k$—and that's the max for any distribution with $k$ options. Makes sense—you're most uncertain when everything's equally likely.  
 
 ### Relative entropy: 
-Finally, $D(p,q)$ is the difference between these two values. That is, it tells us how close our average surprisal measured by cross-entropy is to the ultimate limit measured by entropy. 
-That's also why in some communities, KL divergence is known as the _relative entropy_ between $p$ and $q$. <Footnote>Much better name than KL divergence, if you ask me. The name KL divergence seems to be much more common, though, so we stick with it. </Footnote>
+Finally, $D(p,q)$ is just the gap between these two. It tells you how far your average surprise (cross-entropy) is from the best possible (entropy). 
+That's why some folks call KL divergence the _relative entropy_ between $p$ and $q$. <Footnote>Way better name than KL divergence if you ask me. But KL divergence is what everyone uses, so we're stuck with it. </Footnote>
 
-### So what is this good for?
+### So what's the big deal?
 
-Splitting a summation into two parts is not some kind of hard-core mathematical trick -- the main advantage of adding cross-entropy & entropy to our vocabulary is that they are simply very meaningful concepts. <Footnote>In fact, entropy is probably a good bit more well-known concept than KL divergence. The reason why this mini-course builds everything up using KL divergence and not entropy is related to the fact that I am trying to strike a balance between an excited stream-of-consciousness wall of text about fun and underrated applications of probability, and something resembling a coherent text. </Footnote>
+Splitting a sum into two parts isn't exactly rocket science—the real win is that cross-entropy and entropy are super meaningful concepts on their own. <Footnote>Actually, entropy is probably way more famous than KL divergence. I'm building everything from KL divergence instead of entropy because I'm trying to balance between an excited brain dump about cool probability stuff and something that actually makes sense as a coherent text. </Footnote>
 
-Let's see an example of this. 
+Let's see this in action. 
 
 <Expand headline = "Riddle: Evaluating Predictions"> <a id="application-evaluating-predictions"></a>
 
-As the next application of KL divergence and cross-entropy, let's solve our [prediction riddle](00-introduction/predictions). Recall that we asked about a few experts to predict future events and recorded their probabilities -- how do we measure their performance?
+Time to solve our [prediction riddle](00-introduction/predictions). We asked experts to predict future events—how do we score them?
 
 ### Idealized KL score
 
-To grade an expert's predictions, let $p = (p_1, \dots, p_n)$ denote the true probabilities of the events happening and $q$ denote the expert's predicted probabilities. It sure sounds like a good idea to define the expert's score as:
+To grade predictions, let $p = (p_1, \dots, p_n)$ be the true probabilities and $q$ be what the expert predicted. Seems like a good idea to score them with:
 
 $$
 S_{KL}(q) = D(p,q)
 $$
 
-We will for simplicity assume that all the $n$ events are independent, where this simplifies to the following formula:
+If all $n$ events are independent, this becomes:
 
 $$
 S_{KL}(q) = \sum_{i = 1}^n  \left(
@@ -188,32 +185,29 @@ S_{KL}(q) = 0.3 \cdot \log 0.3/0.5 + 0.7 \cdot \log 0.7/0.5 \\
 \approx ??.
 $$*/}
 
-There's one big problem with our approach -- can you see it?
+But wait—there's a huge problem. Can you spot it?
 
 ### Cross-entropy score
 
-The problem is that when we are grading, we have absolutely no idea what the "true" probabilities are! <Footnote> We could now have a very long philosophical discussion about whether something like "true" probability even exists. Fortunately, this is not very relevant now. </Footnote>
+The problem: we have no clue what the "true" probabilities are! <Footnote> We could go down a philosophical rabbit hole about whether "true" probability even exists. But let's not. </Footnote>
 
-The only fact we know is whether each event happenned or not. This also corresponds to a valid empirical probability distribution $\hat{p}$ -- it's just the case that $\hat{p}_i = 0$ or $\hat{p}_i = 1$ for each $i$, i.e., this empirical distribution is supported on a single outcome that we observed.
+All we know is what actually happened. This gives us an empirical distribution $\hat{p}$ where each $\hat{p}_i$ is either 0 or 1—it's all concentrated on the one outcome we saw.
 
-What happens if we plug $\hat{p}$ into our KL score from ?? instead of $p$? Since the entropy of $\hat{p}$ is zero (it's supported on a single outcome), the cross-entropy and relative entropy are the same, i.e., 
+What happens when we plug $\hat{p}$ into our KL score? Since $\hat{p}$'s entropy is zero (one outcome, no uncertainty), cross-entropy and relative entropy are the same: 
 
 <Math displayMode={true} math="
 S_{CE}(q) =
-&\sum_{i = 1}^n  \left(
-    \hat{p}_i\log\frac{\hat{p}_i}{q_i} + (1-\hat{p}_i)\log\frac{1-\hat{p}_i}{1-q_i}
-    \right)\\
-    &\sum_{i = 1}^n  \left(
+\sum_{i = 1}^n  \left(
     \hat{p}_i\log\frac{1}{q_i} + (1-\hat{p}_i)\log\frac{1}{1-q_i}
     \right)
 "/>
 
-This is why this kind of expression is usually called the _cross-entropy score_, although, as far as I can say, in the forecasting community it's typically called the [Log-score](https://forecasting.wiki/wiki/Log_score).
+This is why it's called the _cross-entropy score_, though forecasting nerds usually call it the [Log-score](https://forecasting.wiki/wiki/Log_score).
 
 ### Connection to the idealized score
-Let's understand more deeply how the cross-entropy score connects to the idealized KL score. Technically speaking, cross-entropy score is a random variable because it depends on the randomness of $p$. More concretely, each $\hat{p}_i$ is actually a random variable equal to 1 with probability $p_i$, and otherwise equal to 0.
+Let's dig into how cross-entropy score relates to our idealized KL score. Technically, cross-entropy score is a random variable—it depends on which outcomes actually happen. Each $\hat{p}_i$ is 1 with probability $p_i$, otherwise 0.
 
-So what's the expected value of the cross-entropy score, i.e., $E_p[S_{CE}(q)]$? Well, since $\hat{p_i}$ is on average equal to $p_i$, i.e., $E_p[\hat{p}_i] = p_i$, we simply have by linearity of expectation that
+So what's the expected cross-entropy score? Since $E_p[\hat{p}_i] = p_i$, linearity of expectation gives us:
 
 <Math displayMode={true} math="
 E_p[S_{CE}(q)] =
@@ -222,72 +216,72 @@ E_p[S_{CE}(q)] =
     \right)
 "/>
 
-That is, <Math  math="E_p[S_{CE}(q)] = H(p,q)"/>. This is pretty cool! If we give our experts many questions, then in the long run, we can use the law of large numbers to argue that their score is going to be close to the cross-entropy $H(p,q)$ between the "true" probability distribution $p$ and their estimate.
+In other words, <Math  math="E_p[S_{CE}(q)] = H(p,q)"/>. Nice! Give experts lots of questions, and by the law of large numbers, their score will approach the cross-entropy $H(p,q)$ between the true distribution and their guess.
 
-At this point, let's remember the equation
+Now remember:
 
 $$
 D(p,q) = H(p,q) - H(p)
 $$
 
-Although we can't compute the value of $D(p,q)$, notice that for two expert predictions $q_1, q_2$, we have $D(p,q_1) < D(p, q_2)$ if and only if $H(p, q_1) < H(p, q_2)$: KL divergence and cross-entropy only differ by $H(p)$ which a constant independent of $q_1, q_2$. That is, _comparing the experts by their cross-entropy score is in the long run the same as comparing them by their KL score!_
+We can't compute $D(p,q)$ directly, but here's the key insight: for two experts with predictions $q_1, q_2$, we have $D(p,q_1) < D(p, q_2)$ if and only if $H(p, q_1) < H(p, q_2)$. They only differ by $H(p)$, which doesn't depend on the experts' predictions. So _comparing experts by cross-entropy is just as good as comparing by KL divergence in the long run!_
 
 <Expand headline="Example: Coin flipping">
-Let's see an example of this. Let's say we flip a fair coin $N$ times ($p_1 = \dots = p_N = 1/2$) and ask two experts for their probabilities. Let's say that the first expert predicts correctly ($q_1 = \dots = q_N = 1/2$) and the other one is a bit off ($q'_1 = \dots = q'_N = 0.6$).
+Let's make this concrete. We flip a fair coin $N$ times ($p_1 = \dots = p_N = 1/2$). Expert 1 nails it ($q_1 = \dots = q_N = 1/2$), while Expert 2 is a bit off ($q'_1 = \dots = q'_N = 0.6$).
 
-Then, the idealized KL score happens to be $KL(p, q) = N \cdot 0 = 0$ and $KL(p, q') = N \cdot D(p_1, q'_1) \approx 0.03 \cdot N$.
+The idealized KL scores: $KL(p, q) = N \cdot 0 = 0$ and $KL(p, q') = N \cdot D(p_1, q'_1) \approx 0.03 \cdot N$.
 
-We don't have access to this score, but if we compute the experts' cross-entropy scores, the law of large numbers tells us that for large enough $N$, the scores are going to be roughly $H(p,q) = N$ and $H(p, q') \approx 1.03 \cdot N$. Both crossentropies are larger by the entropy of the underlying process which is $H(p) = N$. So, the score of both experts is quite high, even if the first expert is as good as it gets. However, since both values are shifted by the same amount, using the score to select the best experts is as good as using the ideal KL score in the long run. 
+We can't see these scores, but we can compute cross-entropy. For large $N$, the law of large numbers says the scores will be roughly $H(p,q) = N$ and $H(p, q') \approx 1.03 \cdot N$. Both are bigger by $H(p) = N$—the inherent uncertainty of coin flips. Even the perfect expert gets a high score! But since both shift by the same amount, cross-entropy still picks the best expert just like KL would. 
 
-Notice that _"in the long run"_ is really important here. In our example of 8 predictions, computing their crossentropy (or any other score function) is premature. 
+Key point: this only works _in the long run_. With just 8 predictions, any scoring is pretty noisy. 
 </Expand>
 </Expand>
 
 ## Coding theory
 
-KL divergence and entropy are closely connected to coding theory. There are [many amazing explainers of that](resources) for that, so let's only see a quick intuition for why this is so closely connected.  
+KL divergence and entropy are deeply connected to coding theory. There are [tons of great explainers out there](resources), so let's just get a quick taste of why this connection matters.  
 
 <Expand headline = "Coding Theory Intuitions"> <a id="coding"></a>
 
-Suppose that we have a long string; for simplicity, let's say the alphabet of the string is A,C,G,T (the string encodes DNA). We want to store the string on the disk using the least amount of space possible.  
+Say you've got a long DNA string over the alphabet {A,C,G,T}. You want to store it using as little disk space as possible.  
 
-We will make this problem easier for ourselves by disregarding correlations between letters. Technically speaking, we will assume that there is some underlying distribution $p$ over the alphabet and our string was produced by sampling repeatedly from $p$.  
+We'll make life easier by ignoring correlations between letters. Basically, we'll assume there's some distribution $p$ over the alphabet, and our string comes from sampling repeatedly from $p$.  
 
-If $p$ is the uniform distribution, the best encoding is to simply use two bits per letter -- for example: <Math math = "A \rightarrow \textsf{00}, C \rightarrow \textsf{01}, G \rightarrow \textsf{10}, T \rightarrow \textsf{11} " />. This way, a string of length $N$ has size of $2N$ bits on the disk. 
+If $p$ is uniform, the best encoding uses two bits per letter: <Math math = "A \rightarrow \textsf{00}, C \rightarrow \textsf{01}, G \rightarrow \textsf{10}, T \rightarrow \textsf{11} " />. An $N$-letter string takes $2N$ bits. Done! 
 
-But what if $p$ is skewed towards some letter? For example, what if $A$ has probability $1/2$, C has probability $1/4$, and G with T have $1/8$ both? Then there is a better encoding: <Math math = "A \rightarrow \textsf{0}, C \rightarrow \textsf{10}, G \rightarrow \textsf{110}, T \rightarrow \textsf{111} " />. On this example, this encoding uses only $1.75N$ bits on average to store the string on the disk. 
+But what if $p$ is skewed? Say A shows up half the time, C a quarter, and G,T each an eighth. Now we can do better: <Math math = "A \rightarrow \textsf{0}, C \rightarrow \textsf{10}, G \rightarrow \textsf{110}, T \rightarrow \textsf{111} " />. This only uses $1.75N$ bits on average. Sweet! 
 
 ![encoding](02-crossentropy/encoding.png)
 
-It makes sense that more frequent letters get shorter code, but what is the best way to map frequencies into code-lengths? Long story short, the coding theory says that if we want to build a good code, then the letter with frequency $p$ should be assigned a bit string of length around $\log 1/p$. For example, since $A$ had probability $1/2$ above, our optimized code assigned it a bit string of length $\log 1/(1/2) = \log 2 = 1$; and similarly for C,G,T. <Footnote>I sneakily chose an example where all probabilities are powers of two. Then, what I said about lengths of $\log 1/p$ is really true. If probabilities are general numbers, it gets more complicated because we can't have code names of noninteger length. For example, if there are five letters with the same frequency, we unfortunately can't have a code that gives each letter a code name of length $\log 5 \approx 2.3$. The good codes solve this problem by giving code names to small tuples of letters instead of just single letters; this way they approach the goal of spending $\log 1/p$ bits for a frequency-$p$ letter. </Footnote> 
+Sure, giving frequent letters shorter codes makes sense, but what's the best way to do it? Turns out coding theory says: give a letter with frequency $p$ a code of length roughly $\log 1/p$. In our example, A had probability 1/2, so it got length $\log 1/(1/2) = 1$. Perfect! <Footnote>I cheated by picking probabilities that are powers of two. Then the $\log 1/p$ formula works exactly. For messier probabilities, you can't have codes of length 2.3 bits or whatever. Good codes fix this by encoding pairs or triples of letters, getting arbitrarily close to $\log 1/p$ bits per letter on average. </Footnote> 
 
-Here's roughly the intuition why the formula $p \rightarrow \log 1/p$ makes sense for code lengths. First, imagine the case of uniform distribution, like 8 letters, each coming with frequency $1/8$. Then, it makes sense that the best code gives code names of same length to each letter, and the right length is $\log 8 = 3$ so that we can cover all letters. 
+Here's the intuition: Say you've got 8 equally likely letters. Makes sense to give them all codes of the same length, and that length should be $\log 8 = 3$ to cover everyone. 
 
-More generally, it makes sense to assign code names starting with <Math math = "\textsf{0}" /> to letters with overall frequency $1/2$, and the rest should start with <Math math = "\textsf{1}" />. For example, our code assigned <Math math = "\textsf{0}" /> to A and <Math math = "\textsf{1}" /> is the starting bit for codes of C,G,T. This way of repeatedly splitting the letters in halves leads to code lengths of $\log 1/p$ for letters of frequency $p$. <Footnote>Again, this works if probabilities are powers of two, if not, building good codes gets a bit more technical. </Footnote> 
+More generally, it makes sense to split your alphabet in half by frequency. Letters in the first half get codes starting with <Math math = "\textsf{0}" />, the rest start with <Math math = "\textsf{1}" />. Like how we gave A (50% frequency) the code <Math math = "\textsf{0}" />, while C,G,T share the other half and start with <Math math = "\textsf{1}" />. Keep splitting recursively and you get codes of length $\log 1/p$. <Footnote>Again, this works perfectly when probabilities are powers of two. Otherwise it gets trickier. </Footnote> 
 
-The upshot is that if our string was generated by sampling $N$ letters independently from a distribution $p$, we can build a code that maps the string to a bit string with about $N \cdot \sum_{i = 1}^k p_i \cdot \log 1/p_i = N \cdot H(p)$ bits -- because the code needs to use $\log 1/p_i$ bits with probability $p_i$. It can also be proven that it's impossible to store such bit strings with less than $N \cdot H(p)$ bits of memory. 
+The punchline: if your string comes from sampling $N$ letters from distribution $p$, you can encode it in about $N \cdot \sum_{i = 1}^k p_i \cdot \log 1/p_i = N \cdot H(p)$ bits. And you can prove you can't do better than $N \cdot H(p)$ bits. 
 
-This can give us a lot of intuition for entropy. For example, take this picture we already discussed. 
+This gives us another way to think about entropy. Remember this picture? 
 
 ![entropy](02-crossentropy/entropy.png)
 
-We discussed the picture using the language of entropy as "average surprisal", but really, we can also talk about how many bits are needed (on average) to store the coin-flipping outcomes to memory. On the left, we need 1 bit per outcome. On the right, it's more frugal to only store the positions of heads, which on average requires much less space than 1 bit per flip. 
+We talked about "average surprisal," but we could also ask: how many bits do you need to store coin flip results? On the left, 1 bit per flip. On the right, you'd be smart to just store where the rare heads show up—way less than 1 bit per flip on average. 
 
-We can also get intuition about cross-entropy: This is the number of bits you need if your data is coming from $p$, but you mistakenly optimize your code for a distribution $q$. Finally, relative entropy is simply how much worse your cross-entropy code is than the best possible code for $p$. 
+Cross-entropy makes sense too: it's the bits you need when data comes from $p$ but you built your code for $q$. And relative entropy? That's just how much worse your mismatched code is compared to the optimal one. 
 
 
 <Expand headline = "Riddle: Size of Wikipedia">
-Let's go back to [our riddle](00-introduction/wikipedia) about the size of Wikipedia and Hutter's prize to compress 1GB of it as much as possible. 
+Back to [our Wikipedia riddle](00-introduction/wikipedia) and Hutter's compression challenge. 
 
-Our discussion about how to encode letters in binary is giving us one benchmark -- if we treat each letter of the text independently coming from a distribution $p$ of English letter-frequencies, we can simply use an encoding optimized for that distribution which needs about $H(p)$ bits per letter. You can find this distribution $p$ for English [online](https://en.wikipedia.org/wiki/Letter_frequency); its entropy is $H(p) \approx 4$ bits and there are code names for letters that get close to this entropy (see image below). Since each letter in the original Wikipedia is stored using 8 bits<Footnote>The Wikipedia file uses the [UTF-8 encoding](https://en.wikipedia.org/wiki/UTF-8) which is the standard way to encode text. This encoding stores English letters using 8 bits, obscure letters using 16 bits, and things like 😀, 𓀀, or 𒀱 using 32 bits. This is an example of coding theory in action -- less frequent symbols are stored using more bits. </Footnote>, we have a simple approach to bring the file size down to about 500MB. This is already quite a lot, even without using helpful facts like that 'th' often continues by letter 'e'. 
+Our coding discussion gives us a benchmark: treat each letter as independent from English letter frequency distribution $p$, optimize a code for it, and you need about $H(p)$ bits per letter. You can find English letter frequencies [online](https://en.wikipedia.org/wiki/Letter_frequency); the entropy is $H(p) \approx 4$ bits. There are codes that get close (see below). Since Wikipedia stores each letter in 8 bits<Footnote>Wikipedia uses [UTF-8](https://en.wikipedia.org/wiki/UTF-8), the standard text encoding. English letters take 8 bits, fancier letters take 16, and emojis like 😀 or hieroglyphs like 𓀀 take 32. Classic coding theory—rare stuff gets longer codes. </Footnote>, we can shrink it to about 500MB. Pretty good, and we haven't even used tricks like "'th' is usually followed by 'e'". 
 
 ![huffman code](02-crossentropy/huffenc.svg "image taken from https://liucs.net/cs101s19/data/69/d3381f-1f93-433a-a85c-851c43ba6832/huffenc.svg")
 
-What's the limit on the compression factor, if we don't treat letters independently? 
+But what's the limit if we don't treat letters independently? 
 
-Claude Shannon, who [came up with information theory](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication) in late 40's did a pretty cool [experimental work](https://www.princeton.edu/~wbialek/rome/refs/shannon_51.pdf) a few years after that. He took English sentences, cut them at a random place, and asked people to predict the next (missing) letter. This way, he estimated that the entropy of English is at most around 1 bit per letter. That is, we -- humans -- are able to compress text by a factor of around 8, which would correspond to storing 1GB in just over 100MB. Coincidentally, just over 100MB is also the current record in [Marcus Hutter challenge](http://prize.hutter1.net/), so there really seems to be something on "1 bit per letter". 
+Claude Shannon, who [invented information theory](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication) in the late 40s, did this cool [experiment](https://www.princeton.edu/~wbialek/rome/refs/shannon_51.pdf) a few years later. He'd show people partial sentences and ask them to guess the next letter. This way, he figured English has at most about 1 bit per letter of entropy. So humans can compress text by a factor of 8, storing 1GB in just over 100MB. Funny thing—that's also the current [Marcus Hutter challenge](http://prize.hutter1.net/) record. Something special about that "1 bit per letter"! 
 
-But not so fast! Large language models are literally trained to predict the next letter (more precisely token) in an English text, so how good are they? The GPT-2 model was around the human-level of prediction with roughly 1 bit per letter, but current models are closer to 0.5 bits per letter. <Footnote>Wait a minute, why is the record for Hutter challenge 100MB and not 50MB then? The problem is that the size of the model itself should also be counted towards the size of the compressed file. So, to use LLMs in your compression algorithm, you would have to train them from scratch inside your compression algorithm and that currently requires way more than 1GB data that we try to compress. </Footnote> Measuring this compression ratio (either as the [cross-entropy loss function](05-machine_learning/neural-nets) or equivalently using so-called [perplexity](https://en.wikipedia.org/wiki/Perplexity)) is in fact one of the most basic ways in which we compare the strength of different models. 
+But hold up! Large language models literally train to predict the next letter (well, token) in text. How good are they? GPT-2 matched humans at roughly 1 bit per letter, but today's models are down to 0.5 bits per letter. <Footnote>So why isn't the Hutter record 50MB? Because you'd have to include the model itself in your compressed file. Training an LLM from scratch inside your compression algorithm would take way more than the 1GB you're trying to compress. </Footnote> We actually use this compression ability (measured as [cross-entropy loss](05-machine_learning/neural-nets) or [perplexity](https://en.wikipedia.org/wiki/Perplexity)) as one of the main ways to compare models. 
 
 ![scaling laws](02-crossentropy/scaling_laws.png "image from https://arxiv.org/pdf/2001.08361")
 </Expand>
@@ -295,11 +289,8 @@ But not so fast! Large language models are literally trained to predict the next
 
 ## Next Steps <a id="next-steps"></a>
 
-We are getting comfortable with KL divergence! A quick recap:
+We're getting the hang of KL divergence! Quick recap:
 
 ![Formula for KL divergence](02-crossentropy/crossentropy_entropy_formula.png)
 
-If it is really the right way to measure how well a model fits the truth, it sure seems that making it small is a good way to build good models!? [Let's see in the next chapter](03-minimizing)!
-
-
-
+If this really measures how well a model fits the truth, then making it small should give us good models, right? [Let's find out in the next chapter](03-minimizing)!

@@ -1,16 +1,16 @@
 # All those riddles <a id="introduction"></a>
 
 This web contains an introduction to Kullback-Leibler (KL) divergence. 
-See [this page](about) for logistics, here we want to tell you several riddles, hoping that you get [nerd-sniped](https://xkcd.com/356/) by some of them!
+Check out [this page](about) for logistics. Here, we've got several riddles that'll hopefully [nerd-snipe](https://xkcd.com/356/) you!
 
-
-<Expand headline="S&P versus Bitcoin"> <a id="financial-mathematics"></a>
 
 ![Financial Data Distribution](00-introduction/sap_graph.png)
+<Expand headline="S&P versus Bitcoin"> <a id="financial-mathematics"></a>
 
-Every day, the price of the S&P index jumps up or down a little bit. <Footnote>If you don't know what that is, think of the price of Bitcoin, Apple, or the exchange rate of USD/EUR</Footnote>
 
-I downloaded the historical data, computed the daily jumps, and plotted them in a histogram plot. The x-axis is the size of the jump (positive roughly half of the time, otherwise negative) and the y-axis is the frequency of that jump. Before I show you the plot, I want you to guess how it is going to look like. Do you think S&P is going to be different than Bitcoin? 
+Every day, the S&P index price jumps around a bit. <Footnote>If you don't know what the S&P is, just think Bitcoin, Apple stock, or how many euros you can buy with a dollar</Footnote>
+
+I grabbed some historical data, calculated the daily price changes, and threw them in a histogram. The x-axis shows how big the change was (positive about half the time, negative the other half) and the y-axis shows how often that size change happens. Before I show you the plot, take a guess—what's it gonna look like? Think S&P and Bitcoin will be different? 
 
 ![shapes](00-introduction/shapes.png)
 
@@ -18,7 +18,7 @@ A
 B
 C
 
-This was a trick question because both answers 2 & 3 are kind of true for both S&P and Bitcoin! The shape of the histogram depends on something I did not tell you -- how far in the past did I look to collect the data. If you collect the data for only the past month, shape C is a better fit, but since then, the data looks more like B. Why? 
+Ha! Trick question—both B and C work for both S&P and Bitcoin! The shape totally depends on something I didn't tell you: how far back I looked. If you only check the last month, shape C fits better. But zoom out to longer periods and it starts looking like B. What's up with that? 
 
 <FinanceImageSliderWidget />
 
@@ -29,26 +29,26 @@ So how come that as we keep zooming out, the histogram gets more and more "point
 
 {/*There are two ways for how this connects to KL divergence. First of all, KL divergence measures how well a ground truth distribution (empirical data we collected) is fitted by a model (normal or Laplace distribution), so you can use it to make claims such as "for more than ?? months, Laplace fits the data better than normal".*/}
 
-[We will use KL divergence](04-max_entropy/application-understanding-financial-data) to understand a deep principle in probability called maximum entropy principle. This will give us a lot of intuition for how one can model this type of data and what different shapes stand for. 
+[We'll use KL divergence](04-max_entropy/application-understanding-financial-data) to understand this deep principle in probability called the maximum entropy principle. It'll give us tons of intuition about modeling this kind of data and what those different shapes actually mean. 
 </Expand>
 
+![rod](00-introduction/rod.png "Determining the length of the foot in 1522; taken from https://commons.wikimedia.org/wiki/File:Determination_of_the_rute_and_the_feet_in_Frankfurt.png")
 <Expand headline="Average foot"> <a id="statistics"></a>
 
-![rod](00-introduction/rod.png "Determining the length of the foot in 1522; taken from https://commons.wikimedia.org/wiki/File:Determination_of_the_rute_and_the_feet_in_Frankfurt.png")
 
-In the ye olden days, people measured lengths in feet. It's pretty clear roughly how long one foot is, but at some point, we have to be a bit more precise. One way to decide on the length (depicted above) is to ask 16 random people and compute their mean foot length as
+Back in the day, people measured stuff in feet. Sure, we all kinda know how long a foot is, but eventually you need to nail it down precisely. One way (shown above) is to grab 16 random people and average their foot lengths:
 $$\bar X = \frac{1}{16} (X_1 + \dots + X_{16})$$
 
-This will be a fairly stable estimate that will hopefully remain similar the next time we do this. To measure the error of the estimate, we usually use the standard deviation. Do you remember the formula that estimates it? Try to guess the correct one:
+This gives you a pretty stable number that shouldn't change much if you do it again. To measure how good your estimate is, you'd usually calculate the standard deviation. Remember the formula? Which one's right:
 
 1. $$\bar \sigma^2 = \frac{1}{15} \sum_{i=1}^{16} (X_i - \bar X)^2$$
 2. $$\bar \sigma^2 = \frac{1}{16} \sum_{i=1}^{16} (X_i - \bar X)^2$$
 3. $$\bar \sigma^2 = \frac{1}{17} \sum_{i=1}^{16} (X_i - \bar X)^2$$
 
-Another trick question since all formulas are correct! Or a bit more precisely, all of them are defensible in the framework of (frequentist) statistics.
-The coefficient $1/(n-1)$ corresponds to the so-called [unbiased estimate](https://en.wikipedia.org/wiki/Bias_of_an_estimator), $1/n$ gives the [maximum likelihood estimate](https://en.wikipedia.org/wiki/Maximum_likelihood_estimation), and $1/(n+1)$ minimizes [the mean squared error](https://en.wikipedia.org/wiki/Mean_squared_error) between the guess and the correct value.
+In a sense, they're all correct! Well, more like they're all defensible options from the viewpoint of frequentist statistics.
+Using $1/(n-1)$ gives you the [unbiased estimate](https://en.wikipedia.org/wiki/Bias_of_an_estimator), $1/n$ gives the [maximum likelihood estimate](https://en.wikipedia.org/wiki/Maximum_likelihood_estimation), and $1/(n+1)$ minimizes [the mean squared error](https://en.wikipedia.org/wiki/Mean_squared_error) between your guess and the truth.
 
-But out of all these philosophies of how to estimate values, only one of them -- maximum likelihood estimation -- became the main workhorse of machine learning. Using KL divergence, [we will see](03-minimizing/mle) why the maximum likelihood philosophy stands out and what it stands for.
+But here's the thing: out of all these ways to estimate stuff, only maximum likelihood became the rockstar of machine learning. Using KL divergence, [we'll see](03-minimizing/mle) why maximum likelihood is so special and what makes it tick.
 </Expand>
 
 
@@ -56,22 +56,22 @@ But out of all these philosophies of how to estimate values, only one of them --
 
 [TODO image]
 
-So you want to train a large language model (LLM) like GPT/Gemini/Claude. Such a model is given some text as input, does some computation inside, and outputs the next letter in the text (In fact, it outputs the next [token](https://en.wikipedia.org/wiki/Large_language_model#Tokenization) which is a small group of letters).
-LLMs are in fact designed so that they don't output a single letter, but try to predict the distribution $p$ of it. 
+So you wanna train a large language model (LLM) like GPT/Gemini/Claude. These beasts take text, do some crazy computations, and spit out the next letter (Well, actually the next [token](https://en.wikipedia.org/wiki/Large_language_model#Tokenization), which is like a little chunk of letters).
+LLMs don't just guess a single letter—they predict the whole distribution $p$ of what might come next. 
 
 {/* We want to train a new model that is at least as good as, say, GPT-4. In practice, this would involve collecting a lot of text and running both GPT-4 and our LLM on them -- for each predicted letter, we would look at the distribution outputted by GPT-4 and try to nudge our model to make its distribution look similar. */}
 
-There are many complicated things going on in training of LLMs, but one particularly important one is the choice of the so-called _loss function_. To understand this, let's say that for some text that appears all over the place on the internet, like "My name is A", we know the distribution of the next letter. Perhaps "l" is frequent because of Alex, but "a" not so much. Let's call this ground-truth distribution $p$.
+Training LLMs is complicated as hell, but one super important bit is picking the _loss function_. Here's the deal: take some text that shows up everywhere online, like "My name is A". We know what usually comes next—maybe "l" is common (all those Alexes), but "a" not so much. Call this the ground-truth distribution $p$.
 
-LLM tries to approximate this distribution. Let's call its guess on it $q$. We need to measure how well $q$ matches $p$ using the so-called loss function. This function is then minimized during the LLM training. So, given two distributions $p = \{p_1, \dots, p_k\}$, $q = \{q_1, \dots, q_k\}$, which loss function should we choose?
+Your LLM tries to guess this distribution with its own guess $q$. We need to measure how close $q$ is to $p$ using a loss function, then make that number as small as possible during training. So given distributions $p = \{p_1, \dots, p_k\}$ and $q = \{q_1, \dots, q_k\}$, which loss function should we pick?
 
-1. $L(p,q) = \sum_{i = 1}^k |p_i - q_i|$ (_$\ell_1$ norm_)
-2. $L(p,q) = \sum_{i = 1}^k (p_i - q_i)^2$ (_$\ell_2$ norm_)
-3. $L(p,q) = \sum_{i = 1}^k p_i \cdot \log (p_i / q_i)$ (_KL divergence_)
+1. $\mathcal L(p,q) = \sum_{i = 1}^k |p_i - q_i|$ (_$\ell_1$ norm_)
+2. $\mathcal L(p,q) = \sum_{i = 1}^k (p_i - q_i)^2$ (_$\ell_2$ norm_)
+3. $\mathcal L(p,q) = \sum_{i = 1}^k p_i \cdot \log (p_i / q_i)$ (_KL divergence_)
 
-There is nothing wrong with the first two functions but in practice, people usually opt for KL divergence. An important feature of it is that according to KL, if $p_i = 0.5$ and $q_i = 0.51$, it's in some sense a smaller problem than if $p_i = 0.01$ and $q_i = 0.02$ (the ratios $p_i/q_i$ end up very different). Sounds reasonable!
+The first two work okay, but everyone uses KL divergence. Here's why it's cool: if $p_i = 0.5$ and $q_i = 0.51$, KL thinks that's basically fine. But if $p_i = 0.01$ and $q_i = 0.02$, KL freaks out (the ratios $p_i/q_i$ are totally different). Makes sense, right?
 
-Here's a widget with two distributions and all three loss functions. Try to make KL infinitely large!
+Check out this widget with two distributions and all three loss functions. See if you can make KL go to infinity!
 
 [TODO widget]
 </Expand>
@@ -79,118 +79,115 @@ Here's a widget with two distributions and all three loss functions. Try to make
 
 <Expand headline="How good are your predictions?"> <a id="predictions"></a>
 
-It would be great to know what the future holds—or at least to know someone who does. To this end, you have gathered a bunch of experts and asked them to assign probabilities to a list of events for the coming year. Each expert provides an estimate for each event.
-When the year ends, you know for each event whether it occurred or not.
+It'd be awesome to know the future—or at least know someone who does. So you've gathered some experts and asked them to predict stuff for next year. Each expert gives probabilities for various events.
+A year later, you know what actually happened.
 
 [TODO table]
 
-The question is, which expert is the best one?
+Question is: which expert crushed it?
 
 1. Expert 1
 2. Expert 2
 3. Expert 3
 
-Answer: It's hard to say since we have only 8 questions. Later, we will see how KL divergence can be used to derive the so-called log-score used in forecasting tournaments. 
+Answer: Hard to tell with just 8 questions. Later, we'll see how KL divergence gives us the log-score that forecasting tournaments use. 
 </Expand>
 
 
 <Expand headline="Distance from independence"> <a id="information-theory"></a>
 
-Independence is one of the most important probability concepts. Here's a recap: think of two distributions $p_1$ and $p_2$. Maybe $p_1$ describes the weather on a given day -- the options are ☀️, ☁️, and $p_2$ describes how I commute to work -- it's one of 🚶‍♀️, 🚲, 🚌. A joint distribution is a table where we put a probability for each pair of options. For example, here are three possible joint distributions for three different people:
+Independence is huge in probability. Quick refresher: you've got two distributions $p_1$ and $p_2$. Maybe $p_1$ is about weather (☀️ or ☁️) and $p_2$ is how I get to work (🚶‍♀️, 🚲, or 🚌). A joint distribution is a table showing the probability of each combo. Here are three possible joint distributions for three different people:
 
 ![Which table is the "most" independent?](00-introduction/independence.png)
 
-All three above distribution have the same _marginals_; all correspond to 70% of good weather, and 20%/30%/50% for walk/bike/bus.
+All three have the same _marginals_: 70% good weather, and 20%/30%/50% for walk/bike/bus.
 
-Two distributions are independent, if the joint distribution is a "product" of the two marginal distributions. Here's how independent distribution looks like:
+Two distributions are independent if their joint distribution equals the product of the marginals. Here's what independence looks like:
 
 ![Independent distributions](00-introduction/independence2.png)
 
-Which of our three tables is the "closest" to being independent?
+Which of our three tables is "closest" to being independent?
 
 1. Table 1
 2. Table 2
 3. Table 3
 
-[We will see](01-kl_intro/information-theory) that this can be measured using a so-called mutual information, a notion which is super important in the field of information theory and which is just a special case of KL divergence.
+[We'll see](01-kl_intro/information-theory) this is measured by something called mutual information, which is super important in information theory and—surprise!—it's just KL divergence in disguise.
 </Expand>
 
 
 <Expand headline="Machine Learning mess"> <a id="machine-learning"></a>
 
-When you first encounter machine learning, it seems like horrible mess, full of ad-hoc tricks and optimization problems. For example, here are a few machine learning tools you learn in the first few Machine-Learning-101 lectures, and what optimization they correspond to:
+When you first dive into machine learning, it looks like total chaos—just a bunch of random tricks and optimization problems. Like, say you wanna understand how DALLE or Midjourney work. The standard setup for image generation is called a variational autoencoder. You train it by optimizing this absolute monster: 
 
-<Math math="k\text{-means -- } \min_{C} \sum_{i = 1}^{n} \min_{c \in C} ||x-c||^2" />
-<Math math="\text{linear regression -- } \min_{\alpha, \beta} \sum_{i = 1}^n (\alpha \cdot x_i + \beta - y_i)^2" />
-<Math math="\text{logistic regression -- } \min_{\alpha, \beta} \sum_{i = 1}^n y_i\log(\sigma(\alpha \cdot x_i + \beta)) + (1-y_i)\log(1 - \sigma(\alpha \cdot x_i + \beta))" />
+<Math displayMode={true} math = "\frac{1}{N} \sum_{i = 1}^N \left( \sum_y p'(y | x) \frac{\| X_i - \textrm{Dec}(y)\|^2}{2d} \,+\, \left( \frac12 \sum_{j = 1}^d \textrm{Enc}_{\mu, j}(X_i)^2 + \textrm{Enc}_{\sigma^2, j}(X_i) - \log \textrm{Enc}_{\sigma^2, j}(X_i) \right)\right)"/>
 
-When you try to understand some more modern deep learning tools, it does not get that much better. For example, consider variational autoencoders (the architecture behind early image generation models like DALL-E / Midjourney as of time of writing). During training, you optimize the following beast:
+Where the hell does this come from?? [We'll see](05-machine_learning) how KL divergence makes sense of this mess—and tons of other standard ML algorithms too. 
 
-<Math displayMode={true} math="
-E_{z \sim p_x}[||x-D(z)||^2] + \sum_{j = 1}^d (d\cdot \sigma_j^2(x) + \mu_j^2 - 2d\log \sigma(x))
-" />
+![Examples](05-machine_learning/table.png)
 
-Although these functions look horrible, we will see what they correspond to and how they can be derived using KL divergence.
 </Expand>
 
 
 <Expand headline="Why polling sucks"><a id="polling"></a>
 
-[This Wikipedia page](https://en.wikipedia.org/wiki/Nationwide_opinion_polling_for_the_2024_United_States_presidential_election) lists hundreds of polls made before the last election. A typical poll asks about 1000-2000 random people. If you crunch the numbers<Footnote>For example, if you know the central limit theorem, you can use it to approximate the random variable corresponding to the outcome of the poll. </Footnote>, you can find out that for these numbers, the output of the poll is typically about 2-3\% from the correct answer. <Footnote>Of course, all the discussion holds under unrealistic assumptions such as we can sample a random voter, they are truthful, etc. But bear with me.</Footnote> This is astonishing! Regardless of how many people live in the country, 1000 random citizens are enough to get the answer within a few percent.
+[This Wikipedia page](https://en.wikipedia.org/wiki/Nationwide_opinion_polling_for_the_2024_United_States_presidential_election) has hundreds of election polls. A typical poll asks 1000-2000 random people. Do the math<Footnote>Like, use the central limit theorem to figure out what happens with the poll results.</Footnote> and you'll find polls are usually within 2-3% of the truth.<Footnote>Sure, this assumes you can actually sample random voters and they tell the truth, but stick with me.</Footnote> Pretty wild—doesn't matter if the country has millions of people, 1000 randos get you within a few percent!
 
-But in reality, all US elections are incredibly close; we already know in advance that both Democrats and Republicans are going to get around 50%. So we should perhaps get a bigger sample (or pool several past polls) to get an estimate that's correct within, let's say, $0.1\%$. The question is, roughly how many people should we sample to get this improved precision?
+But here's the thing: US elections are super close. We already know both parties will get around 50%. So maybe we should poll more people (or combine polls) to get within 0.1%. How many people would that take?
 
-1. about 10 000
-2. about 100 000
-3. about 1 000 000
+1. about 10,000
+2. about 100,000
+3. about 1,000,000
 
-The correct answer is about 1 000 000. That's already a nontrivial proportion of the whole US! In general, if we want to be close up to an error of $\epsilon$, we need about $1/\epsilon^2$ samples. The square in the formula is important -- it's the reason why getting better estimates becomes very expensive very soon! This is one reason why most polling estimates don't bother asking more than a few thousand people.
+It's about 1,000,000! That's a huge chunk of the whole US! The general rule: to get error margin $\epsilon$, you need roughly $1/\epsilon^2$ samples. That square is killer—it's why getting better estimates gets expensive fast! No wonder most polls stick to a few thousand people.
 
-The question is: why $1/\epsilon^2$? We'll explore this in later sections. {/* KL divergence measures how well one distribution matches another, which is why understanding its value for distributions (50%, 50%) and (50%+$\varepsilon$, 50%-$\varepsilon$) is going to shed a lot of light on this question! We will also use this as a jumping bridge to explain a bit more on how KL divergence is crucial in statistics. */}
+But why $1/\epsilon^2$? We'll dig into this later. {/* KL divergence measures how well one distribution matches another, which is why understanding its value for distributions (50%, 50%) and (50%+$\varepsilon$, 50%-$\varepsilon$) is going to shed a lot of light on this question! We will also use this as a jumping bridge to explain a bit more on how KL divergence is crucial in statistics. */}
 </Expand>
 
 <Expand headline="How to get rich"> <a id = "get-rich"></a>
 
-Here's a riddle that motivates a surprising number of recent algorithms in computer science and machine learning. Let's say that we want to get rich by investing at the stock market. Fortunately, there are $n$ investors that are willing to share their advice with us: Each day $t$, they give us some advice, and at the end of the day, we learn how good the advice was -- for the $i$-th expert, we will get to know her loss $\ell_i^{(t)}$ <Footnote>If this number is positive, the advice was bad, if it is negative, the advice was good. </Footnote>
+Here's a riddle that's behind a ton of recent algorithms in CS and ML. Say you wanna get rich trading stocks. Lucky you—$n$ investors share their tips every day. Each day $t$, they give advice, and afterward you find out how they did. For investor $i$, you get her loss $\ell_i^{(t)}$.<Footnote>Positive means bad advice, negative means good advice.</Footnote>
 
-Our general investing strategy is this: We start with a uniform distribution $p_1^{(0)}, \dots, p_n^{(0)}, p_i^{(0)} = 1/n$ over the experts. At the beginning of each day, we sample an expert from this distribution and follow her advice. At the end of the day, we look at the losses $\ell_i^{(t)}$ and we update $p^{(t)}$ to $p^{(t+1)}$.
+Your strategy: Start with equal trust in everyone—$p_i^{(0)} = 1/n$ for all investors. Each morning, randomly pick an investor based on your trust distribution and follow their advice. After seeing how everyone did, update your trust from $p^{(t)}$ to $p^{(t+1)}$.
 
-The question is: how should we update? There are a few plausible strategies:
+How should you update? Here are some options:
 
-"Gradient descent": Choose small $\varepsilon$ and do gradient descent: <Math math="p^{(t+1)} = p^{(t)} - \varepsilon \cdot \ell_i^{(t)}" />; normalize <Math math="p^{(t+1)}" /> afterwards.
-"Multiplicative gradient descent: Choose small $\varepsilon$ and do "multiplicative" gradient descent: <Math math="p^{(t+1)} = p^{(t)} \cdot e^{- \varepsilon \cdot \ell_i^{(t)}}" />; normalize <Math math="p^{(t+1)}" /> afterwards.
-"Follow the leader": Just follow the best guy so far: <Math math="p^{(t+1)}_i = 1" /> for the guy $i$ with minimum <Math math="\ell_i^{(1)} + \ell_i^{(2)} + \dots + \ell_i^{(t)}" />.
+_Gradient descent_: Pick small $\varepsilon$ and do: <Math math="p^{(t+1)} = p^{(t)} - \varepsilon \cdot \ell_i^{(t)}" />; then normalize <Math math="p^{(t+1)}" />.
+_Multiplicative gradient descent_: Pick small $\varepsilon$ and do: <Math math="p^{(t+1)} = p^{(t)} \cdot e^{- \varepsilon \cdot \ell_i^{(t)}}" />; then normalize <Math math="p^{(t+1)}" />.
+_Follow the leader_: Just trust whoever's best so far: <Math math="p^{(t+1)}_i = 1" /> for whoever has the smallest total loss <Math math="\ell_i^{(1)} + \ell_i^{(2)} + \dots + \ell_i^{(t)}" />.
 
-What's the best strategy?
+What's best?
 
 Answer 1
 Answer 2
 Answer 3
 
-Although all strategies are reasonable, the one that turns out to be the most robust and broadly applicable is 2. The algorithm is called multiplicative weights update and its suspiciously similar to gradient descent. We will understand the connection between the two algorithms using KL divergence.
+They all seem reasonable, but option 2 is the most robust. It's called multiplicative weights update, and it looks weirdly like gradient descent. [We'll see](06-algorithms) how KL divergence explains the connection.
 </Expand>
 
 
+![Are the odds in our favor?](00-introduction/countdown.png)
 <Expand headline="Understanding XKCD jokes"> <a id = "xkcd"></a>
 
-![Are the odds in our favor?](00-introduction/countdown.png)
 
-So are the odds in our favor?
+So... are the odds in our favor?
 
 Yes
 No
 depends
+
+We'll use KL divergence to derive something called the [maximum entropy principle](04-max_entropy/xkcd) that explains why our gut feeling says we're probably screwed here. 
 </Expand>
 
 
 <Expand headline="How large is Wikipedia?"><a id = "wikipedia"></a>
-Marcus Hutter is an AI researcher who started [the following challenge](http://prize.hutter1.net/): Given a concrete file containing 1GB of text downloaded from Wikipedia, how much can you compress it? For example, if you just [zip it](https://en.wikipedia.org/wiki/ZIP_(file_format)), you get a file of about 300MB. But there are better ways to do that. Can you guess what the current record is? 
+Marcus Hutter, an AI researcher, started [this challenge](http://prize.hutter1.net/): Take a 1GB file of Wikipedia text. How small can you compress it? [Zipping it](https://en.wikipedia.org/wiki/ZIP_(file_format)) gets you about 300MB. But we can do way better. What's the current record? 
 
 1 around 1MB
 2 around 10MB
 3 around 100MB
 
-It's around 100MB. But more interestingly, why does an *AI* researcher cares about this topic? We will discuss it more in connection with [entropy](02-crossentropy/coding) and [Kolmogorov complexity](?). 
+It's around 100MB. But wait—why does an *AI* researcher care about compression? We'll see the connection with [entropy](02-crossentropy/coding) and [Kolmogorov complexity](?). 
 
 </Expand>
 
@@ -198,7 +195,7 @@ It's around 100MB. But more interestingly, why does an *AI* researcher cares abo
 
 <Expand headline="Random Pi Program"> <a id="random-pi-program"></a>
 
-Here's a riddle: Consider the set of all C programs of length 1000 characters (i.e., the file has 1000 bytes if saved in ASCII) that print the first million digits of $\pi$. Let's sample one such program uniformly at random. How would it probably look?
+Here's a brain-bender: Take all C programs that are exactly 1000 characters long (1000 bytes in ASCII) and print the first million digits of $\pi$. Pick one at random. What's it gonna look like?
 </Expand>
 
 
@@ -206,12 +203,10 @@ Here's a riddle: Consider the set of all C programs of length 1000 characters (i
 
 ## Next Steps <a id="next-steps"></a>
 
-All the puzzles share a common thread: they can all be approached, understood, or solved using KL divergence and related concepts from the intersection of probability, statistics, and information theory. 
+All these puzzles have something in common: you can crack them using KL divergence and related ideas from probability, statistics, and information theory. 
 
 {/*KL divergence is a fundamental measure that quantifies how well one probability distribution is modelled by another. Formal definition: $D(p, q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}$. Here, $p$ represents the "ground-truth" distribution and $q$ represents our model or approximation.*/}
 
-As we progress through the mini-course, we'll use our knowledge of KL to revisit all the puzzles and understand them in depth. 
+As we go through this mini-course, we'll use KL to revisit each puzzle and really understand what's going on. 
 
-In [the next chapter](01-kl_intro), we'll define KL divergence and understand what it stands for. 
-
-
+In [the next chapter](01-kl_intro), we'll define KL divergence and see what it's all about.
