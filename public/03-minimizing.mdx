@@ -132,6 +132,8 @@ Consider the general problem of updating after seeing evidence: We have a joint 
 Then, we observe some evidence $Y=y$. We want to compute the new distribution <Math math = "p_{new}" /> that incorporates this observation. The rules of conditional probability say that <Math math = "p_{new}" /> should be $0$ for $Y \not= y$ and, for $Y = y$, it should be the conditional distribution of $p$ given $Y = y$.
 
 The observation we can now make is that <Math math="p_{new} = \argmin_{p \in P} D(p, p_{old})" />, where $P$ is the set of distributions where $P(Y = y') = 0$ for $y' \ne y$<Footnote>The proof of this observation requires some rewriting, but in essence, it hinges on the fact that the distribution closest in KL to $p$ conditioned on $Y = y$ is... the same distribution. Really, nothing complicated is happening here; we are just saying that the new distribution should resemble the old one, merely rescaled so that probabilities sum to one.</Footnote>.
+</Expand>
+
 
 ### The Maximum Entropy Principle <a id="maximum-entropy-principle"></a>
 
@@ -162,8 +164,6 @@ As we'll discuss [later](05-machine_learning), this particular distribution $p$ 
 It's often helpful to think about this principle more abstractly. Imagine we don't even know the precise values of $\mu$ and $\sigma^2$; we just believe that the mean and variance are important parameters. In this scenario, the maximum entropy principle informs us that we should model the data using *some* Gaussian distribution. In other words, we conclude that the family of Gaussians is the *appropriate* family to represent numerical data when our primary concerns are their mean and variance. This is a very powerful insight!
 
 ![potato](03-minimizing/potato_maxent.png)
-</Expand>
-
 
 
 {/*

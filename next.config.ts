@@ -2,15 +2,17 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "export",
-  // Ensure GitHub Pages compatibility
-  basePath: process.env.NEXT_PUBLIC_BASE_PATH || "",
+  // GitHub Pages subdirectory deployment
+  basePath: "/problens-web",
+  assetPrefix: "/problens-web",
   images: {
-    unoptimized: true,
+    unoptimized: true, // Required for static export
   },
   eslint: {
-    // Include MDX and MD files in linting
     dirs: ["public", "components", "app", "lib"],
   },
+  // Ensure trailing slashes for better GitHub Pages compatibility
+  trailingSlash: true,
 };
 
 export default nextConfig;

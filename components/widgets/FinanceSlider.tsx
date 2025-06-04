@@ -21,9 +21,7 @@ const generateImagePaths = (prefix: string, start: number, end: number, step: nu
   return images;
 };
 
-// Fixed ranges based on your actual files:
-// SAP: sap_plot0020.png to sap_plot7460.png (step 20)
-// BTC: btc_plot0020.png to btc_plot2840.png (step 20)
+// Image ranges based on your actual files
 const sapImages: ImageItem[] = generateImagePaths("sap", 20, 7460, 20);
 const btcImages: ImageItem[] = generateImagePaths("btc", 20, 2840, 20);
 
@@ -31,7 +29,6 @@ const FinanceSlider: React.FC = () => {
   const [mode, setMode] = useState<"sap" | "btc">("sap");
   const [currentIdx, setCurrentIdx] = useState<number>(0);
 
-  // Když se změní režim (SAP/BTC), vrátíme idx na 0
   useEffect(() => {
     setCurrentIdx(0);
   }, [mode]);
@@ -44,79 +41,85 @@ const FinanceSlider: React.FC = () => {
     );
   }
 
-  // Define width and height for the Image component.
-  // Assuming all your plots are 800x600 as a common example.
-  // Adjust these to your actual image dimensions for best results.
-  const imageWidth = 800;
-  const imageHeight = 600;
-
   return (
     <div className="p-4 bg-gray-50 rounded-lg space-y-4">
-      {/* Debug info */}
-      <div className="text-xs text-gray-600 bg-yellow-50 p-2 rounded">
-        <strong>Debug:</strong> Current image path: {images[currentIdx].src}
-        <br />
-        <a href={images[currentIdx].src} target="_blank" className="text-blue-600 underline">
-          Test direct link
-        </a>
-      </div>
-
-      {/* Toggle mezi SAP a Bitcoin */}
+      {/* Mode toggle */}
       <div className="flex justify-center space-x-4">
         <button
           onClick={() => setMode("sap")}
-          className={`px-4 py-2 rounded-md font-medium ${
+          className={`px-4 py-2 rounded-md font-medium transition-colors ${
             mode === "sap" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
           }`}
         >
-          SAP
+          SAP ({sapImages.length} plots)
         </button>
         <button
           onClick={() => setMode("btc")}
-          className={`px-4 py-2 rounded-md font-medium ${
+          className={`px-4 py-2 rounded-md font-medium transition-colors ${
             mode === "btc"
               ? "bg-green-600 text-white hover:bg-green-700"
               : "bg-gray-200 text-gray-700 hover:bg-gray-300"
           }`}
         >
-          Bitcoin
+          Bitcoin ({btcImages.length} plots)
         </button>
       </div>
 
-      {/* Zobrazený obrázek */}
+      {/* Image display */}
       <div className="flex justify-center">
-        <Image
-          src={images[currentIdx].src}
-          alt={`${mode.toUpperCase()} Plot ${images[currentIdx].index}`}
-          width={imageWidth}
-          height={imageHeight}
-          className="max-w-full h-auto border rounded-md shadow"
-          onError={(e) => {
-            console.error("Image failed to load:", images[currentIdx].src);
-            e.currentTarget.style.border = "2px solid red";
-          }}
-          onLoad={() => {
-            console.log("Image loaded successfully:", images[currentIdx].src);
-          }}
-          // Consider adding `priority` if this image is above the fold
-          // priority={true}
-        />
+        <div className="relative">
+          <Image
+            src={images[currentIdx].src}
+            alt={`${mode.toUpperCase()} Plot ${images[currentIdx].index}`}
+            width={800}
+            height={600}
+            className="max-w-full h-auto border rounded-md shadow-lg"
+            unoptimized
+            priority={currentIdx === 0} // Only prioritize the first image
+          />
+        </div>
       </div>
 
-      {/* Slider */}
-      <div className="space-y-2">
-        <div className="text-center text-sm text-gray-700">
-          {mode.toUpperCase()} Plot: <strong>{images[currentIdx].index}</strong> ({currentIdx + 1} of {images.length})
+      {/* Controls */}
+      <div className="space-y-3">
+        <div className="text-center">
+          <div className="text-lg font-semibold text-gray-800">
+            {mode.toUpperCase()} Plot {images[currentIdx].index}
+          </div>
+          <div className="text-sm text-gray-600">
+            {currentIdx + 1} of {images.length}
+          </div>
         </div>
-        <input
-          type="range"
-          min={0}
-          max={images.length - 1}
-          step={1}
-          value={currentIdx}
-          onChange={(e) => setCurrentIdx(Number(e.target.value))}
-          className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer accent-blue-500"
-        />
+
+        <div className="space-y-2">
+          <input
+            type="range"
+            min={0}
+            max={images.length - 1}
+            step={1}
+            value={currentIdx}
+            onChange={(e) => setCurrentIdx(Number(e.target.value))}
+            className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer accent-blue-500"
+          />
+
+          {/* Navigation buttons */}
+          <div className="flex justify-center space-x-2">
+            <button
+              onClick={() => setCurrentIdx(Math.max(0, currentIdx - 1))}
+              disabled={currentIdx === 0}
+              className="px-3 py-1 bg-gray-200 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300"
+            >
+              ← Previous
+            </button>
+            <button
+              onClick={() => setCurrentIdx(Math.min(images.length - 1, currentIdx + 1))}
+              disabled={currentIdx === images.length - 1}
+              className="px-3 py-1 bg-gray-200 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300"
+            >
+              Next →
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
