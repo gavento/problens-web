@@ -297,6 +297,8 @@ That is, whenever you use a power-law distribution, you're implicitly saying, "T
 
 </Expand>
 <Expand headline ="Beta Distribution">
+[todo think more about this]
+
 [Beta distributions](https://en.wikipedia.org/wiki/Beta_distribution) are a family of distributions on $[0,1]$ that are max-entropy if we fix $E[\log X]$ and $E[\log (1-X)]$. You might have encountered the beta distribution in Bayesian statistics, where it's used because it behaves very nicely with respect to Bayesian updates.
 
 But let's look at our Bayesian hero from [the first chapter](01-kl_intro). She didn't really work with the probabilities of the two hypotheses directly; she instead dealt with the logits $\ell_1, \ell_2$. Caring about logits means that if $X$ represents probability, you care about $\log X$ and $\log (1-X)$. So, the maximum entropy principle suggests that using a Beta distribution implies we believe that working with logits is natural.
@@ -347,11 +349,11 @@ In some abstract theories (like [Solomonoff induction](https://en.wikipedia.org/
 
 ---
 
-### Applications
+## Applications
 
 Let's look at some applications of this to our riddles.
 
-<Expand headline ="Application: XKCD Joke">
+<Expand headline ="Riddle: XKCD Joke">
 
 After four chapters developing the theory of KL divergence, we're finally ready to [dissect](https://www.goodreads.com/quotes/440683-explaining-a-joke-is-like-dissecting-a-frog-you-understand) the XKCD joke from [the list of riddles](00-introduction/xkcd).
 
@@ -374,7 +376,7 @@ Another thing to notice is that the posterior distribution still looks uniform f
 The whole point is that the max-entropy principle leads us to a prior that puts more weight on small numbers. Using it only assumes that $E[X]$ is a value of interest, which it arguably is. We conclude that we are **not** fine.
 </Expand>
 
-<Expand headline="Understanding Financial Data"> <a id="application-understanding-financial-data"></a>
+<Expand headline="Riddle: Understanding Financial Data"> <a id="application-understanding-financial-data"></a>
 
 Let's revisit our financial mathematics riddle [from the intro](00-introduction/financial-mathematics).
 
