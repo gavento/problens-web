@@ -197,9 +197,10 @@ You can think of the softmax function (or softmin if $\lambda < 0$) as the gener
 
 The parameter $1/|\lambda|$ is frequently called "temperature" because it behaves that way: at low temperatures, softmax is very orderly and acts much like the `max` function, whereas for high temperatures, the distribution becomes more chaotic, ultimately approaching a uniform distribution. The chaos can be measured by entropy - you can see in the widget below how it decreases if you increase $|\lambda|$. 
 
-{/*
+
 <SoftmaxWidget values={[1, 3, 2, 5, 4]} title="Softmax Distribution Example" />
-*/}
+
+
 <Expand headline = "Logits in Neural Networks">
 Typical neural networks output probabilities. For example, a common neural network classifying images will output an entire probability distribution indicating whether a given picture is a dog/cat/horse/... instead of just a single prediction.
 The issue with this is that often, most of these probabilities are extremely small, perhaps on the order of $10^{-10}$. That's because, given a picture of a dog, the neural network is usually quite certain it's not an octopus.

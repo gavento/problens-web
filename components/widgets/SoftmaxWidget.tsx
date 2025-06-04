@@ -17,7 +17,7 @@ const SoftmaxWidget: React.FC<Props> = ({
   title = "Softmax Distribution",
   minLambda = -3,
   maxLambda = 3,
-  initialLambda = 1,
+  initialLambda = 0.5,
 }) => {
   const [lambda, setLambda] = useState(initialLambda);
 
@@ -142,12 +142,6 @@ const SoftmaxWidget: React.FC<Props> = ({
         </svg>
       </div>
 
-      {/* Current lambda value */}
-      <div className="text-center">
-        <div className="text-sm text-gray-600">Lambda (λ)</div>
-        <div className="text-xl font-bold text-blue-600">{lambda.toFixed(2)}</div>
-      </div>
-
       {/* Formula display */}
       <div className="bg-blue-50 p-3 rounded text-center">
         <BlockMath
@@ -186,7 +180,11 @@ const SoftmaxWidget: React.FC<Props> = ({
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 gap-4 text-sm">
+      <div className="grid grid-cols-3 gap-4 text-sm">
+        <div className="bg-white p-2 rounded text-center">
+          <div className="font-semibold text-gray-700">Lambda (λ)</div>
+          <div className="text-lg text-purple-600">{lambda.toFixed(2)}</div>
+        </div>
         <div className="bg-white p-2 rounded text-center">
           <div className="font-semibold text-gray-700">Max Probability</div>
           <div className="text-lg text-blue-600">{Math.max(...probabilities).toFixed(3)}</div>
