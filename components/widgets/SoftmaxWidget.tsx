@@ -1,3 +1,6 @@
+// components/widgets/SoftmaxWidget.tsx
+"use client";
+
 import React, { useState, useMemo } from "react";
 import { InlineMath, BlockMath } from "react-katex";
 
@@ -199,9 +202,4 @@ const SoftmaxWidget: React.FC<Props> = ({
   );
 };
 
-// Example usage with your data
-const ExampleSoftmaxWidget = () => {
-  return <SoftmaxWidget values={[1, 3, 2, 5, 4]} title="Softmax Distribution Example" />;
-};
-
-export default ExampleSoftmaxWidget;
+export default SoftmaxWidget;
