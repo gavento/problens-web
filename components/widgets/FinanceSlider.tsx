@@ -52,6 +52,15 @@ const FinanceSlider: React.FC = () => {
 
   return (
     <div className="p-4 bg-gray-50 rounded-lg space-y-4">
+      {/* Debug info */}
+      <div className="text-xs text-gray-600 bg-yellow-50 p-2 rounded">
+        <strong>Debug:</strong> Current image path: {images[currentIdx].src}
+        <br />
+        <a href={images[currentIdx].src} target="_blank" className="text-blue-600 underline">
+          Test direct link
+        </a>
+      </div>
+
       {/* Toggle mezi SAP a Bitcoin */}
       <div className="flex justify-center space-x-4">
         <button
@@ -82,6 +91,13 @@ const FinanceSlider: React.FC = () => {
           width={imageWidth}
           height={imageHeight}
           className="max-w-full h-auto border rounded-md shadow"
+          onError={(e) => {
+            console.error("Image failed to load:", images[currentIdx].src);
+            e.currentTarget.style.border = "2px solid red";
+          }}
+          onLoad={() => {
+            console.log("Image loaded successfully:", images[currentIdx].src);
+          }}
           // Consider adding `priority` if this image is above the fold
           // priority={true}
         />
