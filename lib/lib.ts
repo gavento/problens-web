@@ -12,6 +12,7 @@ import { Footnotes } from "@/components/content/Footnotes";
 import EvidenceAccumulationSimulator from "@/components/widgets/EvidenceAccumulationSimulator";
 import FinanceImageSliderWidget from "@/components/widgets/FinanceSlider";
 import SoftmaxWidget from "@/components/widgets/SoftmaxWidget";
+import LogisticWidget from "@/components/widgets/LogisticWidget";
 import { compile, evaluate } from "@mdx-js/mdx";
 import chalk from "chalk";
 import * as runtime from "react/jsx-runtime";
@@ -127,6 +128,7 @@ export async function getMdxContent(path: string) {
       EvidenceAccumulationSimulator: EvidenceAccumulationSimulator,
       FinanceImageSliderWidget: FinanceImageSliderWidget,
       SoftmaxWidget: SoftmaxWidget,
+      LogisticWidget: LogisticWidget,
       Math: KatexMath,
       Block: Block,
       Expand: Expand,

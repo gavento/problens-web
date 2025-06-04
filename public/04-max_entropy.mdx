@@ -165,7 +165,13 @@ Here's my interpretation: if you want to talk about probabilities, but for some 
 <Block headline = "Logistic Function">
 The logistic function $\sigma(x) = 1/(1 + e^{-x})$ is the appropriate function to convert between real numbers (logits) and probabilities.
 </Block>
-[TODO logit widget]
+
+<LogisticWidget 
+  title="Sigmoid Function" 
+  initialLambda={2}
+  minLambda={-5}
+  maxLambda={5}
+/>
 
 <Expand headline = "Elo System">
 The Elo system is used to assign ratings to players. Its fundamental idea is that when you have two players with Elos $E_1$ and $E_2$, you can estimate the probability that the first one wins from their difference $D = E_1 - E_2$. As we just discussed, the softmax function for $E_1, E_2$ is equivalent to mapping $D$ to a probability using the logistic function.
