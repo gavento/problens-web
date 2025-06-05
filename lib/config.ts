@@ -13,12 +13,12 @@ export const CHAPTERS = [
   ["Max entropy distributions", "04-max_entropy"],
   ["Machine learning", "05-machine_learning"],
   ["", ""], // Gap
+  ["Resources", "resources"],
+  ["About", "about"],
+  ["", ""], // Gap
   ["Multiplicative weights", "06-algorithms"],
   ["Fisher information", "07-fisher_info"],
   ["Kolmogorov complexity", "08-kolmogorov"],
-  ["", ""], // Gap
-  ["Resources", "resources"],
-  ["About", "about"],
 ];
 export const rootSlug = "index";
 export const contentDirectory = join(process.cwd(), "public");

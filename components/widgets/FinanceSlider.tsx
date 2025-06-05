@@ -30,19 +30,12 @@ const FinanceSlider: React.FC = () => {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [preloadProgress, setPreloadProgress] = useState<number>(0);
 
+  // Reset everything when mode changes
   useEffect(() => {
     setCurrentIdx(0);
     setLoadedImages(new Set()); // Clear loaded images when switching modes
     setPreloadProgress(0); // Reset preload progress
   }, [mode]);
-
-  // Ensure currentIdx stays within bounds when mode changes
-  useEffect(() => {
-    const images = mode === "sap" ? sapImages : btcImages;
-    if (currentIdx >= images.length) {
-      setCurrentIdx(Math.max(0, images.length - 1));
-    }
-  }, [mode, currentIdx]);
 
   // Preload the first few images for better UX
   useEffect(() => {
@@ -96,12 +89,24 @@ const FinanceSlider: React.FC = () => {
     );
   }
 
+  // Safety check - don't render if we're in an invalid state
+  if (safeCurrentIdx >= images.length || !images[safeCurrentIdx]) {
+    return (
+      <div className="p-4 bg-yellow-50 rounded-md text-yellow-700">Loading {mode === "sap" ? "SAP" : "Bitcoin"} data...</div>
+    );
+  }
+
   return (
     <div className="p-4 bg-gray-50 rounded-lg space-y-4">
       {/* Mode toggle */}
       <div className="flex justify-center space-x-4">
         <button
-          onClick={() => setMode("sap")}
+          onClick={() => {
+            setMode("sap");
+            setCurrentIdx(0);
+            setLoadedImages(new Set());
+            setPreloadProgress(0);
+          }}
           className={`px-4 py-2 rounded-md font-medium transition-colors ${
             mode === "sap" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
           }`}
@@ -109,7 +114,12 @@ const FinanceSlider: React.FC = () => {
           S&P
         </button>
         <button
-          onClick={() => setMode("btc")}
+          onClick={() => {
+            setMode("btc");
+            setCurrentIdx(0);
+            setLoadedImages(new Set());
+            setPreloadProgress(0);
+          }}
           className={`px-4 py-2 rounded-md font-medium transition-colors ${
             mode === "btc"
               ? "bg-green-600 text-white hover:bg-green-700"
@@ -167,9 +177,9 @@ const FinanceSlider: React.FC = () => {
           <input
             type="range"
             min={0}
-            max={images.length - 1}
+            max={Math.max(0, images.length - 1)}
             step={1}
-            value={currentIdx}
+            value={safeCurrentIdx}
             onChange={(e) => setCurrentIdx(Number(e.target.value))}
             className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer accent-blue-500"
           />
@@ -177,15 +187,15 @@ const FinanceSlider: React.FC = () => {
           {/* Navigation buttons */}
           <div className="flex justify-center space-x-2">
             <button
-              onClick={() => setCurrentIdx(Math.max(0, currentIdx - 1))}
-              disabled={currentIdx === 0}
+              onClick={() => setCurrentIdx(Math.max(0, safeCurrentIdx - 1))}
+              disabled={safeCurrentIdx === 0}
               className="px-3 py-1 bg-gray-200 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300"
             >
               ← Previous
             </button>
             <button
-              onClick={() => setCurrentIdx(Math.min(images.length - 1, currentIdx + 1))}
-              disabled={currentIdx === images.length - 1}
+              onClick={() => setCurrentIdx(Math.min(images.length - 1, safeCurrentIdx + 1))}
+              disabled={safeCurrentIdx === images.length - 1}
               className="px-3 py-1 bg-gray-200 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300"
             >
               Next →

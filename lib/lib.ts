@@ -2,6 +2,7 @@ import { join } from "path";
 import { contentDirectory } from "./config";
 import { readFileSync, readdirSync } from "fs";
 import { compileMDX } from "next-mdx-remote/rsc";
+import React from "react";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
@@ -21,6 +22,9 @@ import { compile, evaluate } from "@mdx-js/mdx";
 import chalk from "chalk";
 import * as runtime from "react/jsx-runtime";
 import KatexMath from "@/components/content/KatexMath";
+import NumberedMath from "@/components/content/NumberedMath";
+import EquationRef from "@/components/content/EquationRef";
+import { EquationProvider } from "@/components/content/EquationContext";
 import Block from "@/components/content/Block";
 import Expand from "@/components/content/Expand";
 
@@ -137,7 +141,8 @@ export async function getMdxContent(path: string) {
       EntropyWidget: EntropyWidget,
       MultipleChoiceQuestion: MultipleChoiceQuestion,
       ExpertRatingWidget: ExpertRatingWidget,
-      Math: KatexMath,
+      Math: NumberedMath,
+      EqRef: EquationRef,
       Block: Block,
       Expand: Expand,
     },
@@ -166,7 +171,12 @@ export async function getMdxContent(path: string) {
     },
   });
 
-  return content;
+  // Wrap content with EquationProvider
+  return (
+    <EquationProvider>
+      {content}
+    </EquationProvider>
+  );
 }
 
 export function getAllMdxPaths() {
