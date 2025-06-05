@@ -1,4 +1,4 @@
-# Loss Functions
+# Loss functions
 
 At last, the final chapter! We'll now leverage our newfound KL superpowers to tackle machine learning, or at least, understand a crucial aspect of it: [setting up loss functions](00-introduction/machine-learning). 
 
@@ -12,7 +12,7 @@ We will explore the examples in the following table (feel free to skip some) and
 
 ## A Catalogue of Examples <a id="examples"></a>
 
-<Expand headline="Estimating Mean and Variance"> <a id="application-to-statistics-riddle"></a>
+<Expand headline="Estimating mean and variance"> <a id="application-to-statistics-riddle"></a>
 
 Our [basic statistics riddle](00-introduction/statistics) posed the following: Given a set of numbers $X_1, \dots, X_n$, how do we estimate their mean and variance?
 
@@ -33,7 +33,7 @@ In this specific case, the optimization problem has a closed-form solution $\hat
 What I want to emphasize is how our only initial assumption about the data was simply, "we have a bunch of numbers, and we care about their mean and variance." The rest flowed automatically from our understanding of KL divergence. 
 
 </Expand>
-<Expand headline="Linear Regression"> <a id="linear-regression"></a>
+<Expand headline="Linear regression"> <a id="linear-regression"></a>
 
 Suppose we are given a list of pairs $(x_1, y_1), \dots, (x_n, y_n)$. We believe the data exhibits a roughly linear dependency, meaning there exist some constants $a,b$ such that $y_i \approx a\cdot x_i + b$. Our objective is to determine $a$ and $b$.
 
@@ -57,7 +57,7 @@ This expression appears rather complex, but we notice that for any fixed value o
 
 Therefore, we can effectively disregard the added parameter $\sigma^2$<Footnote>Statistical software like R or Python's statsmodels also outputs $\sigma^2$. This can be helpful if you also, given some new point $x_{n+1}$, want not just to predict $y_{n+1}$, but also its error bars.</Footnote> and simply optimize above expression, which is the classical [least-squares loss function](https://en.wikipedia.org/wiki/Ordinary_least_squares) for linear regression.<Footnote>Typically, more variables $x^1, \dots, x^k$ are used to predict $y$. This leads to more complex formulas, but the derivation remains the same.</Footnote> Notice how the square in the loss function emerged directly from our maximum entropy assumption of Gaussian noise.
 
-<Expand headline="Variants of Linear Regression">
+<Expand headline="Variants of linear regression">
 
 Notice how our approach offers considerable flexibility, allowing us to incorporate additional information about the data into the model.
 
@@ -71,7 +71,7 @@ The challenge is that optimizing this function is computationally difficult (in 
 </Expand>
 </Expand>
 
-<Expand headline="Logistic Regression"> <a id="logistic-regression"></a>
+<Expand headline="Logistic regression"> <a id="logistic-regression"></a>
 
 This time, we're presented with red and blue points on a plane, and our goal is to find the optimal line that separates them. Ideally, all red points would be on one side and all blue points on the other, but this isn't always achievable. In such cases, how do we determine the "best" separating line?
 
@@ -94,7 +94,7 @@ Once we have a model, we can apply the maximum likelihood principle to find its 
 where $\ell_i$ is an indicator variable (i.e., $\ell_i \in \{0,1\}$) denoting whether the point $(x_i,y_i)$ is red. This problem, known as [logistic regression](https://en.wikipedia.org/wiki/Logistic_regression), is hard to solve exactly (NP-hard in particular), but gradient descent typically works well.
 </Expand>
 
-<Expand headline="K-means Clustering"> <a id="k-means-clustering"></a>
+<Expand headline="K-means clustering"> <a id="k-means-clustering"></a>
 
 We are given a set of points $x_1, \dots, x_n$ on, say, a 2D plane. Our objective is to group them into $k$ clusters.
 
@@ -120,7 +120,7 @@ In practice, people typically don't care that much about probabilistic assignmen
 
 The problem of finding $\mu_1, \dots, \mu_k$ that minimize this expression is called [$k$-means](https://en.wikipedia.org/wiki/K-means_clustering).
 </Expand>
-<Expand headline="Classification by Neural Networks"> <a id="neural-nets"></a>
+<Expand headline="Classification by neural networks"> <a id="neural-nets"></a>
 
 We are provided with a vast collection of images, each assigned one of $k$ possible labels (e.g., a dog, a muffin). Our goal is to optimize a neural network that takes an image as input and outputs a probability distribution over these $k$ possible classes.
 
@@ -133,10 +133,7 @@ Next, the maximum likelihood principle states that we should maximize the log-li
 
 Maximizing the log-likelihood is equivalent to minimizing cross-entropy. Therefore, in this context, we usually refer to this as _training the network by minimizing the cross-entropy loss <Math math = "\sum_{i = 1}^n \log 1/p_{\ell_i}(X_i)" />._
 </Expand>
-<Expand headline="Variational Autoencoders"> <a id="variational-autoencoders"></a>
-
-[todo example series of pictures interpolating in the latent space]
-[nebo widget kde můžu prohnat obrázek zašuměním + odšuměním]
+<Expand headline="Variational autoencoders"> <a id="variational-autoencoders"></a>
 
 Here's an observation relevant to the previous example as well. When we store images on a hard drive, we do so pixel by pixel, i.e., in the *pixel space*. However, in our brains, we store them very differently; perhaps we remember "it was a picture of a brown dog that looked like a muffin," or something similar. This corresponds to utilizing what's called the *latent space*. This is a hypothesized space where two images are considered "close" if they refer to similar objects. For instance, two images might be close in the latent space even if they are extremely far apart in the pixel space.
 
@@ -165,7 +162,7 @@ We will optimize our variational autoencoder by minimizing the KL divergence bet
 <Math displayMode={true} math = "D\left( p(x) \cdot p'(y | x), q(y) \cdot q(x|y)\right)" />
 
 Finishing the job now boils down to algebra that I hid in the following Expand box so as not to scare you right away. 
-<Expand headline="Algebra Part">
+<Expand headline="Algebra part">
 Let's call our KL loss function $\mathcal L$. We can decompose it into two parts, known as the **reconstruction loss** and the **regularization term**, as follows:
 <Math displayMode = {true} math = "\mathcal L = \underbrace{\sum_{x,y} p(x) p'(y|x) \log \frac{p(x)}{q(x|y)}}_{\textrm{Reconstruction loss } \mathcal L_1} + \underbrace{\sum_{x,y} p(x) p'(y|x) \log \frac{p'(y|x)}{q(y)}}_{\textrm{Regularization term } \mathcal L_2} "/>
 

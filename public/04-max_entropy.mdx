@@ -1,12 +1,10 @@
-# Max Entropy Distributions <a id="max-entropy-distributions"></a>
+# Max entropy distributions <a id="max-entropy-distributions"></a>
 
 In the [previous chapter](03-minimizing), we saw how minimizing KL divergence generalizes two vital statistical concepts: **maximum likelihood** and **maximum entropy**.
 
 Let's now dive a bit deeper into maximum entropy. Specifically, we'll try to understand what maximum entropy distributions actually look like. For such a broad question, the answer turns out to be surprisingly straightforward!
 
----
-
-## General Form of Maximum Entropy Distributions
+## General form of maximum entropy distributions
 
 The core question we want to address is this: If we limit ourselves to a set of distributions $P$ that possess specific properties, what is the form of the maximum entropy distribution within that set?
 
@@ -16,7 +14,7 @@ Another example: If we fix both $E[X]$ and $E[X^2]$ to certain values, the maxim
 
 Spot a pattern?
 
-<Block headline= "General Form of Max Entropy Distributions">
+<Block headline= "General form of max entropy distributions">
 Here's the general form of maximum entropy distributions: Suppose we have a set of constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$. Then, among all distributions that satisfy these constraints, the distribution $p$ with maximum entropy has the following shape:
 <Math id="max-entropy-form" displayMode = {true} math = "p(x) \propto e^{\lambda_1 f_1(X) + \dots + \lambda_m f_m(X)}"/>
 for some constants $\lambda_1, \dots, \lambda_m$.
@@ -47,8 +45,7 @@ We'll only consider discrete distributions, say those with support $\{1, \dots, 
 <Math displayMode={true} math = "\begin{aligned}
 \text{VARIABLES:} &\quad p_1, \dots, p_K \\
 \text{MAXIMIZE:} &\quad \sum_{i = 1}^K p_i \log \frac{1}{p_i}\\
-\text{CONSTRAINTS:} &\\
-&\quad \sum_{i = 1}^K p_i \cdot f_1(i) = \alpha_1\\
+\text{CONSTRAINTS:} & \quad \sum_{i = 1}^K p_i \cdot f_1(i) = \alpha_1\\
 &\quad \vdots \\
 &\quad \sum_{i = 1}^K p_i \cdot f_m(i) = \alpha_m\\
 &\quad \sum_{i = 1}^K p_i = 1
@@ -129,7 +126,7 @@ So, after all this discussion, generalizing our technique to continuous distribu
 
 ---
 
-## Catalogue of Examples
+## Catalogue of examples
 
 Let's go through the list of maximum-entropy distributions you might have encountered. In fact, most distributions used in practice are maximum entropy distributions for some specific choice of functions $f_1, \dots f_m$.
 
@@ -191,7 +188,7 @@ When we analyzed the Bayesian hero from the [first chapter](01-kl_intro), it was
 Since in our example there were just two hypotheses, we subtracted the two relevant surprisals and worked with "log-odds." We could also call the log-odds number the logit; these are basically synonyms. As far as I know, when there are more than two hypotheses, people tend to stick with the language of "logits."
 </Expand>
 
-<Expand headline="Logistic Activation Function">
+<Expand headline="Logistic activation function">
 In the early days of deep learning, the logistic function was used as an [activation function](https://en.wikipedia.org/wiki/Activation_function)—it converted aggregated inputs to a neuron's output. We can now provide a probabilistic rationale for this: this way of handling neurons corresponds to modeling them as devices where "each neuron aggregates its inputs and then decides whether to fire or not."
 
 Unfortunately, this function doesn't seem to perform too well in practice. As the field evolved, researchers realized it's better to use the [ReLU](https://en.wikipedia.org/wiki/Rectifier_(neural_networks)) activation function (or [something similar](https://en.wikipedia.org/wiki/Activation_function#Comparison_of_activation_functions)) instead of sigmoids. That activation function corresponds to neurons that not only contemplate *whether* to send any signal or none, but also send out a stronger output signal if they receive strong input.
@@ -256,12 +253,12 @@ There's still an elephant in the room, though—the exponential distribution can
 ### Fixing both $E[X]$ & $E[X^2]$ (Normal Distribution) <a id = "normal"></a>
 
 If we believe that both the mean and the variance are interesting, the max entropy principle suggests that we should choose the function that has a quadratic function of $x$ in the exponent. This means it has the shape:
-<Math displayMode={true} math = "p(x) \propto e^{-\lambda_1 x^2 - \lambda_2 x}"/>
+<Math displayMode={true} id = "gaussian" math = "p(x) \propto e^{-\lambda_1 x^2 - \lambda_2 x}"/>
 
 {/*This gets more familiar if we rewrite the equation like this:
 <Math displayMode={true} math = "p(x) = A e^{-B(x-C)^2}"/>
 where $A,B,C$ are some constants chosen so that $p(x)$ integrates to $1$.*/}
-This is the family of [normal (or Gaussian) distributions](https://en.wikipedia.org/wiki/Normal_distribution), and the density formula is usually written more precisely as <Math math = "p(x) = \frac{1}{2\pi\sigma^2} e^{-(x-\mu)^2/\sigma^2}" /> <Footnote>Notice that for a bounded domain, the probability function from ?? could also look like $p(x) \propto e^{x^2}$. That is, the distribution with the smallest probabilities in the middle and large probabilities at the edges is also a perfectly fine max-entropy distribution. However, a distribution with this shape is not normalizable to 1 if the domain is all real numbers. There, the only possible solution is the familiar bell-shaped curve. </Footnote>
+This is the family of [normal (or Gaussian) distributions](https://en.wikipedia.org/wiki/Normal_distribution), and the density formula is usually written more precisely as <Math math = "p(x) = \frac{1}{2\pi\sigma^2} e^{-(x-\mu)^2/\sigma^2}" /> <Footnote>Notice that for a bounded domain, the probability function from <EqRef id = "gaussian" /> could also look like $p(x) \propto e^{x^2}$. That is, the distribution with the smallest probabilities in the middle and large probabilities at the edges is also a perfectly fine max-entropy distribution. However, a distribution with this shape is not normalizable to 1 if the domain is all real numbers. There, the only possible solution is the familiar bell-shaped curve. </Footnote>
 
 I think this provides a good (partial) explanation for "why is there $x^2$ in Gaussian?" It simply means that the Gaussian is the **right** distribution to work with if you care about the mean and the variance. If you cared about the first four [moments](https://en.wikipedia.org/wiki/Moment_(mathematics)), the appropriate family of distributions would be those with four-degree polynomials in the exponent.
 
@@ -309,12 +306,11 @@ That is, whenever you use a power-law distribution, you're implicitly saying, "T
 
 </Expand>
 <Expand headline ="Beta Distribution">
-[todo think more about this]
+Our coin-flipping riddle from the [intro](01-kl_intro) was a bit silly - we somehow assumed that our coin was either fair, or 40/60 biased, but nothing else was possible. In reality, any bias $p$ is plausible, so Bayesian statistician would work with a distribution over $[0,1]$ and update the whole distribution after each flip. 
 
-[Beta distributions](https://en.wikipedia.org/wiki/Beta_distribution) are a family of distributions on $[0,1]$ that are max-entropy if we fix $E[\log X]$ and $E[\log (1-X)]$. You might have encountered the beta distribution in Bayesian statistics, where it's used because it behaves very nicely with respect to Bayesian updates.
+What distribution over $[0,1]$ should we choose? If we start with the uniform distribution (max-entropy without any constraints), then the family of the distributions that the Bayesian can see after a few flips is called the [Beta distributions](https://en.wikipedia.org/wiki/Beta_distribution). 
 
-But let's look at our Bayesian hero from [the first chapter](01-kl_intro). She didn't really work with the probabilities of the two hypotheses directly; she instead dealt with the logits $\ell_1, \ell_2$. Caring about logits means that if $X$ represents probability, you care about $\log X$ and $\log (1-X)$. So, the maximum entropy principle suggests that using a Beta distribution implies we believe that working with logits is natural.
-
+Here's another reason for why this family is natural: We could argue that given some $X \in [0,1]$ the more relevant quantity to work with is the logit - $\log X / \log (1-X)$. So, shouldn't the _right_ distribution to work with be the max-entropy distribution for $f(X) = \log X / \log (1-X)$? Unfortunately, max-entropy distribution for this does not exist (it blows up on one end of $[0,1]$), but the max-entropy family for $f_1(X) = \log X$ and $f_2(X) = \log (1-X)$ normalize in the relevant scenarios and it's exactly the family of beta distributions. 
 </Expand>
 <Expand headline ="Exponential Family">
 
@@ -326,7 +322,7 @@ The **exponential family** is the elite group of distributions that are maximum 
 So, any distribution with a finite domain is in the exponential family. Any distribution we've discussed so far (exponential, geometric, normal, power-law, beta) is in the exponential family. [Wikipedia](https://en.wikipedia.org/wiki/Exponential_family) contains a long list of distributions in that family, many of which I've never heard of.
 
 The importance of this family is that its distributions have a bunch of nice and intuitive properties.
-<Expand headline="A Theoretically Nice Property of Exponential-Family Distributions">
+<Expand headline="A theoretically nice property of exponential-family distributions">
 Here's one of the nice properties that's relevant for the next chapter but perhaps too obscure to fully appreciate on a first read.
 
 Suppose you have some data with mean $\mu$ and variance $\sigma^2$ and you want to fit it with a distribution. There are two ways to approach this:

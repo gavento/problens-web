@@ -20,15 +20,8 @@ I grabbed some historical data, calculated the daily price changes, and threw th
   feedbackType="all-show"
   explanation={<>Trick question—both shapes B (Laplace distribution) and C (Gaussian distribution) kind of work! The shape totally depends on something I didn't tell you: how far back I looked. If you only check the last month, shape C fits better (though in that case it's hard to judge). But zoom out to longer periods and it starts looking more like B. 
   <FinanceSliderSP />
-  What's up with that? We will see in the <a href="04-max_entropy/financial">chapter about the max-entropy principle</a>.<br/><br/><FinanceImageSliderWidget /></>}
+  What's up with that? We will see in the <a href="04-max_entropy/financial">chapter about the max-entropy principle</a>.<br/><br/></>}
 />
-
-{/*
-At the beginning, it seems that distribution looks a lot like the familiar bell-shaped curve <Math math="e^{-x^2}" /> of [normal distribution](https://en.wikipedia.org/wiki/Normal_distribution). This makes sense! The price of a stock slightly increases whenever somebody buys it, and slightly decreases whenever somebody sells. The daily change is a summation of bazilions of buys and sells, and this is the setup in which we can usually apply the [Central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem) and conclude that the resulting distribution should be normal.
-
-So how come that as we keep zooming out, the histogram gets more and more "pointy"? The other distribution is the so-called Laplace distribution with shape <Math math="e^{-|x|}" /> and it starts to be a better fit after around ?? months for S&P, and ?? for Bitcoin.*/}
-
-{/*There are two ways for how this connects to KL divergence. First of all, KL divergence measures how well a ground truth distribution (empirical data we collected) is fitted by a model (normal or Laplace distribution), so you can use it to make claims such as "for more than ?? months, Laplace fits the data better than normal".*/}
 
 [We'll use KL divergence](04-max_entropy/application-understanding-financial-data) to understand this deep principle in probability called the maximum entropy principle. It'll give us tons of intuition about modeling this kind of data and what those different shapes actually mean. 
 </Expand>
@@ -56,8 +49,6 @@ This gives you a pretty stable number that shouldn't change much if you do it ag
 
 
 <Expand headline="🧠 How to train your LLM"> <a id="deep-learning"></a>
-
-[TODO image]
 
 So you wanna train a large language model (LLM) like GPT/Gemini/Claude. These beasts take text, do some crazy computations, and spit out the next letter (Well, actually the next [token](https://en.wikipedia.org/wiki/Large_language_model#Tokenization), which is like a little chunk of letters).
 LLMs don't just guess a single letter—they predict the whole distribution $p$ of what might come next. 

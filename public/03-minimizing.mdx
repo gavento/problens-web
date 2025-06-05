@@ -1,4 +1,4 @@
-# Minimizing KL Divergence <a id="updating-beliefs"></a>
+# Minimizing KL divergence <a id="updating-beliefs"></a>
 
 In this chapter, we'll explore what happens when we minimize the KL divergence between two distributions. Specifically, we'll look at two distinct scenarios:
 
@@ -22,7 +22,7 @@ Now, let's assume we believe a normal distribution is a suitable model for this 
 
 Why does this method make sense? Recall that KL divergence is designed to measure how well a model $q$ approximates the true distribution $p$. So, minimizing KL simply means selecting the best-fitting model from $Q$. If you remember our [first chapter](01-kl_intro), you might even "compile" this argument down to Bayes' theorem: choosing $q$ to minimize $D(p,q)$ effectively means choosing the $q$ that would take a Bayesian the longest time to distinguish from the true distribution $p$. That's pretty reasonable!
 
-### Maximum Likelihood Principle <a id="mle"></a>
+### Maximum likelihood principle <a id="mle"></a>
 
 Let's examine our approach of minimizing $D(p, q)$ more closely. We'll focus on the most common scenario where $p$ is an empirical distribution derived from data points $X_1, \dots, X_n$. To keep the notation tidy, let's assume all $X_i$ are distinct, which means that $p$ is uniform distribution<Footnote>In the general case, $p$ is not necessarily uniform - the probability of each value $x$ is proportional to the count of $x$ in the data. This does not change the following argument. </Footnote>. In this situation, we can express the KL divergence we're minimizing as:
 
@@ -65,7 +65,7 @@ Similarly,
 Setting <Math displayMode={false} math="\frac{\partial \mathcal{L}}{\partial \sigma} = 0"/> then leads to <Math displayMode={false} math="\hat\sigma = \frac{1}{N} \sum_{i = 1}^N (X_i - \mu)^2"/>
 </Expand>
 
-## Updating Models by Minimum Relative Entropy Principle <a id="finding-better-model"></a>
+## Updating models by minimum relative entropy principle <a id="finding-better-model"></a>
 
 So, minimizing <Math math="\min_{q \in Q} D(p,q)" /> is quite useful. But what about the other direction, <Math math="\min_{p \in P} D(p,q)" />? This is also extremely valuable, so let's explore an example of what it signifies.
 
@@ -135,7 +135,7 @@ The observation we can now make is that <Math math="p_{new} = \argmin_{p \in P} 
 </Expand>
 
 
-### The Maximum Entropy Principle <a id="maximum-entropy-principle"></a>
+### The maximum entropy principle <a id="maximum-entropy-principle"></a>
 
 Let's delve deeper into the minimum relative entropy principle. A seemingly significant issue is that it only allows us to refine an existing model $q$ into a better model $p$. But how did we choose the initial model $q$ in the first place? It feels a bit like a chicken-and-egg dilemma.
 
