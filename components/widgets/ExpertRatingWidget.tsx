@@ -13,16 +13,16 @@ const ExpertRatingWidget: React.FC<Props> = ({
 }) => {
   // Initial data: 3 experts + ground truth, 5 questions
   const [predictions, setPredictions] = useState<number[][]>([
-    [0.99, 0.99, 0.5, 0.5, 0.99], // 👵
     [0.5, 0.9, 0.6, 0.6, 0.6],    // 🧑
+    [0.99, 0.99, 0.5, 0.5, 0.99], // 👵🏿
     [0.5, 0.5, 0.5, 0.5, 0.5],    // 👶
   ]);
   
   const [groundTruth, setGroundTruth] = useState<number[]>([1, 1, 0, 1, 0]);
 
   const experts = [
-    { emoji: "👵", name: "Expert 1" },
-    { emoji: "🧑", name: "Expert 2" }, 
+    { emoji: "🧑", name: "Expert 1" },
+    { emoji: "👵🏿", name: "Expert 2" }, 
     { emoji: "👶", name: "Expert 3" }
   ];
 
