@@ -223,18 +223,6 @@ const PollingErrorCalculator: React.FC<Props> = ({
           ))}
         </div>
       </div>
-
-      {/* The 1/ε² relationship visualization */}
-      <div className="bg-blue-50 rounded-lg p-4">
-        <h4 className="text-lg font-semibold text-blue-800 mb-2">The 1/ε² Law</h4>
-        <p className="text-sm text-blue-700">
-          <strong>Key insight:</strong> To halve your margin of error (e.g., 3% → 1.5%), you need <strong>4 times</strong> as many people. 
-          To get 10× more precise (3% → 0.3%), you need <strong>100 times</strong> more people!
-        </p>
-        <p className="text-xs text-blue-600 mt-2">
-          This is why most polls stick to ±3% despite having massive budgets - the last bit of precision costs exponentially more.
-        </p>
-      </div>
     </div>
   );
 };
