@@ -52,7 +52,7 @@ But here's the thing: out of all these ways to estimate stuff, only maximum like
 </Expand>
 
 
-<Expand headline="How to train your LLM"> <a id="deep-learning"></a>
+<Expand headline="🧠 How to train your LLM"> <a id="deep-learning"></a>
 
 [TODO image]
 
@@ -77,7 +77,7 @@ Check out this widget with two distributions and all three loss functions. See i
 </Expand>
 
 
-<Expand headline="How good are your predictions?"> <a id="predictions"></a>
+<Expand headline="🔮 How good are your predictions?"> <a id="predictions"></a>
 
 It'd be awesome to know the future—or at least know someone who does. So you've gathered some experts and asked them to predict stuff for next year. Each expert gives probabilities for various events.
 A year later, you know what actually happened.
@@ -94,7 +94,7 @@ Answer: Hard to tell with just 8 questions. Later, we'll see how KL divergence g
 </Expand>
 
 
-<Expand headline="Distance from independence"> <a id="information-theory"></a>
+<Expand headline="🔗 Distance from independence"> <a id="information-theory"></a>
 
 Independence is huge in probability. Quick refresher: you've got two distributions $p_1$ and $p_2$. Maybe $p_1$ is about weather (☀️ or ☁️) and $p_2$ is how I get to work (🚶‍♀️, 🚲, or 🚌). A joint distribution is a table showing the probability of each combo. Here are three possible joint distributions for three different people:
 
@@ -116,7 +116,7 @@ Which of our three tables is "closest" to being independent?
 </Expand>
 
 
-<Expand headline="Machine Learning mess"> <a id="machine-learning"></a>
+<Expand headline="🤯 Machine Learning mess"> <a id="machine-learning"></a>
 
 When you first dive into machine learning, it looks like total chaos—just a bunch of random tricks and optimization problems. Like, say you wanna understand how DALLE or Midjourney work. The standard setup for image generation is called a variational autoencoder. You train it by optimizing this absolute monster: 
 
@@ -129,7 +129,7 @@ Where the hell does this come from?? [We'll see](05-machine_learning) how KL div
 </Expand>
 
 
-<Expand headline="Why polling sucks"><a id="polling"></a>
+<Expand headline="🗳️ Why polling sucks"><a id="polling"></a>
 
 [This Wikipedia page](https://en.wikipedia.org/wiki/Nationwide_opinion_polling_for_the_2024_United_States_presidential_election) has hundreds of election polls. A typical poll asks 1000-2000 random people. Do the math<Footnote>Like, use the central limit theorem to figure out what happens with the poll results.</Footnote> and you'll find polls are usually within 2-3% of the truth.<Footnote>Sure, this assumes you can actually sample random voters and they tell the truth, but stick with me.</Footnote> Pretty wild—doesn't matter if the country has millions of people, 1000 randos get you within a few percent!
 
@@ -144,7 +144,7 @@ It's about 1,000,000! That's a huge chunk of the whole US! The general rule: to 
 But why $1/\epsilon^2$? We'll dig into this later. {/* KL divergence measures how well one distribution matches another, which is why understanding its value for distributions (50%, 50%) and (50%+$\varepsilon$, 50%-$\varepsilon$) is going to shed a lot of light on this question! We will also use this as a jumping bridge to explain a bit more on how KL divergence is crucial in statistics. */}
 </Expand>
 
-<Expand headline="How to get rich"> <a id = "get-rich"></a>
+<Expand headline="💰 How to get rich"> <a id = "get-rich"></a>
 
 Here's a riddle that's behind a ton of recent algorithms in CS and ML. Say you wanna get rich trading stocks. Lucky you—$n$ investors share their tips every day. Each day $t$, they give advice, and afterward you find out how they did. For investor $i$, you get her loss $\ell_i^{(t)}$.<Footnote>Positive means bad advice, negative means good advice.</Footnote>
 
@@ -167,7 +167,7 @@ They all seem reasonable, but option 2 is the most robust. It's called multiplic
 
 
 ![Are the odds in our favor?](00-introduction/countdown.png)
-<Expand headline="Understanding XKCD jokes"> <a id = "xkcd"></a>
+<Expand headline="🤓 Understanding XKCD jokes"> <a id = "xkcd"></a>
 
 
 So... are the odds in our favor?
@@ -180,7 +180,7 @@ We'll use KL divergence to derive something called the [maximum entropy principl
 </Expand>
 
 
-<Expand headline="How large is Wikipedia?"><a id = "wikipedia"></a>
+<Expand headline="🌐 How large is Wikipedia?"><a id = "wikipedia"></a>
 Marcus Hutter, an AI researcher, started [this challenge](http://prize.hutter1.net/): Take a 1GB file of Wikipedia text. How small can you compress it? [Zipping it](https://en.wikipedia.org/wiki/ZIP_(file_format)) gets you about 300MB. But we can do way better. What's the current record? 
 
 1 around 1MB
@@ -193,7 +193,7 @@ It's around 100MB. But wait—why does an *AI* researcher care about compression
 
 
 
-<Expand headline="Random Pi Program"> <a id="random-pi-program"></a>
+<Expand headline="🥧 Random Pi Program"> <a id="random-pi-program"></a>
 
 Here's a brain-bender: Take all C programs that are exactly 1000 characters long (1000 bytes in ASCII) and print the first million digits of $\pi$. Pick one at random. What's it gonna look like?
 </Expand>
