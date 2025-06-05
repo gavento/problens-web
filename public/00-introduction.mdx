@@ -155,16 +155,14 @@ Here's a riddle that's behind a ton of recent algorithms in CS and ML. Say you w
 
 Your strategy: Start with equal trust in everyone—$p_i^{(0)} = 1/n$ for all investors. Each morning, randomly pick an investor based on your trust distribution and follow their advice. After seeing how everyone did, update your trust from $p^{(t)}$ to $p^{(t+1)}$.
 
-How should you update? Here are some options:
-
-_Gradient descent_: Pick small $\varepsilon$ and do: <Math math="p^{(t+1)} = p^{(t)} - \varepsilon \cdot \ell_i^{(t)}" />; then normalize <Math math="p^{(t+1)}" />.
-_Multiplicative gradient descent_: Pick small $\varepsilon$ and do: <Math math="p^{(t+1)} = p^{(t)} \cdot e^{- \varepsilon \cdot \ell_i^{(t)}}" />; then normalize <Math math="p^{(t+1)}" />.
-_Follow the leader_: Just trust whoever's best so far: <Math math="p^{(t+1)}_i = 1" /> for whoever has the smallest total loss <Math math="\ell_i^{(1)} + \ell_i^{(2)} + \dots + \ell_i^{(t)}" />.
-
-What's best?
+How should you update? What's best?
 
 <MultipleChoiceQuestion
-  options={["Gradient descent", "Multiplicative gradient descent", "Follow the leader"]}
+  options={[
+    <>Gradient descent: <Math math="p^{(t+1)} = p^{(t)} - \varepsilon \cdot \ell_i^{(t)}" />, then normalize</>,
+    <>Multiplicative gradient descent: <Math math="p^{(t+1)} = p^{(t)} \cdot e^{-\varepsilon \cdot \ell_i^{(t)}}" />, then normalize</>, 
+    "Follow the leader: Trust whoever has smallest total loss so far"
+  ]}
   correctIndices={[1]}
   explanation={<>They all seem reasonable, but option 2 is the most robust. It's called multiplicative weights update, and it looks weirdly like gradient descent. <a href="06-algorithms">We'll see</a> how KL divergence explains the connection.</>}
 />

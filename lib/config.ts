@@ -7,7 +7,7 @@ export const TITLE_ABBR = "KL divergence";
 export const CHAPTERS = [
   ["Riddles", "00-introduction"],
   ["", ""], // Gap
-  ["KL divergence & Bayes' rule", "01-kl_intro"],
+  ["KL divergence & Bayes", "01-kl_intro"],
   ["Crossentropy & Entropy", "02-crossentropy"],
   ["Minimizing KL", "03-minimizing"],
   ["Max entropy distributions", "04-max_entropy"],

@@ -44,28 +44,29 @@ There's also an elegant derivation of the shape of max-entropy distributions usi
 <Expand headline = "Derivation by Lagrange Multipliers">
 We'll only consider discrete distributions, say those with support $\{1, \dots, K\}$. This is an optimization problem for $K$ variables $p_1, \dots, p_K$:
 
-[todo fix]
-{/*
-<Math displayMode={true} math = "VARIABLES: p_1, \dots, p_K \\
-MAXIMIZE: \sum_{i = 1}^K p_i \log \frac{1}{p_i}\\
-CONSTRAINTS:\\
-\sum_{i = 1}^K p_i \cdot f_1(i) = \alpha_1\\
-\dots \\
-\sum_{i = 1}^K p_i \cdot f_m(i) = \alpha_m\\
-\sum_{i = 1}^K p_i = 1\\
-"/>
+<Math displayMode={true} math = "\begin{aligned}
+\text{VARIABLES:} &\quad p_1, \dots, p_K \\
+\text{MAXIMIZE:} &\quad \sum_{i = 1}^K p_i \log \frac{1}{p_i}\\
+\text{CONSTRAINTS:} &\\
+&\quad \sum_{i = 1}^K p_i \cdot f_1(i) = \alpha_1\\
+&\quad \vdots \\
+&\quad \sum_{i = 1}^K p_i \cdot f_m(i) = \alpha_m\\
+&\quad \sum_{i = 1}^K p_i = 1
+\end{aligned}"/>
 
 If there were no constraints, the problem would be simple! We'd just take the expression to maximize (the entropy) and set all partial derivatives with respect to $p_1, \dots, p_K$ to zero.
 
 Fortunately, a technique called [Lagrange multipliers](https://en.wikipedia.org/wiki/Lagrange_multiplier) helps us here. It involves turning _hard_ constraints (like those in our problem) into _soft_ constraints. A soft-constraint version of our problem would be:
-{/*
-<Math displayMode={true} math = "VARIABLES: p_1, \dots, p_K\\
-MAXIMIZE: \sum_{i = 1}^K p_i \log \frac{1}{p_i}\\
-- \lambda_1 \left(\sum_{i = 1}^K p_i \cdot f_1(i) - \alpha_1\right)\\
-- \dots -\\
-- \lambda_m \left(\sum_{i = 1}^K p_i \cdot f_m(i) - \alpha_m\right)\\
-- \lambda_{m+1} \left(\sum_{i = 1}^K p_i - 1\right)\\
-"/>*/}
+
+<Math displayMode={true} math = "\begin{aligned}
+\text{VARIABLES:} &\quad p_1, \dots, p_K\\
+\text{MAXIMIZE:} &\quad \sum_{i = 1}^K p_i \log \frac{1}{p_i}\\
+&\quad - \lambda_1 \left(\sum_{i = 1}^K p_i \cdot f_1(i) - \alpha_1\right)\\
+&\quad - \lambda_2 \left(\sum_{i = 1}^K p_i \cdot f_2(i) - \alpha_2\right)\\
+&\quad - \dots \\
+&\quad - \lambda_m \left(\sum_{i = 1}^K p_i \cdot f_m(i) - \alpha_m\right)\\
+&\quad - \lambda_{m+1} \left(\sum_{i = 1}^K p_i - 1\right)
+\end{aligned}"/>
 
 What happens is that instead of requiring the solution to *exactly* satisfy all the constraints, we just say that we have to pay an additional cost for deviating from the target. The constants $\lambda_1, \dots, \lambda_{m+1}$ essentially tell us how important each constraint is—a large $\lambda_j > 0$ means that $\sum_{i = 1}^K p_i \cdot f_j(i) - \alpha_j$ had better be small! <Footnote>In fact, in this soft constraint formulation, we even get "paid" if <Math math = "\lambda_j \left( \sum_{i = 1}^K p_i \cdot f_j(i) - \alpha_j \right) < 0" />! </Footnote>
 
@@ -384,7 +385,7 @@ Notice that almost all the probability is now concentrated on a single outcome�
 
 Another thing to notice is that the posterior distribution still looks uniform for numbers $>10^9$. This also makes sense—for large numbers, their last few digits are like a coin flip, so learning them doesn't significantly change things, and thus the posterior remains uniform there.
 
-The whole point is that the max-entropy principle leads us to a prior that puts more weight on small numbers. Using it only assumes that $E[X]$ is a value of interest, which it arguably is. We conclude that we are **not** fine.
+The whole point is that the max-entropy principle leads us to a prior that puts more weight on small numbers. Using it only assumes that $E[X]$ is a value of interest, which it arguably is. We conclude that we are not necessarily fine. 
 </Expand>
 
 <Expand headline="Riddle: Understanding Financial Data"> <a id="application-understanding-financial-data"></a>
@@ -408,13 +409,12 @@ To understand how this helps explain our financial data, consider the following 
 
 Perhaps we should try a more advanced two-layered model to predict the shape of our data: Maybe each month, we sample $\sigma^2$—the volatility for that month. Let's sample it from the max-entropy distribution, i.e., exponential. Next, for the rest of the month, we sample from a Gaussian with that variance. As we mentioned, this two-layered process actually samples from the Laplace distribution.
 
-Put differently, while a Gaussian fit implies "I'm pretty sure about today's volatility and unsure about the fluctuation around the mean," Laplace is saying, "I'm uncertain both about the volatility and the actual fluctuation of the day." This explains why Gaussian fits near-term data (volatility of the time period stays roughly the same), while more long-term data starts looking more like Laplace. <Footnote>Laplace distribution isn't necessarily a good practical model. As far as I know, a more standard way of modeling financial data is the Student-t distribution. I won't bore you with its formula, but I'll tell you it's the distribution you get from a similar process to how we arrived at Laplace; but instead of sampling $\sigma^2$ from the exponential distribution, you sample it from the so-called inverse gamma distribution. The Gamma distribution is itself a max-entropy distribution for fixing $E[X]$ and $E[\log X]$ (and inverse gamma distribution means we measure volatility by $1/\sigma^2$ instead of $\sigma^2$).
+Put differently, while a Gaussian fit implies "I'm pretty sure about today's volatility and unsure about the fluctuation around the mean," Laplace is saying, "I'm uncertain both about the volatility and the actual fluctuation of the day." This explains why Gaussian fits near-term data (volatility of the time period stays roughly the same), while more long-term data starts looking more like Laplace. 
+
+Notice that even though Laplace distribution fits S&P very well, Bitcoin is even more "spiky", a distribution of the shape <Math math = "e^{-\sqrt{x}}"/>. This just shows that Laplace distribution is, after all, just a model. If you replaced the two-layer reasoning by some kind of three-layer reasoning, max-entropy would, in fact, give you the shape of  <Math math = "e^{-\sqrt{x}}"/>. But maybe all this is a wrong approach and we should fit the data by power-law distributions? I don't know. <Footnote>As far as I know, one standard way of modeling financial data is the Student-t distribution. I won't bore you with its formula, but I'll tell you it's the distribution you get from a similar process to how we arrived at Laplace; but instead of sampling $\sigma^2$ from the exponential distribution, you sample it from the so-called inverse gamma distribution. The Gamma distribution is itself a max-entropy distribution for fixing $E[X]$ and $E[\log X]$ (and inverse gamma distribution means we measure volatility by $1/\sigma^2$ instead of $\sigma^2$).
 That is, the Student-t distribution takes our model a bit further and adds uncertainty about the _scale_ of the volatility. For example, maybe if you look far enough into the past, you start seeing some extreme events like world wars/the Great Depression/industrial revolution, so perhaps we should be open to power-law fits instead of exponential ones.</Footnote>
-
-I like this example because I think it nicely shows the strength of the max-entropy principle. Notice how maximum entropy allows us to focus only on the important aspects of our model (do we fix volatility or is it itself a random variable?). The algebraic details are filled in automatically by max entropy reasoning. Or, if we take it from the other side—when we see a concrete formula, like a fit by a Laplace distribution, max entropy enables us to see through it and understand what the formula stands for.
+I like this example mostly because I think it nicely showcases the strength of the max-entropy principle. Notice how maximum entropy allows us to focus only on the important aspects of our model (do we fix volatility or is it itself a random variable?). The algebraic details are filled in automatically by max entropy reasoning. Or, if we take it from the other side—when we see a concrete formula, like a fit by a Laplace distribution, max entropy enables us to see through it and understand what the formula stands for.
 </Expand>
-
----
 
 ## Next Steps <a id="next-steps"></a>
 
