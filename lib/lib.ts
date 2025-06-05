@@ -14,6 +14,7 @@ import FinanceImageSliderWidget from "@/components/widgets/FinanceSlider";
 import SoftmaxWidget from "@/components/widgets/SoftmaxWidget";
 import LogisticWidget from "@/components/widgets/LogisticWidget";
 import DistributionComparisonWidget from "@/components/widgets/DistributionComparisonWidget";
+import EntropyWidget from "@/components/widgets/EntropyWidget";
 import { compile, evaluate } from "@mdx-js/mdx";
 import chalk from "chalk";
 import * as runtime from "react/jsx-runtime";
@@ -131,6 +132,7 @@ export async function getMdxContent(path: string) {
       SoftmaxWidget: SoftmaxWidget,
       LogisticWidget: LogisticWidget,
       DistributionComparisonWidget: DistributionComparisonWidget,
+      EntropyWidget: EntropyWidget,
       Math: KatexMath,
       Block: Block,
       Expand: Expand,

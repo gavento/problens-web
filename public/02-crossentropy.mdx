@@ -146,6 +146,10 @@ Entropy can get way smaller—like <Math math = "H(\{\textrm{H: }0.001, \textrm{
 
 But entropy can also get way bigger than 1 bit. Rolling a die has entropy $\log_2(6) \approx 2.6$ bits. In general, a uniform distribution over $k$ options has entropy $\log_2 k$—and that's the max for any distribution with $k$ options. Makes sense—you're most uncertain when everything's equally likely.  
 
+Try playing with this widget to get a feel!
+<EntropyWidget numCategories={6} title="Entropy of die-rolling" />
+
+
 ### Relative entropy: 
 Finally, $D(p,q)$ is just the gap between these two. It tells you how far your average surprise (cross-entropy) is from the best possible (entropy). 
 That's why some folks call KL divergence the _relative entropy_ between $p$ and $q$. <Footnote>Way better name than KL divergence if you ask me. But KL divergence is what everyone uses, so we're stuck with it. </Footnote>
@@ -255,9 +259,7 @@ But what if $p$ is skewed? Say A shows up half the time, C a quarter, and G,T ea
 
 Sure, giving frequent letters shorter codes makes sense, but what's the best way to do it? Turns out coding theory says: give a letter with frequency $p$ a code of length roughly $\log 1/p$. In our example, A had probability 1/2, so it got length $\log 1/(1/2) = 1$. Perfect! <Footnote>I cheated by picking probabilities that are powers of two. Then the $\log 1/p$ formula works exactly. For messier probabilities, you can't have codes of length 2.3 bits or whatever. Good codes fix this by encoding pairs or triples of letters, getting arbitrarily close to $\log 1/p$ bits per letter on average. </Footnote> 
 
-Here's the intuition: Say you've got 8 equally likely letters. Makes sense to give them all codes of the same length, and that length should be $\log 8 = 3$ to cover everyone. 
-
-More generally, it makes sense to split your alphabet in half by frequency. Letters in the first half get codes starting with <Math math = "\textsf{0}" />, the rest start with <Math math = "\textsf{1}" />. Like how we gave A (50% frequency) the code <Math math = "\textsf{0}" />, while C,G,T share the other half and start with <Math math = "\textsf{1}" />. Keep splitting recursively and you get codes of length $\log 1/p$. <Footnote>Again, this works perfectly when probabilities are powers of two. Otherwise it gets trickier. </Footnote> 
+Here's the intuition: A natural way to build a code is by a recursive algorithm: You always split your alphabet in half so that both half have roughly the same total frequency. Then, the first half gets code names starting with  <Math math = "\textsf{0}" />, and the rest starts with <Math math = "\textsf{1}" />. In our example, this means giving A (50% frequency) the code <Math math = "\textsf{0}" />, while C,G,T (50% frequency in total) start with <Math math = "\textsf{1}" />. Keep splitting recursively and letters with frequency $p$ get get code names of length $\log 1/p$. <Footnote>Again, this works perfectly when probabilities are powers of two. Otherwise it gets trickier. </Footnote> 
 
 The punchline: if your string comes from sampling $N$ letters from distribution $p$, you can encode it in about $N \cdot \sum_{i = 1}^k p_i \cdot \log 1/p_i = N \cdot H(p)$ bits. And you can prove you can't do better than $N \cdot H(p)$ bits. 
 
@@ -267,7 +269,7 @@ This gives us another way to think about entropy. Remember this picture?
 
 We talked about "average surprisal," but we could also ask: how many bits do you need to store coin flip results? On the left, 1 bit per flip. On the right, you'd be smart to just store where the rare heads show up—way less than 1 bit per flip on average. 
 
-Cross-entropy makes sense too: it's the bits you need when data comes from $p$ but you built your code for $q$. And relative entropy? That's just how much worse your mismatched code is compared to the optimal one. 
+Cross-entropy makes sense too: it's the bits you need when data comes from $p$ but you built your code for $q$. And relative entropy is how much worse your mismatched code is compared to the optimal one. 
 
 
 <Expand headline = "Riddle: Size of Wikipedia">
@@ -279,10 +281,11 @@ Our coding discussion gives us a benchmark: treat each letter as independent fro
 
 But what's the limit if we don't treat letters independently? 
 
-Claude Shannon, who [invented information theory](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication) in the late 40s, did this cool [experiment](https://www.princeton.edu/~wbialek/rome/refs/shannon_51.pdf) a few years later. He'd show people partial sentences and ask them to guess the next letter. This way, he figured English has at most about 1 bit per letter of entropy. So humans can compress text by a factor of 8, storing 1GB in just over 100MB. Funny thing—that's also the current [Marcus Hutter challenge](http://prize.hutter1.net/) record. Something special about that "1 bit per letter"! 
+Claude Shannon, who [invented information theory](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication) in the late 40s, did this cool [experiment](https://www.princeton.edu/~wbialek/rome/refs/shannon_51.pdf) a few years later. He'd show people partial sentences and ask them to guess the next letter. This way, he figured English is at most about 0.5 - 1 bit per letter of entropy. So humans are able to compress text by a factor of 8, storing 1GB in just over 100MB. Interestingly, that's also the current [Marcus Hutter challenge](http://prize.hutter1.net/) record. 
 
-But hold up! Large language models literally train to predict the next letter (well, token) in text. How good are they? GPT-2 matched humans at roughly 1 bit per letter, but today's models are down to 0.5 bits per letter. <Footnote>So why isn't the Hutter record 50MB? Because you'd have to include the model itself in your compressed file. Training an LLM from scratch inside your compression algorithm would take way more than the 1GB you're trying to compress. </Footnote> We actually use this compression ability (measured as [cross-entropy loss](05-machine_learning/neural-nets) or [perplexity](https://en.wikipedia.org/wiki/Perplexity)) as one of the main ways to compare models. 
+But hold up! Large language models literally train to predict the next letter (well, token) in text. How good are they? GPT-2 matched humans at roughly 1 bit per letter, but today's models are better, probably at around 0.5 bits per letter. <Footnote>So why isn't the Hutter record 50MB by using state-of-the-art LLMs? Because you'd have to include the model itself in your compressed file. Or, you would have to train an LLM from scratch inside your compression algorithm, but that requires way more than the 1GB of data you're trying to compress, and way more time than Hutter allows the algorithms to run. In other words, while it was a spectacular vision to predict that text compression is going to be important for AI, the parameters of the challenge make it hard match for current AI paradigm. </Footnote> We actually use this compression ability (measured as [cross-entropy loss](05-machine_learning/neural-nets) or [perplexity](https://en.wikipedia.org/wiki/Perplexity)) as one of the main ways to compare models. 
 
+The image below is from a famous paper that trained 
 ![scaling laws](02-crossentropy/scaling_laws.png "image from https://arxiv.org/pdf/2001.08361")
 </Expand>
 </Expand>

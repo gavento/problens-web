@@ -115,9 +115,9 @@ For entropy, it's a bit trickier. To understand what's happening, let's remember
 
 ![uniform](04-max_entropy/unif.png)
 
-The problem with entropy is that it doesn't converge. Indeed, the entropy of a uniform distribution with $n$ options is $\log n$, so the entropy of a continuous uniform distribution is infinite. This makes sense! If I sample a real number from a continuous uniform distribution, this number will effectively have infinitely many bits of information.
+The problem with entropy is that it doesn't converge. Indeed, the entropy of a uniform distribution with $n$ options is $\log n$, so the entropy of a continuous uniform distribution is infinite. This makes sense! If I sample a real number from [0,1], I can't store it on my disk since there are infinitely many bits of information to store.
 
-So, strictly speaking, it doesn't make much sense to talk about the entropy of continuous random variables. Fortunately, it *still* makes sense to talk about KL divergence—since this is the _relative_ entropy between two distributions, the infinities "cancel out," and as we discussed, we get convergence and sensible numbers.
+Fortunately, it *still* makes sense to talk about KL divergence of continuous random variables—since this is the _relative_ entropy between two distributions, the infinities "cancel out," and as we discussed, we get convergence and sensible numbers.
 
 What does this mean for the principle of maximum entropy? If this principle were purely about entropy, we'd be in trouble. But, thankfully, we understand from [the previous chapter](03-minimizing) that this principle is fundamentally about minimizing KL divergence between $p$ and a model distribution, which, in the case of the max entropy principle, is the uniform distribution.
 
