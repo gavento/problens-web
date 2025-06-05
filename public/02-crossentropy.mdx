@@ -160,7 +160,7 @@ Let's see this in action.
 
 <Expand headline = "Riddle: Evaluating Predictions"> <a id="application-evaluating-predictions"></a>
 
-Time to solve our [prediction riddle](00-introduction/predictions). We asked experts to predict future events—how do we score them?
+Time to solve our [prediction riddle](00-introduction#predictions). We asked experts to predict future events—how do we score them?
 
 ### Idealized KL score
 
@@ -277,7 +277,7 @@ Cross-entropy makes sense too: it's the bits you need when data comes from $p$ b
 
 
 <Expand headline = "Riddle: Size of Wikipedia"><a id = "hutter"></a>
-Back to [our Wikipedia riddle](00-introduction/wikipedia) and Hutter's compression challenge. 
+Back to [our Wikipedia riddle](00-introduction#wikipedia) and Hutter's compression challenge. 
 
 Our coding discussion gives us a benchmark: treat each letter as independent from English letter frequency distribution $p$, optimize a code for it, and you need about $H(p)$ bits per letter. You can find English letter frequencies [online](https://en.wikipedia.org/wiki/Letter_frequency); the entropy is $H(p) \approx 4$ bits. There are codes that get close (see below). Since Wikipedia stores each letter in 8 bits<Footnote>Wikipedia uses [UTF-8](https://en.wikipedia.org/wiki/UTF-8), the standard text encoding. English letters take 8 bits, fancier letters take 16, and emojis like 😀 or hieroglyphs like 𓀀 take 32. Classic coding theory—rare stuff gets longer codes. </Footnote>, we can shrink it to about 500MB. Pretty good, and we haven't even used tricks like "'th' is usually followed by 'e'". 
 

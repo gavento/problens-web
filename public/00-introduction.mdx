@@ -21,7 +21,7 @@ This gives you a pretty stable number that shouldn't change much if you do it ag
   ]}
   correctIndices={[0, 1, 2]}
   feedbackType="all-show"
-  explanation={<>In a sense, they're all correct! Well, more like they're all defensible options from the viewpoint of frequentist statistics. Using <Math math="1/(n-1)" /> gives you the <a href="https://en.wikipedia.org/wiki/Bias_of_an_estimator">unbiased estimate</a>, <Math math="1/n" /> gives the <a href="https://en.wikipedia.org/wiki/Maximum_likelihood_estimation">maximum likelihood estimate</a>, and <Math math="1/(n+1)" /> minimizes <a href="https://en.wikipedia.org/wiki/Mean_squared_error">the mean squared error</a> between your guess and the truth.<br/><br/>But here's the thing: out of all these ways to estimate stuff, only maximum likelihood became the rockstar of machine learning. Using KL divergence, <a href="03-minimizing/mle">we'll see</a> why maximum likelihood is so special and what makes it tick.</>}
+  explanation={<>In a sense, they're all correct! Well, more like they're all defensible options from the viewpoint of frequentist statistics. Using <Math math="1/(n-1)" /> gives you the <a href="https://en.wikipedia.org/wiki/Bias_of_an_estimator">unbiased estimate</a>, <Math math="1/n" /> gives the <a href="https://en.wikipedia.org/wiki/Maximum_likelihood_estimation">maximum likelihood estimate</a>, and <Math math="1/(n+1)" /> minimizes <a href="https://en.wikipedia.org/wiki/Mean_squared_error">the mean squared error</a> between your guess and the truth.<br/><br/>But here's the thing: out of all these ways to estimate stuff, only maximum likelihood became the rockstar of machine learning. Using KL divergence, <a href="03-minimizing#mle">we'll see</a> why maximum likelihood is so special and what makes it tick.</>}
 />
 </Expand>
 
@@ -75,10 +75,10 @@ I grabbed some historical data, calculated the daily price changes, and threw th
   feedbackType="all-show"
   explanation={<>Trick question—both shapes B (Laplace distribution) and C (Gaussian distribution) kind of work! The shape totally depends on something I didn't tell you: how far back I looked. If you only check the last month, shape C fits better (though in that case it's hard to judge). But zoom out to longer periods and it starts looking more like B. 
   <FinanceSliderSP />
-  What's up with that? We will see in the <a href="04-max_entropy/financial">chapter about the max-entropy principle</a>.<br/><br/></>}
+  What's up with that? We will see in the <a href="04-max_entropy">chapter about the max-entropy principle</a>.<br/><br/></>}
 />
 
-[We'll use KL divergence](04-max_entropy/application-understanding-financial-data) to understand this deep principle in probability called the maximum entropy principle. It'll give us tons of intuition about modeling this kind of data and what those different shapes actually mean. 
+[We'll use KL divergence](04-max_entropy#application-understanding-financial-data) to understand this deep principle in probability called the maximum entropy principle. It'll give us tons of intuition about modeling this kind of data and what those different shapes actually mean. 
 </Expand>
 
 <Expand headline="💰 How to get rich"> <a id = "get-rich"></a>
@@ -139,7 +139,7 @@ Which of our three tables is "closest" to being independent?
 <MultipleChoiceQuestion
   options={["Table 1", "Table 2", "Table 3"]}
   correctIndices={[1]}
-  explanation={<><a href="01-kl_intro/information-theory">We'll see</a> this is measured by something called mutual information, which is super important in information theory and—surprise!—it's just KL divergence in disguise.</>}
+  explanation={<><a href="01-kl_intro#information-theory">We'll see</a> this is measured by something called mutual information, which is super important in information theory and—surprise!—it's just KL divergence in disguise.</>}
 />
 </Expand>
 
@@ -152,7 +152,7 @@ So... are the odds in our favor?
 <MultipleChoiceQuestion
   options={["Yes", "No", "depends"]}
   correctIndices={[1, 2]}
-  explanation={<>We'll use KL divergence to derive something called the <a href="04-max_entropy/xkcd">maximum entropy principle</a> that explains why our gut feeling says we are not necessarily fine here.</>}
+  explanation={<>We'll use KL divergence to derive something called the <a href="04-max_entropy">maximum entropy principle</a> that explains why our gut feeling says we are not necessarily fine here.</>}
 /> 
 </Expand>
 

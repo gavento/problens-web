@@ -1,14 +1,12 @@
 # More on algorithms
 
-In the [previous chapter](05-machine_learning), we have seen how KL divergence guides to go all the way from having a rough guess of how our data look like to a well-defined problem of optimizing a concrete loss function. This part is where KL divergence shines and shows us the way.
+In the [chapter about machine learning](05-machine_learning), we have seen how KL divergence guides us to go all the way from having a rough guess of how our data looks like to a well-defined problem of optimizing a concrete loss function. This part is where KL divergence shines and shows us the way.
 
-But there's one more step missing -- how do we solve the final optimization problem? This is the place where understanding KL is not necessarily too important. In a few fortunate cases (estimating mean/variance, linear regression), we have explicit formulas for how the solution look like, so we solve the problem by plugging into those formulas. <Footnote>Although, in the case of linear regression, the formula involves inverting a matrix, so in practice it's faster to solve the problem by running gradient descent. </Footnote>
+But there's one more step missing -- how do we solve the final optimization problem? This is the place where understanding KL is not necessarily too important. In a few fortunate cases (estimating mean/variance, linear regression), we have explicit formulas for how the solution looks like and we can solve the problem by plugging into those formulas. 
 
-Most machine learning problems are however NP hard ($k$-means, neural net optimization) and we try to solve them using some kind of locally-improving algorithm.
+Most machine learning problems are however NP hard ($k$-means, neural net optimization) and we try to solve them using some kind of locally-improving algorithm, typically gradient descent. This chapter is about a variant of this algorithm called _multiplicative weights update_. 
 
-In case of $k$-means, it would be what's called Lloyd's algorithm, a special version of a more general algorithm called EM. We will discuss in the section on [Variational methods](variational-methods) how this is connected to a large class of methods called variational Bayesian methods, and a technique called ELBO.
-
-In case of neural network and many other machine learning problems, we solve them using gradient descent. There are several variants of this algorithm and one very useful one is called _multiplicative weights update_. This is a super important algorithm, but it's not usually explained as a variant of gradient descent. We will understand the connection in [the section on multiplicative weights](multiplicative-weights), using KL divergence.
+In this chapter, we will understand the connection of the algorithm to KL divergence and discuss a few applications. 
 
 ## Multiplicative weights update <a id="multiplicative-weights"></a>
 
@@ -30,7 +28,11 @@ Hence multiplicative weights update algorithm:
 
 <Math displayMode={true} math = "p_i^{(t+1)} \propto p_i^{(t)} \cdot e^{- \eps \cdot \ell_i^{(t)}}" />
 
-The $\propto$ just means that we normalize $p^{(t+1)}$ after the multiplicative update. This turns to be a better way to approach the problem. The math behind this is a long story<Footnote> Check out e.g. ... Multiplicative weights are used in machine learning (the keyword: bandit problems and recommendation systems), algorithm design, optimization, game theory etc. etc. </Footnote>, but I want to give you two intuitions why this algorithm is a good idea.
+The $\propto$ just means that we normalize $p^{(t+1)}$ after the multiplicative update. This turns to be a better way to approach the problem. 
+
+Specifically, 
+
+The math behind this is a long story<Footnote> Check out e.g. ... Multiplicative weights are used in machine learning (the keyword: bandit problems and recommendation systems), algorithm design, optimization, game theory etc. etc. </Footnote>, but I want to give you two intuitions why this algorithm is a good idea.
 
 The first intuition is pretty down-to-earth and uses what we already learnt. The second intuition is more abstract, but I think it nicely explains how gradient descent and multiplicative weights are connected.
 

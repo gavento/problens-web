@@ -10,7 +10,7 @@ Let's dive into the details!
 
 ## Simplifying models by minimizing KL <a id="mle"></a>
 
-Imagine we have some data—for instance, the 16 foot length measurements $X_1, \dots, X_{16}$ from [our statistics riddle](00-introduction/statistics). Assuming the order of the data doesn't matter, it's convenient to represent these data as an empirical distribution $p$, where each outcome is assigned a probability of $1/16$. This is what we call an _empirical distribution_. In one sense, this empirical distribution is the "best fit" for our data. However, in another sense, it's a terrible model—it assigns zero probability to outcomes not present in the data, even though, if we were to measure the 17th person's foot, it would likely fall outside the initial 16 measurements. Therefore, we need a different model.
+Imagine we have some data—for instance, the 16 foot length measurements $X_1, \dots, X_{16}$ from [our statistics riddle](00-introduction#statistics). Assuming the order of the data doesn't matter, it's convenient to represent these data as an empirical distribution $p$, where each outcome is assigned a probability of $1/16$. This is what we call an _empirical distribution_. In one sense, this empirical distribution is the "best fit" for our data. However, in another sense, it's a terrible model—it assigns zero probability to outcomes not present in the data, even though, if we were to measure the 17th person's foot, it would likely fall outside the initial 16 measurements. Therefore, we need a different model.
 
 ![fit](03-minimizing/fit.png)
 
@@ -88,7 +88,7 @@ Here's how. I propose that, among all distributions <Math math="p" /> with an av
 
 <Math id="min-relative-entropy" displayMode={true} math="p_{\textrm{new}} = \arg\min_{p \in P} D(p,q)" /> 
 
-This is sometimes called [the minimum relative entropy principle](resources). Why does this make sense? Intuitively, I want to find a distribution <Math math="p \in P" /> such that <Math math="q" /> remains as good a model of it as possible. This is precisely what we achieve by minimizing KL divergence.
+This is sometimes called [the minimum relative entropy principle](resources#intermediate-resources). Why does this make sense? Intuitively, I want to find a distribution <Math math="p \in P" /> such that <Math math="q" /> remains as good a model of it as possible. This is precisely what we achieve by minimizing KL divergence.
 
 ![max-ent](03-minimizing/max_ent_example.png)
 
@@ -116,7 +116,7 @@ We now need to understand the distribution of $\hat{q}$, i.e., we want to unders
 
 1.  We can write it down exactly (<Math math="P(\hat{q} = p) = {N \choose p_1N, \dots, p_kN}\cdot \prod_{i = 1}^k q_i ^ {p_i N}" />) and solve it (using Stirling's approximation, we have <Math math="P(\hat{q} = p) \approx 2^{H(p)\cdot N}" /> and thus <Math math="P(\hat{q} = p) \approx 2^{-D(p,q)\cdot N}" />).
 
-2.  If you prefer to see the underlying algebra, we can revisit the [first chapter](01-kl_intro) where our Bayesian friend was essentially trying to compute the probability we now need. More concretely, if our friend obtained $N$ samples and the empirical distribution was $p$, all the evidence supporting a hypothesis $q$ summed up to the value $N \cdot H(p, q)$. The meaning of this evidence is that the probability <Math math="P(\hat{q} = p)" /> must be proportional to <Math math="2^{-N \cdot H(p, q)}" />; we just don't know the normalization constant.
+2.  If you prefer to see the underlying algebra, we can revisit the [first chapter](01-kl_intro#expected-distinguishing-evidence) where our Bayesian friend was essentially trying to compute the probability we now need. More concretely, if our friend obtained $N$ samples and the empirical distribution was $p$, all the evidence supporting a hypothesis $q$ summed up to the value $N \cdot H(p, q)$. The meaning of this evidence is that the probability <Math math="P(\hat{q} = p)" /> must be proportional to <Math math="2^{-N \cdot H(p, q)}" />; we just don't know the normalization constant.
 
 Now, with a bit of hand-waving, we can observe that the probability distribution of <Math math="\hat{q}" /> will be concentrated around the value of $q$ as $N$ approaches infinity, even though there's a nonzero probability that $\hat{q} \in P$. If that happens, we similarly find that the posterior distribution is concentrated around the value <Math math="\tilde{p} = \argmin_{p \in P} D(p,q)"/>. We conclude that in the limit of $N$ going to infinity, working with mixture distributions and conditioning on it being from $P$ is equivalent to simply replacing $q$ with <Math math="\argmin_{p \in P} D(p,q)"/>.
 </Expand>
@@ -177,7 +177,7 @@ We will spend the whole next chapter discussing all the applications of the maxi
 
 2. If you have a joint distribution $(p,q)$, then $H((p,q)) \le H(p) + H(q)$, with equality if and only if $p$ and $q$ are independent.
 <Footnote>
-This is called [subadditivity of entropy](01-kl_intro/information-theory). Why is it subadditive? If you still remember [our discussion of mutual information](), the mutual information is defined as $D((p,q), p \otimes q)$. You can rewrite this expression as $H(p) + H(q) - H((p,q))$ (try it!), so subadditivity of entropy is equivalent to mutual information being nonnegative.
+This is called [subadditivity of entropy](01-kl_intro#information-theory). Why is it subadditive? If you still remember [our discussion of mutual information](01-kl_intro#information-theory), the mutual information is defined as $D((p,q), p \otimes q)$. You can rewrite this expression as $H(p) + H(q) - H((p,q))$ (try it!), so subadditivity of entropy is equivalent to mutual information being nonnegative.
 </Footnote>
 The implication for the max-entropy principle is this: Imagine that you work with a joint distribution and you know its two marginals $p,q$. Then, the maximum entropy principle tells us that the joint distribution with these two marginals that maximizes the entropy is the one where they are independent.
 Whenever people model stuff by probability distributions, they assume that two distributions are independent all the time. We can think of this assumption as a special case of the maximum entropy principle.

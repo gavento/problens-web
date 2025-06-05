@@ -18,13 +18,13 @@ Our [basic statistics riddle](00-introduction/statistics) posed the following: G
 
 We've already approached this riddle from various angles; now, let's combine our insights.
 
-First, we transform the general idea that mean and variance are important into a concrete probabilistic model. The [maximum entropy principle](04-max_entropy) suggests modeling the data as [independent samples](03-minimizing/a-few-observations) drawn from [the gaussian distribution](04-max_entropy/normal).
+First, we transform the general idea that mean and variance are important into a concrete probabilistic model. The [maximum entropy principle](04-max_entropy) suggests modeling the data as independent samples drawn from [the gaussian distribution](04-max_entropy#normal).
 
-Once we have a set of possible models—all Gaussian distributions—we can select the best one using [the maximum likelihood principle](04-minimizing/mle).
+Once we have a set of possible models—all Gaussian distributions—we can select the best one using [the maximum likelihood principle](03-minimizing#mle).
 
 We want to find $\hat\mu, \hat\sigma^2$ that maximizes
 <Math displayMode={true} math = "\hat\mu, \hat\sigma^2 = \argmin_{\mu, \sigma^2} \prod_{i = 1}^N \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(X_i-\mu)^2}{2\sigma^2}}"/>
-It's typically easier to write down the logarithm of the likelihood function, i.e., the log-likelihood. This is not too surprising since [we understand](03-minimizing/mle) that maximizing log-likelihood is a synonym to minimizing KL divergence. If we make the problem simpler for us and consider only the estimation of the mean $\mu$, the equation simplifies like this:
+It's typically easier to write down the logarithm of the likelihood function, i.e., the log-likelihood. This is not too surprising since [we understand](03-minimizing#mle) that maximizing log-likelihood is a synonym to minimizing KL divergence. If we make the problem simpler for us and consider only the estimation of the mean $\mu$, the equation simplifies like this:
 
 <Math displayMode={true} math = "\hat\mu = \argmin_{\mu} \sum_{i = 1}^N (X_i-\mu)^2"/>
 
@@ -81,7 +81,7 @@ It will be easier to represent the line not as $y = ax+b$, but using its normal 
 
 Given a point $(x, y)$, the crucial quantity is its distance from our line. This can be calculated using the dot product as $\theta \cdot (x, y) + \delta$.
 
-Now, employing the maximum entropy principle, we construct a probabilistic model that transforms this distance into a probability of color. We utilize the [logistic function](04-max_entropy/logit). That is, our model states:
+Now, employing the maximum entropy principle, we construct a probabilistic model that transforms this distance into a probability of color. We utilize the [logistic function](04-max_entropy). That is, our model states:
 <Math displayMode={true} math = "p(\textrm{red} | (x, y)) = \sigma\left( \lambda (\theta \cdot (x, y) + \delta) \right)"/>
 where $\sigma$ is the logistic function $\sigma(x) = e^x / (1+e^x)$. Naturally, we also have <Math displayMode={false} math = "p(\textrm{blue} | (x, y)) = 1 - p(\textrm{red} | (x, y)). " />
 
@@ -126,7 +126,7 @@ We are provided with a vast collection of images, each assigned one of $k$ possi
 
 ![dogs](05-machine_learning/dogs.png "taken from https://www.freecodecamp.org/news/chihuahua-or-muffin-my-search-for-the-best-computer-vision-api-cbda4d6b425d/")
 
-Designing the architecture of a neural network is an extremely intricate problem that cannot be "solved" simply by name-dropping KL divergence. However, maximum entropy does offer some assistance: [we've already discussed](04-max-entropy/softmax) that the final layer of the network typically converts logits into probabilities using a softmax function. That is, if we build a neural network that transforms an input image $X$ into $k$ numbers $NN_1(X), \dots, NN_k(X)$, we should map them into probabilities as <Math math = "p_j(X) \propto e^{\lambda NN_j(X)}" />. The constant $\lambda$ can be optimized alongside the network's weights or simply hardcoded to $1$.
+Designing the architecture of a neural network is an extremely intricate problem that cannot be "solved" simply by name-dropping KL divergence. However, maximum entropy does offer some assistance: [we've already discussed](04-max_entropy#softmax) that the final layer of the network typically converts logits into probabilities using a softmax function. That is, if we build a neural network that transforms an input image $X$ into $k$ numbers $NN_1(X), \dots, NN_k(X)$, we should map them into probabilities as <Math math = "p_j(X) \propto e^{\lambda NN_j(X)}" />. The constant $\lambda$ can be optimized alongside the network's weights or simply hardcoded to $1$.
 
 Next, the maximum likelihood principle states that we should maximize the log-likelihood. This means that if for an image $X_i$ with label $\ell_i$, the network outputs a distribution $p_1(X_i), \dots, p_k(X_i)$, we should aim to maximize:
 <Math displayMode={true} math = "\argmax_{\substack{\textrm{neural net \\ weights}}} \sum_{i = 1}^n \log p_{\ell_i}(X_i)"/>
