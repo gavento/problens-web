@@ -50,7 +50,7 @@ const FinanceSlider: React.FC = () => {
             mode === "sap" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
           }`}
         >
-          SAP ({sapImages.length} plots)
+          S&P
         </button>
         <button
           onClick={() => setMode("btc")}
@@ -60,7 +60,7 @@ const FinanceSlider: React.FC = () => {
               : "bg-gray-200 text-gray-700 hover:bg-gray-300"
           }`}
         >
-          Bitcoin ({btcImages.length} plots)
+          Bitcoin
         </button>
       </div>
 
@@ -81,10 +81,6 @@ const FinanceSlider: React.FC = () => {
               console.log('Image loaded successfully:', images[currentIdx].src);
             }}
           />
-          {/* Debug info */}
-          <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs p-1 rounded">
-            {images[currentIdx].src}
-          </div>
         </div>
       </div>
 
@@ -92,7 +88,7 @@ const FinanceSlider: React.FC = () => {
       <div className="space-y-3">
         <div className="text-center">
           <div className="text-lg font-semibold text-gray-800">
-            {mode.toUpperCase()} Plot {images[currentIdx].index}
+            Past {images[currentIdx].index} Days
           </div>
           <div className="text-sm text-gray-600">
             {currentIdx + 1} of {images.length}

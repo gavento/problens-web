@@ -18,10 +18,8 @@ I grabbed some historical data, calculated the daily price changes, and threw th
   options={["A", "B", "C"]}
   correctIndices={[1, 2]}
   feedbackType="all-show"
-  explanation={<>Trick question—both B and C kind of work! The shape totally depends on something I didn't tell you: how far back I looked. If you only check the last month, shape C fits better. But zoom out to longer periods and it starts looking like B. What's up with that? We will see in the <a href="04-max_entropy/financial">chapter about the max-entropy principle</a>.</>}
-/> 
-
-<FinanceImageSliderWidget />
+  explanation={<>Trick question—both B and C kind of work! The shape totally depends on something I didn't tell you: how far back I looked. If you only check the last month, shape C fits better (though in that case it's hard to judge which shape fits better). But zoom out to longer periods and it starts looking like B. What's up with that? We will see in the <a href="04-max_entropy/financial">chapter about the max-entropy principle</a>.<br/><br/><FinanceImageSliderWidget /></>}
+/>
 
 {/*
 At the beginning, it seems that distribution looks a lot like the familiar bell-shaped curve <Math math="e^{-x^2}" /> of [normal distribution](https://en.wikipedia.org/wiki/Normal_distribution). This makes sense! The price of a stock slightly increases whenever somebody buys it, and slightly decreases whenever somebody sells. The daily change is a summation of bazilions of buys and sells, and this is the setup in which we can usually apply the [Central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem) and conclude that the resulting distribution should be normal.
@@ -94,8 +92,12 @@ Question is: which expert crushed it?
   options={["Expert 1", "Expert 2", "Expert 3"]}
   correctIndices={[0, 1, 2]}
   feedbackType="all-show"
-  explanation="Hard to tell with just 6 questions. But I am not a big fan of 🧑🏻 though, with his failed 99%-confidence prediction! Later, we'll see how KL divergence gives us the log-score that forecasting tournaments use; this score penalizes failed 99%-confidence predictions quite heavily! "
-/> 
+  explanation={<>Hard to tell with just 6 questions. But I am not a big fan of 🧑🏻 though, with his failed 99%-confidence prediction! Later, we'll see how KL divergence gives us the log-score that forecasting tournaments use; this score penalizes failed 99%-confidence predictions quite heavily!   
+  <ExpertRatingWidget
+    title="Log score"
+    showBrierScore={false}
+  />  </> }
+  />
 </Expand>
 
 
@@ -189,7 +191,7 @@ Marcus Hutter, an AI researcher, started <a href="http://prize.hutter1.net/">thi
 <MultipleChoiceQuestion
   options={["around 1MB", "around 10MB", "around 100MB"]}
   correctIndices={[2]}
-  explanation={<>It's around 100MB. But wait—why does an <em>AI</em> researcher care about compression? We'll see the connection with <a href="02-crossentropy/coding">entropy</a> and <a href="#">Kolmogorov complexity</a>.</>}
+  explanation={<>It's around 100MB. But wait—why does an <em>AI</em> researcher care about compression? We'll see the connection with <a href="02-crossentropy/coding">entropy</a>, <a href = "02-crossentropy/hutter">next token prediction</a>, and <a href="#">Kolmogorov complexity</a>.</>}
 /> 
 
 </Expand>

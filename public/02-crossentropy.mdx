@@ -239,6 +239,14 @@ We can't see these scores, but we can compute cross-entropy. For large $N$, the 
 
 Key point: this only works _in the long run_. With just 8 predictions, any scoring is pretty noisy. 
 </Expand>
+
+Try the log-score on our example! Also, you can compare it with other popular score called brier score, which is just the so-called $\ell_2$ metric (i.e., if you predicted 0.8 probability and the event happens, your score is $(1-0.8)^2 = 0.04$). 
+
+<ExpertRatingWidget
+    title="Comparing Scoring Methods"
+    showBrierScore={true}
+  />
+
 </Expand>
 
 ## Coding theory
@@ -272,7 +280,7 @@ We talked about "average surprisal," but we could also ask: how many bits do you
 Cross-entropy makes sense too: it's the bits you need when data comes from $p$ but you built your code for $q$. And relative entropy is how much worse your mismatched code is compared to the optimal one. 
 
 
-<Expand headline = "Riddle: Size of Wikipedia">
+<Expand headline = "Riddle: Size of Wikipedia"><a id = "hutter"></a>
 Back to [our Wikipedia riddle](00-introduction/wikipedia) and Hutter's compression challenge. 
 
 Our coding discussion gives us a benchmark: treat each letter as independent from English letter frequency distribution $p$, optimize a code for it, and you need about $H(p)$ bits per letter. You can find English letter frequencies [online](https://en.wikipedia.org/wiki/Letter_frequency); the entropy is $H(p) \approx 4$ bits. There are codes that get close (see below). Since Wikipedia stores each letter in 8 bits<Footnote>Wikipedia uses [UTF-8](https://en.wikipedia.org/wiki/UTF-8), the standard text encoding. English letters take 8 bits, fancier letters take 16, and emojis like 😀 or hieroglyphs like 𓀀 take 32. Classic coding theory—rare stuff gets longer codes. </Footnote>, we can shrink it to about 500MB. Pretty good, and we haven't even used tricks like "'th' is usually followed by 'e'". 

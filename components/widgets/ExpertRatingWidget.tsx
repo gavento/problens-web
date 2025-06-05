@@ -1,0 +1,194 @@
+"use client";
+
+import React, { useState, useMemo } from "react";
+
+type Props = {
+  title?: string;
+  showBrierScore?: boolean;
+};
+
+const ExpertRatingWidget: React.FC<Props> = ({
+  title = "Expert Rating Widget",
+  showBrierScore = false
+}) => {
+  // Initial data: 3 experts + ground truth, 6 questions
+  const [predictions, setPredictions] = useState<number[][]>([
+    [0.99, 0.99, 0.5, 0.5, 0.99, 0.99], // 👵
+    [0.5, 0.9, 0.6, 0.6, 0.6, 0.5],     // 🧑
+    [0.5, 0.5, 0.5, 0.5, 0.5, 0.5],     // 👶
+  ]);
+  
+  const [groundTruth, setGroundTruth] = useState<number[]>([1, 1, 0, 1, 0, 1]);
+
+  const experts = [
+    { emoji: "👵", name: "Expert 1" },
+    { emoji: "🧑", name: "Expert 2" }, 
+    { emoji: "👶", name: "Expert 3" }
+  ];
+
+  // Calculate log scores (cross-entropy)
+  const logScores = useMemo(() => {
+    return predictions.map(expertPreds => {
+      let totalScore = 0;
+      for (let i = 0; i < expertPreds.length; i++) {
+        const p = Math.max(0.001, Math.min(0.999, expertPreds[i])); // Clamp to avoid log(0)
+        const outcome = groundTruth[i];
+        totalScore += outcome * Math.log(p) + (1 - outcome) * Math.log(1 - p);
+      }
+      return -totalScore / expertPreds.length; // Negative log likelihood, averaged
+    });
+  }, [predictions, groundTruth]);
+
+  // Calculate Brier scores
+  const brierScores = useMemo(() => {
+    return predictions.map(expertPreds => {
+      let totalScore = 0;
+      for (let i = 0; i < expertPreds.length; i++) {
+        const p = expertPreds[i];
+        const outcome = groundTruth[i];
+        totalScore += Math.pow(p - outcome, 2);
+      }
+      return totalScore / expertPreds.length;
+    });
+  }, [predictions, groundTruth]);
+
+  const updatePrediction = (expertIdx: number, questionIdx: number, value: string) => {
+    const numValue = parseFloat(value);
+    if (isNaN(numValue)) return;
+    
+    const clampedValue = Math.max(0, Math.min(1, numValue));
+    const newPredictions = [...predictions];
+    newPredictions[expertIdx] = [...newPredictions[expertIdx]];
+    newPredictions[expertIdx][questionIdx] = clampedValue;
+    setPredictions(newPredictions);
+  };
+
+  const updateGroundTruth = (questionIdx: number, value: string) => {
+    const numValue = parseInt(value);
+    if (numValue !== 0 && numValue !== 1) return;
+    
+    const newGroundTruth = [...groundTruth];
+    newGroundTruth[questionIdx] = numValue;
+    setGroundTruth(newGroundTruth);
+  };
+
+  const addQuestion = () => {
+    const newPredictions = predictions.map(expertPreds => [...expertPreds, 0.5]);
+    setPredictions(newPredictions);
+    setGroundTruth([...groundTruth, 1]);
+  };
+
+  const numQuestions = groundTruth.length;
+
+  return (
+    <div className="p-4 bg-gray-50 rounded-lg space-y-4 max-w-6xl mx-auto">
+      {title && (
+        <h3 className="text-lg font-semibold text-center text-gray-800">
+          {title}
+        </h3>
+      )}
+
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse bg-white rounded-lg shadow">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-gray-300 p-2 text-center font-semibold">
+                Expert
+              </th>
+              {Array.from({ length: numQuestions }, (_, i) => (
+                <th key={i} className="border border-gray-300 p-2 text-center font-semibold">
+                  Q{i + 1}
+                </th>
+              ))}
+              <th className="border-l-4 border-blue-500 border-t border-r border-b border-gray-300 p-2 text-center font-semibold text-blue-700">
+                Log Score<br/>(Cross-entropy)
+              </th>
+              {showBrierScore && (
+                <th className="border border-gray-300 p-2 text-center font-semibold text-green-700">
+                  Brier Score
+                </th>
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            {experts.map((expert, expertIdx) => (
+              <tr key={expertIdx} className="hover:bg-gray-50">
+                <td className="border border-gray-300 p-2 text-center font-semibold">
+                  <div className="text-2xl">{expert.emoji}</div>
+                  <div className="text-xs text-gray-600">{expert.name}</div>
+                </td>
+                {Array.from({ length: numQuestions }, (_, questionIdx) => (
+                  <td key={questionIdx} className="border border-gray-300 p-1">
+                    <input
+                      type="number"
+                      min="0"
+                      max="1"
+                      step="0.01"
+                      value={predictions[expertIdx][questionIdx].toFixed(2)}
+                      onChange={(e) => updatePrediction(expertIdx, questionIdx, e.target.value)}
+                      className="w-full p-1 text-center border rounded text-sm"
+                    />
+                  </td>
+                ))}
+                <td className="border-l-4 border-blue-500 border-t border-r border-b border-gray-300 p-2 text-center font-mono font-bold text-blue-700">
+                  {logScores[expertIdx].toFixed(3)}
+                </td>
+                {showBrierScore && (
+                  <td className="border border-gray-300 p-2 text-center font-mono font-bold text-green-700">
+                    {brierScores[expertIdx].toFixed(3)}
+                  </td>
+                )}
+              </tr>
+            ))}
+            
+            {/* Ground Truth Row */}
+            <tr className="bg-yellow-50 border-t-2 border-yellow-400">
+              <td className="border border-gray-300 p-2 text-center font-semibold">
+                <div className="text-sm font-bold text-gray-700">Ground Truth</div>
+              </td>
+              {Array.from({ length: numQuestions }, (_, questionIdx) => (
+                <td key={questionIdx} className="border border-gray-300 p-1">
+                  <select
+                    value={groundTruth[questionIdx]}
+                    onChange={(e) => updateGroundTruth(questionIdx, e.target.value)}
+                    className="w-full p-1 text-center border rounded text-sm bg-yellow-100"
+                  >
+                    <option value={0}>0</option>
+                    <option value={1}>1</option>
+                  </select>
+                </td>
+              ))}
+              <td className="border-l-4 border-blue-500 border-t border-r border-b border-gray-300 p-2 text-center text-gray-500">
+                —
+              </td>
+              {showBrierScore && (
+                <td className="border border-gray-300 p-2 text-center text-gray-500">
+                  —
+                </td>
+              )}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div className="text-center">
+        <button
+          onClick={addQuestion}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+        >
+          Add Question
+        </button>
+      </div>
+
+      <div className="text-sm text-gray-600 space-y-1">
+        <p><strong>Log Score (Cross-entropy):</strong> Lower is better. Heavily penalizes confident wrong predictions.</p>
+        {showBrierScore && (
+          <p><strong>Brier Score:</strong> Lower is better. Measures mean squared error between predictions and outcomes.</p>
+        )}
+        <p><strong>Usage:</strong> Edit prediction values (0-1) and outcomes (0 or 1) to see how different scoring methods evaluate experts.</p>
+      </div>
+    </div>
+  );
+};
+
+export default ExpertRatingWidget;
