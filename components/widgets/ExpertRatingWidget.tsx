@@ -95,6 +95,14 @@ const ExpertRatingWidget: React.FC<Props> = ({
     setGroundTruth([...groundTruth, 1]);
   };
 
+  const removeLastQuestion = () => {
+    if (numQuestions > 1) {
+      const newPredictions = predictions.map(expertPreds => expertPreds.slice(0, -1));
+      setPredictions(newPredictions);
+      setGroundTruth(groundTruth.slice(0, -1));
+    }
+  };
+
   const numQuestions = groundTruth.length;
 
   return (
@@ -188,12 +196,19 @@ const ExpertRatingWidget: React.FC<Props> = ({
         </table>
       </div>
 
-      <div className="text-center">
+      <div className="text-center space-x-3">
         <button
           onClick={addQuestion}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
         >
           Add Question
+        </button>
+        <button
+          onClick={removeLastQuestion}
+          disabled={numQuestions <= 1}
+          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
+          Remove Last Question
         </button>
       </div>
     </div>

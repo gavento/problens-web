@@ -13,6 +13,7 @@ import { Footnotes } from "@/components/content/Footnotes";
 import EvidenceAccumulationSimulator from "@/components/widgets/EvidenceAccumulationSimulator";
 import FinanceImageSliderWidget from "@/components/widgets/FinanceSlider";
 import FinanceSliderSP from "@/components/widgets/FinanceSliderSP";
+import PollingErrorCalculator from "@/components/widgets/PollingErrorCalculator";
 import SoftmaxWidget from "@/components/widgets/SoftmaxWidget";
 import LogisticWidget from "@/components/widgets/LogisticWidget";
 import DistributionComparisonWidget from "@/components/widgets/DistributionComparisonWidget";
@@ -137,6 +138,7 @@ export async function getMdxContent(path: string) {
       EvidenceAccumulationSimulator: EvidenceAccumulationSimulator,
       FinanceImageSliderWidget: FinanceImageSliderWidget,
       FinanceSliderSP: FinanceSliderSP,
+      PollingErrorCalculator: PollingErrorCalculator,
       SoftmaxWidget: SoftmaxWidget,
       LogisticWidget: LogisticWidget,
       DistributionComparisonWidget: DistributionComparisonWidget,

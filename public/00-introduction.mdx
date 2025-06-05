@@ -4,28 +4,6 @@ This web contains an introduction to Kullback-Leibler (KL) divergence.
 Check out [this page](about) for logistics. Here, we've got several riddles some of which will hopefully [nerd-snipe](https://xkcd.com/356/) you!
 
 
-<Expand headline="📈 S&P shape"> <a id="financial-mathematics"></a>
-
-{/* ![Financial Data Distribution](00-introduction/sap_graph.png) */}
-
-Every day, the S&P index price jumps around a bit. <Footnote>If you don't know what the S&P is, just think Bitcoin, Apple stock, or how many euros you can buy with a dollar</Footnote>
-
-I grabbed some historical data, calculated the daily price changes, and threw them in a histogram. The x-axis shows how big the change was (positive about half the time, negative the other half) and the y-axis shows how often that size change happens. Before I show you the plot, take a guess—what's it gonna look like? 
-
-![shapes](00-introduction/shapes.png)
-
-<MultipleChoiceQuestion
-  options={["A", "B", "C"]}
-  correctIndices={[1, 2]}
-  feedbackType="all-show"
-  explanation={<>Trick question—both shapes B (Laplace distribution) and C (Gaussian distribution) kind of work! The shape totally depends on something I didn't tell you: how far back I looked. If you only check the last month, shape C fits better (though in that case it's hard to judge). But zoom out to longer periods and it starts looking more like B. 
-  <FinanceSliderSP />
-  What's up with that? We will see in the <a href="04-max_entropy/financial">chapter about the max-entropy principle</a>.<br/><br/></>}
-/>
-
-[We'll use KL divergence](04-max_entropy/application-understanding-financial-data) to understand this deep principle in probability called the maximum entropy principle. It'll give us tons of intuition about modeling this kind of data and what those different shapes actually mean. 
-</Expand>
-
 <Expand headline="🦶 Average foot"> <a id="statistics"></a>
 
 ![rod](00-introduction/rod.png "Determining the length of the foot in 1522; taken from https://commons.wikimedia.org/wiki/File:Determination_of_the_rute_and_the_feet_in_Frankfurt.png")
@@ -46,31 +24,6 @@ This gives you a pretty stable number that shouldn't change much if you do it ag
   explanation={<>In a sense, they're all correct! Well, more like they're all defensible options from the viewpoint of frequentist statistics. Using <Math math="1/(n-1)" /> gives you the <a href="https://en.wikipedia.org/wiki/Bias_of_an_estimator">unbiased estimate</a>, <Math math="1/n" /> gives the <a href="https://en.wikipedia.org/wiki/Maximum_likelihood_estimation">maximum likelihood estimate</a>, and <Math math="1/(n+1)" /> minimizes <a href="https://en.wikipedia.org/wiki/Mean_squared_error">the mean squared error</a> between your guess and the truth.<br/><br/>But here's the thing: out of all these ways to estimate stuff, only maximum likelihood became the rockstar of machine learning. Using KL divergence, <a href="03-minimizing/mle">we'll see</a> why maximum likelihood is so special and what makes it tick.</>}
 />
 </Expand>
-
-
-<Expand headline="🧠 How to train your LLM"> <a id="deep-learning"></a>
-
-So you wanna train a large language model (LLM) like GPT/Gemini/Claude. These beasts take text, do some crazy computations, and spit out the next letter (Well, actually the next [token](https://en.wikipedia.org/wiki/Large_language_model#Tokenization), which is like a little chunk of letters).
-LLMs don't just guess a single letter—they predict the whole distribution $p$ of what might come next. 
-
-{/* We want to train a new model that is at least as good as, say, GPT-4. In practice, this would involve collecting a lot of text and running both GPT-4 and our LLM on them -- for each predicted letter, we would look at the distribution outputted by GPT-4 and try to nudge our model to make its distribution look similar. */}
-
-Training LLMs is complicated as hell, but one super important bit is picking the _loss function_. Here's the deal: take some text that shows up everywhere online, like "My name is A". We know what usually comes next—maybe "l" is common (all those Alexes), but "a" not so much. Call this the ground-truth distribution $p$.
-
-Your LLM tries to guess this distribution with its own guess $q$. We need to measure how close $q$ is to $p$ using a loss function, then make that number as small as possible during training. So given distributions $p = \{p_1, \dots, p_k\}$ and $q = \{q_1, \dots, q_k\}$, which loss function should we pick?
-
-<MultipleChoiceQuestion
-  options={[
-    <><Math math="\mathcal L(p,q) = \sum_{i = 1}^k |p_i - q_i|" /> (<em><Math math="\ell_1" /> norm</em>)</>,
-    <><Math math="\mathcal L(p,q) = \sum_{i = 1}^k (p_i - q_i)^2" /> (<em><Math math="\ell_2" /> norm</em>)</>,
-    <><Math math="\mathcal L(p,q) = \sum_{i = 1}^k p_i \cdot \log (p_i / q_i)" /> (<em>KL divergence</em>)</>
-  ]}
-  correctIndices={[2]}
-  explanation={<>The first two work okay, but everyone uses KL divergence. Here's why it's cool: if <Math math="p_i = 0.5" /> and <Math math="q_i = 0.51" />, KL thinks that's basically fine. But if <Math math="p_i = 0.01" /> and <Math math="q_i = 0.02" />, KL freaks out (the ratios <Math math="p_i/q_i" /> are totally different). Makes sense, right?<br/><br/>Check out this widget with two distributions and all three loss functions. See if you can make KL go to infinity!<br/><br/><DistributionComparisonWidget title="KL Divergence Explorer" /></>}
-/>
-
-</Expand>
-
 
 <Expand headline="🔮 How good are your predictions?"> <a id="predictions"></a>
 
@@ -93,6 +46,81 @@ Question is: which expert is the best one?
   />
 </Expand>
 
+<Expand headline="🗳️ Why polling sucks"><a id="polling"></a>
+
+[This Wikipedia page](https://en.wikipedia.org/wiki/Nationwide_opinion_polling_for_the_2024_United_States_presidential_election) has hundreds of election polls. A typical poll asks 1000-2000 random people. Do the math<Footnote>Like, use the central limit theorem to figure out what happens with the poll results.</Footnote> and you'll find polls are usually within 2-3% of the truth.<Footnote>Sure, this assumes you can actually sample random voters and they tell the truth, but stick with me.</Footnote> Pretty wild—doesn't matter if the country has millions of people, 1000 randos get you within a few percent!
+
+But here's the thing: US elections are super close. We already know both parties will get around 50%. So maybe we should poll more people (or combine polls) to get within 0.1%. How many people would that take?
+
+<MultipleChoiceQuestion
+  options={["about 10,000", "about 100,000", "about 1,000,000"]}
+  correctIndices={[2]}
+  explanation={<>It's about 1,000,000! That's a huge chunk of the whole US! The general rule: to get error margin <Math math="\eps" />, you need roughly <Math math="1/\eps^2" /> samples. That square is killer—it's why getting better estimates gets expensive fast! No wonder most polls stick to a few thousand people.<br/><br/>But why <Math math="1/\eps^2" />? Explore the relationship below:<br/><br/><PollingErrorCalculator /></>}
+/>
+</Expand>
+
+<Expand headline="📈 S&P shape"> <a id="financial-mathematics"></a>
+
+{/* ![Financial Data Distribution](00-introduction/sap_graph.png) */}
+
+Every day, the S&P index price jumps around a bit. <Footnote>If you don't know what the S&P is, just think Bitcoin, Apple stock, or how many euros you can buy with a dollar</Footnote>
+
+I grabbed some historical data, calculated the daily price changes, and threw them in a histogram. The x-axis shows how big the change was (positive about half the time, negative the other half) and the y-axis shows how often that size change happens. Before I show you the plot, take a guess—what's it gonna look like? 
+
+![shapes](00-introduction/shapes.png)
+
+<MultipleChoiceQuestion
+  options={["A", "B", "C"]}
+  correctIndices={[1, 2]}
+  feedbackType="all-show"
+  explanation={<>Trick question—both shapes B (Laplace distribution) and C (Gaussian distribution) kind of work! The shape totally depends on something I didn't tell you: how far back I looked. If you only check the last month, shape C fits better (though in that case it's hard to judge). But zoom out to longer periods and it starts looking more like B. 
+  <FinanceSliderSP />
+  What's up with that? We will see in the <a href="04-max_entropy/financial">chapter about the max-entropy principle</a>.<br/><br/></>}
+/>
+
+[We'll use KL divergence](04-max_entropy/application-understanding-financial-data) to understand this deep principle in probability called the maximum entropy principle. It'll give us tons of intuition about modeling this kind of data and what those different shapes actually mean. 
+</Expand>
+
+<Expand headline="💰 How to get rich"> <a id = "get-rich"></a>
+
+Here's a riddle that's behind a ton of recent algorithms in CS and ML. Say you wanna get rich trading stocks. Lucky you—$n$ investors share their tips every day. Each day $t$, they give advice, and afterward you find out how they did. For investor $i$, you get her loss $\ell_i^{(t)}$.<Footnote>Positive loss means bad advice, negative loss means good advice.</Footnote>
+
+Your strategy: Start with equal trust in everyone—$p_i^{(0)} = 1/n$ for all investors. Each morning, randomly pick an investor based on your trust distribution and follow their advice. After seeing how everyone did, update your trust from $p^{(t)}$ to $p^{(t+1)}$.
+
+How should you update? What's best?
+
+<MultipleChoiceQuestion
+  options={[
+    <>Gradient descent: <Math math="p^{(t+1)} = p^{(t)} - \varepsilon \cdot \ell_i^{(t)}" />, then normalize</>,
+    <>Multiplicative gradient descent: <Math math="p^{(t+1)} = p^{(t)} \cdot e^{-\varepsilon \cdot \ell_i^{(t)}}" />, then normalize</>, 
+    "Follow the leader: Trust whoever has smallest total loss so far"
+  ]}
+  correctIndices={[1]}
+  explanation={<>They all seem reasonable, but option 2 is the most robust. It's called multiplicative weights update, and it looks weirdly like gradient descent. <a href="06-algorithms">We'll see</a> how KL divergence explains the connection.</>}
+/>
+</Expand>
+
+<Expand headline="🧠 LLM training"> <a id="deep-learning"></a>
+
+So you wanna train a large language model (LLM) like GPT/Gemini/Claude. These beasts take text, do some crazy computations, and spit out the next letter (Well, actually the next [token](https://en.wikipedia.org/wiki/Large_language_model#Tokenization), which is like a little chunk of letters).
+LLMs don't just guess a single letter—they predict the whole distribution $p$ of what might come next. 
+
+{/* We want to train a new model that is at least as good as, say, GPT-4. In practice, this would involve collecting a lot of text and running both GPT-4 and our LLM on them -- for each predicted letter, we would look at the distribution outputted by GPT-4 and try to nudge our model to make its distribution look similar. */}
+
+Training LLMs is complicated as hell, but one super important bit is picking the _loss function_. Here's the deal: take some text that shows up everywhere online, like "My name is A". We know what usually comes next—maybe "l" is common (all those Alexes), but "a" not so much. Call this the ground-truth distribution $p$.
+
+Your LLM tries to guess this distribution with its own guess $q$. We need to measure how close $q$ is to $p$ using a loss function, then make that number as small as possible during training. So given distributions $p = \{p_1, \dots, p_k\}$ and $q = \{q_1, \dots, q_k\}$, which loss function should we pick?
+
+<MultipleChoiceQuestion
+  options={[
+    <><Math math="\mathcal L(p,q) = \sum_{i = 1}^k |p_i - q_i|" /> (<em><Math math="\ell_1" /> norm</em>)</>,
+    <><Math math="\mathcal L(p,q) = \sum_{i = 1}^k (p_i - q_i)^2" /> (<em><Math math="\ell_2" /> norm</em>)</>,
+    <><Math math="\mathcal L(p,q) = \sum_{i = 1}^k p_i \cdot \log (p_i / q_i)" /> (<em>KL divergence</em>)</>
+  ]}
+  correctIndices={[2]}
+  explanation={<>The first two work okay, but everyone uses KL divergence. Here's why it's cool: if <Math math="p_i = 0.5" /> and <Math math="q_i = 0.51" />, KL thinks that's basically fine. But if <Math math="p_i = 0.01" /> and <Math math="q_i = 0.02" />, KL freaks out (the ratios <Math math="p_i/q_i" /> are totally different). Makes sense, right?<br/><br/>Check out this widget with two distributions and all three loss functions. See if you can make KL go to infinity!<br/><br/><DistributionComparisonWidget title="KL Divergence Explorer" /></>}
+/>
+</Expand>
 
 <Expand headline="🔗 Distance from independence"> <a id="information-theory"></a>
 
@@ -115,53 +143,6 @@ Which of our three tables is "closest" to being independent?
 />
 </Expand>
 
-
-<Expand headline="🤯 Machine Learning mess"> <a id="machine-learning"></a>
-
-When you first dive into machine learning, it looks like total chaos—just a bunch of random tricks and optimization problems. Like, say you wanna understand how DALLE or Midjourney work. The standard setup for image generation is called a variational autoencoder. You train it by optimizing this absolute monster: 
-
-<Math displayMode={true} math = "\frac{1}{N} \sum_{i = 1}^N \left( \sum_y p'(y | x) \frac{\| X_i - \textrm{Dec}(y)\|^2}{2d} \,+\, \left( \frac12 \sum_{j = 1}^d \textrm{Enc}_{\mu, j}(X_i)^2 + \textrm{Enc}_{\sigma^2, j}(X_i) - \log \textrm{Enc}_{\sigma^2, j}(X_i) \right)\right)"/>
-
-Where the hell does this come from?? [We'll see](05-machine_learning) how KL divergence makes sense of this mess—and tons of other standard ML algorithms too. 
-
-![Examples](05-machine_learning/table.png)
-
-</Expand>
-
-
-<Expand headline="🗳️ Why polling sucks"><a id="polling"></a>
-
-[This Wikipedia page](https://en.wikipedia.org/wiki/Nationwide_opinion_polling_for_the_2024_United_States_presidential_election) has hundreds of election polls. A typical poll asks 1000-2000 random people. Do the math<Footnote>Like, use the central limit theorem to figure out what happens with the poll results.</Footnote> and you'll find polls are usually within 2-3% of the truth.<Footnote>Sure, this assumes you can actually sample random voters and they tell the truth, but stick with me.</Footnote> Pretty wild—doesn't matter if the country has millions of people, 1000 randos get you within a few percent!
-
-But here's the thing: US elections are super close. We already know both parties will get around 50%. So maybe we should poll more people (or combine polls) to get within 0.1%. How many people would that take?
-
-<MultipleChoiceQuestion
-  options={["about 10,000", "about 100,000", "about 1,000,000"]}
-  correctIndices={[2]}
-  explanation={<>It's about 1,000,000! That's a huge chunk of the whole US! The general rule: to get error margin <Math math="\eps" />, you need roughly <Math math="1/\eps^2" /> samples. That square is killer—it's why getting better estimates gets expensive fast! No wonder most polls stick to a few thousand people.<br/><br/>But why <Math math="1/\eps^2" />? We'll dig into this later.</>}
-/>
-</Expand>
-
-<Expand headline="💰 How to get rich"> <a id = "get-rich"></a>
-
-Here's a riddle that's behind a ton of recent algorithms in CS and ML. Say you wanna get rich trading stocks. Lucky you—$n$ investors share their tips every day. Each day $t$, they give advice, and afterward you find out how they did. For investor $i$, you get her loss $\ell_i^{(t)}$.<Footnote>Positive means bad advice, negative means good advice.</Footnote>
-
-Your strategy: Start with equal trust in everyone—$p_i^{(0)} = 1/n$ for all investors. Each morning, randomly pick an investor based on your trust distribution and follow their advice. After seeing how everyone did, update your trust from $p^{(t)}$ to $p^{(t+1)}$.
-
-How should you update? What's best?
-
-<MultipleChoiceQuestion
-  options={[
-    <>Gradient descent: <Math math="p^{(t+1)} = p^{(t)} - \varepsilon \cdot \ell_i^{(t)}" />, then normalize</>,
-    <>Multiplicative gradient descent: <Math math="p^{(t+1)} = p^{(t)} \cdot e^{-\varepsilon \cdot \ell_i^{(t)}}" />, then normalize</>, 
-    "Follow the leader: Trust whoever has smallest total loss so far"
-  ]}
-  correctIndices={[1]}
-  explanation={<>They all seem reasonable, but option 2 is the most robust. It's called multiplicative weights update, and it looks weirdly like gradient descent. <a href="06-algorithms">We'll see</a> how KL divergence explains the connection.</>}
-/>
-</Expand>
-
-
 <Expand headline="🤓 Understanding XKCD jokes"> <a id = "xkcd"></a>
 
 ![Are the odds in our favor?](00-introduction/countdown.png)
@@ -175,7 +156,6 @@ So... are the odds in our favor?
 /> 
 </Expand>
 
-
 <Expand headline="🌐 How large is Wikipedia?"><a id = "wikipedia"></a>
 Marcus Hutter, an AI researcher, started <a href="http://prize.hutter1.net/">this challenge</a>: Take a 1GB file of Wikipedia text. How small can you compress it? <a href="https://en.wikipedia.org/wiki/ZIP_(file_format)">Zipping it</a> gets you about 300MB. But we can do way better. What's the current record? 
 
@@ -184,18 +164,19 @@ Marcus Hutter, an AI researcher, started <a href="http://prize.hutter1.net/">thi
   correctIndices={[2]}
   explanation={<>It's around 100MB. But wait—why does an <em>AI</em> researcher care about compression? We'll see the connection with <a href="02-crossentropy/coding">entropy</a>, <a href = "02-crossentropy/hutter">next token prediction</a>, and <a href="#">Kolmogorov complexity</a>.</>}
 /> 
-
 </Expand>
 
+<Expand headline="🤯 Machine Learning mess"> <a id="machine-learning"></a>
 
+When you first dive into machine learning, it looks like total chaos—just a bunch of random tricks and optimization problems. Like, say you wanna understand how DALLE or Midjourney work. The standard setup for image generation is called a variational autoencoder. You train it by optimizing this absolute monster: 
 
-<Expand headline="🥧 Random Pi Program"> <a id="random-pi-program"></a>
+<Math displayMode={true} math = "\frac{1}{N} \sum_{i = 1}^N \left( \sum_y p'(y | x) \frac{\| X_i - \textrm{Dec}(y)\|^2}{2d} \,+\, \left( \frac12 \sum_{j = 1}^d \textrm{Enc}_{\mu, j}(X_i)^2 + \textrm{Enc}_{\sigma^2, j}(X_i) - \log \textrm{Enc}_{\sigma^2, j}(X_i) \right)\right)"/>
 
-Here's a brain-bender: Take all C programs that are exactly 1000 characters long (1000 bytes in ASCII) and print the first million digits of $\pi$. Pick one at random. What's it gonna look like?
+Where the hell does this come from?? [We'll see](05-machine_learning) how KL divergence makes sense of this mess—and tons of other standard ML algorithms too. 
+
+![Examples](05-machine_learning/table.png)
+
 </Expand>
-
-
-
 
 ## Next Steps <a id="next-steps"></a>
 
