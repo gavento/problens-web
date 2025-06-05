@@ -2,7 +2,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 
 type ImageItem = {
   src: string;
@@ -68,15 +67,24 @@ const FinanceSlider: React.FC = () => {
       {/* Image display */}
       <div className="flex justify-center">
         <div className="relative">
-          <Image
+          <img
             src={images[currentIdx].src}
             alt={`${mode.toUpperCase()} Plot ${images[currentIdx].index}`}
-            width={800}
-            height={600}
             className="max-w-full h-auto border rounded-md shadow-lg"
-            unoptimized
-            priority={currentIdx === 0} // Only prioritize the first image
+            style={{ maxHeight: '600px' }}
+            onError={(e) => {
+              console.error('Image failed to load:', images[currentIdx].src);
+              console.error('Error details:', e);
+              (e.target as HTMLImageElement).style.border = '2px solid red';
+            }}
+            onLoad={() => {
+              console.log('Image loaded successfully:', images[currentIdx].src);
+            }}
           />
+          {/* Debug info */}
+          <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs p-1 rounded">
+            {images[currentIdx].src}
+          </div>
         </div>
       </div>
 

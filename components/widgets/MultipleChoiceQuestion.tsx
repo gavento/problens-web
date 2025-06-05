@@ -27,10 +27,6 @@ const MultipleChoiceQuestion: React.FC<Props> = ({
     setShowResults(true);
   };
 
-  const resetQuestion = () => {
-    setSelectedIndex(null);
-    setShowResults(false);
-  };
 
   return (
     <div className="my-6 p-4 bg-gray-50 rounded-lg border">
@@ -105,14 +101,6 @@ const MultipleChoiceQuestion: React.FC<Props> = ({
             </div>
           </div>
           
-          <div className="text-center">
-            <button
-              onClick={resetQuestion}
-              className="px-4 py-2 text-sm bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
-            >
-              Try Again
-            </button>
-          </div>
         </div>
       )}
     </div>
