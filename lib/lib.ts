@@ -21,6 +21,7 @@ import DistributionComparisonWidget from "@/components/widgets/DistributionCompa
 import EntropyWidget from "@/components/widgets/EntropyWidget";
 import MultipleChoiceQuestion from "@/components/widgets/MultipleChoiceQuestion";
 import ExpertRatingWidget from "@/components/widgets/ExpertRatingWidget";
+import NoisyBinarySearchWidget from "@/components/widgets/NoisyBinarySearchWidget";
 import { compile, evaluate } from "@mdx-js/mdx";
 import chalk from "chalk";
 import * as runtime from "react/jsx-runtime";
@@ -147,6 +148,7 @@ export async function getMdxContent(path: string) {
       EntropyWidget: EntropyWidget,
       MultipleChoiceQuestion: MultipleChoiceQuestion,
       ExpertRatingWidget: ExpertRatingWidget,
+      NoisyBinarySearchWidget: NoisyBinarySearchWidget,
       Math: NumberedMath,
       EqRef: EquationRef,
       Block: Block,

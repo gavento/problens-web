@@ -31,11 +31,10 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
 }) => {
   const [constraints, setConstraints] = useState<Constraint[]>([
     { id: "mean", name: "E[X]", mathDisplay: "E[X]", enabled: true, value: 0.5, defaultValue: 0.5 },
-    { id: "secondMoment", name: "E[X²]", mathDisplay: "E[X^2]", enabled: true, value: 0.3, defaultValue: 0.3 },
+    { id: "secondMoment", name: "E[X²]", mathDisplay: "E[X^2]", enabled: false, value: 0.33, defaultValue: 0.33 },
     { id: "logX", name: "E[log X]", mathDisplay: "E[\\log X]", enabled: false, value: -1, defaultValue: -1 },
-    { id: "log1MinusX", name: "E[log(1-X)]", mathDisplay: "E[\\log(1-X)]", enabled: false, value: -1, defaultValue: -1 },
-    { id: "thirdMoment", name: "E[X³]", mathDisplay: "E[X^3]", enabled: false, value: 0.2, defaultValue: 0.2 },
-    { id: "fourthMoment", name: "E[X⁴]", mathDisplay: "E[X^4]", enabled: false, value: 0.15, defaultValue: 0.15 },
+    { id: "thirdMoment", name: "E[X³]", mathDisplay: "E[X^3]", enabled: false, value: 0.25, defaultValue: 0.25 },
+    { id: "fourthMoment", name: "E[X⁴]", mathDisplay: "E[X^4]", enabled: false, value: 0.2, defaultValue: 0.2 },
   ]);
 
   // Simple optimization simulation - in reality this would use numerical methods
@@ -55,6 +54,21 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
         return {
           success: false,
           error: `E[X²] = ${secondMoment.toFixed(3)} < E[X]² = ${(mean * mean).toFixed(3)}. This violates Var(X) ≥ 0.`
+        };
+      }
+      
+      // For distributions on [0,1], additional bounds apply
+      if (mean < 0 || mean > 1) {
+        return {
+          success: false,
+          error: `E[X] = ${mean.toFixed(3)} is outside [0,1]. For distributions on [0,1], the mean must be in this range.`
+        };
+      }
+      
+      if (secondMoment > 1) {
+        return {
+          success: false,
+          error: `E[X²] = ${secondMoment.toFixed(3)} > 1. For distributions on [0,1], E[X²] cannot exceed 1.`
         };
       }
     }
@@ -96,7 +110,6 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
     const meanConstraint = enabledConstraints.find(c => c.id === "mean");
     const secondMomentConstraint = enabledConstraints.find(c => c.id === "secondMoment");
     const logXConstraint = enabledConstraints.find(c => c.id === "logX");
-    const log1MinusXConstraint = enabledConstraints.find(c => c.id === "log1MinusX");
     
     for (let i = 0; i <= 100; i++) {
       const x = i / 100;
@@ -112,15 +125,24 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
         }
       }
       
-      if (logXConstraint && log1MinusXConstraint) {
-        // Beta-like distribution
-        const alpha = Math.max(0.1, -logXConstraint.value);
-        const beta = Math.max(0.1, -log1MinusXConstraint.value);
-        y = Math.pow(x, alpha - 1) * Math.pow(1 - x, beta - 1);
-      } else if (logXConstraint) {
-        // Power law-like
+      if (logXConstraint) {
+        // Power law-like distribution
         const alpha = Math.max(-0.9, logXConstraint.value);
         y = Math.pow(x + 0.001, alpha); // Add small epsilon to avoid singularity
+      }
+      
+      if (secondMomentConstraint && meanConstraint) {
+        // Adjust for second moment constraint (simplified approximation)
+        const targetMean = meanConstraint.value;
+        const targetSecondMoment = secondMomentConstraint.value;
+        const targetVariance = targetSecondMoment - targetMean * targetMean;
+        
+        if (targetVariance > 0) {
+          // Add some spread based on variance
+          const spread = Math.sqrt(targetVariance);
+          const deviation = x - targetMean;
+          y *= Math.exp(-0.5 * (deviation * deviation) / (spread * spread + 0.01));
+        }
       }
       
       if (x === 0 || x === 1) y = Math.max(0.001, y); // Avoid exact zeros for visualization
@@ -154,7 +176,7 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
   const resetToDefaults = () => {
     setConstraints(prev => prev.map(c => ({
       ...c,
-      enabled: c.id === "mean" || c.id === "secondMoment",
+      enabled: c.id === "mean",
       value: c.defaultValue
     })));
   };
