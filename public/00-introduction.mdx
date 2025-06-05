@@ -42,14 +42,16 @@ $$\bar X = \frac{1}{16} (X_1 + \dots + X_{16})$$
 
 This gives you a pretty stable number that shouldn't change much if you do it again. To measure how good your estimate is, you'd usually calculate the standard deviation. Remember the formula? Which one's right:
 
-1. $$\bar \sigma^2 = \frac{1}{15} \sum_{i=1}^{16} (X_i - \bar X)^2$$
-2. $$\bar \sigma^2 = \frac{1}{16} \sum_{i=1}^{16} (X_i - \bar X)^2$$
-3. $$\bar \sigma^2 = \frac{1}{17} \sum_{i=1}^{16} (X_i - \bar X)^2$$
-
-In a sense, they're all correct! Well, more like they're all defensible options from the viewpoint of frequentist statistics.
-Using $1/(n-1)$ gives you the [unbiased estimate](https://en.wikipedia.org/wiki/Bias_of_an_estimator), $1/n$ gives the [maximum likelihood estimate](https://en.wikipedia.org/wiki/Maximum_likelihood_estimation), and $1/(n+1)$ minimizes [the mean squared error](https://en.wikipedia.org/wiki/Mean_squared_error) between your guess and the truth.
-
-But here's the thing: out of all these ways to estimate stuff, only maximum likelihood became the rockstar of machine learning. Using KL divergence, [we'll see](03-minimizing/mle) why maximum likelihood is so special and what makes it tick.
+<MultipleChoiceQuestion
+  options={[
+    <Math math="\\bar \\sigma^2 = \\frac{1}{15} \\sum_{i=1}^{16} (X_i - \\bar X)^2" />,
+    <Math math="\\bar \\sigma^2 = \\frac{1}{16} \\sum_{i=1}^{16} (X_i - \\bar X)^2" />,
+    <Math math="\\bar \\sigma^2 = \\frac{1}{17} \\sum_{i=1}^{16} (X_i - \\bar X)^2" />
+  ]}
+  correctIndices={[0, 1, 2]}
+  feedbackType="all-show"
+  explanation={<>In a sense, they're all correct! Well, more like they're all defensible options from the viewpoint of frequentist statistics. Using <Math math="1/(n-1)" /> gives you the <a href="https://en.wikipedia.org/wiki/Bias_of_an_estimator">unbiased estimate</a>, <Math math="1/n" /> gives the <a href="https://en.wikipedia.org/wiki/Maximum_likelihood_estimation">maximum likelihood estimate</a>, and <Math math="1/(n+1)" /> minimizes <a href="https://en.wikipedia.org/wiki/Mean_squared_error">the mean squared error</a> between your guess and the truth.<br/><br/>But here's the thing: out of all these ways to estimate stuff, only maximum likelihood became the rockstar of machine learning. Using KL divergence, <a href="03-minimizing/mle">we'll see</a> why maximum likelihood is so special and what makes it tick.</>}
+/>
 </Expand>
 
 
@@ -66,11 +68,15 @@ Training LLMs is complicated as hell, but one super important bit is picking the
 
 Your LLM tries to guess this distribution with its own guess $q$. We need to measure how close $q$ is to $p$ using a loss function, then make that number as small as possible during training. So given distributions $p = \{p_1, \dots, p_k\}$ and $q = \{q_1, \dots, q_k\}$, which loss function should we pick?
 
-1. $\mathcal L(p,q) = \sum_{i = 1}^k |p_i - q_i|$ (_$\ell_1$ norm_)
-2. $\mathcal L(p,q) = \sum_{i = 1}^k (p_i - q_i)^2$ (_$\ell_2$ norm_)
-3. $\mathcal L(p,q) = \sum_{i = 1}^k p_i \cdot \log (p_i / q_i)$ (_KL divergence_)
-
-The first two work okay, but everyone uses KL divergence. Here's why it's cool: if $p_i = 0.5$ and $q_i = 0.51$, KL thinks that's basically fine. But if $p_i = 0.01$ and $q_i = 0.02$, KL freaks out (the ratios $p_i/q_i$ are totally different). Makes sense, right?
+<MultipleChoiceQuestion
+  options={[
+    <><Math math="\mathcal L(p,q) = \sum_{i = 1}^k |p_i - q_i|" /> (<em><Math math="\ell_1" /> norm</em>)</>,
+    <><Math math="\mathcal L(p,q) = \sum_{i = 1}^k (p_i - q_i)^2" /> (<em><Math math="\ell_2" /> norm</em>)</>,
+    <><Math math="\mathcal L(p,q) = \sum_{i = 1}^k p_i \cdot \log (p_i / q_i)" /> (<em>KL divergence</em>)</>
+  ]}
+  correctIndices={[2]}
+  explanation={<>The first two work okay, but everyone uses KL divergence. Here's why it's cool: if <Math math="p_i = 0.5" /> and <Math math="q_i = 0.51" />, KL thinks that's basically fine. But if <Math math="p_i = 0.01" /> and <Math math="q_i = 0.02" />, KL freaks out (the ratios <Math math="p_i/q_i" /> are totally different). Makes sense, right?</>}
+/>
 
 Check out this widget with two distributions and all three loss functions. See if you can make KL go to infinity!
 
@@ -88,11 +94,12 @@ A year later, you know what actually happened.
 
 Question is: which expert crushed it?
 
-1. Expert 1
-2. Expert 2
-3. Expert 3
-
-Answer: Hard to tell with just 8 questions. Later, we'll see how KL divergence gives us the log-score that forecasting tournaments use. 
+<MultipleChoiceQuestion
+  options={["Expert 1", "Expert 2", "Expert 3"]}
+  correctIndices={[]}
+  feedbackType="all-show"
+  explanation="Hard to tell with just 8 questions. Later, we'll see how KL divergence gives us the log-score that forecasting tournaments use."
+/> 
 </Expand>
 
 
@@ -110,11 +117,11 @@ Two distributions are independent if their joint distribution equals the product
 
 Which of our three tables is "closest" to being independent?
 
-1. Table 1
-2. Table 2
-3. Table 3
-
-[We'll see](01-kl_intro/information-theory) this is measured by something called mutual information, which is super important in information theory and—surprise!—it's just KL divergence in disguise.
+<MultipleChoiceQuestion
+  options={["Table 1", "Table 2", "Table 3"]}
+  correctIndices={[1]}
+  explanation={<><a href="01-kl_intro/information-theory">We'll see</a> this is measured by something called mutual information, which is super important in information theory and—surprise!—it's just KL divergence in disguise.</>}
+/>
 </Expand>
 
 
@@ -137,11 +144,11 @@ Where the hell does this come from?? [We'll see](05-machine_learning) how KL div
 
 But here's the thing: US elections are super close. We already know both parties will get around 50%. So maybe we should poll more people (or combine polls) to get within 0.1%. How many people would that take?
 
-1. about 10,000
-2. about 100,000
-3. about 1,000,000
-
-It's about 1,000,000! That's a huge chunk of the whole US! The general rule: to get error margin $\epsilon$, you need roughly $1/\epsilon^2$ samples. That square is killer—it's why getting better estimates gets expensive fast! No wonder most polls stick to a few thousand people.
+<MultipleChoiceQuestion
+  options={["about 10,000", "about 100,000", "about 1,000,000"]}
+  correctIndices={[2]}
+  explanation={<>It's about 1,000,000! That's a huge chunk of the whole US! The general rule: to get error margin <Math math="\epsilon" />, you need roughly <Math math="1/\epsilon^2" /> samples. That square is killer—it's why getting better estimates gets expensive fast! No wonder most polls stick to a few thousand people.</>}
+/>
 
 But why $1/\epsilon^2$? We'll dig into this later. {/* KL divergence measures how well one distribution matches another, which is why understanding its value for distributions (50%, 50%) and (50%+$\varepsilon$, 50%-$\varepsilon$) is going to shed a lot of light on this question! We will also use this as a jumping bridge to explain a bit more on how KL divergence is crucial in statistics. */}
 </Expand>
@@ -160,11 +167,11 @@ _Follow the leader_: Just trust whoever's best so far: <Math math="p^{(t+1)}_i =
 
 What's best?
 
-Answer 1
-Answer 2
-Answer 3
-
-They all seem reasonable, but option 2 is the most robust. It's called multiplicative weights update, and it looks weirdly like gradient descent. [We'll see](06-algorithms) how KL divergence explains the connection.
+<MultipleChoiceQuestion
+  options={["Gradient descent", "Multiplicative gradient descent", "Follow the leader"]}
+  correctIndices={[1]}
+  explanation={<>They all seem reasonable, but option 2 is the most robust. It's called multiplicative weights update, and it looks weirdly like gradient descent. <a href="06-algorithms">We'll see</a> how KL divergence explains the connection.</>}
+/>
 </Expand>
 
 
@@ -174,22 +181,22 @@ They all seem reasonable, but option 2 is the most robust. It's called multiplic
 
 So... are the odds in our favor?
 
-Yes
-No
-depends
-
-We'll use KL divergence to derive something called the [maximum entropy principle](04-max_entropy/xkcd) that explains why our gut feeling says we're probably screwed here. 
+<MultipleChoiceQuestion
+  options={["Yes", "No", "depends"]}
+  correctIndices={[1]}
+  explanation={<>We'll use KL divergence to derive something called the <a href="04-max_entropy/xkcd">maximum entropy principle</a> that explains why our gut feeling says we're probably screwed here.</>}
+/> 
 </Expand>
 
 
 <Expand headline="🌐 How large is Wikipedia?"><a id = "wikipedia"></a>
-Marcus Hutter, an AI researcher, started [this challenge](http://prize.hutter1.net/): Take a 1GB file of Wikipedia text. How small can you compress it? [Zipping it](https://en.wikipedia.org/wiki/ZIP_(file_format)) gets you about 300MB. But we can do way better. What's the current record? 
+Marcus Hutter, an AI researcher, started <a href="http://prize.hutter1.net/">this challenge</a>: Take a 1GB file of Wikipedia text. How small can you compress it? <a href="https://en.wikipedia.org/wiki/ZIP_(file_format)">Zipping it</a> gets you about 300MB. But we can do way better. What's the current record? 
 
-1 around 1MB
-2 around 10MB
-3 around 100MB
-
-It's around 100MB. But wait—why does an *AI* researcher care about compression? We'll see the connection with [entropy](02-crossentropy/coding) and [Kolmogorov complexity](?). 
+<MultipleChoiceQuestion
+  options={["around 1MB", "around 10MB", "around 100MB"]}
+  correctIndices={[2]}
+  explanation={<>It's around 100MB. But wait—why does an <em>AI</em> researcher care about compression? We'll see the connection with <a href="02-crossentropy/coding">entropy</a> and <a href="#">Kolmogorov complexity</a>.</>}
+/> 
 
 </Expand>
 
