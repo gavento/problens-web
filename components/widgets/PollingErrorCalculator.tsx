@@ -176,7 +176,7 @@ const PollingErrorCalculator: React.FC<Props> = ({
             {calculations.sampleSize > 1_000_000 && (
               <div className="bg-red-100 border-l-4 border-red-500 p-3 text-sm">
                 <p className="font-semibold text-red-800">This is getting impractical!</p>
-                <p className="text-red-700">You'd need to poll {calculations.percentOfUSVoters.toFixed(2)}% of all US voters.</p>
+                <p className="text-red-700">You&apos;d need to poll {calculations.percentOfUSVoters.toFixed(2)}% of all US voters.</p>
               </div>
             )}
 
