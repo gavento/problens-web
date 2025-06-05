@@ -121,9 +121,17 @@ const NoisyBinarySearchWidget: React.FC = () => {
     <div className={styles.widget}>
       <h3>Noisy Binary Search Visualization</h3>
       
-      <div style={{ marginBottom: '20px' }}>
-        <label>
-          Target element: 
+      <div style={{ marginBottom: '20px', textAlign: 'center' }}>
+        <label style={{ 
+          display: 'inline-flex', 
+          alignItems: 'center',
+          gap: '10px',
+          padding: '10px 20px',
+          backgroundColor: '#f0f0f0',
+          borderRadius: '8px',
+          border: '2px solid #e0e0e0'
+        }}>
+          <span style={{ fontSize: '16px', fontWeight: '500' }}>Search for element:</span>
           <input
             type="number"
             min="1"
@@ -136,8 +144,19 @@ const NoisyBinarySearchWidget: React.FC = () => {
                 resetAlgorithm();
               }
             }}
-            style={{ marginLeft: '10px', width: '60px' }}
+            style={{ 
+              width: '60px',
+              padding: '5px 10px',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              border: '2px solid #2196F3',
+              borderRadius: '4px',
+              textAlign: 'center',
+              backgroundColor: 'white',
+              cursor: 'pointer'
+            }}
           />
+          <span style={{ fontSize: '14px', color: '#666' }}>(1-{ARRAY_SIZE})</span>
         </label>
       </div>
 
