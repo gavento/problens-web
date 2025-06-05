@@ -21,7 +21,7 @@ const NoisyBinarySearchWidget: React.FC = () => {
   );
   const [currentMiddle, setCurrentMiddle] = useState<number | null>(null);
   const [found, setFound] = useState(false);
-  const [comparisonResult, setComparisonResult] = useState<string | null>(null);
+  const [comparisonResult, setComparisonResult] = useState<React.ReactNode>(null);
   const [stepCount, setStepCount] = useState(0);
   const [showArrow, setShowArrow] = useState(false);
   const [animatingWeights, setAnimatingWeights] = useState(false);
@@ -76,9 +76,23 @@ const NoisyBinarySearchWidget: React.FC = () => {
       const reportedComparison = isCorrectComparison ? actualComparison : !actualComparison;
 
       if (reportedComparison) {
-        setComparisonResult(`${middleElement.index} < ${targetIndex} (${isCorrectComparison ? 'correct' : 'noisy!'})`);
+        setComparisonResult(
+          <span>
+            {middleElement.index} &lt; {targetIndex} 
+            <span style={{ color: isCorrectComparison ? '#4CAF50' : '#f44336', fontWeight: 'bold' }}>
+              {' '}({isCorrectComparison ? 'correct' : 'noisy!'})
+            </span>
+          </span>
+        );
       } else {
-        setComparisonResult(`${middleElement.index} > ${targetIndex} (${isCorrectComparison ? 'correct' : 'noisy!'})`);
+        setComparisonResult(
+          <span>
+            {middleElement.index} &gt; {targetIndex} 
+            <span style={{ color: isCorrectComparison ? '#4CAF50' : '#f44336', fontWeight: 'bold' }}>
+              {' '}({isCorrectComparison ? 'correct' : 'noisy!'})
+            </span>
+          </span>
+        );
       }
 
       setAnimatingWeights(true);
