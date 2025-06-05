@@ -1,7 +1,7 @@
 // components/widgets/SoftmaxWidget.tsx
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { InlineMath, BlockMath } from "react-katex";
 
 type Props = {
@@ -20,6 +20,16 @@ const SoftmaxWidget: React.FC<Props> = ({
   initialLambda = 0.5,
 }) => {
   const [lambda, setLambda] = useState(initialLambda);
+  const [containerWidth, setContainerWidth] = useState(400);
+
+  useEffect(() => {
+    const updateWidth = () => {
+      setContainerWidth(Math.min(400, window.innerWidth - 80));
+    };
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
 
   // Calculate softmax probabilities
   const probabilities = useMemo(() => {
@@ -28,9 +38,9 @@ const SoftmaxWidget: React.FC<Props> = ({
     return exponentials.map((exp) => exp / sum);
   }, [values, lambda]);
 
-  // Chart dimensions
-  const chartWidth = 400;
-  const chartHeight = 300;
+  // Chart dimensions - responsive
+  const chartWidth = containerWidth;
+  const chartHeight = Math.min(300, chartWidth * 0.75);
   const margin = { top: 20, right: 20, bottom: 20, left: 40 };
   const innerWidth = chartWidth - margin.left - margin.right;
   const innerHeight = chartHeight - margin.top - margin.bottom;
@@ -50,8 +60,8 @@ const SoftmaxWidget: React.FC<Props> = ({
       </div>
 
       {/* SVG Chart */}
-      <div className="flex justify-center">
-        <svg width={chartWidth} height={chartHeight} className="border rounded bg-white">
+      <div className="flex justify-center overflow-x-auto">
+        <svg width={chartWidth} height={chartHeight} className="border rounded bg-white min-w-0 max-w-full">
           {/* Chart area background */}
           <rect
             x={margin.left}

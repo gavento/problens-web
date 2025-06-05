@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { BlockMath } from "react-katex";
 
 type Props = {
@@ -21,6 +21,16 @@ const LogisticWidget: React.FC<Props> = ({
   xMax = 5,
 }) => {
   const [lambda, setLambda] = useState(initialLambda);
+  const [containerWidth, setContainerWidth] = useState(500);
+
+  useEffect(() => {
+    const updateWidth = () => {
+      setContainerWidth(Math.min(500, window.innerWidth - 80));
+    };
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
 
   // Calculate logistic function values
   const logisticData = useMemo(() => {
@@ -37,9 +47,9 @@ const LogisticWidget: React.FC<Props> = ({
     return points;
   }, [lambda, xMin, xMax]);
 
-  // Chart dimensions
-  const chartWidth = 500;
-  const chartHeight = 300;
+  // Chart dimensions - responsive
+  const chartWidth = containerWidth;
+  const chartHeight = Math.min(300, chartWidth * 0.6);
   const margin = { top: 20, right: 40, bottom: 40, left: 50 };
   const innerWidth = chartWidth - margin.left - margin.right;
   const innerHeight = chartHeight - margin.top - margin.bottom;
@@ -67,8 +77,8 @@ const LogisticWidget: React.FC<Props> = ({
       {title && <h3 className="text-lg font-semibold text-center text-gray-800">{title}</h3>}
 
       {/* SVG Chart */}
-      <div className="flex justify-center">
-        <svg width={chartWidth} height={chartHeight} className="border rounded bg-white">
+      <div className="flex justify-center overflow-x-auto">
+        <svg width={chartWidth} height={chartHeight} className="border rounded bg-white min-w-0 max-w-full">
           {/* Chart area background */}
           <rect
             x={margin.left}
