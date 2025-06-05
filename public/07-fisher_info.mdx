@@ -6,6 +6,8 @@ In this chapter, we will explain a bit more about how KL divergence connects to 
 
 In [one of our riddles](00-introduction), we have been talking about the problem with polling: If you want to learn the percentage of the vote for one party up to $\eps$, you need sample about $1/\eps^2$ voters. <Footnote>More precisely, it's about $1/(2\eps^2) \cdot \log 1/\delta$ if you want your estimate to be within $\pm \eps$ with probability at least $1-\delta$. In practice, this means that if you want to be withing $\pm 2\%$ with 75\% probability, you should sample around 1700 voters. </Footnote>
 
+<PollingErrorCalculator />
+
 ## The law of large numbers
 
 One way you can understand this is via [the law of large numbers](https://en.wikipedia.org/wiki/Law_of_large_numbers). This law tells you that if you flip a fair coin $n$ times, you typically get around $n/2 \pm \sqrt{n}$ heads. <Footnote>You can prove this by estimating the variance of the sum and using [Chebyshev's inequality](https://en.wikipedia.org/wiki/Chebyshev%27s_inequality). </Footnote>. If your coin is biased and heads come out with probability $1/2 + \eps$, then the law says you will typically see around $(1+\eps)n/2 \pm \sqrt{n}$ heads. If you want to be able to separate the two options, you need the intervals $n/2 \pm \sqrt{n}$ and $(1+\eps)n/2 \pm \sqrt{n}$ to be disjoint, which means that $\eps \cdot n \approx \sqrt{n}$, i.e., $n$ should be at least around $1/\eps^2$.
