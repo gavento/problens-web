@@ -21,6 +21,10 @@ for some constants $\lambda_1, \dots, \lambda_m$.
 </Block>
 Notice that this general recipe doesn't tell us the exact values of $\lambda_1, \dots, \lambda_m$. Those depend on the specific values of $\alpha_1, \dots, \alpha_m$ (though the general shape remains the same regardless of the $\alpha$ values). But don't get too hung up on the $\alpha$s and $\lambda$s. The key takeaway is that the maximum entropy distribution looks like an exponential, with the "stuff we care about"—the functions $f_1, \dots, f_m$—in the exponent.
 
+Try building your own maximum entropy distribution by setting constraints:
+
+<DistributionConstraintBuilder />
+
 ### Why? <a id = "intuition"></a>
 
 Let's build some intuition for this. Remember from [the previous chapter](03-minimizing) that the max-entropy principle is essentially about finding a distribution that is as close to uniform as possible, in the sense of minimizing KL divergence.
