@@ -6,14 +6,17 @@ export const TITLE_SHORT = "KL divergence";
 export const TITLE_ABBR = "KL divergence";
 export const CHAPTERS = [
   ["Riddles", "00-introduction"],
+  ["", ""], // Gap
   ["KL divergence & Bayes' rule", "01-kl_intro"],
   ["Crossentropy & Entropy", "02-crossentropy"],
   ["Minimizing KL", "03-minimizing"],
   ["Max entropy distributions", "04-max_entropy"],
   ["Machine learning", "05-machine_learning"],
-  ["Additional topics", "06-algorithms"],
-  // ["Multiplicative weights", "06-algorithms"],
-  // ["Statistics & Fisher information", "07-fisher_info"],
+  ["", ""], // Gap
+  ["Multiplicative weights", "06-algorithms"],
+  ["Fisher information", "07-fisher_info"],
+  ["Kolmogorov complexity", "08-kolmogorov"],
+  ["", ""], // Gap
   ["Resources", "resources"],
   ["About", "about"],
 ];

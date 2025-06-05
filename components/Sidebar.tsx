@@ -32,7 +32,12 @@ export default function Sidebar({ className = "", onLinkClick, style }: SidebarP
   return (
     <nav className={`${styles.sidebar} ${className}`} style={style}>
       <ul className={styles.list}>
-        {CHAPTERS.map(([title, path]) => {
+        {CHAPTERS.map(([title, path], index) => {
+          // Render gaps as spacers
+          if (title === "" && path === "") {
+            return <li key={`gap-${index}`} className={styles.gap}></li>;
+          }
+
           const href = `/${path}`;
           const isActive = pathname === href || (path === "" && pathname === "/");
           const wasActive = prevActive === href || (path === "" && prevActive === "/");

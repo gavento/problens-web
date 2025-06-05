@@ -240,7 +240,7 @@ We can't see these scores, but we can compute cross-entropy. For large $N$, the 
 Key point: this only works _in the long run_. With just 8 predictions, any scoring is pretty noisy. 
 </Expand>
 
-Try the log-score on our example! Also, you can compare it with other popular score called brier score, which is just the so-called $\ell_2$ metric (i.e., if you predicted 0.8 probability and the event happens, your score is $(1-0.8)^2 = 0.04$). 
+Try the log-score on our example! Also, you can compare it with other popular score called brier score, which is just the so-called mean squared error or $\ell_2$ metric (i.e., if you predicted 0.8 probability and the event happens, your score is $(1-0.8)^2 = 0.04$). 
 
 <ExpertRatingWidget
     title="Comparing Scoring Methods"

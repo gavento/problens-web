@@ -32,7 +32,17 @@ const FinanceSlider: React.FC = () => {
 
   useEffect(() => {
     setCurrentIdx(0);
+    setLoadedImages(new Set()); // Clear loaded images when switching modes
+    setPreloadProgress(0); // Reset preload progress
   }, [mode]);
+
+  // Ensure currentIdx stays within bounds when mode changes
+  useEffect(() => {
+    const images = mode === "sap" ? sapImages : btcImages;
+    if (currentIdx >= images.length) {
+      setCurrentIdx(Math.max(0, images.length - 1));
+    }
+  }, [mode, currentIdx]);
 
   // Preload the first few images for better UX
   useEffect(() => {
@@ -77,6 +87,9 @@ const FinanceSlider: React.FC = () => {
 
   const images = mode === "sap" ? sapImages : btcImages;
 
+  // Ensure currentIdx is within bounds
+  const safeCurrentIdx = Math.max(0, Math.min(currentIdx, images.length - 1));
+
   if (images.length === 0) {
     return (
       <div className="p-4 bg-red-50 rounded-md text-red-700">No {mode === "sap" ? "SAP" : "Bitcoin"} plots found.</div>
@@ -110,7 +123,7 @@ const FinanceSlider: React.FC = () => {
       {/* Image display */}
       <div className="flex justify-center">
         <div className="relative">
-          {!loadedImages.has(images[currentIdx].src) && (
+          {!loadedImages.has(images[safeCurrentIdx].src) && (
             <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-md border">
               <div className="text-center">
                 <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-2"></div>
@@ -122,18 +135,18 @@ const FinanceSlider: React.FC = () => {
             </div>
           )}
           <img
-            src={images[currentIdx].src}
-            alt={`${mode.toUpperCase()} Plot ${images[currentIdx].index}`}
+            src={images[safeCurrentIdx].src}
+            alt={`${mode.toUpperCase()} Plot ${images[safeCurrentIdx].index}`}
             className={`max-w-full h-auto border rounded-md shadow-lg transition-opacity duration-300 ${
-              loadedImages.has(images[currentIdx].src) ? 'opacity-100' : 'opacity-0'
+              loadedImages.has(images[safeCurrentIdx].src) ? 'opacity-100' : 'opacity-0'
             }`}
             style={{ maxHeight: '600px', minHeight: '400px' }}
             onError={(e) => {
-              console.error('Image failed to load:', images[currentIdx].src);
+              console.error('Image failed to load:', images[safeCurrentIdx].src);
               (e.target as HTMLImageElement).style.border = '2px solid red';
             }}
             onLoad={() => {
-              setLoadedImages(prev => new Set([...prev, images[currentIdx].src]));
+              setLoadedImages(prev => new Set([...prev, images[safeCurrentIdx].src]));
             }}
           />
         </div>
@@ -143,10 +156,10 @@ const FinanceSlider: React.FC = () => {
       <div className="space-y-3">
         <div className="text-center">
           <div className="text-lg font-semibold text-gray-800">
-            Past {images[currentIdx].index} Days
+            Past {images[safeCurrentIdx].index} Days
           </div>
           <div className="text-sm text-gray-600">
-            {currentIdx + 1} of {images.length}
+            {safeCurrentIdx + 1} of {images.length}
           </div>
         </div>
 
