@@ -171,32 +171,16 @@ const PollingErrorCalculator: React.FC<Props> = ({
           </div>
 
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-gray-800">Reality Check</h4>
+            <h4 className="text-lg font-semibold text-gray-800">Formula</h4>
             
-            {calculations.sampleSize > 1_000_000 && (
-              <div className="bg-red-100 border-l-4 border-red-500 p-3 text-sm">
-                <p className="font-semibold text-red-800">This is getting impractical!</p>
-                <p className="text-red-700">You&apos;d need to poll {calculations.percentOfUSVoters.toFixed(2)}% of all US voters.</p>
+            <div className="text-center bg-gray-100 p-4 rounded-lg">
+              <div className="text-lg font-mono">
+                n = z² × p × (1-p) / E²
               </div>
-            )}
-
-            {calculations.sampleSize > 100_000 && calculations.sampleSize <= 1_000_000 && (
-              <div className="bg-yellow-100 border-l-4 border-yellow-500 p-3 text-sm">
-                <p className="font-semibold text-yellow-800">Very expensive!</p>
-                <p className="text-yellow-700">This would cost {formatCurrency(calculations.totalCost)} - way beyond typical polling budgets.</p>
+              <div className="text-sm text-gray-600 mt-2">
+                Where n = sample size, z = confidence multiplier,<br/>
+                p = population proportion, E = margin of error
               </div>
-            )}
-
-            {calculations.sampleSize <= 100_000 && (
-              <div className="bg-green-100 border-l-4 border-green-500 p-3 text-sm">
-                <p className="font-semibold text-green-800">Feasible</p>
-                <p className="text-green-700">This is within the realm of possibility for well-funded organizations.</p>
-              </div>
-            )}
-
-            <div className="text-xs text-gray-600">
-              <p><strong>Formula:</strong> n = z² × p × (1-p) / E²</p>
-              <p>Where n = sample size, z = confidence multiplier, p = population proportion, E = margin of error</p>
             </div>
           </div>
         </div>
