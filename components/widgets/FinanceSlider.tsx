@@ -13,7 +13,7 @@ const generateImagePaths = (prefix: string, start: number, end: number, step: nu
   for (let i = start; i <= end; i += step) {
     const paddedIndex = String(i).padStart(4, "0");
     images.push({
-      src: `/financial/${prefix}_plot${paddedIndex}.png`,
+      src: `/problens-web/financial/${prefix}_plot${paddedIndex}.png`,
       index: i,
     });
   }
