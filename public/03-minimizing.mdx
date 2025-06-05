@@ -86,7 +86,7 @@ We simply can't do this. In probability theory, we can condition on events like 
 
 Here's how. I propose that, among all distributions <Math math="p" /> with an average of 15 minutes, I should select the distribution <Math math = "p_{\textrm{new}} = \arg\min_{p: E_p[X]=15} D(p,q)"/> where <Math math="q" /> is my original uniform model. In general, if I have an existing model distribution $q$ and discover that the true distribution belongs to some set $P$ (e.g., the set of distributions with a mean of 15), I claim that I should update my model $q$ to a new model <Math math = "p_{\textrm{new}}"/> like this:
 
-<Math displayMode={true} math="p_{\textrm{new}} = \arg\min_{p \in P} D(p,q)," /> 
+<Math id="min-relative-entropy" displayMode={true} math="p_{\textrm{new}} = \arg\min_{p \in P} D(p,q)" /> 
 
 This is sometimes called [the minimum relative entropy principle](resources). Why does this make sense? Intuitively, I want to find a distribution <Math math="p \in P" /> such that <Math math="q" /> remains as good a model of it as possible. This is precisely what we achieve by minimizing KL divergence.
 
@@ -94,7 +94,7 @@ This is sometimes called [the minimum relative entropy principle](resources). Wh
 
 Admittedly, this line of reasoning can feel a bit shaky, as we typically prefer $p$ to represent the "true" distribution when using KL divergence, whereas here it's simply a new, improved, model.
 
-However, we can also justify the principle directly from Bayes' rule. Remember how we discussed that using maximum likelihood essentially means "choosing a model $q$ that's hardest to distinguish from $p$ by Bayes' rule"? Equation ?? can be similarly explained as "updating a model $q$ to incorporate new evidence that the model should be from $P$, using Bayes' rule."
+However, we can also justify the principle directly from Bayes' rule. Remember how we discussed that using maximum likelihood essentially means "choosing a model $q$ that's hardest to distinguish from $p$ by Bayes' rule"? <EqRef id="min-relative-entropy" format="full" /> can be similarly explained as "updating a model $q$ to incorporate new evidence that the model should be from $P$, using Bayes' rule."
 The reasoning behind this is a bit more involved, so it's placed in an expand box.
 
 <Expand headline="Detailed discussion of how this follows from Bayes' rule">

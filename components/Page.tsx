@@ -7,6 +7,7 @@ import { loadBibtexFromFile } from "@/lib/citations";
 import { getMdxContent } from "@/lib/lib";
 import { referencesPath } from "@/lib/config";
 import { Footnotes, FootnotesProvider } from "./content/Footnotes";
+import { EquationProvider } from "./content/EquationContext";
 import styles from "./Page.module.css";
 
 interface PageProps {
@@ -33,14 +34,16 @@ export async function singlePage(path: string) {
   const content = await getMdxContent(path);
   const references = await loadBibtexFromFile(referencesPath);
   return (
-    <CitationsProvider data={references}>
-      <FootnotesProvider>
-        <article className={`${styles.article} prose prose-neutral max-w-none`}>
-          {content}
-          <Footnotes headerLevel={0} />
-          <References />
-        </article>
-      </FootnotesProvider>
-    </CitationsProvider>
+    <EquationProvider>
+      <CitationsProvider data={references}>
+        <FootnotesProvider>
+          <article className={`${styles.article} prose prose-neutral max-w-none`}>
+            {content}
+            <Footnotes headerLevel={0} />
+            <References />
+          </article>
+        </FootnotesProvider>
+      </CitationsProvider>
+    </EquationProvider>
   );
 }

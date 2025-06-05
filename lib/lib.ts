@@ -171,12 +171,7 @@ export async function getMdxContent(path: string) {
     },
   });
 
-  // Wrap content with EquationProvider
-  return (
-    <EquationProvider>
-      {content}
-    </EquationProvider>
-  );
+  return content;
 }
 
 export function getAllMdxPaths() {

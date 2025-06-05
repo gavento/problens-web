@@ -6,9 +6,7 @@ In this chapter, we'll check out some nice algebraic properties of KL divergence
 
 Let's go through some key properties of KL divergence you should know about. Remember, KL divergence is algebraically defined like this:
 
-$$
-D(p,q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}
-$$
+<Math id="kl-definition" displayMode={true} math="D(p,q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}" />
 
 Heads up: KL divergence can be infinite! This happens when $q_i = 0$ but $p_i \neq 0$ for some $i$. We also use the convention $0 \cdot \log 0/0 = 0$ so that KL always gives us either a nice number or $+\infty$.
 
@@ -113,7 +111,7 @@ Last time, we read this table row-by-row—subtracting surprisals to see how muc
 
 But we can also read the table column-by-column. The detective could add up the total surprisal for each hypothesis, then convert that to posterior probabilities. This gives us a different way to write KL divergence:
 
-<Math displayMode={true} math='
+<Math id="cross-entropy-decomp" displayMode={true} math='
 \underbrace{\sum_{i = 1}^n p_i \log \frac{p_i}{q_i}}_{D(p,q)}
  =
 \underbrace{\sum_{i = 1}^n p_i \log 1 / q_i}_{H(p,q)}
@@ -224,9 +222,7 @@ In other words, <Math  math="E_p[S_{CE}(q)] = H(p,q)"/>. Nice! Give experts lots
 
 Now remember:
 
-$$
-D(p,q) = H(p,q) - H(p)
-$$
+<Math id="entropy-relation" displayMode={true} math="D(p,q) = H(p,q) - H(p)" />
 
 We can't compute $D(p,q)$ directly, but here's the key insight: for two experts with predictions $q_1, q_2$, we have $D(p,q_1) < D(p, q_2)$ if and only if $H(p, q_1) < H(p, q_2)$. They only differ by $H(p)$, which doesn't depend on the experts' predictions. So _comparing experts by cross-entropy is just as good as comparing by KL divergence in the long run!_
 
