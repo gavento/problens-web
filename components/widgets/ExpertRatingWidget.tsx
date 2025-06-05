@@ -30,11 +30,28 @@ const ExpertRatingWidget: React.FC<Props> = ({
   const logScores = useMemo(() => {
     return predictions.map(expertPreds => {
       let totalScore = 0;
+      let hasInfiniteScore = false;
+      
       for (let i = 0; i < expertPreds.length; i++) {
-        const p = Math.max(0.001, Math.min(0.999, expertPreds[i])); // Clamp to avoid log(0)
+        const p = expertPreds[i];
         const outcome = groundTruth[i];
-        totalScore += outcome * Math.log(p) + (1 - outcome) * Math.log(1 - p);
+        
+        // Check for infinite cases
+        if ((outcome === 1 && p === 0) || (outcome === 0 && p === 1)) {
+          hasInfiniteScore = true;
+          break;
+        }
+        
+        // Normal log score calculation
+        if (p > 0 && p < 1) {
+          totalScore += outcome * Math.log(p) + (1 - outcome) * Math.log(1 - p);
+        }
       }
+      
+      if (hasInfiniteScore) {
+        return Infinity;
+      }
+      
       return -totalScore / expertPreds.length; // Negative log likelihood, averaged
     });
   }, [predictions, groundTruth]);
@@ -89,14 +106,14 @@ const ExpertRatingWidget: React.FC<Props> = ({
       )}
 
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse bg-white rounded-lg shadow">
+        <table className={`border-collapse bg-white rounded-lg shadow ${numQuestions >= 7 ? '' : 'w-full'}`} style={numQuestions >= 7 ? { width: 'auto', minWidth: '100%' } : {}}>
           <thead>
             <tr className="bg-gray-100">
-              <th className="border border-gray-300 p-2 text-center font-semibold">
+              <th className="border border-gray-300 p-2 text-center font-semibold w-20">
                 Expert
               </th>
               {Array.from({ length: numQuestions }, (_, i) => (
-                <th key={i} className="border border-gray-300 p-2 text-center font-semibold">
+                <th key={i} className="border border-gray-300 p-2 text-center font-semibold" style={{ minWidth: '80px' }}>
                   Q{i + 1}
                 </th>
               ))}
@@ -113,12 +130,12 @@ const ExpertRatingWidget: React.FC<Props> = ({
           <tbody>
             {experts.map((expert, expertIdx) => (
               <tr key={expertIdx} className="hover:bg-gray-50">
-                <td className="border border-gray-300 p-2 text-center font-semibold">
+                <td className="border border-gray-300 p-2 text-center font-semibold w-20">
                   <div className="text-2xl">{expert.emoji}</div>
                   <div className="text-xs text-gray-600">{expert.name}</div>
                 </td>
                 {Array.from({ length: numQuestions }, (_, questionIdx) => (
-                  <td key={questionIdx} className="border border-gray-300 p-1">
+                  <td key={questionIdx} className="border border-gray-300 p-0" style={{ minWidth: '80px' }}>
                     <input
                       type="number"
                       min="0"
@@ -126,12 +143,12 @@ const ExpertRatingWidget: React.FC<Props> = ({
                       step="0.01"
                       value={predictions[expertIdx][questionIdx].toFixed(2)}
                       onChange={(e) => updatePrediction(expertIdx, questionIdx, e.target.value)}
-                      className="w-full p-1 text-center border rounded text-sm"
+                      className="w-full h-full p-2 text-center border-none text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </td>
                 ))}
                 <td className="border-l-4 border-blue-500 border-t border-r border-b border-gray-300 p-2 text-center font-mono font-bold text-blue-700">
-                  {logScores[expertIdx].toFixed(3)}
+                  {logScores[expertIdx] === Infinity ? "∞" : logScores[expertIdx].toFixed(3)}
                 </td>
                 {showBrierScore && (
                   <td className="border border-gray-300 p-2 text-center font-mono font-bold text-green-700">
@@ -143,15 +160,15 @@ const ExpertRatingWidget: React.FC<Props> = ({
             
             {/* Ground Truth Row */}
             <tr className="bg-yellow-50 border-t-2 border-yellow-400">
-              <td className="border border-gray-300 p-2 text-center font-semibold">
+              <td className="border border-gray-300 p-2 text-center font-semibold w-20">
                 <div className="text-sm font-bold text-gray-700">Ground Truth</div>
               </td>
               {Array.from({ length: numQuestions }, (_, questionIdx) => (
-                <td key={questionIdx} className="border border-gray-300 p-1">
+                <td key={questionIdx} className="border border-gray-300 p-0" style={{ minWidth: '80px' }}>
                   <select
                     value={groundTruth[questionIdx]}
                     onChange={(e) => updateGroundTruth(questionIdx, e.target.value)}
-                    className="w-full p-1 text-center border rounded text-sm bg-yellow-100"
+                    className="w-full h-full p-2 text-center border-none text-sm bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-yellow-500"
                   >
                     <option value={0}>0</option>
                     <option value={1}>1</option>
@@ -178,14 +195,6 @@ const ExpertRatingWidget: React.FC<Props> = ({
         >
           Add Question
         </button>
-      </div>
-
-      <div className="text-sm text-gray-600 space-y-1">
-        <p><strong>Log Score (Cross-entropy):</strong> Lower is better. Heavily penalizes confident wrong predictions.</p>
-        {showBrierScore && (
-          <p><strong>Brier Score:</strong> Lower is better. Measures mean squared error between predictions and outcomes.</p>
-        )}
-        <p><strong>Usage:</strong> Edit prediction values (0-1) and outcomes (0 or 1) to see how different scoring methods evaluate experts.</p>
       </div>
     </div>
   );

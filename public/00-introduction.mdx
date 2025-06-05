@@ -18,7 +18,7 @@ I grabbed some historical data, calculated the daily price changes, and threw th
   options={["A", "B", "C"]}
   correctIndices={[1, 2]}
   feedbackType="all-show"
-  explanation={<>Trick question—both B and C kind of work! The shape totally depends on something I didn't tell you: how far back I looked. If you only check the last month, shape C fits better (though in that case it's hard to judge which shape fits better). But zoom out to longer periods and it starts looking like B. What's up with that? We will see in the <a href="04-max_entropy/financial">chapter about the max-entropy principle</a>.<br/><br/><FinanceImageSliderWidget /></>}
+  explanation={<>Trick question—both shapes B (Laplace distribution) and C (Gaussian distribution) kind of work! The shape totally depends on something I didn't tell you: how far back I looked. If you only check the last month, shape C fits better (though in that case it's hard to judge). But zoom out to longer periods and it starts looking more like B. What's up with that? We will see in the <a href="04-max_entropy/financial">chapter about the max-entropy principle</a>.<br/><br/><FinanceImageSliderWidget /></>}
 />
 
 {/*
@@ -86,7 +86,7 @@ A year later, you know what actually happened.
 
 ![questions](00-introduction/questions.png)
 
-Question is: which expert crushed it?
+Question is: which expert is the best one?
 
 <MultipleChoiceQuestion
   options={["Expert 1", "Expert 2", "Expert 3"]}
@@ -180,7 +180,7 @@ So... are the odds in our favor?
 <MultipleChoiceQuestion
   options={["Yes", "No", "depends"]}
   correctIndices={[1, 2]}
-  explanation={<>We'll use KL divergence to derive something called the <a href="04-max_entropy/xkcd">maximum entropy principle</a> that explains why our gut feeling says we're probably screwed here.</>}
+  explanation={<>We'll use KL divergence to derive something called the <a href="04-max_entropy/xkcd">maximum entropy principle</a> that explains why our gut feeling says we are not necessarily fine here.</>}
 /> 
 </Expand>
 
