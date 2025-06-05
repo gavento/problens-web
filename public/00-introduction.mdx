@@ -4,13 +4,13 @@ This web contains an introduction to Kullback-Leibler (KL) divergence.
 Check out [this page](about) for logistics. Here, we've got several riddles some of which will hopefully [nerd-snipe](https://xkcd.com/356/) you!
 
 
-<Expand headline="📈 S&P versus Bitcoin"> <a id="financial-mathematics"></a>
+<Expand headline="📈 S&P shape"> <a id="financial-mathematics"></a>
 
 {/* ![Financial Data Distribution](00-introduction/sap_graph.png) */}
 
 Every day, the S&P index price jumps around a bit. <Footnote>If you don't know what the S&P is, just think Bitcoin, Apple stock, or how many euros you can buy with a dollar</Footnote>
 
-I grabbed some historical data, calculated the daily price changes, and threw them in a histogram. The x-axis shows how big the change was (positive about half the time, negative the other half) and the y-axis shows how often that size change happens. Before I show you the plot, take a guess—what's it gonna look like? Think S&P and Bitcoin will be different? 
+I grabbed some historical data, calculated the daily price changes, and threw them in a histogram. The x-axis shows how big the change was (positive about half the time, negative the other half) and the y-axis shows how often that size change happens. Before I show you the plot, take a guess—what's it gonna look like? 
 
 ![shapes](00-introduction/shapes.png)
 
@@ -18,7 +18,9 @@ I grabbed some historical data, calculated the daily price changes, and threw th
   options={["A", "B", "C"]}
   correctIndices={[1, 2]}
   feedbackType="all-show"
-  explanation={<>Trick question—both shapes B (Laplace distribution) and C (Gaussian distribution) kind of work! The shape totally depends on something I didn't tell you: how far back I looked. If you only check the last month, shape C fits better (though in that case it's hard to judge). But zoom out to longer periods and it starts looking more like B. What's up with that? We will see in the <a href="04-max_entropy/financial">chapter about the max-entropy principle</a>.<br/><br/><FinanceImageSliderWidget /></>}
+  explanation={<>Trick question—both shapes B (Laplace distribution) and C (Gaussian distribution) kind of work! The shape totally depends on something I didn't tell you: how far back I looked. If you only check the last month, shape C fits better (though in that case it's hard to judge). But zoom out to longer periods and it starts looking more like B. 
+  <FinanceSliderSP />
+  What's up with that? We will see in the <a href="04-max_entropy/financial">chapter about the max-entropy principle</a>.<br/><br/><FinanceImageSliderWidget /></>}
 />
 
 {/*
