@@ -20,11 +20,11 @@ const NoisyBinarySearchWidget: React.FC = () => {
     }))
   );
   const [currentMiddle, setCurrentMiddle] = useState<number | null>(null);
-  const [isRunning, setIsRunning] = useState(false);
-  const [stepMode, setStepMode] = useState(true);
   const [found, setFound] = useState(false);
   const [comparisonResult, setComparisonResult] = useState<string | null>(null);
   const [stepCount, setStepCount] = useState(0);
+  const [showArrow, setShowArrow] = useState(false);
+  const [animatingWeights, setAnimatingWeights] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const resetAlgorithm = () => {
@@ -36,7 +36,8 @@ const NoisyBinarySearchWidget: React.FC = () => {
     setFound(false);
     setComparisonResult(null);
     setStepCount(0);
-    setIsRunning(false);
+    setShowArrow(false);
+    setAnimatingWeights(false);
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
@@ -54,76 +55,64 @@ const NoisyBinarySearchWidget: React.FC = () => {
   };
 
   const performStep = () => {
-    if (found) return;
+    if (found || showArrow || animatingWeights) return;
 
     const middleIdx = findMiddleElement(elements);
     const middleElement = elements[middleIdx];
     setCurrentMiddle(middleIdx);
     setStepCount(prev => prev + 1);
+    setShowArrow(true);
 
-    if (middleElement.index === targetIndex) {
-      setFound(true);
-      setComparisonResult(`Found at position ${middleElement.index}!`);
-      setIsRunning(false);
-      return;
-    }
+    // Check if found after showing arrow
+    timeoutRef.current = setTimeout(() => {
+      if (middleElement.index === targetIndex) {
+        setFound(true);
+        setComparisonResult(`Found at position ${middleElement.index}!`);
+        return;
+      }
 
-    const isCorrectComparison = Math.random() < COMPARISON_SUCCESS_PROB;
-    const actualComparison = middleElement.index < targetIndex;
-    const reportedComparison = isCorrectComparison ? actualComparison : !actualComparison;
+      const isCorrectComparison = Math.random() < COMPARISON_SUCCESS_PROB;
+      const actualComparison = middleElement.index < targetIndex;
+      const reportedComparison = isCorrectComparison ? actualComparison : !actualComparison;
 
-    if (reportedComparison) {
-      setComparisonResult(`${middleElement.index} < ${targetIndex} (${isCorrectComparison ? 'correct' : 'noisy!'})`);
-    } else {
-      setComparisonResult(`${middleElement.index} > ${targetIndex} (${isCorrectComparison ? 'correct' : 'noisy!'})`);
-    }
+      if (reportedComparison) {
+        setComparisonResult(`${middleElement.index} < ${targetIndex} (${isCorrectComparison ? 'correct' : 'noisy!'})`);
+      } else {
+        setComparisonResult(`${middleElement.index} > ${targetIndex} (${isCorrectComparison ? 'correct' : 'noisy!'})`);
+      }
 
-    const newElements = elements.map((elem, idx) => {
-      const shouldBoost = reportedComparison ? idx > middleIdx : idx < middleIdx;
-      return {
-        ...elem,
-        weight: shouldBoost ? elem.weight * 2 : elem.weight
-      };
-    });
+      setAnimatingWeights(true);
 
-    const totalWeight = newElements.reduce((sum, elem) => sum + elem.weight, 0);
-    const normalizedElements = newElements.map(elem => ({
-      ...elem,
-      weight: elem.weight / totalWeight
-    }));
+      // Update weights after another delay
+      timeoutRef.current = setTimeout(() => {
+        const newElements = elements.map((elem, idx) => {
+          const shouldBoost = reportedComparison ? idx > middleIdx : idx < middleIdx;
+          return {
+            ...elem,
+            weight: shouldBoost ? elem.weight * 2 : elem.weight
+          };
+        });
 
-    setElements(normalizedElements);
+        const totalWeight = newElements.reduce((sum, elem) => sum + elem.weight, 0);
+        const normalizedElements = newElements.map(elem => ({
+          ...elem,
+          weight: elem.weight / totalWeight
+        }));
+
+        setElements(normalizedElements);
+        setShowArrow(false);
+        setAnimatingWeights(false);
+      }, 500);
+    }, 500);
   };
 
   useEffect(() => {
-    const runContinuous = () => {
-      if (!isRunning || found) return;
-      
-      performStep();
-      
-      if (!found) {
-        timeoutRef.current = setTimeout(runContinuous, 800);
-      }
-    };
-
-    if (isRunning && !stepMode && !found) {
-      runContinuous();
-    }
-    
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [isRunning, stepMode, found, elements]);
-
-  const handleRunToggle = () => {
-    if (stepMode) {
-      performStep();
-    } else {
-      setIsRunning(!isRunning);
-    }
-  };
+  }, []);
 
   const maxWeight = Math.max(...elements.map(e => e.weight));
   const BAR_MAX_HEIGHT = 200;
@@ -182,18 +171,19 @@ const NoisyBinarySearchWidget: React.FC = () => {
                   width: '30px',
                   height: `${height}px`,
                   backgroundColor: isFound ? '#4CAF50' : isMiddle ? '#FF9800' : isTarget ? '#2196F3' : '#9E9E9E',
-                  transition: 'all 0.3s ease',
+                  transition: animatingWeights ? 'all 0.5s ease' : 'all 0.3s ease',
                   borderRadius: '2px',
                   position: 'relative'
                 }}
               >
-                {isMiddle && !found && (
+                {isMiddle && !found && showArrow && (
                   <div style={{
                     position: 'absolute',
                     top: '-25px',
                     left: '50%',
                     transform: 'translateX(-50%)',
-                    fontSize: '20px'
+                    fontSize: '20px',
+                    animation: 'fadeIn 0.3s ease-in'
                   }}>
                     ↓
                   </div>
@@ -234,42 +224,20 @@ const NoisyBinarySearchWidget: React.FC = () => {
         Steps: {stepCount}
       </div>
 
-      <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '15px' }}>
-        <label>
-          <input
-            type="radio"
-            checked={stepMode}
-            onChange={() => {
-              setStepMode(true);
-              setIsRunning(false);
-            }}
-          />
-          Step by step
-        </label>
-        <label>
-          <input
-            type="radio"
-            checked={!stepMode}
-            onChange={() => setStepMode(false)}
-          />
-          Continuous
-        </label>
-      </div>
-
       <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
         <button
-          onClick={handleRunToggle}
-          disabled={found}
+          onClick={performStep}
+          disabled={found || showArrow || animatingWeights}
           style={{
             padding: '8px 16px',
-            backgroundColor: found ? '#ccc' : '#2196F3',
+            backgroundColor: found || showArrow || animatingWeights ? '#ccc' : '#2196F3',
             color: 'white',
             border: 'none',
             borderRadius: '4px',
-            cursor: found ? 'default' : 'pointer'
+            cursor: found || showArrow || animatingWeights ? 'default' : 'pointer'
           }}
         >
-          {stepMode ? 'Next Step' : (isRunning ? 'Pause' : 'Run')}
+          Next Step
         </button>
         <button
           onClick={resetAlgorithm}
@@ -286,13 +254,18 @@ const NoisyBinarySearchWidget: React.FC = () => {
         </button>
       </div>
 
-      <div style={{ marginTop: '20px', fontSize: '14px', color: '#666' }}>
-        <p><strong>Legend:</strong></p>
-        <p>• Gray bars: Array elements with their weights</p>
-        <p>• Blue bar: Target element</p>
-        <p>• Orange bar: Currently comparing</p>
-        <p>• Green bar: Found!</p>
-      </div>
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-5px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+          }
+        }
+      `}</style>
     </div>
   );
 };
