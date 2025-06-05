@@ -12,7 +12,7 @@ const NoisyBinarySearchWidget: React.FC = () => {
   const ARRAY_SIZE = 15;
   const COMPARISON_SUCCESS_PROB = 2/3;
   
-  const [targetIndex, setTargetIndex] = useState(8);
+  const [targetIndex, setTargetIndex] = useState(1);
   const [elements, setElements] = useState<ArrayElement[]>(() => 
     Array.from({ length: ARRAY_SIZE }, (_, i) => ({
       index: i + 1,
