@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import KatexMath from "@/components/content/KatexMath";
 
 type Props = {
   title?: string;
@@ -174,12 +175,12 @@ const PollingErrorCalculator: React.FC<Props> = ({
             <h4 className="text-lg font-semibold text-gray-800">Formula</h4>
             
             <div className="text-center bg-gray-100 p-4 rounded-lg">
-              <div className="text-lg font-mono">
-                n = z² × p × (1-p) / E²
+              <div className="text-lg">
+                <KatexMath math="n = \frac{z^2 \cdot p \cdot (1-p)}{E^2}" />
               </div>
               <div className="text-sm text-gray-600 mt-2">
-                Where n = sample size, z = confidence multiplier,<br/>
-                p = population proportion, E = margin of error
+                Where <em>n</em> = sample size, <em>z</em> = confidence multiplier,<br/>
+                <em>p</em> = population proportion, <em>E</em> = margin of error
               </div>
             </div>
           </div>
