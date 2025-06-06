@@ -229,12 +229,6 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
               </g>
             ))}
             
-            {/* Y-axis labels */}
-            {[0, 0.25, 0.5, 0.75, 1].map((y, i) => (
-              <text key={i} x="15" y={320 - i * 75} textAnchor="start" className="text-sm fill-gray-600">
-                {(maxY * y).toFixed(1)}
-              </text>
-            ))}
             
             {/* Distribution curve */}
             {results.points && (
