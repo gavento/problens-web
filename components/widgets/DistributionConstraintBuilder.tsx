@@ -8,7 +8,7 @@ type Lambda = {
   name: string;
   mathDisplay: string;
   value: number;
-  type: 'polynomial' | 'log' | 'indicator';
+  type: 'polynomial' | 'log' | 'indicator' | 'sin';
   power?: number;
 };
 
@@ -25,6 +25,7 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
     { id: "lambda3", name: "λ₃", mathDisplay: "\\lambda_3", value: 0, type: 'polynomial', power: 3 },
     { id: "lambdalog", name: "λ_log", mathDisplay: "\\lambda_{\\log}", value: 0, type: 'log' },
     { id: "lambdaind", name: "λ_ind", mathDisplay: "\\lambda_{\\mathbb{1}_{x>2/3}}", value: 0, type: 'indicator' },
+    { id: "lambdasin", name: "λ_sin", mathDisplay: "\\lambda_{\\sin}", value: 0, type: 'sin' },
   ]);
 
   // Numerical integration helper
@@ -51,6 +52,8 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
           exponent += lambda.value * Math.log(x);
         } else if (lambda.type === 'indicator') {
           exponent += lambda.value * (x > 2/3 ? 1 : 0);
+        } else if (lambda.type === 'sin') {
+          exponent += lambda.value * Math.sin(10 * x);
         }
       });
       // Clip to prevent numerical overflow
@@ -92,6 +95,10 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
     // E[1_{X>2/3}]
     const expectationIndicator = integrate(x => pdf(x) * (x > 2/3 ? 1 : 0));
     expectations.push({ label: `E[\\mathbb{1}_{X>2/3}]`, value: expectationIndicator });
+    
+    // E[sin(10X)]
+    const expectationSin = integrate(x => pdf(x) * Math.sin(10 * x));
+    expectations.push({ label: `E[\\sin(10X)]`, value: expectationSin });
 
     return { points, expectations, lambda0 };
   }, [lambdas, integrate]);
@@ -109,6 +116,7 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
       { id: "lambda3", name: "λ₃", mathDisplay: "\\lambda_3", value: 0, type: 'polynomial', power: 3 },
       { id: "lambdalog", name: "λ_log", mathDisplay: "\\lambda_{\\log}", value: 0, type: 'log' },
       { id: "lambdaind", name: "λ_ind", mathDisplay: "\\lambda_{\\mathbb{1}_{x>2/3}}", value: 0, type: 'indicator' },
+      { id: "lambdasin", name: "λ_sin", mathDisplay: "\\lambda_{\\sin}", value: 0, type: 'sin' },
     ]);
   };
 
@@ -138,6 +146,8 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
         return `${sign}${absValue} \\log x`;
       } else if (l.type === 'indicator') {
         return `${sign}${absValue} \\mathbb{1}_{x>2/3}`;
+      } else if (l.type === 'sin') {
+        return `${sign}${absValue} \\sin(10x)`;
       }
       return null;
     })
@@ -158,9 +168,6 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
         <div className="text-lg">
           <KatexMath math={`p(x) \\propto \\exp\\left(${formulaString || '0'}\\right)`} />
         </div>
-        <p className="text-sm text-blue-700 mt-2">
-          Adjust the λ values below to shape the distribution
-        </p>
       </div>
 
       {/* Lambda inputs */}
@@ -187,15 +194,16 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
                 step="0.5"
                 value={lambda.value}
                 onChange={(e) => updateLambda(lambda.id, parseFloat(e.target.value) || 0)}
-                className="flex-1 px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-20 px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-500 w-32 text-right">
+              <div className="text-sm text-gray-500 w-40">
                 <KatexMath math={
                   lambda.type === 'polynomial' && lambda.power ? `\\text{for } x^${lambda.power}` : 
                   lambda.type === 'log' ? '\\text{for } \\log x' :
-                  '\\text{for } \\mathbb{1}_{x>2/3}'
+                  lambda.type === 'indicator' ? '\\text{for } \\mathbb{1}_{x>2/3}' :
+                  '\\text{for } \\sin(10x)'
                 } />
-              </span>
+              </div>
             </div>
           ))}
         </div>
@@ -213,9 +221,9 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
               <g key={x}>
                 <line x1={x * 760 + 20} y1={20} x2={x * 760 + 20} y2={320} 
                       stroke="#e5e7eb" strokeWidth="1" strokeDasharray={x % 0.2 === 0 ? "0" : "2,2"} />
-                {x % 0.2 === 0 && (
+                {[0, 0.2, 0.4, 0.6, 0.8, 1.0].includes(x) && (
                   <text x={x * 760 + 20} y={335} textAnchor="middle" className="text-sm fill-gray-600">
-                    {x}
+                    {x.toFixed(1)}
                   </text>
                 )}
               </g>
@@ -223,7 +231,7 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
             
             {/* Y-axis labels */}
             {[0, 0.25, 0.5, 0.75, 1].map((y, i) => (
-              <text key={i} x="10" y={320 - i * 75} textAnchor="end" className="text-sm fill-gray-600">
+              <text key={i} x="15" y={320 - i * 75} textAnchor="start" className="text-sm fill-gray-600">
                 {(maxY * y).toFixed(1)}
               </text>
             ))}
@@ -266,7 +274,7 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
       <div className="bg-white rounded-lg p-4">
         <h4 className="text-lg font-semibold text-gray-800 mb-3">Computed Expectations</h4>
         
-        <div className="grid grid-cols-2 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-7 gap-3">
           {results.expectations.map((exp, idx) => (
             <div key={idx} className="bg-gray-50 p-3 rounded-lg">
               <div className="text-sm text-gray-600">

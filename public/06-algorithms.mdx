@@ -102,7 +102,7 @@ How do we solve this noisy problem? Here's a simple algorithm that finishes in e
 
 If $x < a_i$, we got some evidence that $x$ lies to the left, so we multiply all the weights to the left by two (and normalize the weights afterwards to sum to 1). If $x > a_i$, we behave analogously, and if $x = a_i$ we finish.
 
-Let's see this algorithm in action:
+Let's see this algorithm in action! <Footnote>Of course, it's a bit silly to run it on an array with 15 elements where it may be faster to just check elements one-by-one. </Footnote>
 
 import NoisyBinarySearchWidget from '@/components/widgets/NoisyBinarySearchWidget';
 
