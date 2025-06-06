@@ -82,8 +82,8 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
     // Calculate expectations
     const expectations: { label: string; value: number }[] = [];
     
-    // E[X], E[X²], E[X³], E[X⁴]
-    for (let power = 1; power <= 4; power++) {
+    // E[X], E[X²], E[X³]
+    for (let power = 1; power <= 3; power++) {
       const expectation = integrate(x => pdf(x) * Math.pow(x, power));
       expectations.push({ label: `E[X^${power}]`, value: expectation });
     }
@@ -274,7 +274,7 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
       <div className="bg-white rounded-lg p-4">
         <h4 className="text-lg font-semibold text-gray-800 mb-3">Computed Expectations</h4>
         
-        <div className="grid grid-cols-2 lg:grid-cols-7 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-6 gap-3">
           {results.expectations.map((exp, idx) => (
             <div key={idx} className="bg-gray-50 p-3 rounded-lg">
               <div className="text-sm text-gray-600">
