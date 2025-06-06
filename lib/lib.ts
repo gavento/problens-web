@@ -23,6 +23,7 @@ import MultipleChoiceQuestion from "@/components/widgets/MultipleChoiceQuestion"
 import ExpertRatingWidget from "@/components/widgets/ExpertRatingWidget";
 import NoisyBinarySearchWidget from "@/components/widgets/NoisyBinarySearchWidget";
 import MutualInformationWidget from "@/components/widgets/MutualInformationWidget";
+import MWUWidget from "@/components/widgets/MWUWidget";
 import { compile, evaluate } from "@mdx-js/mdx";
 import chalk from "chalk";
 import * as runtime from "react/jsx-runtime";
@@ -151,6 +152,7 @@ export async function getMdxContent(path: string) {
       ExpertRatingWidget: ExpertRatingWidget,
       NoisyBinarySearchWidget: NoisyBinarySearchWidget,
       MutualInformationWidget: MutualInformationWidget,
+      MWUWidget: MWUWidget,
       Math: NumberedMath,
       EqRef: EquationRef,
       Block: Block,

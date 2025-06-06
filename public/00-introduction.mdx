@@ -83,20 +83,20 @@ I grabbed some historical data, calculated the daily price changes, and threw th
 
 <Expand headline="💰 How to get rich"> <a id = "get-rich"></a>
 
-Here's a riddle that's behind a ton of recent algorithms in CS and ML. Say you wanna get rich trading stocks. Lucky you—$n$ investors share their tips every day. Each day $t$, they give advice, and afterward you find out how they did. For investor $i$, you get her loss $\ell_i^{(t)}$.<Footnote>Positive loss means bad advice, negative loss means good advice.</Footnote>
+Here's a riddle that's behind a ton of recent algorithms in CS and ML. Say you wanna get rich trading stocks. Lucky you—$n$ investors share their tips every day. Each day $t$, they give advice, and afterward you find out how they did. For investor $i$, you get $g_i^{(t)}$ - how many dollars she gained that day.
 
-Your strategy: Start with equal trust in everyone—$p_i^{(0)} = 1/n$ for all investors. Each morning, randomly pick an investor based on your trust distribution and follow their advice. After seeing how everyone did, update your trust from $p^{(t)}$ to $p^{(t+1)}$.
+Your strategy: Start with equal trust in everyone—$p_i^{(0)} = 1/n$ for all investors. Each morning, randomly pick an investor based on your trust distribution and follow their advice. After seeing how everyone did, update your distribution to $p^{(t+1)}$.
 
 How should you update? What's best?
 
 <MultipleChoiceQuestion
   options={[
-    <>Gradient descent: <Math math="p^{(t+1)} = p^{(t)} - \varepsilon \cdot \ell_i^{(t)}" />, then normalize</>,
-    <>Multiplicative gradient descent: <Math math="p^{(t+1)} = p^{(t)} \cdot e^{-\varepsilon \cdot \ell_i^{(t)}}" />, then normalize</>, 
-    "Follow the leader: Trust whoever has smallest total loss so far"
+    <>Proportional sampling: <Math math="p_i^{(t+1)} \propto \ell_i^{(1)} + \dots + \ell_i^{(t)}" />,
+    <>Multiplicative sampling: <Math math="p_i^{(t+1)} \propto e^{\eps \cdot \left( \ell_i^{(1)} + \dots + \ell_i^{(t)} \right) }" /> for some small $\eps$,
+    <>"Follow the leader: Go with the expert that has the largest gain so far"
   ]}
   correctIndices={[1]}
-  explanation={<>They all seem reasonable, but option 2 is the most robust. It's called multiplicative weights update, and it looks weirdly like gradient descent. <a href="06-algorithms">We'll see</a> how KL divergence explains the connection.</>}
+  explanation={<>All options are reasonable, but option 2 is the most robust. It's called multiplicative weights update, and it looks weirdly like gradient descent. <a href="06-algorithms">We'll see</a> how KL divergence explains the connection.<br/><br/>Try it yourself with the widget below:<br/><br/><MWUWidget /></>}
 />
 </Expand>
 
@@ -152,7 +152,9 @@ So... are the odds in our favor?
 <MultipleChoiceQuestion
   options={["Yes", "No", "depends"]}
   correctIndices={[1, 2]}
-  explanation={<>We'll use KL divergence to derive something called the <a href="04-max_entropy">maximum entropy principle</a> that explains why our gut feeling says we are not necessarily fine here.</>}
+  explanation={<>We'll use KL divergence to derive an important tool called the <a href="04-max_entropy">maximum entropy principle</a>. This will allow us to understand various distributions and construct new ones from scratch (see below). We will also use the principle to explain our gut feeling that we are not necessarily fine here.
+  <DistributionConstraintBuilder />
+  </>}
 /> 
 </Expand>
 

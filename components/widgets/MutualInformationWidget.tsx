@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import KatexMath from "@/components/content/KatexMath";
 
 type Props = {
@@ -42,16 +42,16 @@ const MutualInformationWidget: React.FC<Props> = ({
     ];
 
     entries.forEach(({ joint, marginal }) => {
-      if (joint > 0 && marginal > 0) {
+      if (joint > 1e-10 && marginal > 1e-10) {
         mi += joint * Math.log(joint / marginal);
       }
     });
 
     return mi / Math.log(2); // Convert to bits
-  }, [jointProbs]);
+  }, [jointProbs, weatherProbs.sun, weatherProbs.cloud, transportProbs.walk, transportProbs.bike, transportProbs.bus]);
 
   // Normalize probabilities to ensure they sum to 1
-  const normalizeProbs = () => {
+  const normalizeProbs = useCallback(() => {
     const sum = Object.values(jointProbs).reduce((a, b) => a + b, 0);
     if (Math.abs(sum - 1) > 0.001) {
       const normalized = {} as typeof jointProbs;
@@ -60,7 +60,7 @@ const MutualInformationWidget: React.FC<Props> = ({
       });
       setJointProbs(normalized);
     }
-  };
+  }, [jointProbs]);
 
   // Reset to independent distribution
   const resetToIndependent = () => {
@@ -79,7 +79,7 @@ const MutualInformationWidget: React.FC<Props> = ({
     setIsDragging(key);
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent | React.MouseEvent) => {
     if (!isDragging || !containerRef.current) return;
 
     const rect = containerRef.current.getBoundingClientRect();
@@ -93,19 +93,19 @@ const MutualInformationWidget: React.FC<Props> = ({
       ...prev,
       [isDragging]: newProb * 0.7, // Scale down to leave room for normalization
     }));
-  };
+  }, [isDragging]);
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     if (isDragging) {
       normalizeProbs();
       setIsDragging(null);
     }
-  };
+  }, [isDragging, normalizeProbs]);
 
   useEffect(() => {
     if (isDragging) {
       const handleGlobalMouseMove = (e: MouseEvent) => {
-        handleMouseMove(e as any);
+        handleMouseMove(e);
       };
       const handleGlobalMouseUp = () => {
         handleMouseUp();
@@ -119,7 +119,7 @@ const MutualInformationWidget: React.FC<Props> = ({
         document.removeEventListener('mouseup', handleGlobalMouseUp);
       };
     }
-  }, [isDragging]);
+  }, [isDragging, handleMouseMove, handleMouseUp]);
 
   const barData = [
     { key: 'sunWalk', weather: '☀️', transport: '🚶‍♀️', label: 'Sun + Walk' },
@@ -130,7 +130,7 @@ const MutualInformationWidget: React.FC<Props> = ({
     { key: 'cloudBus', weather: '☁️', transport: '🚌', label: 'Cloud + Bus' },
   ];
 
-  const maxProb = Math.max(...Object.values(jointProbs));
+  const maxProb = Math.max(...Object.values(jointProbs), 0.001); // Prevent division by zero
   const barMaxHeight = 200;
 
   return (
