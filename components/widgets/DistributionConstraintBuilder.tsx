@@ -53,7 +53,7 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
         } else if (lambda.type === 'indicator') {
           exponent += lambda.value * (x > 2/3 ? 1 : 0);
         } else if (lambda.type === 'sin') {
-          exponent += lambda.value * Math.sin(10 * x);
+          exponent += lambda.value * Math.sin(20 * x);
         }
       });
       // Clip to prevent numerical overflow
@@ -96,9 +96,9 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
     const expectationIndicator = integrate(x => pdf(x) * (x > 2/3 ? 1 : 0));
     expectations.push({ label: `E[\\mathbb{1}_{X>2/3}]`, value: expectationIndicator });
     
-    // E[sin(10X)]
-    const expectationSin = integrate(x => pdf(x) * Math.sin(10 * x));
-    expectations.push({ label: `E[\\sin(10X)]`, value: expectationSin });
+    // E[sin(20X)]
+    const expectationSin = integrate(x => pdf(x) * Math.sin(20 * x));
+    expectations.push({ label: `E[\\sin(20X)]`, value: expectationSin });
 
     return { points, expectations, lambda0 };
   }, [lambdas, integrate]);
@@ -147,7 +147,7 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
       } else if (l.type === 'indicator') {
         return `${sign}${absValue} \\mathbb{1}_{x>2/3}`;
       } else if (l.type === 'sin') {
-        return `${sign}${absValue} \\sin(10x)`;
+        return `${sign}${absValue} \\sin(20x)`;
       }
       return null;
     })
@@ -201,7 +201,7 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
                   lambda.type === 'polynomial' && lambda.power ? `\\text{for } x^${lambda.power}` : 
                   lambda.type === 'log' ? '\\text{for } \\log x' :
                   lambda.type === 'indicator' ? '\\text{for } \\mathbb{1}_{x>2/3}' :
-                  '\\text{for } \\sin(10x)'
+                  '\\text{for } \\sin(20x)'
                 } />
               </div>
             </div>
