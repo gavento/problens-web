@@ -8,7 +8,8 @@ type Lambda = {
   name: string;
   mathDisplay: string;
   value: number;
-  power: number;
+  type: 'polynomial' | 'log';
+  power?: number;
 };
 
 type Props = {
@@ -19,14 +20,14 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
   title = "Maximum Entropy Distribution Builder"
 }) => {
   const [lambdas, setLambdas] = useState<Lambda[]>([
-    { id: "lambda0", name: "λ₀", mathDisplay: "\\lambda_0", value: 0, power: 0 },
-    { id: "lambda1", name: "λ₁", mathDisplay: "\\lambda_1", value: 0, power: 1 },
-    { id: "lambda2", name: "λ₂", mathDisplay: "\\lambda_2", value: 0, power: 2 },
-    { id: "lambda3", name: "λ₃", mathDisplay: "\\lambda_3", value: 0, power: 3 },
+    { id: "lambda1", name: "λ₁", mathDisplay: "\\lambda_1", value: -2, type: 'polynomial', power: 1 },
+    { id: "lambda2", name: "λ₂", mathDisplay: "\\lambda_2", value: -8, type: 'polynomial', power: 2 },
+    { id: "lambda3", name: "λ₃", mathDisplay: "\\lambda_3", value: 0, type: 'polynomial', power: 3 },
+    { id: "lambdalog", name: "λ_log", mathDisplay: "\\lambda_{\\log}", value: 0, type: 'log' },
   ]);
 
   // Numerical integration helper
-  const integrate = useCallback((f: (x: number) => number, start = 0, end = 1, steps = 1000) => {
+  const integrate = useCallback((f: (x: number) => number, start = 0.001, end = 0.999, steps = 1000) => {
     const dx = (end - start) / steps;
     let sum = 0;
     for (let i = 0; i < steps; i++) {
@@ -39,11 +40,15 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
 
   // Calculate the distribution and expectations
   const results = useMemo(() => {
-    // p(x) ∝ exp(λ₀ + λ₁x + λ₂x² + ...)
+    // p(x) ∝ exp(λ₁x + λ₂x² + ... + λ_log*log(x))
     const unnormalizedPdf = (x: number) => {
       let exponent = 0;
       lambdas.forEach(lambda => {
-        exponent += lambda.value * Math.pow(x, lambda.power);
+        if (lambda.type === 'polynomial' && lambda.power !== undefined) {
+          exponent += lambda.value * Math.pow(x, lambda.power);
+        } else if (lambda.type === 'log' && x > 0) {
+          exponent += lambda.value * Math.log(x);
+        }
       });
       // Clip to prevent numerical overflow
       exponent = Math.max(-50, Math.min(50, exponent));
@@ -53,6 +58,9 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
     // Calculate normalization constant
     const Z = integrate(unnormalizedPdf);
     
+    // Lambda_0 is implicitly -log(Z) for normalization
+    const lambda0 = -Math.log(Z);
+    
     // Normalized PDF
     const pdf = (x: number) => unnormalizedPdf(x) / Z;
 
@@ -60,23 +68,25 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
     const points: { x: number; y: number }[] = [];
     for (let i = 0; i <= 200; i++) {
       const x = i / 200;
-      points.push({ x, y: pdf(x) });
+      if (x > 0 && x < 1) {
+        points.push({ x, y: pdf(x) });
+      }
     }
 
     // Calculate expectations
-    const expectations: { power: number; value: number }[] = [];
+    const expectations: { label: string; value: number }[] = [];
+    
+    // E[X], E[X²], E[X³], E[X⁴]
     for (let power = 1; power <= 4; power++) {
       const expectation = integrate(x => pdf(x) * Math.pow(x, power));
-      expectations.push({ power, value: expectation });
+      expectations.push({ label: `E[X^${power}]`, value: expectation });
     }
+    
+    // E[log X]
+    const expectationLogX = integrate(x => pdf(x) * Math.log(x));
+    expectations.push({ label: `E[\\log X]`, value: expectationLogX });
 
-    // Calculate entropy
-    const entropy = -integrate(x => {
-      const p = pdf(x);
-      return p > 0 ? p * Math.log(p) : 0;
-    });
-
-    return { points, expectations, entropy, Z };
+    return { points, expectations, lambda0 };
   }, [lambdas, integrate]);
 
   const updateLambda = (id: string, value: number) => {
@@ -86,11 +96,41 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
   };
 
   const resetLambdas = () => {
-    setLambdas(prev => prev.map(l => ({ ...l, value: 0 })));
+    setLambdas([
+      { id: "lambda1", name: "λ₁", mathDisplay: "\\lambda_1", value: -2, type: 'polynomial', power: 1 },
+      { id: "lambda2", name: "λ₂", mathDisplay: "\\lambda_2", value: -8, type: 'polynomial', power: 2 },
+      { id: "lambda3", name: "λ₃", mathDisplay: "\\lambda_3", value: 0, type: 'polynomial', power: 3 },
+      { id: "lambdalog", name: "λ_log", mathDisplay: "\\lambda_{\\log}", value: 0, type: 'log' },
+    ]);
   };
 
   // Find the maximum y-value for scaling
   const maxY = Math.max(...results.points.map(p => p.y), 0.1);
+
+  // Format numbers for display in formula
+  const formatNumber = (num: number) => {
+    if (num === 0) return '';
+    const sign = num >= 0 ? '+' : '';
+    return `${sign}${num.toFixed(2)}`;
+  };
+
+  // Build the formula string with actual values
+  const formulaString = lambdas
+    .map(l => {
+      if (l.value === 0) return null;
+      const formattedValue = l.value.toFixed(2);
+      if (l.type === 'polynomial' && l.power !== undefined) {
+        if (l.power === 1) {
+          return `${formattedValue} x`;
+        }
+        return `${formattedValue} x^${l.power}`;
+      } else if (l.type === 'log') {
+        return `${formattedValue} \\log x`;
+      }
+      return null;
+    })
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className="p-6 bg-gray-50 rounded-lg space-y-6 max-w-6xl mx-auto">
@@ -103,15 +143,7 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
       {/* Formula Display */}
       <div className="bg-blue-50 rounded-lg p-4 text-center">
         <div className="text-lg">
-          <KatexMath math={`p(x) \\propto \\exp\\left(${
-            lambdas.map(l => 
-              l.power === 0 
-                ? `\\lambda_0` 
-                : l.power === 1 
-                  ? `\\lambda_1 x` 
-                  : `\\lambda_${l.power} x^${l.power}`
-            ).join(' + ')
-          }\\right)`} />
+          <KatexMath math={`p(x) \\propto \\exp\\left(${formulaString || '0'}\\right)`} />
         </div>
         <p className="text-sm text-blue-700 mt-2">
           Adjust the λ values below to shape the distribution
@@ -134,29 +166,22 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
           <div className="space-y-3">
             {lambdas.map((lambda) => (
               <div key={lambda.id} className="flex items-center space-x-3 p-3 bg-white rounded-lg border">
-                <div className="w-12">
+                <div className="w-16">
                   <KatexMath math={lambda.mathDisplay} />
                 </div>
                 <span className="text-gray-600">=</span>
                 <input
                   type="number"
-                  step="0.1"
+                  step="0.5"
                   value={lambda.value}
                   onChange={(e) => updateLambda(lambda.id, parseFloat(e.target.value) || 0)}
                   className="flex-1 px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <span className="text-sm text-gray-500 w-24">
-                  {lambda.power === 0 ? 'normalization' : `for x^${lambda.power}`}
+                <span className="text-sm text-gray-500 w-20">
+                  {lambda.type === 'polynomial' && lambda.power ? `for x^${lambda.power}` : 'for log x'}
                 </span>
               </div>
             ))}
-          </div>
-
-          <div className="bg-yellow-50 p-3 rounded-lg text-sm">
-            <p className="text-yellow-800">
-              <strong>Note:</strong> Large positive λ values can cause numerical overflow. 
-              The distribution is automatically normalized.
-            </p>
           </div>
         </div>
 
@@ -221,35 +246,20 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
       </div>
 
       {/* Expectations Display */}
-      <div className="bg-white rounded-lg p-4 space-y-3">
+      <div className="bg-white rounded-lg p-4">
         <h4 className="text-lg font-semibold text-gray-800 mb-3">Computed Expectations</h4>
         
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {results.expectations.map(exp => (
-            <div key={exp.power} className="bg-gray-50 p-3 rounded-lg">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+          {results.expectations.map((exp, idx) => (
+            <div key={idx} className="bg-gray-50 p-3 rounded-lg">
               <div className="text-sm text-gray-600">
-                <KatexMath math={`E[X^${exp.power}]`} />
+                <KatexMath math={exp.label} />
               </div>
               <div className="text-lg font-mono font-semibold text-gray-800">
                 {exp.value.toFixed(4)}
               </div>
             </div>
           ))}
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t">
-          <div className="bg-gray-50 p-3 rounded-lg">
-            <div className="text-sm text-gray-600">Entropy</div>
-            <div className="text-lg font-mono font-semibold text-gray-800">
-              {results.entropy.toFixed(4)}
-            </div>
-          </div>
-          <div className="bg-gray-50 p-3 rounded-lg">
-            <div className="text-sm text-gray-600">Normalization (Z)</div>
-            <div className="text-lg font-mono font-semibold text-gray-800">
-              {results.Z.toFixed(4)}
-            </div>
-          </div>
         </div>
       </div>
     </div>
