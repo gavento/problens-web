@@ -8,7 +8,7 @@ type Lambda = {
   name: string;
   mathDisplay: string;
   value: number;
-  type: 'polynomial' | 'log';
+  type: 'polynomial' | 'log' | 'indicator';
   power?: number;
 };
 
@@ -20,10 +20,11 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
   title = "Maximum Entropy Distribution Builder"
 }) => {
   const [lambdas, setLambdas] = useState<Lambda[]>([
-    { id: "lambda1", name: "λ₁", mathDisplay: "\\lambda_1", value: -2, type: 'polynomial', power: 1 },
-    { id: "lambda2", name: "λ₂", mathDisplay: "\\lambda_2", value: -8, type: 'polynomial', power: 2 },
+    { id: "lambda1", name: "λ₁", mathDisplay: "\\lambda_1", value: 20, type: 'polynomial', power: 1 },
+    { id: "lambda2", name: "λ₂", mathDisplay: "\\lambda_2", value: -20, type: 'polynomial', power: 2 },
     { id: "lambda3", name: "λ₃", mathDisplay: "\\lambda_3", value: 0, type: 'polynomial', power: 3 },
     { id: "lambdalog", name: "λ_log", mathDisplay: "\\lambda_{\\log}", value: 0, type: 'log' },
+    { id: "lambdaind", name: "λ_ind", mathDisplay: "\\lambda_{\\mathbb{1}_{x>2/3}}", value: 0, type: 'indicator' },
   ]);
 
   // Numerical integration helper
@@ -48,6 +49,8 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
           exponent += lambda.value * Math.pow(x, lambda.power);
         } else if (lambda.type === 'log' && x > 0) {
           exponent += lambda.value * Math.log(x);
+        } else if (lambda.type === 'indicator') {
+          exponent += lambda.value * (x > 2/3 ? 1 : 0);
         }
       });
       // Clip to prevent numerical overflow
@@ -85,6 +88,10 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
     // E[log X]
     const expectationLogX = integrate(x => pdf(x) * Math.log(x));
     expectations.push({ label: `E[\\log X]`, value: expectationLogX });
+    
+    // E[1_{X>2/3}]
+    const expectationIndicator = integrate(x => pdf(x) * (x > 2/3 ? 1 : 0));
+    expectations.push({ label: `E[\\mathbb{1}_{X>2/3}]`, value: expectationIndicator });
 
     return { points, expectations, lambda0 };
   }, [lambdas, integrate]);
@@ -97,10 +104,11 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
 
   const resetLambdas = () => {
     setLambdas([
-      { id: "lambda1", name: "λ₁", mathDisplay: "\\lambda_1", value: -2, type: 'polynomial', power: 1 },
-      { id: "lambda2", name: "λ₂", mathDisplay: "\\lambda_2", value: -8, type: 'polynomial', power: 2 },
+      { id: "lambda1", name: "λ₁", mathDisplay: "\\lambda_1", value: 20, type: 'polynomial', power: 1 },
+      { id: "lambda2", name: "λ₂", mathDisplay: "\\lambda_2", value: -20, type: 'polynomial', power: 2 },
       { id: "lambda3", name: "λ₃", mathDisplay: "\\lambda_3", value: 0, type: 'polynomial', power: 3 },
       { id: "lambdalog", name: "λ_log", mathDisplay: "\\lambda_{\\log}", value: 0, type: 'log' },
+      { id: "lambdaind", name: "λ_ind", mathDisplay: "\\lambda_{\\mathbb{1}_{x>2/3}}", value: 0, type: 'indicator' },
     ]);
   };
 
@@ -115,22 +123,27 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
   };
 
   // Build the formula string with actual values
-  const formulaString = lambdas
-    .map(l => {
+  const formulaTerms = lambdas
+    .map((l, idx) => {
       if (l.value === 0) return null;
-      const formattedValue = l.value.toFixed(2);
+      const absValue = Math.abs(l.value).toFixed(2);
+      const sign = l.value >= 0 ? (idx === 0 || lambdas.slice(0, idx).every(prev => prev.value === 0) ? '' : '+') : '-';
+      
       if (l.type === 'polynomial' && l.power !== undefined) {
         if (l.power === 1) {
-          return `${formattedValue} x`;
+          return `${sign}${absValue} x`;
         }
-        return `${formattedValue} x^${l.power}`;
+        return `${sign}${absValue} x^${l.power}`;
       } else if (l.type === 'log') {
-        return `${formattedValue} \\log x`;
+        return `${sign}${absValue} \\log x`;
+      } else if (l.type === 'indicator') {
+        return `${sign}${absValue} \\mathbb{1}_{x>2/3}`;
       }
       return null;
     })
-    .filter(Boolean)
-    .join(' ');
+    .filter(Boolean);
+  
+  const formulaString = formulaTerms.join(' ');
 
   return (
     <div className="p-6 bg-gray-50 rounded-lg space-y-6 max-w-6xl mx-auto">
@@ -177,7 +190,11 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
                 className="flex-1 px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <span className="text-sm text-gray-500 w-32 text-right">
-                <KatexMath math={lambda.type === 'polynomial' && lambda.power ? `\\text{for } x^${lambda.power}` : '\\text{for } \\log x'} />
+                <KatexMath math={
+                  lambda.type === 'polynomial' && lambda.power ? `\\text{for } x^${lambda.power}` : 
+                  lambda.type === 'log' ? '\\text{for } \\log x' :
+                  '\\text{for } \\mathbb{1}_{x>2/3}'
+                } />
               </span>
             </div>
           ))}
@@ -249,7 +266,7 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
       <div className="bg-white rounded-lg p-4">
         <h4 className="text-lg font-semibold text-gray-800 mb-3">Computed Expectations</h4>
         
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-6 gap-3">
           {results.expectations.map((exp, idx) => (
             <div key={idx} className="bg-gray-50 p-3 rounded-lg">
               <div className="text-sm text-gray-600">
