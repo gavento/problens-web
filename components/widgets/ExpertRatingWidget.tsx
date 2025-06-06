@@ -13,8 +13,8 @@ const ExpertRatingWidget: React.FC<Props> = ({
 }) => {
   // Initial data: 3 experts + ground truth, 5 questions
   const [predictions, setPredictions] = useState<number[][]>([
-    [0.5, 0.9, 0.6, 0.6, 0.6],    // 🧑
-    [0.99, 0.99, 0.5, 0.5, 0.99], // 👵🏿
+    [0.99, 0.99, 0.5, 0.5, 0.99], // 🧑
+    [0.5, 0.9, 0.6, 0.6, 0.6],    // 👵🏿
     [0.5, 0.5, 0.5, 0.5, 0.5],    // 👶
   ]);
   
