@@ -150,98 +150,98 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Left Panel - Lambda inputs */}
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h4 className="text-lg font-semibold text-gray-800">Lambda Parameters</h4>
-            <button
-              onClick={resetLambdas}
-              className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors"
-            >
-              Reset
-            </button>
-          </div>
-
-          <div className="space-y-3">
-            {lambdas.map((lambda) => (
-              <div key={lambda.id} className="flex items-center space-x-3 p-3 bg-white rounded-lg border">
-                <div className="w-16">
-                  <KatexMath math={lambda.mathDisplay} />
-                </div>
-                <span className="text-gray-600">=</span>
-                <input
-                  type="number"
-                  step="0.5"
-                  value={lambda.value}
-                  onChange={(e) => updateLambda(lambda.id, parseFloat(e.target.value) || 0)}
-                  className="flex-1 px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <span className="text-sm text-gray-500 w-20">
-                  {lambda.type === 'polynomial' && lambda.power ? `for x^${lambda.power}` : 'for log x'}
-                </span>
-              </div>
-            ))}
-          </div>
+      {/* Lambda inputs */}
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h4 className="text-lg font-semibold text-gray-800">Lambda Parameters</h4>
+          <button
+            onClick={resetLambdas}
+            className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors"
+          >
+            Reset
+          </button>
         </div>
 
-        {/* Right Panel - Visualization */}
-        <div className="space-y-4">
-          <h4 className="text-lg font-semibold text-gray-800">Distribution</h4>
-          
-          {/* Distribution Plot */}
-          <div className="bg-white p-4 rounded-lg border">
-            <svg width="100%" height="250" viewBox="0 0 400 250" className="border">
-              {/* Grid lines */}
-              {[0, 0.25, 0.5, 0.75, 1.0].map(x => (
-                <g key={x}>
-                  <line x1={x * 360 + 20} y1={20} x2={x * 360 + 20} y2={220} 
-                        stroke="#e5e7eb" strokeWidth="1" />
-                  <text x={x * 360 + 20} y={235} textAnchor="middle" className="text-xs fill-gray-600">
+        <div className="grid md:grid-cols-2 gap-3">
+          {lambdas.map((lambda) => (
+            <div key={lambda.id} className="flex items-center space-x-3 p-3 bg-white rounded-lg border">
+              <div className="w-16">
+                <KatexMath math={lambda.mathDisplay} />
+              </div>
+              <span className="text-gray-600">=</span>
+              <input
+                type="number"
+                step="0.5"
+                value={lambda.value}
+                onChange={(e) => updateLambda(lambda.id, parseFloat(e.target.value) || 0)}
+                className="flex-1 px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <span className="text-sm text-gray-500 w-32 text-right">
+                <KatexMath math={lambda.type === 'polynomial' && lambda.power ? `\\text{for } x^${lambda.power}` : '\\text{for } \\log x'} />
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Distribution Visualization */}
+      <div className="space-y-4">
+        <h4 className="text-lg font-semibold text-gray-800">Distribution</h4>
+        
+        {/* Distribution Plot */}
+        <div className="bg-white p-6 rounded-lg border">
+          <svg width="100%" height="350" viewBox="0 0 800 350" className="border">
+            {/* Grid lines */}
+            {[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0].map(x => (
+              <g key={x}>
+                <line x1={x * 760 + 20} y1={20} x2={x * 760 + 20} y2={320} 
+                      stroke="#e5e7eb" strokeWidth="1" strokeDasharray={x % 0.2 === 0 ? "0" : "2,2"} />
+                {x % 0.2 === 0 && (
+                  <text x={x * 760 + 20} y={335} textAnchor="middle" className="text-sm fill-gray-600">
                     {x}
                   </text>
-                </g>
-              ))}
-              
-              {/* Y-axis labels */}
-              {[0, 0.5, 1].map((y, i) => (
-                <text key={i} x="10" y={220 - i * 100} textAnchor="end" className="text-xs fill-gray-600">
-                  {(maxY * y).toFixed(1)}
-                </text>
-              ))}
-              
-              {/* Distribution curve */}
-              {results.points && (
-                <>
-                  {/* Fill under curve */}
-                  <path
-                    d={`M 20 220 ${results.points.map(p => 
-                      `L ${p.x * 360 + 20} ${220 - (p.y / maxY) * 200}`
-                    ).join(' ')} L 380 220 Z`}
-                    fill="#3b82f6"
-                    fillOpacity="0.2"
-                  />
-                  {/* Curve line */}
-                  <path
-                    d={`M ${results.points.map(p => 
-                      `${p.x * 360 + 20} ${220 - (p.y / maxY) * 200}`
-                    ).join(' L ')}`}
-                    fill="none"
-                    stroke="#3b82f6"
-                    strokeWidth="2"
-                  />
-                </>
-              )}
-              
-              {/* Axes */}
-              <line x1="20" y1="220" x2="380" y2="220" stroke="#374151" strokeWidth="2" />
-              <line x1="20" y1="20" x2="20" y2="220" stroke="#374151" strokeWidth="2" />
-              
-              {/* Labels */}
-              <text x="200" y="248" textAnchor="middle" className="text-sm fill-gray-700">x</text>
-              <text x="10" y="10" textAnchor="middle" className="text-sm fill-gray-700">p(x)</text>
-            </svg>
-          </div>
+                )}
+              </g>
+            ))}
+            
+            {/* Y-axis labels */}
+            {[0, 0.25, 0.5, 0.75, 1].map((y, i) => (
+              <text key={i} x="10" y={320 - i * 75} textAnchor="end" className="text-sm fill-gray-600">
+                {(maxY * y).toFixed(1)}
+              </text>
+            ))}
+            
+            {/* Distribution curve */}
+            {results.points && (
+              <>
+                {/* Fill under curve */}
+                <path
+                  d={`M 20 320 ${results.points.map(p => 
+                    `L ${p.x * 760 + 20} ${320 - (p.y / maxY) * 300}`
+                  ).join(' ')} L 780 320 Z`}
+                  fill="#3b82f6"
+                  fillOpacity="0.2"
+                />
+                {/* Curve line */}
+                <path
+                  d={`M ${results.points.map(p => 
+                    `${p.x * 760 + 20} ${320 - (p.y / maxY) * 300}`
+                  ).join(' L ')}`}
+                  fill="none"
+                  stroke="#3b82f6"
+                  strokeWidth="3"
+                />
+              </>
+            )}
+            
+            {/* Axes */}
+            <line x1="20" y1="320" x2="780" y2="320" stroke="#374151" strokeWidth="2" />
+            <line x1="20" y1="20" x2="20" y2="320" stroke="#374151" strokeWidth="2" />
+            
+            {/* Labels */}
+            <text x="400" y="348" textAnchor="middle" className="text-base fill-gray-700">x</text>
+            <text x="10" y="10" textAnchor="middle" className="text-base fill-gray-700">p(x)</text>
+          </svg>
         </div>
       </div>
 
