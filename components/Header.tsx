@@ -43,16 +43,7 @@ export default function Header() {
           scrolled ? "py-0" : "py-2"
         }`}
       >
-        <div className="max-w-[var(--content-width)] mx-auto px-4 py-6 flex h-16 items-center justify-between">
-          <Link
-            href="/"
-            className={`font-semibold text-neutral-900 hover:text-neutral-600 transition-all duration-200 ${
-              isRootPage && !scrolled && !isMobileMenuOpen ? "text-4xl mt-16" : "text-2xl"
-            }`}
-            onClick={handleClose}
-          >
-            {TITLE}
-          </Link>
+        <div className="max-w-[var(--content-width)] mx-auto px-4 py-6 flex h-16 items-center justify-end">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="lg:hidden p-2 text-neutral-600 hover:text-neutral-900"

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { CHAPTERS } from "@/lib/config";
+import { CHAPTERS, TITLE } from "@/lib/config";
 import { TableOfContents } from "./TableOfContents";
 import styles from "./Sidebar.module.css";
 
@@ -31,6 +31,11 @@ export default function Sidebar({ className = "", onLinkClick, style }: SidebarP
 
   return (
     <nav className={`${styles.sidebar} ${className}`} style={style}>
+      <div className="mb-6">
+        <Link href="/" onClick={onLinkClick} className="text-2xl font-semibold text-neutral-900 hover:text-neutral-600 transition-colors">
+          {TITLE}
+        </Link>
+      </div>
       <ul className={styles.list}>
         {CHAPTERS.map(([title, path], index) => {
           // Render gaps as spacers

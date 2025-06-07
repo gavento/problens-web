@@ -290,7 +290,7 @@ const DistributionComparisonWidget: React.FC<Props> = ({
       <div className="grid grid-cols-3 gap-4 text-sm">
         <div className="bg-white p-3 rounded text-center border">
           <div className="font-semibold text-gray-700">KL Divergence</div>
-          <div className="text-xs text-gray-500 mb-1">D(Red, Blue)</div>
+          <div className="text-xs text-gray-500 mb-1">D(<span className="text-red-600">Red</span>, <span className="text-blue-600">Blue</span>)</div>
           <div className="text-lg text-orange-600 font-mono">
             {metrics.kl === Infinity ? "∞" : metrics.kl.toFixed(3)}
           </div>

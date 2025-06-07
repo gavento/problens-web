@@ -48,7 +48,7 @@ Question is: which expert is the best one?
 
 <Expand headline="🗳️ Why polling sucks"><a id="polling"></a>
 
-[This Wikipedia page](https://en.wikipedia.org/wiki/Nationwide_opinion_polling_for_the_2024_United_States_presidential_election) has hundreds of election polls. A typical poll asks 1000-2000 random people. Do the math<Footnote>Like, use the central limit theorem to figure out what happens with the poll results.</Footnote> and you'll find polls are usually within 2-3% of the truth.<Footnote>Sure, this assumes you can actually sample random voters and they tell the truth, but stick with me.</Footnote> Pretty wild—doesn't matter if the country has millions of people, 1000 randos get you within a few percent!
+[This Wikipedia page](https://en.wikipedia.org/wiki/Nationwide_opinion_polling_for_the_2024_United_States_presidential_election) has hundreds of election polls. A typical poll asks 1000-2000 random people. Do the math<Footnote>Like, use the central limit theorem to figure out what happens with the poll results.</Footnote> and you'll find polls are usually within 3% of the truth.<Footnote>Sure, this assumes you can actually sample random voters and they tell the truth, but stick with me.</Footnote> Pretty wild—doesn't matter if the country has millions of people, 1000 randos get you within a few percent!
 
 But here's the thing: US elections are super close. We already know both parties will get around 50%. So maybe we should poll more people (or combine polls) to get within 0.1%. How many people would that take?
 
@@ -91,9 +91,9 @@ How should you update? What's best?
 
 <MultipleChoiceQuestion
   options={[
-    <>Proportional sampling: <Math math="p_i^{(t+1)} \propto \ell_i^{(1)} + \dots + \ell_i^{(t)}" />,
-    <>Multiplicative sampling: <Math math="p_i^{(t+1)} \propto e^{\eps \cdot \left( \ell_i^{(1)} + \dots + \ell_i^{(t)} \right) }" /> for some small $\eps$,
-    <>"Follow the leader: Go with the expert that has the largest gain so far"
+    <>Proportional sampling: <Math math="p_i^{(t+1)} \propto \ell_i^{(1)} + \dots + \ell_i^{(t)}" /></>,
+    <>Multiplicative sampling: <Math math="p_i^{(t+1)} \propto e^{\eps \cdot \left( \ell_i^{(1)} + \dots + \ell_i^{(t)} \right) }" /> for some small $\eps$</>,
+    <>"Follow the leader: Go with the expert that has the largest gain so far"</>
   ]}
   correctIndices={[1]}
   explanation={<>All options are reasonable, but option 2 is the most robust. It's called multiplicative weights update, and it looks weirdly like gradient descent. <a href="06-algorithms">We'll see</a> how KL divergence explains the connection.<br/><br/>Try it yourself with the widget below:<br/><br/><MWUWidget /></>}
@@ -113,12 +113,12 @@ Your LLM tries to guess this distribution with its own guess $q$. We need to mea
 
 <MultipleChoiceQuestion
   options={[
-    <><Math math="\mathcal L(p,q) = \sum_{i = 1}^k |p_i - q_i|" /> (<em><Math math="\ell_1" /> norm</em>)</>,
-    <><Math math="\mathcal L(p,q) = \sum_{i = 1}^k (p_i - q_i)^2" /> (<em><Math math="\ell_2" /> norm</em>)</>,
-    <><Math math="\mathcal L(p,q) = \sum_{i = 1}^k p_i \cdot \log (p_i / q_i)" /> (<em>KL divergence</em>)</>
+    <><Math math="\mathcal L(p,q) = \sum_{i = 1}^k |p_i - q_i|" /></>,
+    <><Math math="\mathcal L(p,q) = \sum_{i = 1}^k (p_i - q_i)^2" /></>,
+    <><Math math="\mathcal L(p,q) = \sum_{i = 1}^k p_i \cdot \log (p_i / q_i)" /></>
   ]}
   correctIndices={[2]}
-  explanation={<>The first two work okay, but everyone uses KL divergence. Here's why it's cool: if <Math math="p_i = 0.5" /> and <Math math="q_i = 0.51" />, KL thinks that's basically fine. But if <Math math="p_i = 0.01" /> and <Math math="q_i = 0.02" />, KL freaks out (the ratios <Math math="p_i/q_i" /> are totally different). Makes sense, right?<br/><br/>Check out this widget with two distributions and all three loss functions. See if you can make KL go to infinity!<br/><br/><DistributionComparisonWidget title="KL Divergence Explorer" /></>}
+  explanation={<>The first two work okay, but practioners typically use KL divergence. Here's why it's nice: if <Math math="p_i = 0.5" /> and <Math math="q_i = 0.49" />, KL thinks that's basically fine. But if <Math math="p_i = 0.01" /> and <Math math="q_i = 0.0" />, KL freaks out (the ratio <Math math="p_i/q_i" /> is infinite). On the other hand, the other two loss functions think both situations are similar problem. <br/><br/>Check out this widget with two distributions and all three loss functions. <br/><br/><DistributionComparisonWidget title="KL Divergence Explorer" /></>}
 />
 </Expand>
 
