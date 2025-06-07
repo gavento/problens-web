@@ -166,61 +166,65 @@ const BayesSequenceWidget: React.FC<Props> = ({
           Current step: {currentStep}/{sequence.length}
         </div>
 
-        {/* Prior row */}
-        <div className="bg-white rounded-lg p-4 space-y-3">
-          <div className="flex items-center justify-between py-2 px-3 rounded bg-blue-50 border border-blue-200">
-            <div className="flex items-center space-x-4 flex-1">
-              <span className="text-sm font-medium text-gray-700 w-6 text-center">
-                Prior
-              </span>
-              <div className="flex-1 border-t border-dashed border-blue-400"></div>
-              <span className="font-mono text-sm font-bold">
-                {priorFair} : {priorBiased}
-              </span>
+        {/* Prior and flip rows */}
+        <div className="bg-white rounded-lg p-4 space-y-2">
+          {/* Prior row */}
+          <div className="flex items-center py-2 px-3 rounded bg-blue-50 border border-blue-200">
+            <span className="text-sm font-medium text-gray-700 w-12">Prior</span>
+            <div className="flex-1 flex items-center justify-center space-x-2">
+              <span className="font-mono text-sm font-bold">{priorFair}</span>
+              <span className="text-gray-500">:</span>
+              <span className="font-mono text-sm font-bold">{priorBiased}</span>
             </div>
           </div>
           
           {/* Flip rows */}
-          <div className="space-y-2">
-            {steps.slice(1, currentStep + 1).map((step, index) => (
-              <div
-                key={index}
-                className={`flex items-center justify-between py-2 px-3 rounded ${
-                  index === currentStep - 1 ? 'bg-yellow-50 border border-yellow-300' : 'bg-gray-50'
-                }`}
-              >
-                <div className="flex items-center space-x-4 flex-1">
-                  <span className="font-mono font-bold text-lg w-6 text-center">
-                    {step.flip}
+          {steps.slice(1, currentStep + 1).map((step, index) => (
+            <div
+              key={index}
+              className={`flex items-center py-2 px-3 rounded ${
+                index === currentStep - 1 ? 'bg-yellow-50 border border-yellow-300' : 'bg-gray-50'
+              }`}
+            >
+              <span className="font-mono font-bold text-lg w-12 text-center">
+                {step.flip}
+              </span>
+              <div className="flex-1 flex items-center justify-center space-x-2">
+                <span className="font-mono text-sm">{step.likelihoodFair?.toFixed(2)}</span>
+                <span className="text-gray-500">:</span>
+                <span className="font-mono text-sm">{step.likelihoodBiased?.toFixed(2)}</span>
+              </div>
+            </div>
+          ))}
+
+          {/* Posterior section */}
+          {currentStep > 0 && (
+            <div className="mt-4 pt-3 border-t border-gray-300 space-y-2">
+              {/* Posterior odds */}
+              <div className="flex items-center py-2 px-3 rounded bg-green-50">
+                <span className="text-sm font-medium text-gray-700 w-12">Posterior</span>
+                <div className="flex-1 flex items-center justify-center space-x-2">
+                  <span className="font-mono text-sm font-bold text-blue-600">
+                    {steps[currentStep]?.oddsFair.toFixed(3)}
                   </span>
-                  <div className="flex-1 border-t border-dashed border-gray-400"></div>
-                  <span className="font-mono text-sm">
-                    {step.likelihoodFair?.toFixed(2)} : {step.likelihoodBiased?.toFixed(2)}
+                  <span className="text-gray-500">:</span>
+                  <span className="font-mono text-sm font-bold text-blue-600">
+                    {steps[currentStep]?.oddsBiased.toFixed(3)}
                   </span>
                 </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Current posterior */}
-          {currentStep > 0 && (
-            <div className="mt-4 pt-3 border-t border-gray-300">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">Posterior odds:</span>
-                <span className="font-mono font-bold text-blue-600">
-                  {steps[currentStep]?.oddsFair.toFixed(3)} : {steps[currentStep]?.oddsBiased.toFixed(3)}
-                </span>
               </div>
               
               {/* Probabilities */}
-              <div className="mt-2 flex justify-center space-x-6">
-                <div className="text-center">
-                  <div className="text-lg font-bold text-blue-600">{steps[currentStep]?.probFair.toFixed(1)}%</div>
-                  <div className="text-xs text-gray-600">Fair</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-red-600">{steps[currentStep]?.probBiased.toFixed(1)}%</div>
-                  <div className="text-xs text-gray-600">Biased</div>
+              <div className="flex items-center py-2 px-3 rounded bg-green-50">
+                <span className="text-sm font-medium text-gray-700 w-12">Probability</span>
+                <div className="flex-1 flex items-center justify-center space-x-2">
+                  <span className="font-mono text-sm font-bold text-blue-600">
+                    {steps[currentStep]?.probFair.toFixed(1)}%
+                  </span>
+                  <span className="text-gray-500">:</span>
+                  <span className="font-mono text-sm font-bold text-red-600">
+                    {steps[currentStep]?.probBiased.toFixed(1)}%
+                  </span>
                 </div>
               </div>
             </div>

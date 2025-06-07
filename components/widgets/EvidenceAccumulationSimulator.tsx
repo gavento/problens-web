@@ -5,7 +5,7 @@ import { InlineMath, BlockMath } from "react-katex";
 
 const EvidenceAccumulationSimulator = () => {
   // Parameters for the simulation
-  const [trueHeadsProb, setTrueHeadsProb] = useState(0.4); // True probability of heads
+  const [trueHeadsProb, setTrueHeadsProb] = useState(0.25); // True probability of heads
   const [modelHeadsProb, setModelHeadsProb] = useState(0.5); // Model probability of heads
   // Removed prior odds state
   const [numFlips, setNumFlips] = useState(100); // Number of coin flips to simulate
