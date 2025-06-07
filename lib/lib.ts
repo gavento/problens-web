@@ -28,6 +28,7 @@ import FinancialDistributionWidget from "@/components/widgets/FinancialDistribut
 import BayesCalculatorWidget from "@/components/widgets/BayesCalculatorWidget";
 import BayesCalculatorLogWidget from "@/components/widgets/BayesCalculatorLogWidget";
 import BayesSequenceWidget from "@/components/widgets/BayesSequenceWidget";
+import BayesSequenceLogWidget from "@/components/widgets/BayesSequenceLogWidget";
 import { compile, evaluate } from "@mdx-js/mdx";
 import chalk from "chalk";
 import * as runtime from "react/jsx-runtime";
@@ -161,6 +162,7 @@ export async function getMdxContent(path: string) {
       BayesCalculatorWidget: BayesCalculatorWidget,
       BayesCalculatorLogWidget: BayesCalculatorLogWidget,
       BayesSequenceWidget: BayesSequenceWidget,
+      BayesSequenceLogWidget: BayesSequenceLogWidget,
       Math: NumberedMath,
       EqRef: EquationRef,
       Block: Block,

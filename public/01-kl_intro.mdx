@@ -72,6 +72,10 @@ Here's the same calculation in log space, where multiplication becomes addition:
 
 Notice how much simpler the arithmetic becomes! Instead of multiplying odds, we just add log-odds.
 
+Here's the same step-by-step sequence in log space:
+
+<BayesSequenceLogWidget />
+
 The key insight is _[surprisal](https://en.wikipedia.org/wiki/Information_content)_: instead of probability $p$, we write $\log 1/p$. This measures how surprised you are when something happens. Getting heads when you thought it was 1% likely? Super surprising ($\log 1/0.01 \approx 6.6$). Getting heads on a fair coin? Meh ($\log 1/0.5 = 1$).
 
 When you subtract surprisals for the same outcome under different hypotheses, you get how much evidence that outcome provides. For our coin example, heads give you 1 bit of evidence for fair, tails give 0.58 bits for biased.
