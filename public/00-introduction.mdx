@@ -27,18 +27,18 @@ This gives you a pretty stable number that shouldn't change much if you do it ag
 
 <Expand headline="🔮 How good are your predictions?"> <a id="predictions"></a>
 
-It'd be awesome to know the future—or at least know someone who does. So you've gathered some experts and asked them to predict stuff for next year. Each expert gives probabilities for various events.
-A year later, you know what actually happened.
+It'd be awesome to know the future—or at least know someone who does. So you've gathered some experts and came up with five questions (Q1 to Q5). You ask the experts to give you probabilities for all 5 questions.
+A year later, you know what actually happened and are ready to find the best expert.  
 
 ![questions](00-introduction/questions.png)
 
-Question is: which expert is the best one?
+Question is: how do you find the best expert?
 
 <MultipleChoiceQuestion
-  options={["Expert 1", "Expert 2", "Expert 3"]}
+  options={["🧑 Expert 1", "👵🏿 Expert 2", "👶 Expert 3"]}
   correctIndices={[0, 1, 2]}
   feedbackType="all-show"
-  explanation={<>Hard to tell with just 5 questions. But I am not a big fan of 🧑🏻 though, with his failed 99%-confidence prediction! Later, we'll see how KL divergence gives us the log-score that forecasting tournaments use; this score penalizes failed 99%-confidence predictions quite heavily!   
+  explanation={<>This is actually hard to tell with just 5 questions, we would need many more of them. But I am not a big fan of 🧑 though, with his failed 99%-confidence prediction! Later, we'll see how KL divergence gives us the log-score that forecasting tournaments use; this score penalizes failed 99%-confidence predictions quite heavily!   
   <ExpertRatingWidget
     title="Log score"
     showBrierScore={false}

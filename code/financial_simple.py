@@ -13,14 +13,14 @@ import requests
 ##############################################################################
 max_months = 999
 # Choose which asset to analyze: 'BTC' or 'SAP'
-ASSET_TO_ANALYZE = 'BTC'  # Change this to 'SAP' to analyze S&P instead
+ASSET_TO_ANALYZE = 'SAP'  # Change this to 'SAP' to analyze S&P instead
 # Number of standard deviations to cover in the histogram
 STD_RANGE = 3  # Shows data within ±3 standard deviations
 
 ##############################################################################
 # CREATE OUTPUT AND CACHE DIRECTORIES
 ##############################################################################
-output_dir = '../components/widgets/financial'
+output_dir = 'financial'
 cache_dir = 'financial_cache'
 os.makedirs(output_dir, exist_ok=True)
 os.makedirs(cache_dir, exist_ok=True)
@@ -233,14 +233,18 @@ def plot_and_compute_kl(ax, data_values, title, std_range=3):
     return kl_gauss, kl_laplace
 
 ##############################################################################
-# EXTRACT PRICE DATA AND COMPUTE DAILY DIFFERENCES
+# EXTRACT PRICE DATA AND COMPUTE NORMALIZED DAILY DIFFERENCES
 ##############################################################################
 all_prices = data['Close'].dropna().values.flatten()
-all_price_diff = np.diff(all_prices) if len(all_prices) >= 2 else []
+# Compute normalized differences: (a_{i+1}/a_i) - 1
+if len(all_prices) >= 2:
+    all_price_returns = (all_prices[1:] / all_prices[:-1]) - 1
+else:
+    all_price_returns = []
 
-max_days = len(all_price_diff)
+max_days = len(all_price_returns)
 if max_days == 0:
-    print("No price differences to analyze. Exiting.")
+    print("No price returns to analyze. Exiting.")
     exit(1)
 
 print(f"Total available data points: {max_days}")
@@ -252,15 +256,15 @@ print(f"Generating plots for 1 to {max_days} days...")
 ##############################################################################
 step = 20
 for i in range(step, max_days + 1, step):
-    price_diff = all_price_diff[-i:] if i <= len(all_price_diff) else all_price_diff
-    if len(price_diff) < 2:
+    price_returns = all_price_returns[-i:] if i <= len(all_price_returns) else all_price_returns
+    if len(price_returns) < 2:
         continue
 
     fig, ax = plt.subplots(1, 1, figsize=(10, 6))
     kl_gauss, kl_laplace = plot_and_compute_kl(
         ax,
-        price_diff,
-        f"{asset_name} Daily Differences ({i} days)",
+        price_returns,
+        f"{asset_name} Daily Returns ({i} days)",
         STD_RANGE
     )
 
@@ -285,11 +289,11 @@ print(f"Files range from {filename_prefix}_plot0001.png to {filename_prefix}_plo
 ##############################################################################
 # PRINT FINAL STATISTICS FOR THE FULL DATASET
 ##############################################################################
-if len(all_price_diff) > 0:
+if len(all_price_returns) > 0:
     print(f"\nFull {asset_name} Dataset Statistics:")
-    print(f"Total data points: {len(all_price_diff)}")
-    print(f"Mean daily change: {np.mean(all_price_diff):.4f}")
-    print(f"Standard deviation: {np.std(all_price_diff, ddof=1):.4f}")
+    print(f"Total data points: {len(all_price_returns)}")
+    print(f"Mean daily return: {np.mean(all_price_returns):.4f}")
+    print(f"Standard deviation: {np.std(all_price_returns, ddof=1):.4f}")
 
 print(f"\nData cached in '{cache_dir}/'")
 print("To force re-download, delete the cache file and run again")

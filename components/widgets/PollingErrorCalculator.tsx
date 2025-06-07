@@ -144,8 +144,7 @@ const PollingErrorCalculator: React.FC<Props> = ({
 
       {/* Results */}
       <div className="bg-white rounded-lg p-6 shadow-md">
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="space-y-4">
+        <div className="space-y-4">
             <h4 className="text-lg font-semibold text-gray-800">Required Sample Size</h4>
             
             <div className="text-center">
@@ -170,21 +169,6 @@ const PollingErrorCalculator: React.FC<Props> = ({
               </div>
             </div>
           </div>
-
-          <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-gray-800">Formula</h4>
-            
-            <div className="text-center bg-gray-100 p-4 rounded-lg">
-              <div className="text-lg">
-                <KatexMath math="n = \frac{z^2 \cdot p \cdot (1-p)}{E^2}" />
-              </div>
-              <div className="text-sm text-gray-600 mt-2">
-                Where <em>n</em> = sample size, <em>z</em> = confidence multiplier,<br/>
-                <em>p</em> = population proportion, <em>E</em> = margin of error
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Quick Scenarios */}

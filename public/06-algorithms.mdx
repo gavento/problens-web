@@ -26,10 +26,10 @@ One way is using gradient descent:
 Where $\eps$ is the [learning rate](https://en.wikipedia.org/wiki/Learning_rate) of the algorithm. After doing this update, we would of course normalize the probabilities so that they sum up to one. 
 If we use $G_i^{(t)}$ for the total accumulated gain, i.e., $G_i^{(t)} = g_i^{(1)} + \dots + g_i^{(t)}$, then we can rewrite <EqRef id = "gradient"/> simply as
 
-<Math displayMode={true} math = "p_i^{(t+1)} \propto \eps \cdot G_i^{(t)}">
+<Math displayMode={true} math = "p_i^{(t+1)} \propto \eps \cdot G_i^{(t)}" />
 Notice that the learning rate does not play a role due to the normalization, so we end up with the proportional sampling rule from the riddle statement:
 
-<Math displayMode={true} math = "p_i^{(t+1)} \propto G_i^{(t)}">
+<Math displayMode={true} math = "p_i^{(t+1)} \propto G_i^{(t)}" />
 
 
 This proportional rule has some problems - in the widget, you can notice that if the first expert has gained $100 and the other two experts gained $50, the proportional rule goes to the top expert only with 50% probability, although it should better go for her with close to 100% probability. 
