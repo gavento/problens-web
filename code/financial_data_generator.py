@@ -3,7 +3,7 @@ import pickle
 import time
 import numpy as np
 import pandas as pd
-from scipy.stats import norm, laplace, t as student_t
+from scipy.stats import norm, laplace
 from datetime import datetime
 import requests
 import json
@@ -192,28 +192,6 @@ def compute_distribution_params(data_values):
         'loc': float(loc_lap),
         'scale': float(scale_lap),
         'kl_divergence': kl_laplace
-    }
-    
-    # Student-t parameters and KL divergence
-    kurtosis = result['kurtosis']
-    if kurtosis > 0:
-        df = 4 + 6 / kurtosis
-        df = max(2.1, min(df, 100))
-    else:
-        df = 100
-    
-    t_pdf_vals = student_t.pdf(bin_centers, df, loc=mu, scale=std)
-    if t_pdf_vals.sum() > 0:
-        Q_student_t = t_pdf_vals / np.sum(t_pdf_vals)
-        kl_student_t = float(np.sum(P[mask] * np.log(P[mask] / Q_student_t[mask]))) if Q_student_t[mask].all() else float('inf')
-    else:
-        kl_student_t = float('inf')
-    
-    result['distributions']['student_t'] = {
-        'df': float(df),
-        'loc': mu,
-        'scale': std,
-        'kl_divergence': kl_student_t
     }
     
     return result
