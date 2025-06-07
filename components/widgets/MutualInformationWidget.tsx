@@ -10,19 +10,22 @@ type Props = {
 const MutualInformationWidget: React.FC<Props> = ({
   title = "Mutual Information Explorer"
 }) => {
-  // Fixed marginal probabilities
-  const weatherProbs = useMemo(() => ({ sun: 0.7, cloud: 0.3 }), []);
-  const transportProbs = useMemo(() => ({ walk: 0.2, bike: 0.3, bus: 0.5 }), []);
-  
-  // Initialize joint distribution as independent
-  const [jointProbs, setJointProbs] = useState(() => ({
-    sunWalk: 0.7 * 0.2,
-    sunBike: 0.7 * 0.3,
-    sunBus: 0.7 * 0.5,
-    cloudWalk: 0.3 * 0.2,
-    cloudBike: 0.3 * 0.3,
-    cloudBus: 0.3 * 0.5,
-  }));
+  // Joint distribution - 6 values that sum to 1
+  const [jointProbs, setJointProbs] = useState<number[]>([0.14, 0.21, 0.35, 0.06, 0.09, 0.15]);
+
+  // Calculate marginal probabilities
+  const marginals = useMemo(() => {
+    // Weather marginals: P(sun) = sum of first 3, P(cloud) = sum of last 3
+    const sun = jointProbs[0] + jointProbs[1] + jointProbs[2];
+    const cloud = jointProbs[3] + jointProbs[4] + jointProbs[5];
+    
+    // Transport marginals: P(walk) = jointProbs[0] + jointProbs[3], etc.
+    const walk = jointProbs[0] + jointProbs[3];
+    const bike = jointProbs[1] + jointProbs[4];
+    const bus = jointProbs[2] + jointProbs[5];
+    
+    return { sun, cloud, walk, bike, bus };
+  }, [jointProbs]);
 
   // Calculate mutual information
   const mutualInformation = useMemo(() => {
@@ -30,12 +33,12 @@ const MutualInformationWidget: React.FC<Props> = ({
     
     // I(X;Y) = sum p(x,y) log(p(x,y) / (p(x)p(y)))
     const entries = [
-      { joint: jointProbs.sunWalk, marginal: weatherProbs.sun * transportProbs.walk },
-      { joint: jointProbs.sunBike, marginal: weatherProbs.sun * transportProbs.bike },
-      { joint: jointProbs.sunBus, marginal: weatherProbs.sun * transportProbs.bus },
-      { joint: jointProbs.cloudWalk, marginal: weatherProbs.cloud * transportProbs.walk },
-      { joint: jointProbs.cloudBike, marginal: weatherProbs.cloud * transportProbs.bike },
-      { joint: jointProbs.cloudBus, marginal: weatherProbs.cloud * transportProbs.bus },
+      { joint: jointProbs[0], marginal: marginals.sun * marginals.walk },  // sun, walk
+      { joint: jointProbs[1], marginal: marginals.sun * marginals.bike },  // sun, bike
+      { joint: jointProbs[2], marginal: marginals.sun * marginals.bus },   // sun, bus
+      { joint: jointProbs[3], marginal: marginals.cloud * marginals.walk }, // cloud, walk
+      { joint: jointProbs[4], marginal: marginals.cloud * marginals.bike }, // cloud, bike
+      { joint: jointProbs[5], marginal: marginals.cloud * marginals.bus },  // cloud, bus
     ];
 
     entries.forEach(({ joint, marginal }) => {
@@ -45,144 +48,48 @@ const MutualInformationWidget: React.FC<Props> = ({
     });
 
     return mi / Math.log(2); // Convert to bits
-  }, [jointProbs, weatherProbs, transportProbs]);
+  }, [jointProbs, marginals]);
 
-  // Update distribution while maintaining fixed marginals
+  // Update distribution while maintaining sum = 1 (like DistributionComparisonWidget)
   const updateDistribution = useCallback((
-    key: string,
+    index: number,
     newValue: number
   ) => {
     const clampedValue = Math.max(0, Math.min(1, newValue));
+    const newDist = [...jointProbs];
     
-    // Determine which weather and transport category this cell belongs to
-    const isSun = key.startsWith('sun');
-    const weatherKey = isSun ? 'sun' : 'cloud';
-    const transportKey = key.includes('Walk') ? 'walk' : key.includes('Bike') ? 'bike' : 'bus';
+    // Calculate remaining mass to distribute
+    const remainingMass = 1 - clampedValue;
+    const currentRemainingMass = jointProbs.reduce((sum, p, i) => i === index ? sum : sum + p, 0);
     
-    // Get the maximum possible value for this cell given marginal constraints
-    const weatherMarginal = weatherProbs[weatherKey as keyof typeof weatherProbs];
-    const transportMarginal = transportProbs[transportKey as keyof typeof transportProbs];
-    const maxPossible = Math.min(weatherMarginal, transportMarginal);
-    
-    const finalValue = Math.min(clampedValue, maxPossible);
-    const oldValue = jointProbs[key as keyof typeof jointProbs];
-    const change = finalValue - oldValue;
-    
-    if (Math.abs(change) < 1e-10) return; // No significant change
-    
-    // Start with current probabilities
-    const newProbs = { ...jointProbs };
-    newProbs[key as keyof typeof jointProbs] = finalValue;
-    
-    // We need to redistribute the change while maintaining fixed marginals
-    // Strategy: adjust other cells in the same row and column proportionally
-    
-    // Find cells in the same weather row (excluding the changed cell)
-    const sameWeatherKeys = Object.keys(newProbs).filter(k => 
-      k !== key && k.startsWith(isSun ? 'sun' : 'cloud')
-    );
-    
-    // Find cells in the same transport column (excluding the changed cell)
-    const sameTransportKeys = Object.keys(newProbs).filter(k => 
-      k !== key && (
-        (transportKey === 'walk' && k.includes('Walk')) ||
-        (transportKey === 'bike' && k.includes('Bike')) ||
-        (transportKey === 'bus' && k.includes('Bus'))
-      )
-    );
-    
-    // Calculate current sums for validation
-    const currentWeatherSum = sameWeatherKeys.reduce((sum, k) => 
-      sum + newProbs[k as keyof typeof jointProbs], 0) + finalValue;
-    const currentTransportSum = sameTransportKeys.reduce((sum, k) => 
-      sum + newProbs[k as keyof typeof jointProbs], 0) + finalValue;
-    
-    // If we need to reduce other probabilities in the same row/column
-    if (change > 0) {
-      // Reduce proportionally from same weather row
-      const weatherExcess = currentWeatherSum - weatherMarginal;
-      if (weatherExcess > 1e-10 && sameWeatherKeys.length > 0) {
-        const weatherReduction = weatherExcess / sameWeatherKeys.length;
-        sameWeatherKeys.forEach(k => {
-          newProbs[k as keyof typeof jointProbs] = Math.max(0, 
-            newProbs[k as keyof typeof jointProbs] - weatherReduction);
-        });
-      }
+    if (currentRemainingMass > 0) {
+      const scaleFactor = remainingMass / currentRemainingMass;
       
-      // Reduce proportionally from same transport column
-      const transportExcess = currentTransportSum - transportMarginal;
-      if (transportExcess > 1e-10 && sameTransportKeys.length > 0) {
-        const transportReduction = transportExcess / sameTransportKeys.length;
-        sameTransportKeys.forEach(k => {
-          newProbs[k as keyof typeof jointProbs] = Math.max(0, 
-            newProbs[k as keyof typeof jointProbs] - transportReduction);
-        });
+      // Update all other probabilities proportionally
+      for (let i = 0; i < newDist.length; i++) {
+        if (i === index) {
+          newDist[i] = clampedValue;
+        } else {
+          newDist[i] = jointProbs[i] * scaleFactor;
+        }
       }
-    } else if (change < 0) {
-      // Increase proportionally in same weather row
-      const weatherDeficit = weatherMarginal - currentWeatherSum;
-      if (weatherDeficit > 1e-10 && sameWeatherKeys.length > 0) {
-        const weatherIncrease = weatherDeficit / sameWeatherKeys.length;
-        sameWeatherKeys.forEach(k => {
-          newProbs[k as keyof typeof jointProbs] = Math.min(1, 
-            newProbs[k as keyof typeof jointProbs] + weatherIncrease);
-        });
-      }
-      
-      // Increase proportionally in same transport column
-      const transportDeficit = transportMarginal - currentTransportSum;
-      if (transportDeficit > 1e-10 && sameTransportKeys.length > 0) {
-        const transportIncrease = transportDeficit / sameTransportKeys.length;
-        sameTransportKeys.forEach(k => {
-          newProbs[k as keyof typeof jointProbs] = Math.min(1, 
-            newProbs[k as keyof typeof jointProbs] + transportIncrease);
-        });
+    } else {
+      // Edge case: if all other probabilities are 0
+      newDist[index] = clampedValue;
+      const remaining = (1 - clampedValue) / (newDist.length - 1);
+      for (let i = 0; i < newDist.length; i++) {
+        if (i !== index) {
+          newDist[i] = remaining;
+        }
       }
     }
     
-    // Final normalization to ensure exact marginal constraints
-    // This is a simplified projection - adjust all probabilities to satisfy constraints
-    const weatherKeys = {
-      sun: ['sunWalk', 'sunBike', 'sunBus'],
-      cloud: ['cloudWalk', 'cloudBike', 'cloudBus']
-    };
-    
-    const transportKeys = {
-      walk: ['sunWalk', 'cloudWalk'],
-      bike: ['sunBike', 'cloudBike'],
-      bus: ['sunBus', 'cloudBus']
-    };
-    
-    // Adjust weather marginals
-    Object.entries(weatherKeys).forEach(([weather, keys]) => {
-      const currentSum = keys.reduce((sum, k) => sum + newProbs[k as keyof typeof jointProbs], 0);
-      const targetSum = weatherProbs[weather as keyof typeof weatherProbs];
-      if (Math.abs(currentSum - targetSum) > 1e-10 && currentSum > 0) {
-        const scaleFactor = targetSum / currentSum;
-        keys.forEach(k => {
-          newProbs[k as keyof typeof jointProbs] *= scaleFactor;
-        });
-      }
-    });
-    
-    // Adjust transport marginals
-    Object.entries(transportKeys).forEach(([transport, keys]) => {
-      const currentSum = keys.reduce((sum, k) => sum + newProbs[k as keyof typeof jointProbs], 0);
-      const targetSum = transportProbs[transport as keyof typeof transportProbs];
-      if (Math.abs(currentSum - targetSum) > 1e-10 && currentSum > 0) {
-        const scaleFactor = targetSum / currentSum;
-        keys.forEach(k => {
-          newProbs[k as keyof typeof jointProbs] *= scaleFactor;
-        });
-      }
-    });
-    
-    setJointProbs(newProbs);
-  }, [jointProbs, weatherProbs, transportProbs]);
+    setJointProbs(newDist);
+  }, [jointProbs]);
 
   // Handle bar dragging with the same mechanism as DistributionComparisonWidget
   const handleBarDrag = useCallback((
-    key: string,
+    index: number,
     event: React.MouseEvent<SVGRectElement>
   ) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -192,10 +99,10 @@ const MutualInformationWidget: React.FC<Props> = ({
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const x = moveEvent.clientX - svgRect.left;
       const relativeX = x - 100; // Account for margin
-      const barMaxWidth = 200;
+      const barMaxWidth = 140;
       const probability = Math.max(0, Math.min(1, relativeX / barMaxWidth));
       
-      updateDistribution(key, probability);
+      updateDistribution(index, probability);
     };
     
     const handleMouseUp = () => {
@@ -207,32 +114,26 @@ const MutualInformationWidget: React.FC<Props> = ({
     document.addEventListener('mouseup', handleMouseUp);
   }, [updateDistribution]);
 
-  // Reset to default distribution
+  // Reset to default distribution (independent)
   const resetToDefault = useCallback(() => {
-    setJointProbs({
-      sunWalk: weatherProbs.sun * transportProbs.walk,
-      sunBike: weatherProbs.sun * transportProbs.bike,
-      sunBus: weatherProbs.sun * transportProbs.bus,
-      cloudWalk: weatherProbs.cloud * transportProbs.walk,
-      cloudBike: weatherProbs.cloud * transportProbs.bike,
-      cloudBus: weatherProbs.cloud * transportProbs.bus,
-    });
-  }, [weatherProbs, transportProbs]);
+    // Independent distribution: 70% sun, 30% cloud; 20% walk, 30% bike, 50% bus
+    setJointProbs([0.14, 0.21, 0.35, 0.06, 0.09, 0.15]);
+  }, []);
 
-  const barMaxWidth = 200;
-  const maxProb = Math.max(...Object.values(jointProbs), 0.001);
+  const barMaxWidth = 140;
+  const maxProb = Math.max(...jointProbs, 0.001);
 
-  // Define the 2x3 table structure
+  // Define the 2x3 table structure with indices
   const tableData = [
     [
-      { key: 'sunWalk', weather: '☀️', transport: '🚶‍♀️' },
-      { key: 'sunBike', weather: '☀️', transport: '🚲' },
-      { key: 'sunBus', weather: '☀️', transport: '🚌' }
+      { index: 0, weather: '☀️', transport: '🚶‍♀️', label: 'Sun, Walk' },
+      { index: 1, weather: '☀️', transport: '🚲', label: 'Sun, Bike' },
+      { index: 2, weather: '☀️', transport: '🚌', label: 'Sun, Bus' }
     ],
     [
-      { key: 'cloudWalk', weather: '☁️', transport: '🚶‍♀️' },
-      { key: 'cloudBike', weather: '☁️', transport: '🚲' },
-      { key: 'cloudBus', weather: '☁️', transport: '🚌' }
+      { index: 3, weather: '☁️', transport: '🚶‍♀️', label: 'Cloud, Walk' },
+      { index: 4, weather: '☁️', transport: '🚲', label: 'Cloud, Bike' },
+      { index: 5, weather: '☁️', transport: '🚌', label: 'Cloud, Bus' }
     ]
   ];
 
@@ -250,7 +151,7 @@ const MutualInformationWidget: React.FC<Props> = ({
           Drag the bars to adjust the joint distribution P(Weather, Transport)
         </p>
         <p className="text-xs text-blue-600 mt-1">
-          Marginals are fixed: P(☀️) = 70%, P(☁️) = 30%, P(🚶‍♀️) = 20%, P(🚲) = 30%, P(🚌) = 50%
+          All 6 probabilities must sum to 1. Other bars adjust automatically.
         </p>
       </div>
 
@@ -284,13 +185,13 @@ const MutualInformationWidget: React.FC<Props> = ({
             {/* Probability bars for each cell */}
             {tableData.map((row, rowIndex) => 
               row.map((cell, colIndex) => {
-                const prob = jointProbs[cell.key as keyof typeof jointProbs];
-                const barWidth = (prob / maxProb) * 140; // Max width of 140px
+                const prob = jointProbs[cell.index];
+                const barWidth = (prob / maxProb) * barMaxWidth;
                 const x = 105 + colIndex * 150;
                 const y = 70 + rowIndex * 100;
                 
                 return (
-                  <g key={cell.key}>
+                  <g key={cell.index}>
                     {/* Probability bar */}
                     <rect
                       x={x}
@@ -301,7 +202,7 @@ const MutualInformationWidget: React.FC<Props> = ({
                       stroke="#2563eb"
                       strokeWidth="1"
                       className="cursor-grab hover:fill-blue-500"
-                      onMouseDown={(e) => handleBarDrag(cell.key, e)}
+                      onMouseDown={(e) => handleBarDrag(cell.index, e)}
                     />
                     
                     {/* Probability text inside bar (if bar is wide enough) */}
@@ -335,24 +236,24 @@ const MutualInformationWidget: React.FC<Props> = ({
               })
             )}
             
-            {/* Marginal probabilities */}
+            {/* Marginal probabilities (calculated dynamically) */}
             {/* Weather marginals (right side) */}
             <text x="570" y="100" fontSize="14" fontWeight="bold" fill="#059669">
-              {(weatherProbs.sun * 100).toFixed(0)}%
+              {(marginals.sun * 100).toFixed(1)}%
             </text>
             <text x="570" y="200" fontSize="14" fontWeight="bold" fill="#059669">
-              {(weatherProbs.cloud * 100).toFixed(0)}%
+              {(marginals.cloud * 100).toFixed(1)}%
             </text>
             
             {/* Transport marginals (bottom) */}
             <text x="175" y="270" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#059669">
-              {(transportProbs.walk * 100).toFixed(0)}%
+              {(marginals.walk * 100).toFixed(1)}%
             </text>
             <text x="325" y="270" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#059669">
-              {(transportProbs.bike * 100).toFixed(0)}%
+              {(marginals.bike * 100).toFixed(1)}%
             </text>
             <text x="475" y="270" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#059669">
-              {(transportProbs.bus * 100).toFixed(0)}%
+              {(marginals.bus * 100).toFixed(1)}%
             </text>
             
             {/* Labels for marginals */}
