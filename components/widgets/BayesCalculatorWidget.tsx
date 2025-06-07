@@ -114,15 +114,16 @@ const BayesCalculatorWidget: React.FC<Props> = ({
 
         {/* Probability conversion */}
         <div className="bg-green-50 rounded-lg p-4 mt-4">
-          <div className="text-sm font-medium text-gray-700 mb-2">Posterior probabilities:</div>
-          <div className="flex justify-center space-x-8 text-lg">
-            <div className="text-center">
-              <div className="font-bold text-blue-600">{calculations.probFair.toFixed(1)}%</div>
-              <div className="text-sm text-gray-600">Fair</div>
-            </div>
-            <div className="text-center">
-              <div className="font-bold text-red-600">{calculations.probBiased.toFixed(1)}%</div>
-              <div className="text-sm text-gray-600">Biased</div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700">Posterior probabilities:</span>
+            <div className="flex items-center space-x-2">
+              <span className="font-mono text-sm font-bold text-blue-600">
+                {calculations.probFair.toFixed(1)}%
+              </span>
+              <span className="text-gray-500">:</span>
+              <span className="font-mono text-sm font-bold text-blue-600">
+                {calculations.probBiased.toFixed(1)}%
+              </span>
             </div>
           </div>
         </div>

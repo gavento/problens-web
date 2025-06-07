@@ -245,7 +245,7 @@ const BayesSequenceLogWidget: React.FC<Props> = ({
                     {steps[currentStep]?.probFair.toFixed(1)}%
                   </span>
                   <span className="text-gray-500">:</span>
-                  <span className="font-mono text-sm font-bold text-red-600">
+                  <span className="font-mono text-sm font-bold text-blue-600">
                     {steps[currentStep]?.probBiased.toFixed(1)}%
                   </span>
                 </div>
