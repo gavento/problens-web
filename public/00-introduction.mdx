@@ -74,7 +74,7 @@ I grabbed some historical data, calculated the daily price changes, and threw th
   correctIndices={[1, 2]}
   feedbackType="all-show"
   explanation={<>Trick question—both shapes B (Laplace distribution) and C (Gaussian distribution) kind of work! The shape totally depends on something I didn't tell you: how far back I looked. If you only check the last month, shape C fits better (though in that case it's hard to judge). But zoom out to longer periods and it starts looking more like B. 
-  <FinanceSliderSP />
+  <FinancialDistributionWidget showBTC={false} showSAP={true} />
   What's up with that? We will see in the <a href="04-max_entropy">chapter about the max-entropy principle</a>.<br/><br/></>}
 />
 
@@ -92,7 +92,7 @@ How should you update? What's best?
 <MultipleChoiceQuestion
   options={[
     <>Proportional sampling: <Math math="p_i^{(t+1)} \propto \ell_i^{(1)} + \dots + \ell_i^{(t)}" /></>,
-    <>Multiplicative sampling: <Math math="p_i^{(t+1)} \propto e^{\eps \cdot \left( \ell_i^{(1)} + \dots + \ell_i^{(t)} \right) }" /> for some small $\eps$</>,
+    <>Multiplicative sampling: <Math math="p_i^{(t+1)} \propto e^{\eps \cdot \left( \ell_i^{(1)} + \dots + \ell_i^{(t)} \right) }" /> for some small <Math math="\eps" /></>,
     <>"Follow the leader: Go with the expert that has the largest gain so far"</>
   ]}
   correctIndices={[1]}

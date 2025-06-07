@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import KatexMath from "@/components/content/KatexMath";
 
 type Props = {
@@ -10,7 +10,7 @@ type Props = {
 const MutualInformationWidget: React.FC<Props> = ({
   title = "Mutual Information Explorer"
 }) => {
-  // Marginal probabilities (fixed from the text)
+  // Fixed marginal probabilities
   const weatherProbs = { sun: 0.7, cloud: 0.3 };
   const transportProbs = { walk: 0.2, bike: 0.3, bus: 0.5 };
   
@@ -23,9 +23,6 @@ const MutualInformationWidget: React.FC<Props> = ({
     cloudBike: weatherProbs.cloud * transportProbs.bike,
     cloudBus: weatherProbs.cloud * transportProbs.bus,
   });
-
-  const [isDragging, setIsDragging] = useState<string | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   // Calculate mutual information
   const mutualInformation = useMemo(() => {
@@ -48,22 +45,170 @@ const MutualInformationWidget: React.FC<Props> = ({
     });
 
     return mi / Math.log(2); // Convert to bits
-  }, [jointProbs, weatherProbs.sun, weatherProbs.cloud, transportProbs.walk, transportProbs.bike, transportProbs.bus]);
+  }, [jointProbs, weatherProbs, transportProbs]);
 
-  // Normalize probabilities to ensure they sum to 1
-  const normalizeProbs = useCallback(() => {
-    const sum = Object.values(jointProbs).reduce((a, b) => a + b, 0);
-    if (Math.abs(sum - 1) > 0.001) {
-      const normalized = {} as typeof jointProbs;
-      Object.entries(jointProbs).forEach(([key, value]) => {
-        normalized[key as keyof typeof jointProbs] = value / sum;
-      });
-      setJointProbs(normalized);
+  // Update distribution while maintaining fixed marginals
+  const updateDistribution = useCallback((
+    key: string,
+    newValue: number
+  ) => {
+    const clampedValue = Math.max(0, Math.min(1, newValue));
+    
+    // Determine which weather and transport category this cell belongs to
+    const isSun = key.startsWith('sun');
+    const weatherKey = isSun ? 'sun' : 'cloud';
+    const transportKey = key.includes('Walk') ? 'walk' : key.includes('Bike') ? 'bike' : 'bus';
+    
+    // Get the maximum possible value for this cell given marginal constraints
+    const weatherMarginal = weatherProbs[weatherKey as keyof typeof weatherProbs];
+    const transportMarginal = transportProbs[transportKey as keyof typeof transportProbs];
+    const maxPossible = Math.min(weatherMarginal, transportMarginal);
+    
+    const finalValue = Math.min(clampedValue, maxPossible);
+    const oldValue = jointProbs[key as keyof typeof jointProbs];
+    const change = finalValue - oldValue;
+    
+    if (Math.abs(change) < 1e-10) return; // No significant change
+    
+    // Start with current probabilities
+    const newProbs = { ...jointProbs };
+    newProbs[key as keyof typeof jointProbs] = finalValue;
+    
+    // We need to redistribute the change while maintaining fixed marginals
+    // Strategy: adjust other cells in the same row and column proportionally
+    
+    // Find cells in the same weather row (excluding the changed cell)
+    const sameWeatherKeys = Object.keys(newProbs).filter(k => 
+      k !== key && k.startsWith(isSun ? 'sun' : 'cloud')
+    );
+    
+    // Find cells in the same transport column (excluding the changed cell)
+    const sameTransportKeys = Object.keys(newProbs).filter(k => 
+      k !== key && (
+        (transportKey === 'walk' && k.includes('Walk')) ||
+        (transportKey === 'bike' && k.includes('Bike')) ||
+        (transportKey === 'bus' && k.includes('Bus'))
+      )
+    );
+    
+    // Calculate current sums for validation
+    const currentWeatherSum = sameWeatherKeys.reduce((sum, k) => 
+      sum + newProbs[k as keyof typeof jointProbs], 0) + finalValue;
+    const currentTransportSum = sameTransportKeys.reduce((sum, k) => 
+      sum + newProbs[k as keyof typeof jointProbs], 0) + finalValue;
+    
+    // If we need to reduce other probabilities in the same row/column
+    if (change > 0) {
+      // Reduce proportionally from same weather row
+      const weatherExcess = currentWeatherSum - weatherMarginal;
+      if (weatherExcess > 1e-10 && sameWeatherKeys.length > 0) {
+        const weatherReduction = weatherExcess / sameWeatherKeys.length;
+        sameWeatherKeys.forEach(k => {
+          newProbs[k as keyof typeof jointProbs] = Math.max(0, 
+            newProbs[k as keyof typeof jointProbs] - weatherReduction);
+        });
+      }
+      
+      // Reduce proportionally from same transport column
+      const transportExcess = currentTransportSum - transportMarginal;
+      if (transportExcess > 1e-10 && sameTransportKeys.length > 0) {
+        const transportReduction = transportExcess / sameTransportKeys.length;
+        sameTransportKeys.forEach(k => {
+          newProbs[k as keyof typeof jointProbs] = Math.max(0, 
+            newProbs[k as keyof typeof jointProbs] - transportReduction);
+        });
+      }
+    } else if (change < 0) {
+      // Increase proportionally in same weather row
+      const weatherDeficit = weatherMarginal - currentWeatherSum;
+      if (weatherDeficit > 1e-10 && sameWeatherKeys.length > 0) {
+        const weatherIncrease = weatherDeficit / sameWeatherKeys.length;
+        sameWeatherKeys.forEach(k => {
+          newProbs[k as keyof typeof jointProbs] = Math.min(1, 
+            newProbs[k as keyof typeof jointProbs] + weatherIncrease);
+        });
+      }
+      
+      // Increase proportionally in same transport column
+      const transportDeficit = transportMarginal - currentTransportSum;
+      if (transportDeficit > 1e-10 && sameTransportKeys.length > 0) {
+        const transportIncrease = transportDeficit / sameTransportKeys.length;
+        sameTransportKeys.forEach(k => {
+          newProbs[k as keyof typeof jointProbs] = Math.min(1, 
+            newProbs[k as keyof typeof jointProbs] + transportIncrease);
+        });
+      }
     }
-  }, [jointProbs]);
+    
+    // Final normalization to ensure exact marginal constraints
+    // This is a simplified projection - adjust all probabilities to satisfy constraints
+    const weatherKeys = {
+      sun: ['sunWalk', 'sunBike', 'sunBus'],
+      cloud: ['cloudWalk', 'cloudBike', 'cloudBus']
+    };
+    
+    const transportKeys = {
+      walk: ['sunWalk', 'cloudWalk'],
+      bike: ['sunBike', 'cloudBike'],
+      bus: ['sunBus', 'cloudBus']
+    };
+    
+    // Adjust weather marginals
+    Object.entries(weatherKeys).forEach(([weather, keys]) => {
+      const currentSum = keys.reduce((sum, k) => sum + newProbs[k as keyof typeof jointProbs], 0);
+      const targetSum = weatherProbs[weather as keyof typeof weatherProbs];
+      if (Math.abs(currentSum - targetSum) > 1e-10 && currentSum > 0) {
+        const scaleFactor = targetSum / currentSum;
+        keys.forEach(k => {
+          newProbs[k as keyof typeof jointProbs] *= scaleFactor;
+        });
+      }
+    });
+    
+    // Adjust transport marginals
+    Object.entries(transportKeys).forEach(([transport, keys]) => {
+      const currentSum = keys.reduce((sum, k) => sum + newProbs[k as keyof typeof jointProbs], 0);
+      const targetSum = transportProbs[transport as keyof typeof transportProbs];
+      if (Math.abs(currentSum - targetSum) > 1e-10 && currentSum > 0) {
+        const scaleFactor = targetSum / currentSum;
+        keys.forEach(k => {
+          newProbs[k as keyof typeof jointProbs] *= scaleFactor;
+        });
+      }
+    });
+    
+    setJointProbs(newProbs);
+  }, [jointProbs, weatherProbs, transportProbs]);
 
-  // Reset to independent distribution
-  const resetToIndependent = () => {
+  // Handle bar dragging with the same mechanism as DistributionComparisonWidget
+  const handleBarDrag = useCallback((
+    key: string,
+    event: React.MouseEvent<SVGRectElement>
+  ) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const svg = event.currentTarget.closest('svg')!;
+    const svgRect = svg.getBoundingClientRect();
+    
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const x = moveEvent.clientX - svgRect.left;
+      const relativeX = x - 100; // Account for margin
+      const barMaxWidth = 200;
+      const probability = Math.max(0, Math.min(1, relativeX / barMaxWidth));
+      
+      updateDistribution(key, probability);
+    };
+    
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  }, [updateDistribution]);
+
+  // Reset to default distribution
+  const resetToDefault = () => {
     setJointProbs({
       sunWalk: weatherProbs.sun * transportProbs.walk,
       sunBike: weatherProbs.sun * transportProbs.bike,
@@ -74,67 +219,25 @@ const MutualInformationWidget: React.FC<Props> = ({
     });
   };
 
-  // Handle dragging
-  const handleMouseDown = (key: string) => {
-    setIsDragging(key);
-  };
+  const barMaxWidth = 200;
+  const maxProb = Math.max(...Object.values(jointProbs), 0.001);
 
-  const handleMouseMove = useCallback((e: MouseEvent | React.MouseEvent) => {
-    if (!isDragging || !containerRef.current) return;
-
-    const rect = containerRef.current.getBoundingClientRect();
-    const y = e.clientY - rect.top;
-    const height = rect.height;
-    
-    // Calculate new probability based on mouse position
-    const newProb = Math.max(0, Math.min(1, 1 - y / height));
-    
-    setJointProbs(prev => ({
-      ...prev,
-      [isDragging]: newProb * 0.7, // Scale down to leave room for normalization
-    }));
-  }, [isDragging]);
-
-  const handleMouseUp = useCallback(() => {
-    if (isDragging) {
-      normalizeProbs();
-      setIsDragging(null);
-    }
-  }, [isDragging, normalizeProbs]);
-
-  useEffect(() => {
-    if (isDragging) {
-      const handleGlobalMouseMove = (e: MouseEvent) => {
-        handleMouseMove(e);
-      };
-      const handleGlobalMouseUp = () => {
-        handleMouseUp();
-      };
-
-      document.addEventListener('mousemove', handleGlobalMouseMove);
-      document.addEventListener('mouseup', handleGlobalMouseUp);
-
-      return () => {
-        document.removeEventListener('mousemove', handleGlobalMouseMove);
-        document.removeEventListener('mouseup', handleGlobalMouseUp);
-      };
-    }
-  }, [isDragging, handleMouseMove, handleMouseUp]);
-
-  const barData = [
-    { key: 'sunWalk', weather: '☀️', transport: '🚶‍♀️', label: 'Sun + Walk' },
-    { key: 'sunBike', weather: '☀️', transport: '🚲', label: 'Sun + Bike' },
-    { key: 'sunBus', weather: '☀️', transport: '🚌', label: 'Sun + Bus' },
-    { key: 'cloudWalk', weather: '☁️', transport: '🚶‍♀️', label: 'Cloud + Walk' },
-    { key: 'cloudBike', weather: '☁️', transport: '🚲', label: 'Cloud + Bike' },
-    { key: 'cloudBus', weather: '☁️', transport: '🚌', label: 'Cloud + Bus' },
+  // Define the 2x3 table structure
+  const tableData = [
+    [
+      { key: 'sunWalk', weather: '☀️', transport: '🚶‍♀️' },
+      { key: 'sunBike', weather: '☀️', transport: '🚲' },
+      { key: 'sunBus', weather: '☀️', transport: '🚌' }
+    ],
+    [
+      { key: 'cloudWalk', weather: '☁️', transport: '🚶‍♀️' },
+      { key: 'cloudBike', weather: '☁️', transport: '🚲' },
+      { key: 'cloudBus', weather: '☁️', transport: '🚌' }
+    ]
   ];
 
-  const maxProb = Math.max(...Object.values(jointProbs), 0.001); // Prevent division by zero
-  const barMaxHeight = 200;
-
   return (
-    <div className="p-6 bg-gray-50 rounded-lg space-y-6 max-w-4xl mx-auto">
+    <div className="p-6 bg-gray-50 rounded-lg space-y-6 max-w-5xl mx-auto">
       {title && (
         <h3 className="text-xl font-semibold text-center text-gray-800">
           {title}
@@ -147,128 +250,152 @@ const MutualInformationWidget: React.FC<Props> = ({
           Drag the bars to adjust the joint distribution P(Weather, Transport)
         </p>
         <p className="text-xs text-blue-600 mt-1">
-          Marginals are fixed: P(☀️) = 70%, P(🚶‍♀️) = 20%, P(🚲) = 30%, P(🚌) = 50%
+          Marginals are fixed: P(☀️) = 70%, P(☁️) = 30%, P(🚶‍♀️) = 20%, P(🚲) = 30%, P(🚌) = 50%
         </p>
       </div>
 
-      {/* Joint Distribution Visualization */}
+      {/* Joint Distribution Table */}
       <div className="bg-white rounded-lg p-6">
-        <h4 className="text-lg font-semibold text-gray-800 mb-4">Joint Distribution</h4>
+        <h4 className="text-lg font-semibold text-gray-800 mb-4 text-center">Joint Distribution P(Weather, Transport)</h4>
         
-        <div 
-          ref={containerRef}
-          className="relative"
-          style={{ height: `${barMaxHeight + 100}px` }}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-        >
-          <div className="flex justify-around items-end" style={{ height: `${barMaxHeight + 50}px` }}>
-            {barData.map((bar) => {
-              const prob = jointProbs[bar.key as keyof typeof jointProbs];
-              const height = (prob / maxProb) * barMaxHeight;
-              const isActive = isDragging === bar.key;
-
-              return (
-                <div key={bar.key} className="flex flex-col items-center">
-                  <div
-                    className="relative cursor-grab active:cursor-grabbing"
-                    style={{ height: `${barMaxHeight}px` }}
-                    onMouseDown={() => handleMouseDown(bar.key)}
-                  >
-                    <div
-                      className={`absolute bottom-0 w-16 rounded-t transition-all ${
-                        isActive ? 'bg-blue-500' : 'bg-blue-400 hover:bg-blue-500'
-                      }`}
-                      style={{ 
-                        height: `${height}px`,
-                        transition: isDragging ? 'none' : 'height 0.2s ease'
-                      }}
-                    >
-                      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-sm font-mono">
+        <div className="flex justify-center">
+          <svg width="600" height="300" className="border rounded bg-white">
+            {/* Background */}
+            <rect width="600" height="300" fill="#f9fafb" stroke="#e5e7eb" />
+            
+            {/* Column headers (Transport) */}
+            <text x="200" y="30" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#374151">🚶‍♀️ Walk</text>
+            <text x="350" y="30" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#374151">🚲 Bike</text>
+            <text x="500" y="30" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#374151">🚌 Bus</text>
+            
+            {/* Row headers (Weather) */}
+            <text x="80" y="100" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#374151">☀️ Sun</text>
+            <text x="80" y="200" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#374151">☁️ Cloud</text>
+            
+            {/* Grid lines */}
+            <line x1="100" y1="50" x2="550" y2="50" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="100" y1="150" x2="550" y2="150" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="100" y1="250" x2="550" y2="250" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="100" y1="50" x2="100" y2="250" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="250" y1="50" x2="250" y2="250" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="400" y1="50" x2="400" y2="250" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="550" y1="50" x2="550" y2="250" stroke="#d1d5db" strokeWidth="1" />
+            
+            {/* Probability bars for each cell */}
+            {tableData.map((row, rowIndex) => 
+              row.map((cell, colIndex) => {
+                const prob = jointProbs[cell.key as keyof typeof jointProbs];
+                const barWidth = (prob / maxProb) * 140; // Max width of 140px
+                const x = 105 + colIndex * 150;
+                const y = 70 + rowIndex * 100;
+                
+                return (
+                  <g key={cell.key}>
+                    {/* Probability bar */}
+                    <rect
+                      x={x}
+                      y={y}
+                      width={barWidth}
+                      height={30}
+                      fill="#3b82f6"
+                      stroke="#2563eb"
+                      strokeWidth="1"
+                      className="cursor-grab hover:fill-blue-500"
+                      onMouseDown={(e) => handleBarDrag(cell.key, e)}
+                    />
+                    
+                    {/* Probability text inside bar (if bar is wide enough) */}
+                    {barWidth > 50 && (
+                      <text
+                        x={x + barWidth / 2}
+                        y={y + 20}
+                        textAnchor="middle"
+                        fontSize="12"
+                        fill="white"
+                        fontWeight="bold"
+                      >
                         {(prob * 100).toFixed(1)}%
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-2 text-2xl">
-                    {bar.weather}{bar.transport}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Grid lines */}
-          {[0, 0.1, 0.2, 0.3, 0.4, 0.5].map(val => (
-            <div
-              key={val}
-              className="absolute left-0 right-0 border-t border-gray-200"
-              style={{ 
-                bottom: `${50 + (val / maxProb) * barMaxHeight}px`
-              }}
-            >
-              <span className="absolute -left-10 -top-2 text-xs text-gray-500">
-                {(val * 100).toFixed(0)}%
-              </span>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-4 flex justify-center">
-          <button
-            onClick={resetToIndependent}
-            className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors"
-          >
-            Reset to Independent
-          </button>
+                      </text>
+                    )}
+                    
+                    {/* Probability text outside bar (if bar is too narrow) */}
+                    {barWidth <= 50 && (
+                      <text
+                        x={x + barWidth + 5}
+                        y={y + 20}
+                        fontSize="12"
+                        fill="#374151"
+                        fontWeight="bold"
+                      >
+                        {(prob * 100).toFixed(1)}%
+                      </text>
+                    )}
+                  </g>
+                );
+              })
+            )}
+            
+            {/* Marginal probabilities */}
+            {/* Weather marginals (right side) */}
+            <text x="570" y="100" fontSize="14" fontWeight="bold" fill="#059669">
+              {(weatherProbs.sun * 100).toFixed(0)}%
+            </text>
+            <text x="570" y="200" fontSize="14" fontWeight="bold" fill="#059669">
+              {(weatherProbs.cloud * 100).toFixed(0)}%
+            </text>
+            
+            {/* Transport marginals (bottom) */}
+            <text x="175" y="270" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#059669">
+              {(transportProbs.walk * 100).toFixed(0)}%
+            </text>
+            <text x="325" y="270" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#059669">
+              {(transportProbs.bike * 100).toFixed(0)}%
+            </text>
+            <text x="475" y="270" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#059669">
+              {(transportProbs.bus * 100).toFixed(0)}%
+            </text>
+            
+            {/* Labels for marginals */}
+            <text x="570" y="40" fontSize="12" fill="#6b7280" textAnchor="middle">P(Weather)</text>
+            <text x="325" y="290" fontSize="12" fill="#6b7280" textAnchor="middle">P(Transport)</text>
+          </svg>
         </div>
       </div>
 
       {/* Mutual Information Display */}
       <div className="bg-white rounded-lg p-6">
-        <h4 className="text-lg font-semibold text-gray-800 mb-3">Mutual Information</h4>
-        
         <div className="text-center">
-          <div className="text-3xl font-mono font-bold text-blue-600">
-            {mutualInformation.toFixed(4)} bits
+          <h4 className="text-lg font-semibold text-gray-800 mb-2">Mutual Information</h4>
+          <div className="text-3xl font-bold text-blue-600 mb-2">
+            I(Weather; Transport) = {mutualInformation.toFixed(4)} bits
+          </div>
+          <div className="text-sm text-gray-600">
+            <KatexMath math="I(X;Y) = \sum_{x,y} P(x,y) \log_2 \frac{P(x,y)}{P(x)P(y)}" />
           </div>
           
-          <div className="mt-4 text-sm text-gray-600">
-            <KatexMath math="I(X;Y) = \sum_{x,y} p(x,y) \log \frac{p(x,y)}{p(x)p(y)}" />
-          </div>
-
-          <div className="mt-4 p-4 bg-gray-50 rounded">
-            <p className="text-sm text-gray-700">
-              {mutualInformation < 0.001 ? (
-                "The variables are independent! Weather and transport choice are unrelated."
-              ) : mutualInformation < 0.1 ? (
-                "Weak dependence: Weather has a small influence on transport choice."
-              ) : mutualInformation < 0.3 ? (
-                "Moderate dependence: Weather noticeably affects transport choice."
-              ) : (
-                "Strong dependence: Weather significantly determines transport choice."
-              )}
-            </p>
-            <p className="text-xs text-gray-500 mt-2">
-              Maximum possible: ~0.67 bits (when weather completely determines transport)
-            </p>
+          {/* Independence indicator */}
+          <div className="mt-4">
+            {Math.abs(mutualInformation) < 0.001 ? (
+              <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                ✓ Variables are independent
+              </div>
+            ) : (
+              <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                ⚡ Variables are dependent
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Marginal Constraints */}
-      <div className="bg-gray-100 rounded-lg p-4">
-        <h5 className="text-sm font-semibold text-gray-700 mb-2">Marginal Constraints (Fixed)</h5>
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <p>P(☀️) = {(jointProbs.sunWalk + jointProbs.sunBike + jointProbs.sunBus).toFixed(2)} ≈ 0.70</p>
-            <p>P(☁️) = {(jointProbs.cloudWalk + jointProbs.cloudBike + jointProbs.cloudBus).toFixed(2)} ≈ 0.30</p>
-          </div>
-          <div>
-            <p>P(🚶‍♀️) = {(jointProbs.sunWalk + jointProbs.cloudWalk).toFixed(2)} ≈ 0.20</p>
-            <p>P(🚲) = {(jointProbs.sunBike + jointProbs.cloudBike).toFixed(2)} ≈ 0.30</p>
-            <p>P(🚌) = {(jointProbs.sunBus + jointProbs.cloudBus).toFixed(2)} ≈ 0.50</p>
-          </div>
-        </div>
+      {/* Controls */}
+      <div className="flex justify-center">
+        <button
+          onClick={resetToDefault}
+          className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+        >
+          Reset to Default
+        </button>
       </div>
     </div>
   );

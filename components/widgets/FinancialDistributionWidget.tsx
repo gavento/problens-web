@@ -26,12 +26,6 @@ interface DistributionData {
       scale: number;
       kl_divergence: number;
     };
-    student_t: {
-      df: number;
-      loc: number;
-      scale: number;
-      kl_divergence: number;
-    };
   };
 }
 
@@ -61,24 +55,6 @@ function computePDF(x: number[], dist: string, params: any): number[] {
         const scale = params.scale || 1e-10;
         return Math.exp(-Math.abs(xi - params.loc) / scale) / (2 * scale);
       });
-    case 'student_t':
-      // Student-t distribution PDF
-      return x.map(xi => {
-        const df = params.df;
-        const scale = params.scale;
-        const loc = params.loc;
-        const z = (xi - loc) / scale;
-        const gamma = (n: number): number => {
-          // Simple gamma approximation for positive integers
-          let result = 1;
-          for (let i = 2; i < n; i++) result *= i;
-          return result;
-        };
-        const numerator = gamma((df + 1) / 2);
-        const denominator = Math.sqrt(df * Math.PI) * gamma(df / 2) * scale;
-        const base = 1 + (z * z) / df;
-        return (numerator / denominator) * Math.pow(base, -(df + 1) / 2);
-      });
     default:
       return x.map(() => 0);
   }
@@ -94,7 +70,6 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
   const [xAxisRange, setXAxisRange] = useState(3); // Standard deviations
   const [showGaussian, setShowGaussian] = useState(true);
   const [showLaplace, setShowLaplace] = useState(true);
-  const [showStudentT, setShowStudentT] = useState(true);
 
   // Load data
   useEffect(() => {
@@ -162,7 +137,6 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
     // Compute PDFs
     const gaussianPDF = showGaussian ? computePDF(xValues, 'gaussian', distributions.gaussian) : null;
     const laplacePDF = showLaplace ? computePDF(xValues, 'laplace', distributions.laplace) : null;
-    const studentTPDF = showStudentT ? computePDF(xValues, 'student_t', distributions.student_t) : null;
 
     // Prepare histogram data
     const histogramData = [];
@@ -181,13 +155,12 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
       xValues,
       gaussianPDF,
       laplacePDF,
-      studentTPDF,
       histogramData,
       distributions,
       mean,
       std
     };
-  }, [currentData, selectedDays, xAxisRange, showGaussian, showLaplace, showStudentT]);
+  }, [currentData, selectedDays, xAxisRange, showGaussian, showLaplace]);
 
   if (loading) {
     return (
@@ -277,15 +250,6 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
               />
               <span className="text-green-600">Laplace</span>
             </label>
-            <label className="flex items-center text-sm">
-              <input
-                type="checkbox"
-                checked={showStudentT}
-                onChange={(e) => setShowStudentT(e.target.checked)}
-                className="mr-2"
-              />
-              <span className="text-blue-600">Student-t</span>
-            </label>
           </div>
         </div>
       </div>
@@ -327,7 +291,6 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
               const allPDFValues = [
                 ...(plotData.gaussianPDF || []),
                 ...(plotData.laplacePDF || []),
-                ...(plotData.studentTPDF || []),
                 ...plotData.histogramData.map(d => d.y)
               ].filter(v => isFinite(v));
               const maxY = Math.max(...allPDFValues, 0.01);
@@ -363,19 +326,6 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
                     />
                   )}
                   
-                  {/* Student-t curve */}
-                  {plotData.studentTPDF && showStudentT && (
-                    <path
-                      d={`M ${plotData.xValues.map((x, i) => {
-                        const xPos = 50 + (x - plotData.xValues[0]) * xScale;
-                        const yPos = 350 - plotData.studentTPDF![i] * yScale;
-                        return `${xPos},${Math.max(50, Math.min(350, yPos))}`;
-                      }).join(' L ')}`}
-                      fill="none"
-                      stroke="#3b82f6"
-                      strokeWidth="2"
-                    />
-                  )}
                 </>
               );
             })()}
@@ -403,13 +353,7 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
                   <text x="25" y="5" fontSize="12" fill="#374151">Laplace</text>
                 </g>
               )}
-              {showStudentT && (
-                <g transform="translate(0, 40)">
-                  <line x1="0" y1="0" x2="20" y2="0" stroke="#3b82f6" strokeWidth="2" />
-                  <text x="25" y="5" fontSize="12" fill="#374151">Student-t</text>
-                </g>
-              )}
-              <g transform="translate(0, 60)">
+              <g transform="translate(0, 40)">
                 <rect x="0" y="-5" width="20" height="10" fill="#94a3b8" opacity="0.7" />
                 <text x="25" y="5" fontSize="12" fill="#374151">Empirical</text>
               </g>
@@ -417,7 +361,7 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
           </svg>
           
           {/* KL Divergences */}
-          <div className="mt-4 grid grid-cols-3 gap-4 text-sm">
+          <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
             {showGaussian && (
               <div className="text-center">
                 <div className="font-semibold text-red-600">Gaussian</div>
@@ -428,12 +372,6 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
               <div className="text-center">
                 <div className="font-semibold text-green-600">Laplace</div>
                 <div>KL = {plotData.distributions.laplace.kl_divergence.toFixed(6)}</div>
-              </div>
-            )}
-            {showStudentT && (
-              <div className="text-center">
-                <div className="font-semibold text-blue-600">Student-t (df={plotData.distributions.student_t.df.toFixed(1)})</div>
-                <div>KL = {plotData.distributions.student_t.kl_divergence.toFixed(6)}</div>
               </div>
             )}
           </div>
