@@ -11,18 +11,18 @@ const MutualInformationWidget: React.FC<Props> = ({
   title = "Mutual Information Explorer"
 }) => {
   // Fixed marginal probabilities
-  const weatherProbs = { sun: 0.7, cloud: 0.3 };
-  const transportProbs = { walk: 0.2, bike: 0.3, bus: 0.5 };
+  const weatherProbs = useMemo(() => ({ sun: 0.7, cloud: 0.3 }), []);
+  const transportProbs = useMemo(() => ({ walk: 0.2, bike: 0.3, bus: 0.5 }), []);
   
   // Initialize joint distribution as independent
-  const [jointProbs, setJointProbs] = useState({
-    sunWalk: weatherProbs.sun * transportProbs.walk,
-    sunBike: weatherProbs.sun * transportProbs.bike,
-    sunBus: weatherProbs.sun * transportProbs.bus,
-    cloudWalk: weatherProbs.cloud * transportProbs.walk,
-    cloudBike: weatherProbs.cloud * transportProbs.bike,
-    cloudBus: weatherProbs.cloud * transportProbs.bus,
-  });
+  const [jointProbs, setJointProbs] = useState(() => ({
+    sunWalk: 0.7 * 0.2,
+    sunBike: 0.7 * 0.3,
+    sunBus: 0.7 * 0.5,
+    cloudWalk: 0.3 * 0.2,
+    cloudBike: 0.3 * 0.3,
+    cloudBus: 0.3 * 0.5,
+  }));
 
   // Calculate mutual information
   const mutualInformation = useMemo(() => {
@@ -208,7 +208,7 @@ const MutualInformationWidget: React.FC<Props> = ({
   }, [updateDistribution]);
 
   // Reset to default distribution
-  const resetToDefault = () => {
+  const resetToDefault = useCallback(() => {
     setJointProbs({
       sunWalk: weatherProbs.sun * transportProbs.walk,
       sunBike: weatherProbs.sun * transportProbs.bike,
@@ -217,7 +217,7 @@ const MutualInformationWidget: React.FC<Props> = ({
       cloudBike: weatherProbs.cloud * transportProbs.bike,
       cloudBus: weatherProbs.cloud * transportProbs.bus,
     });
-  };
+  }, [weatherProbs, transportProbs]);
 
   const barMaxWidth = 200;
   const maxProb = Math.max(...Object.values(jointProbs), 0.001);

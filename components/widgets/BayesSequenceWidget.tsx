@@ -225,7 +225,7 @@ const BayesSequenceWidget: React.FC<Props> = ({
       {/* Instructions */}
       <div className="text-center text-sm text-gray-600">
         Step through the sequence to see how each coin flip updates the posterior probabilities.
-        Click "Edit" to modify the sequence.
+        Click Edit to modify the sequence.
       </div>
     </div>
   );

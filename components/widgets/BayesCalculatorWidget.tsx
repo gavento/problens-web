@@ -130,7 +130,7 @@ const BayesCalculatorWidget: React.FC<Props> = ({
 
       {/* Instructions */}
       <div className="text-center text-sm text-gray-600">
-        Adjust the prior odds and likelihood values to see how Bayes' theorem updates beliefs
+        Adjust the prior odds and likelihood values to see how Bayes theorem updates beliefs
       </div>
     </div>
   );
