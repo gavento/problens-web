@@ -60,7 +60,7 @@ function computePDF(x: number[], dist: string, params: any): number[] {
   }
 }
 
-export default function FinancialDistributionWidget({ showBTC = true, showSAP = true }: Props) {
+export default function FinancialDistributionWidget({ showBTC = true, showSAP = false }: Props) {
   const [btcData, setBtcData] = useState<FinancialData | null>(null);
   const [sapData, setSapData] = useState<FinancialData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -80,24 +80,42 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
         
         if (showBTC) {
           promises.push(
-            fetch('/financial_data/btc_data.json')
-              .then(res => res.json())
-              .then(data => setBtcData(data))
+            fetch('/financial_data/btc_data_test.json')
+              .then(res => {
+                console.log('BTC fetch response:', res.status, res.statusText);
+                if (!res.ok) {
+                  throw new Error(`BTC fetch failed: ${res.status} ${res.statusText}`);
+                }
+                return res.json();
+              })
+              .then(data => {
+                console.log('BTC data loaded, keys:', Object.keys(data));
+                setBtcData(data);
+              })
           );
         }
         
         if (showSAP) {
           promises.push(
             fetch('/financial_data/sap_data.json')
-              .then(res => res.json())
-              .then(data => setSapData(data))
+              .then(res => {
+                console.log('SAP fetch response:', res.status, res.statusText);
+                if (!res.ok) {
+                  throw new Error(`SAP fetch failed: ${res.status} ${res.statusText}`);
+                }
+                return res.json();
+              })
+              .then(data => {
+                console.log('SAP data loaded, keys:', Object.keys(data));
+                setSapData(data);
+              })
           );
         }
         
         await Promise.all(promises);
       } catch (err) {
-        setError('Failed to load financial data');
-        console.error(err);
+        setError(`Failed to load financial data: ${err instanceof Error ? err.message : String(err)}`);
+        console.error('Financial data loading error:', err);
       } finally {
         setLoading(false);
       }
