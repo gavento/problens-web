@@ -46,9 +46,9 @@ This is pretty much just a different way of writing down the Bayes' rule. <Footn
 
 With odds, Bayes' formula is super clean! You just multiply your prior odds by <Math math = "\frac{P(\textrm{heads} | \textrm{fair})}{P(\textrm{heads} | \textrm{biased})}" />—that's how much more likely heads are under each hypothesis. These conditional probabilities <Math math = "P(\textrm{event} | \textrm{hypothesis})" /> are called [_likelihoods_](https://en.wikipedia.org/wiki/Likelihood_function), so this ratio is the likelihood ratio.
 
-Here's the picture: <Footnote>Getting Bayes' rule is super important. If this isn't clicking, check out [this explainer](https://www.lesswrong.com/w/bayes-rule). </Footnote>
+Here's how it works in practice: <Footnote>Getting Bayes' rule is super important. If this isn't clicking, check out [this explainer](https://www.lesswrong.com/w/bayes-rule). </Footnote>
 
-![Bayes' theorem using odds](01-kl_intro/bayes_theorem.png)
+<BayesCalculatorWidget />
 
 {/*Bayes' theorem simply says we should do the simplest thing possible with the two relevant ratios -- multiply them -- to arrive at the posterior odds $P(\textrm{fair} | \textrm{heads}) : P(\textrm{biased} | \textrm{heads})$ .*/}
 
@@ -56,7 +56,7 @@ Here's the picture: <Footnote>Getting Bayes' rule is super important. If this is
 
 KL divergence is about what happens when you keep flipping. Picture our Bayesian hero flipping over and over, updating her beliefs each time using Bayes. If she gets $\{H, T, T, H, T\}$, here's what's happening:
 
-![Repeated application of Bayes' theorem](01-kl_intro/repeated_bayes.png)
+<BayesSequenceWidget />
 
 Every flip, she multiplies her odds by a likelihood ratio: $5/4$ for heads, $5/6$ for tails.
 
@@ -66,20 +66,15 @@ In this example, three tails out of five slightly favor the biased coin. After c
 
 Before we see what happens long-term, let's switch gears. <Footnote>No pun intended. </Footnote> We'll take logs of everything so we can add instead of multiply.
 
-First, let's rewrite our table:
+Here's the same calculation in log space, where multiplication becomes addition:
 
-![Repeated application of Bayes' theorem in log scale](01-kl_intro/repeated_bayes_log2.png)
+<BayesCalculatorLogWidget />
 
-We just wrote everything as powers of 2, so multiplying becomes adding in the exponent.
+Notice how much simpler the arithmetic becomes! Instead of multiplying odds, we just add log-odds.
 
-Let's clean it up even more:
+The key insight is _[surprisal](https://en.wikipedia.org/wiki/Information_content)_: instead of probability $p$, we write $\log 1/p$. This measures how surprised you are when something happens. Getting heads when you thought it was 1% likely? Super surprising ($\log 1/0.01 \approx 6.6$). Getting heads on a fair coin? Meh ($\log 1/0.5 = 1$).
 
-![Surprisal](01-kl_intro/repeated_bayes_surprisals.png)
-
-Instead of probability $p$ in each cell, we write $\log 1/p$. This $\log 1/p$ thing is called _[surprisal](https://en.wikipedia.org/wiki/Information_content)_. Makes sense—it measures how surprised you are when something happens. Getting heads when you thought it was 1% likely? Super surprising ($\log 1/0.01 \approx 6.6$). Getting heads on a fair coin? Meh ($\log 1/0.5 = 1$).
-
-Our table is now like a scorecard for surprisals.
-When you subtract surprisals in the same row, you get how much evidence you gained for each hypothesis. Here, heads give you 0.32 bits of evidence for fair, tails give 0.26 bits for biased.
+When you subtract surprisals for the same outcome under different hypotheses, you get how much evidence that outcome provides. For our coin example, heads give you 0.32 bits of evidence for fair, tails give 0.26 bits for biased.
 
 To get the final probability, add up all the surprisals for each hypothesis, exponentiate, and don't forget the prior.
 
