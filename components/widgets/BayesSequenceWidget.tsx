@@ -198,37 +198,35 @@ const BayesSequenceWidget: React.FC<Props> = ({
           ))}
 
           {/* Posterior section */}
-          {currentStep > 0 && (
-            <div className="mt-4 pt-3 border-t border-gray-300 space-y-2">
-              {/* Posterior odds */}
-              <div className="flex items-center py-2 px-3 rounded bg-green-50">
-                <span className="text-sm font-medium text-gray-700 w-12">Posterior</span>
-                <div className="flex-1 flex items-center justify-center space-x-2">
-                  <span className="font-mono text-sm font-bold text-blue-600">
-                    {steps[currentStep]?.oddsFair.toFixed(3)}
-                  </span>
-                  <span className="text-gray-500">:</span>
-                  <span className="font-mono text-sm font-bold text-blue-600">
-                    {steps[currentStep]?.oddsBiased.toFixed(3)}
-                  </span>
-                </div>
-              </div>
-              
-              {/* Probabilities */}
-              <div className="flex items-center py-2 px-3 rounded bg-green-50">
-                <span className="text-sm font-medium text-gray-700 w-12">Probability</span>
-                <div className="flex-1 flex items-center justify-center space-x-2">
-                  <span className="font-mono text-sm font-bold text-blue-600">
-                    {steps[currentStep]?.probFair.toFixed(1)}%
-                  </span>
-                  <span className="text-gray-500">:</span>
-                  <span className="font-mono text-sm font-bold text-blue-600">
-                    {steps[currentStep]?.probBiased.toFixed(1)}%
-                  </span>
-                </div>
+          <div className="mt-4 pt-3 border-t border-gray-300 space-y-2">
+            {/* Posterior odds */}
+            <div className="flex items-center py-2 px-3 rounded bg-green-50">
+              <span className="text-sm font-medium text-gray-700 w-12">Posterior</span>
+              <div className="flex-1 flex items-center justify-center space-x-2">
+                <span className="font-mono text-sm font-bold text-blue-600">
+                  {steps[currentStep]?.oddsFair.toFixed(3)}
+                </span>
+                <span className="text-gray-500">:</span>
+                <span className="font-mono text-sm font-bold text-blue-600">
+                  {steps[currentStep]?.oddsBiased.toFixed(3)}
+                </span>
               </div>
             </div>
-          )}
+            
+            {/* Probabilities */}
+            <div className="flex items-center py-2 px-3 rounded bg-green-50">
+              <span className="text-sm font-medium text-gray-700 w-12">Probability</span>
+              <div className="flex-1 flex items-center justify-center space-x-2">
+                <span className="font-mono text-sm font-bold text-blue-600">
+                  {steps[currentStep]?.probFair.toFixed(1)}%
+                </span>
+                <span className="text-gray-500">:</span>
+                <span className="font-mono text-sm font-bold text-blue-600">
+                  {steps[currentStep]?.probBiased.toFixed(1)}%
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
