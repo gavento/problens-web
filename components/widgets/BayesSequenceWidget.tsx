@@ -168,8 +168,16 @@ const BayesSequenceWidget: React.FC<Props> = ({
 
         {/* Prior row */}
         <div className="bg-white rounded-lg p-4 space-y-3">
-          <div className="text-center text-sm font-medium text-gray-700 mb-3">
-            Prior odds: {priorFair} : {priorBiased}
+          <div className="flex items-center justify-between py-2 px-3 rounded bg-blue-50 border border-blue-200">
+            <div className="flex items-center space-x-4 flex-1">
+              <span className="text-sm font-medium text-gray-700 w-6 text-center">
+                Prior
+              </span>
+              <div className="flex-1 border-t border-dashed border-blue-400"></div>
+              <span className="font-mono text-sm font-bold">
+                {priorFair} : {priorBiased}
+              </span>
+            </div>
           </div>
           
           {/* Flip rows */}
