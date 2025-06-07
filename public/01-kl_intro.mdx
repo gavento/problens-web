@@ -26,7 +26,7 @@ Let me break this down properly.
 
 Before we dive into KL, let's refresh on Bayes' theorem—it's how you update your beliefs when you get new info. Example time:
 
-You've got a coin that might be rigged. To keep it simple, let's say there are only two options: it's either fair (50/50 for heads/tails) or it's biased toward tails (40% heads, 60% tails).
+You've got a coin that might be rigged. To keep it simple, let's say there are only two options: it's either fair (50/50 for heads/tails) or it's biased toward tails (25% heads, 75% tails).
 
 To use Bayes, you need a starting guess (a _prior_) about which it is. Let's say you think there's a 2/3 chance it's fair and 1/3 chance it's biased.
 
@@ -58,7 +58,7 @@ KL divergence is about what happens when you keep flipping. Picture our Bayesian
 
 <BayesSequenceWidget />
 
-Every flip, she multiplies her odds by a likelihood ratio: $5/4$ for heads, $5/6$ for tails.
+Every flip, she multiplies her odds by a likelihood ratio: $2/1$ for heads, $2/3$ for tails.
 
 In this example, three tails out of five slightly favor the biased coin. After converting back to probabilities, her initial 67% belief in fairness drops to about 64%. Gonna need way more flips to know for sure!
 
@@ -74,31 +74,31 @@ Notice how much simpler the arithmetic becomes! Instead of multiplying odds, we 
 
 The key insight is _[surprisal](https://en.wikipedia.org/wiki/Information_content)_: instead of probability $p$, we write $\log 1/p$. This measures how surprised you are when something happens. Getting heads when you thought it was 1% likely? Super surprising ($\log 1/0.01 \approx 6.6$). Getting heads on a fair coin? Meh ($\log 1/0.5 = 1$).
 
-When you subtract surprisals for the same outcome under different hypotheses, you get how much evidence that outcome provides. For our coin example, heads give you 0.32 bits of evidence for fair, tails give 0.26 bits for biased.
+When you subtract surprisals for the same outcome under different hypotheses, you get how much evidence that outcome provides. For our coin example, heads give you 1 bit of evidence for fair, tails give 0.58 bits for biased.
 
 To get the final probability, add up all the surprisals for each hypothesis, exponentiate, and don't forget the prior.
 
 In our example, the total evidence for biased is:
 
 $$
-3 \cdot 0.26 - 2 \cdot 0.32 \approx 0.15. 
+3 \cdot 0.58 - 2 \cdot 1 = 1.74 - 2 = -0.26. 
 $$
 
-We started with one bit favoring fair, so we end up with 0.85 bits for fair. Convert that back and you get 64% probability it's fair.
+We started with one bit favoring fair, so we end up with 1.26 bits for fair. Convert that back and you get about 75% probability it's fair.
 
 ## Expected Distinguishing Evidence <a id="expected-distinguishing-evidence"></a>
 
-Let's say the coin actually is biased. How fast will our Bayesian hero figure this out? We can calculate the average bits learned per flip. Heads give -0.32 bits (negative 'cause it points the wrong way), tails give +0.26 bits. On average, each flip gives:
+Let's say the coin actually is biased. How fast will our Bayesian hero figure this out? We can calculate the average bits learned per flip. Heads give -1 bit (negative 'cause it points the wrong way), tails give +0.58 bits. On average, each flip gives:
 
 $$
-0.4 \cdot (-0.32) + 0.6 \cdot 0.26 \approx 0.03
+0.25 \cdot (-1) + 0.75 \cdot 0.58 \approx 0.185
 $$
 
-bits of evidence toward the truth. Boom—that's the KL divergence between the true 40%/60% distribution and the model 50%/50% distribution!
+bits of evidence toward the truth. Boom—that's the KL divergence between the true 25%/75% distribution and the model 50%/50% distribution!
 
-What's this mean in practice? You need about 33 flips to get one bit of evidence. So if you start thinking 2:1 the coin is fair, after ~33 flips you'll be at 1:1. Another 33 flips gets you to 2:1 it's biased, then 4:1, and so on.
+What's this mean in practice? You need about 5.4 flips to get one bit of evidence. So if you start thinking 2:1 the coin is fair, after ~5 flips you'll be at 1:1. Another 5 flips gets you to 2:1 it's biased, then 4:1, and so on.
 
-The actual odds bounce around this average. But thanks to the law of large numbers, after $N$ flips the total evidence will be close to $0.03 \cdot N$. <Footnote> More precisely, it's $0.03N \pm O(\sqrt{N})$. We use logs and talk about bits because the law of large numbers works for adding stuff, not multiplying. </Footnote>
+The actual odds bounce around this average. But thanks to the law of large numbers, after $N$ flips the total evidence will be close to $0.185 \cdot N$. <Footnote> More precisely, it's $0.185N \pm O(\sqrt{N})$. We use logs and talk about bits because the law of large numbers works for adding stuff, not multiplying. </Footnote>
 
 Try it yourself!
 

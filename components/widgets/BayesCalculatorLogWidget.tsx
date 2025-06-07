@@ -12,7 +12,7 @@ const BayesCalculatorLogWidget: React.FC<Props> = ({
   const [priorLogFair, setPriorLogFair] = useState(1);
   const [priorLogBiased, setPriorLogBiased] = useState(0);
   const [likelihoodLogFair, setLikelihoodLogFair] = useState(-1);
-  const [likelihoodLogBiased, setLikelihoodLogBiased] = useState(-1.32);
+  const [likelihoodLogBiased, setLikelihoodLogBiased] = useState(-2);
 
   const calculations = useMemo(() => {
     // Posterior log odds = Prior log odds + Likelihood log ratio

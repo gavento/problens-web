@@ -20,9 +20,9 @@ const BayesSequenceWidget: React.FC<Props> = ({
   const priorFair = 2;
   const priorBiased = 1;
   const probHeadsFair = 0.5;
-  const probHeadsBiased = 0.4;
+  const probHeadsBiased = 0.25;
   const probTailsFair = 0.5;
-  const probTailsBiased = 0.6;
+  const probTailsBiased = 0.75;
 
   const steps = useMemo(() => {
     const results = [];
@@ -166,59 +166,57 @@ const BayesSequenceWidget: React.FC<Props> = ({
           Current step: {currentStep}/{sequence.length}
         </div>
 
-        {/* Steps display */}
-        <div className="space-y-2 max-h-96 overflow-y-auto">
-          {steps.slice(0, currentStep + 1).map((step, index) => (
-            <div
-              key={index}
-              className={`p-3 rounded border ${
-                index === currentStep ? 'bg-yellow-50 border-yellow-300' : 'bg-gray-50 border-gray-200'
-              }`}
-            >
-              {step.step === 0 ? (
-                // Prior step
-                <div className="space-y-1">
-                  <div className="font-medium text-sm">Step 0 (Prior):</div>
-                  <div className="flex items-center space-x-4 text-sm">
-                    <span>Prior odds:</span>
-                    <span className="font-mono">{priorFair} : {priorBiased}</span>
-                  </div>
+        {/* Prior row */}
+        <div className="bg-white rounded-lg p-4 space-y-3">
+          <div className="text-center text-sm font-medium text-gray-700 mb-3">
+            Prior odds: {priorFair} : {priorBiased}
+          </div>
+          
+          {/* Flip rows */}
+          <div className="space-y-2">
+            {steps.slice(1, currentStep + 1).map((step, index) => (
+              <div
+                key={index}
+                className={`flex items-center justify-between py-2 px-3 rounded ${
+                  index === currentStep - 1 ? 'bg-yellow-50 border border-yellow-300' : 'bg-gray-50'
+                }`}
+              >
+                <div className="flex items-center space-x-4 flex-1">
+                  <span className="font-mono font-bold text-lg w-6 text-center">
+                    {step.flip}
+                  </span>
+                  <div className="flex-1 border-t border-dashed border-gray-400"></div>
+                  <span className="font-mono text-sm">
+                    {step.likelihoodFair?.toFixed(2)} : {step.likelihoodBiased?.toFixed(2)}
+                  </span>
                 </div>
-              ) : (
-                // Flip steps
-                <div className="space-y-1">
-                  <div className="font-medium text-sm">
-                    Step {step.step} (after {step.flip}):
-                  </div>
-                  <div className="flex items-center space-x-4 text-sm">
-                    <span>Likelihood:</span>
-                    <span className="font-mono">
-                      {step.likelihoodFair?.toFixed(1)} : {step.likelihoodBiased?.toFixed(1)}
-                    </span>
-                    <span className="text-gray-500">(for {step.flip})</span>
-                  </div>
-                  <div className="flex items-center space-x-4 text-sm">
-                    <span>Posterior:</span>
-                    <span className="font-mono font-bold text-blue-600">
-                      {step.oddsFair.toFixed(3)} : {step.oddsBiased.toFixed(3)}
-                    </span>
-                  </div>
-                </div>
-              )}
+              </div>
+            ))}
+          </div>
+
+          {/* Current posterior */}
+          {currentStep > 0 && (
+            <div className="mt-4 pt-3 border-t border-gray-300">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-700">Posterior odds:</span>
+                <span className="font-mono font-bold text-blue-600">
+                  {steps[currentStep]?.oddsFair.toFixed(3)} : {steps[currentStep]?.oddsBiased.toFixed(3)}
+                </span>
+              </div>
               
               {/* Probabilities */}
               <div className="mt-2 flex justify-center space-x-6">
                 <div className="text-center">
-                  <div className="text-sm font-bold text-blue-600">{step.probFair.toFixed(1)}%</div>
+                  <div className="text-lg font-bold text-blue-600">{steps[currentStep]?.probFair.toFixed(1)}%</div>
                   <div className="text-xs text-gray-600">Fair</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-sm font-bold text-red-600">{step.probBiased.toFixed(1)}%</div>
+                  <div className="text-lg font-bold text-red-600">{steps[currentStep]?.probBiased.toFixed(1)}%</div>
                   <div className="text-xs text-gray-600">Biased</div>
                 </div>
               </div>
             </div>
-          ))}
+          )}
         </div>
       </div>
 

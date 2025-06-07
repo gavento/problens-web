@@ -12,7 +12,7 @@ const BayesCalculatorWidget: React.FC<Props> = ({
   const [priorFair, setPriorFair] = useState(2);
   const [priorBiased, setPriorBiased] = useState(1);
   const [likelihoodFair, setLikelihoodFair] = useState(0.5);
-  const [likelihoodBiased, setLikelihoodBiased] = useState(0.4);
+  const [likelihoodBiased, setLikelihoodBiased] = useState(0.25);
 
   const calculations = useMemo(() => {
     // Posterior odds = Prior odds × Likelihood ratio
