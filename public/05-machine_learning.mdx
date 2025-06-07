@@ -71,28 +71,6 @@ The challenge is that optimizing this function is computationally difficult (in 
 </Expand>
 </Expand>
 
-<Expand headline="Logistic regression"> <a id="logistic-regression"></a>
-
-This time, we're presented with red and blue points on a plane, and our goal is to find the optimal line that separates them. Ideally, all red points would be on one side and all blue points on the other, but this isn't always achievable. In such cases, how do we determine the "best" separating line?
-
-It will be easier to represent the line not as $y = ax+b$, but using its normal vector $\theta$ (orthogonal to the line) and the distance $\delta$ of the origin from the line, as shown in the image below.<Footnote>Specifically, $\theta = \frac{1}{a^2+1} (a, -1)$ and $\delta = |b|/\sqrt{a^2+1}$, but let's not get bogged down in those details.</Footnote>
-
-![Logistic regression](05-machine_learning/logistic.png)
-
-Given a point $(x, y)$, the crucial quantity is its distance from our line. This can be calculated using the dot product as $\theta \cdot (x, y) + \delta$.
-
-Now, employing the maximum entropy principle, we construct a probabilistic model that transforms this distance into a probability of color. We utilize the [logistic function](04-max_entropy). That is, our model states:
-<Math displayMode={true} math = "p(\textrm{red} | (x, y)) = \sigma\left( \lambda (\theta \cdot (x, y) + \delta) \right)"/>
-where $\sigma$ is the logistic function $\sigma(x) = e^x / (1+e^x)$. Naturally, we also have <Math displayMode={false} math = "p(\textrm{blue} | (x, y)) = 1 - p(\textrm{red} | (x, y)). " />
-
-The constant $\lambda$ is a new parameter that the max-entropy principle compels us to add to our probabilistic model. Fortunately, it's quite a useful parameter—it quantifies our confidence in the classification. This is convenient because if we want to classify a new point in the future, we can not only assign it a red/blue color based on which side of the line it falls, but also use the equation above to compute how certain we are about our classification.
-
-Once we have a model, we can apply the maximum likelihood principle to find its parameters. This principle instructs us to find $a,b,\lambda$ that minimize the following log-likelihood:
-
-<Math displayMode = {true} math = "\argmin_{\theta, \delta, \lambda} \sum_{i = 1}^n \ell_i \log \sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)) + (1-\ell_i) \log (1-\sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)))"/>
-
-where $\ell_i$ is an indicator variable (i.e., $\ell_i \in \{0,1\}$) denoting whether the point $(x_i,y_i)$ is red. This problem, known as [logistic regression](https://en.wikipedia.org/wiki/Logistic_regression), is hard to solve exactly (NP-hard in particular), but gradient descent typically works well.
-</Expand>
 
 <Expand headline="K-means clustering"> <a id="k-means-clustering"></a>
 
@@ -120,6 +98,34 @@ In practice, people typically don't care that much about probabilistic assignmen
 
 The problem of finding $\mu_1, \dots, \mu_k$ that minimize this expression is called [$k$-means](https://en.wikipedia.org/wiki/K-means_clustering).
 </Expand>
+
+
+
+<Expand headline="Logistic regression"> <a id="logistic-regression"></a>
+
+This time, we're presented with red and blue points on a plane, and our goal is to find the optimal line that separates them. Ideally, all red points would be on one side and all blue points on the other, but this isn't always achievable. In such cases, how do we determine the "best" separating line? <Footnote>Sometimes, people use the term "logistic regression" for 1D version of this where we have red and blue points on a line and want to split the line into two parts. Our algorithm works for any number of dimensions. </Footnote>
+
+It will be easier to represent the line not as $y = ax+b$, but using its normal vector $\theta$ (orthogonal to the line) and the distance $\delta$ of the origin from the line, as shown in the image below.<Footnote>Specifically, $\theta = \frac{1}{a^2+1} (a, -1)$ and $\delta = |b|/\sqrt{a^2+1}$, but let's not get bogged down in those details.</Footnote>
+
+![Logistic regression](05-machine_learning/logistic.png)
+
+Given a point $(x, y)$, the crucial quantity is its distance from our line. This can be calculated using the dot product as $\theta \cdot (x, y) + \delta$.
+
+Now, employing the maximum entropy principle, we construct a probabilistic model that transforms this distance into a probability of color. We utilize the [logistic function](04-max_entropy). That is, our model states:
+<Math displayMode={true} math = "p(\textrm{red} | (x, y)) = \sigma\left( \lambda (\theta \cdot (x, y) + \delta) \right)"/>
+where $\sigma$ is the logistic function $\sigma(x) = e^x / (1+e^x)$. Naturally, we also have <Math displayMode={false} math = "p(\textrm{blue} | (x, y)) = 1 - p(\textrm{red} | (x, y)). " />
+
+The constant $\lambda$ is a new parameter that the max-entropy principle compels us to add to our probabilistic model. Fortunately, it's quite a useful parameter—it quantifies our confidence in the classification. This is convenient because if we want to classify a new point in the future, we can not only assign it a red/blue color based on which side of the line it falls, but also use the equation above to compute how certain we are about our classification.
+
+Once we have a model, we can apply the maximum likelihood principle to find its parameters. This principle instructs us to find $a,b,\lambda$ that minimize the following log-likelihood:
+
+<Math displayMode = {true} math = "\argmin_{\theta, \delta, \lambda} \sum_{i = 1}^n \ell_i \log \sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)) + (1-\ell_i) \log (1-\sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)))"/>
+
+where $\ell_i$ is an indicator variable (i.e., $\ell_i \in \{0,1\}$) denoting whether the point $(x_i,y_i)$ is red. This problem, known as [logistic regression](https://en.wikipedia.org/wiki/Logistic_regression), is hard to solve exactly (NP-hard in particular), but gradient descent typically works well.
+</Expand>
+
+
+
 <Expand headline="Classification by neural networks"> <a id="neural-nets"></a>
 
 We are provided with a vast collection of images, each assigned one of $k$ possible labels (e.g., a dog, a muffin). Our goal is to optimize a neural network that takes an image as input and outputs a probability distribution over these $k$ possible classes.

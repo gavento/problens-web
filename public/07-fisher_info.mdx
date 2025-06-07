@@ -70,7 +70,7 @@ After plugging it in and some calculations <Footnote>[todo fill]</Footnote>, we 
 D(p_{\theta + \eps}, p_\theta) \approx \frac12 I(\theta) \cdot \eps^2 + O(\eps^3)
 " />
 for 
-<Math displayMode={true} math = "I(\theta) = \int p_\theta(x) \cdot (\frac{\partial}{\partial \theta} \log p_\theta(x))^2 dx">
+<Math displayMode={true} math = "I(\theta) = \int p_\theta(x) \cdot (\frac{\partial}{\partial \theta} \log p_\theta(x))^2 dx" />
 The term $I(\theta)$ is called _Fisher information_. Let's not try to understand what this integral mean. The short story is that you can approximate KL divergence of two similar distributions as $I(\theta)\cdot \eps^2$ and $I(\theta)$ can often be computed by integration.
 
 Our KL intuition is telling us that estimating a parameter $\theta$ up to $\eps$ should require about <Math math="\Theta\left(\frac{1}{I(\theta)\eps^2}\right)" /> many samples. Let's see what this intuition is saying in some cases:

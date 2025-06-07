@@ -4,7 +4,7 @@ import time
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy.stats import norm, laplace
+from scipy.stats import norm, laplace, t as student_t
 from datetime import datetime
 import requests
 
@@ -16,6 +16,11 @@ max_months = 999
 ASSET_TO_ANALYZE = 'SAP'  # Change this to 'SAP' to analyze S&P instead
 # Number of standard deviations to cover in the histogram
 STD_RANGE = 3  # Shows data within ±3 standard deviations
+
+# Choose which distributions to fit (set to True/False)
+FIT_GAUSSIAN = True
+FIT_LAPLACE = True
+FIT_STUDENT_T = True
 
 ##############################################################################
 # CREATE OUTPUT AND CACHE DIRECTORIES
@@ -147,14 +152,14 @@ if data.empty:
 ##############################################################################
 def plot_and_compute_kl(ax, data_values, title, std_range=3):
     """
-    Plot the histogram of 'data_values', overlay Gaussian and Laplace fits,
-    and compute KL(empirical || Gaussian) and KL(empirical || Laplace).
-    Returns (kl_gaussian, kl_laplace).
+    Plot the histogram of 'data_values', overlay Gaussian, Laplace, and Student-t fits,
+    and compute KL divergences for enabled distributions.
+    Returns (kl_gaussian, kl_laplace, kl_student_t).
     """
     if len(data_values) < 2:
         ax.text(0.5, 0.5, "No data (len<2)", ha='center', va='center', transform=ax.transAxes)
         ax.set_title(title + " (Insufficient data)")
-        return None, None
+        return None, None, None
 
     mu = np.mean(data_values)
     std = np.std(data_values, ddof=1)
@@ -173,32 +178,56 @@ def plot_and_compute_kl(ax, data_values, title, std_range=3):
             ax.hist(data_filtered, bins=50, density=True, alpha=0.5, label='Empirical')
             ax.text(0.5, 0.5, "No data in range", ha='center', va='center', transform=ax.transAxes)
             ax.set_title(title)
-            return None, None
+            return None, None, None
 
         # Empirical probability per bin
         P = counts.astype(float) / total_counts
         # Bin centers
         bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2.0
 
+        # Initialize KL divergences
+        kl_gauss, kl_laplace, kl_student_t = None, None, None
+        
         # Gaussian PDF at bin centers (un-normalized over discrete bins)
-        gauss_pdf_vals = norm.pdf(bin_centers, mu, std)
-        # Normalize discrete Gaussian probabilities over bins
-        Q_gauss = gauss_pdf_vals / np.sum(gauss_pdf_vals)
+        if FIT_GAUSSIAN:
+            gauss_pdf_vals = norm.pdf(bin_centers, mu, std)
+            # Normalize discrete Gaussian probabilities over bins
+            Q_gauss = gauss_pdf_vals / np.sum(gauss_pdf_vals)
+            # Compute KL divergence
+            mask = P > 0
+            kl_gauss = np.sum(P[mask] * np.log(P[mask] / Q_gauss[mask]))
 
         # Laplace parameters
-        loc_lap = np.median(data_values)
-        scale_lap = np.mean(np.abs(data_values - loc_lap))
-        lap_pdf_vals = laplace.pdf(bin_centers, loc_lap, scale_lap) if scale_lap > 0 and np.isfinite(loc_lap) else np.zeros_like(bin_centers)
-        # Normalize discrete Laplace probabilities over bins
-        if lap_pdf_vals.sum() > 0:
-            Q_laplace = lap_pdf_vals / np.sum(lap_pdf_vals)
-        else:
-            Q_laplace = np.zeros_like(bin_centers)
-
-        # Compute KL divergences: sum_{j, P_j>0} P_j * log(P_j / Q_j)
-        mask = P > 0
-        kl_gauss = np.sum(P[mask] * np.log(P[mask] / Q_gauss[mask]))
-        kl_laplace = np.sum(P[mask] * np.log(P[mask] / Q_laplace[mask])) if Q_laplace[mask].all() else np.inf
+        if FIT_LAPLACE:
+            loc_lap = np.median(data_values)
+            scale_lap = np.mean(np.abs(data_values - loc_lap))
+            lap_pdf_vals = laplace.pdf(bin_centers, loc_lap, scale_lap) if scale_lap > 0 and np.isfinite(loc_lap) else np.zeros_like(bin_centers)
+            # Normalize discrete Laplace probabilities over bins
+            if lap_pdf_vals.sum() > 0:
+                Q_laplace = lap_pdf_vals / np.sum(lap_pdf_vals)
+                mask = P > 0
+                kl_laplace = np.sum(P[mask] * np.log(P[mask] / Q_laplace[mask])) if Q_laplace[mask].all() else np.inf
+                
+        # Student-t parameters
+        if FIT_STUDENT_T:
+            # Fit Student-t distribution using method of moments
+            # Estimate degrees of freedom from kurtosis
+            kurtosis = np.mean(((data_values - mu) / std) ** 4) - 3
+            # For Student-t: excess kurtosis = 6/(df-4) for df > 4
+            # Solve for df: df = 4 + 6/kurtosis (if kurtosis > 0)
+            if kurtosis > 0:
+                df = 4 + 6 / kurtosis
+                df = max(2.1, min(df, 100))  # Clamp between 2.1 and 100
+            else:
+                df = 100  # Large df approximates normal distribution
+                
+            # Student-t PDF at bin centers
+            t_pdf_vals = student_t.pdf(bin_centers, df, loc=mu, scale=std)
+            # Normalize discrete Student-t probabilities over bins
+            if t_pdf_vals.sum() > 0:
+                Q_student_t = t_pdf_vals / np.sum(t_pdf_vals)
+                mask = P > 0
+                kl_student_t = np.sum(P[mask] * np.log(P[mask] / Q_student_t[mask])) if Q_student_t[mask].all() else np.inf
 
         # Plot empirical histogram (normalized density)
         ax.hist(data_filtered, bins=50, density=True, alpha=0.5, label='Empirical',
@@ -208,20 +237,26 @@ def plot_and_compute_kl(ax, data_values, title, std_range=3):
         x = np.linspace(hist_min, hist_max, 400)
 
         # Plot Gaussian fit
-        gauss_pdf_continuous = norm.pdf(x, mu, std)
-        ax.plot(x, gauss_pdf_continuous, 'r-', label='Gaussian')
+        if FIT_GAUSSIAN:
+            gauss_pdf_continuous = norm.pdf(x, mu, std)
+            ax.plot(x, gauss_pdf_continuous, 'r-', label='Gaussian')
 
         # Plot Laplace fit
-        if scale_lap > 0 and np.isfinite(loc_lap):
+        if FIT_LAPLACE and 'scale_lap' in locals() and scale_lap > 0 and np.isfinite(loc_lap):
             laplace_pdf_continuous = laplace.pdf(x, loc_lap, scale_lap)
             ax.plot(x, laplace_pdf_continuous, 'g-', label='Laplace')
+            
+        # Plot Student-t fit
+        if FIT_STUDENT_T and 'df' in locals():
+            t_pdf_continuous = student_t.pdf(x, df, loc=mu, scale=std)
+            ax.plot(x, t_pdf_continuous, 'b-', label=f'Student-t (df={df:.1f})')
 
         ax.set_xlim(hist_min, hist_max)
     else:
         # Fallback: plot raw histogram only
         ax.hist(data_values, bins=50, density=True, alpha=0.5, label='Empirical')
         ax.text(0.5, 0.5, "Invalid statistics", ha='center', va='center', transform=ax.transAxes)
-        kl_gauss, kl_laplace = None, None
+        kl_gauss, kl_laplace, kl_student_t = None, None, None
 
     ax.set_title(title)
     ax.grid(False)
@@ -230,7 +265,7 @@ def plot_and_compute_kl(ax, data_values, title, std_range=3):
     ax.set_xticks([])
     ax.set_yticks([])
     ax.legend(fontsize=12)
-    return kl_gauss, kl_laplace
+    return kl_gauss, kl_laplace, kl_student_t
 
 ##############################################################################
 # EXTRACT PRICE DATA AND COMPUTE NORMALIZED DAILY DIFFERENCES
@@ -261,7 +296,7 @@ for i in range(step, max_days + 1, step):
         continue
 
     fig, ax = plt.subplots(1, 1, figsize=(10, 6))
-    kl_gauss, kl_laplace = plot_and_compute_kl(
+    kl_gauss, kl_laplace, kl_student_t = plot_and_compute_kl(
         ax,
         price_returns,
         f"{asset_name} Daily Returns ({i} days)",
@@ -269,8 +304,16 @@ for i in range(step, max_days + 1, step):
     )
 
     # Print KL divergences to terminal
-    if kl_gauss is not None and kl_laplace is not None:
-        print(f"{i:4d} days: KL(emp || Gaussian) = {kl_gauss:.6f}, KL(emp || Laplace) = {kl_laplace:.6f}")
+    kl_values = []
+    if FIT_GAUSSIAN and kl_gauss is not None:
+        kl_values.append(f"KL(emp || Gaussian) = {kl_gauss:.6f}")
+    if FIT_LAPLACE and kl_laplace is not None:
+        kl_values.append(f"KL(emp || Laplace) = {kl_laplace:.6f}")
+    if FIT_STUDENT_T and kl_student_t is not None:
+        kl_values.append(f"KL(emp || Student-t) = {kl_student_t:.6f}")
+    
+    if kl_values:
+        print(f"{i:4d} days: {', '.join(kl_values)}")
     else:
         print(f"{i:4d} days: KL could not be computed (insufficient or invalid data)")
 
