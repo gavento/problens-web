@@ -220,14 +220,17 @@ if var_var > 0:
             label=f'Inverse-Gamma (α={alpha_invgamma:.3f}, β={beta_invgamma:.6f})')
 
 # Customize variance histogram plot
-ax.set_xlabel('Variance (σ²)', fontsize=12)
-ax.set_ylabel('Probability Density', fontsize=12)
-ax.set_title(f'{asset_name} Variance Distribution Histogram', fontsize=14)
+ax.set_xlabel('Variance (σ²)', fontsize=16)
+ax.set_ylabel('Probability Density', fontsize=16)
+ax.set_title(f'{asset_name} Variance Distribution Histogram', fontsize=18)
 ax.set_xlim(0, 0.005)
-ax.legend(fontsize=10)
+ax.legend(fontsize=18, loc='upper right')
 ax.grid(True, alpha=0.3)
 
-# Add statistics text box for variance
+# Increase tick label font size
+ax.tick_params(axis='both', which='major', labelsize=14)
+
+# Add statistics text box for variance - positioned on the right, middle-bottom
 var_std = np.std(variances, ddof=1)
 var_skewness = ((variances - var_mean) / var_std)**3
 var_skewness_val = var_skewness.mean()
@@ -241,8 +244,9 @@ Min: {np.min(variances):.6f}
 Max: {np.max(variances):.6f}
 Skewness: {var_skewness_val:.3f}"""
 
-ax.text(0.02, 0.98, stats_text_var, transform=ax.transAxes, fontsize=9,
-        verticalalignment='top', bbox=dict(boxstyle='round', facecolor='lightcyan', alpha=0.8))
+ax.text(0.98, 0.4, stats_text_var, transform=ax.transAxes, fontsize=16,
+        verticalalignment='top', horizontalalignment='right', 
+        bbox=dict(boxstyle='round', facecolor='lightcyan', alpha=0.8))
 
 # Adjust layout and save
 plt.tight_layout()

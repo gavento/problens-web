@@ -396,10 +396,14 @@ Let's revisit our financial mathematics riddle [from the intro](00-introduction/
 
 You can observe that the Laplace distribution seems to fit the data better than the normal distribution, as measured by KL between the data and the model distribution. 
 
+### Laplace distribution
+
 The Laplace distribution has the shape <Math math = "p(x) \propto e^{-\lambda |x-\mu|}" />. What's the meaning of this formula? We could think of it as the max entropy distribution for fixing the value $E[|X-\mu|]$, but there's a more illuminating way to understand it. The Laplace distribution with parameter $\lambda$ can be viewed as the result of the following process:<Footnote>Let me know if you know a simple proof of this fact!</Footnote>
 
 1.  Sample a variance $\sigma^2$ from the exponential distribution. <Footnote>If we want Laplace distribution <Math math = "p(x) \propto e^{-\lambda |x-\mu|}" />, we should sample $\sigma^2$ from exponential distribution <Math math = "p'(t) \propto e^{-2/\lambda^2 \cdot t}"/>. </Footnote>
 2.  Output a sample from $N(\mu, \sigma^2)$.
+
+### S&P stories
 
 To understand how this helps explain our financial data, consider the following two stories for price fluctuations:
 
@@ -411,15 +415,20 @@ Perhaps we should try a more advanced two-layered model to predict the shape of 
 
 Put differently, while a Gaussian fit implies "I'm pretty sure about today's volatility and unsure about the fluctuation around the mean," Laplace is saying, "I'm uncertain both about the volatility and the actual fluctuation of the day." This explains why Gaussian fits near-term data (volatility of the time period stays roughly the same), while more long-term data starts looking more like Laplace. 
 
+Our Laplace story suggests that the data should look more like Gaussian at the beginning and then look more and more like Laplace, which seems to be happening. 
 
+## Is Laplace a good model?
 
-
-Notice that even though Laplace distribution fits S&P very well, it's not as good fit for Bitcoin (another option in the widget) which is even more "spiky". A distribution of the shape <Math math = "e^{-\sqrt{x}}"/> would be a better fit there. <Footnote>If we extended our "2-level" story to three levels, this is the shape would get. </Footnote> This just shows that Laplace distribution is, after all, just a model. <Footnote>As far as I know, one standard way of modeling financial data is the Student-t distribution. I won't bore you with its formula, but I'll tell you it's the distribution you get from a similar process to how we arrived at Laplace; but instead of sampling $\sigma^2$ from the exponential distribution, you sample it from the so-called inverse gamma distribution. The Gamma distribution is itself a max-entropy distribution for fixing $E[X]$ and $E[\log X]$ (and inverse gamma distribution means we measure volatility by $1/\sigma^2$ instead of $\sigma^2$).
-That is, the Student-t distribution takes our model a bit further and adds uncertainty about the _scale_ of the volatility. For example, maybe if you look far enough into the past, you start seeing some extreme events like world wars/the Great Depression/industrial revolution, so perhaps we should be open to power-law fits instead of exponential ones.</Footnote>
+Not really. We now understand that by fitting Laplace, we are claiming that daily variance fluctuates according to exponential distribution. Let's see how daily variance of S&P looks like: 
 
 ![volatility](04-max_entropy/volatility.png)
 
-I like this example mostly because I think it nicely showcases the strength of the max-entropy principle. Notice how maximum entropy allows us to focus only on the important aspects of our model (do we fix volatility or is it itself a random variable?). The algebraic details are filled in automatically by max entropy reasoning. Or, if we take it from the other side—when we see a concrete formula, like a fit by a Laplace distribution, max entropy enables us to see through it and understand what the formula stands for.
+Exponential is not a great fit. As far as I know, practitioners use distributions such as log-normal, gamma, or inverse-gamma to fit this kind of data (or they train a network to fit it). These distributions are more complicated and correspond to more complicated stories about how the data behaves. Most importantly, they are basically power-law fits that are less surprised by stock crashes / world wars / etc. 
+
+{/*<Footnote>As far as I know, one standard way of modeling financial data is the Student-t distribution. I won't bore you with its formula, but I'll tell you it's the distribution you get from a similar process to how we arrived at Laplace; but instead of sampling $\sigma^2$ from the exponential distribution, you sample it from the so-called inverse gamma distribution. The Gamma distribution is itself a max-entropy distribution for fixing $E[X]$ and $E[\log X]$ (and inverse gamma distribution means we measure volatility by $1/\sigma^2$ instead of $\sigma^2$).
+That is, the Student-t distribution takes our model a bit further and adds uncertainty about the _scale_ of the volatility. For example, maybe if you look far enough into the past, you start seeing some extreme events like world wars/the Great Depression/industrial revolution, so perhaps we should be open to power-law fits instead of exponential ones.</Footnote>*/}
+
+At this point, I should confess that I know nearly nothing about financial mathematics. This discussion is just based on me playing with Claude/GPT and trying some stuff. But this is exactly the point - max-entropy is so powerful because it gives you the right language to talk about data fitting. It enables you to explore, build more and more complicated models of data, and still keep track of what your models stand for, where their weaknesses are, and how to improve them.  
 </Expand>
 
 ## Next Steps <a id="next-steps"></a>

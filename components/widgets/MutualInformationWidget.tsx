@@ -63,56 +63,83 @@ const MutualInformationWidget: React.FC<Props> = ({
     const newDist = [...jointProbs];
 
     if (constrainMarginals) {
-      // CONSTRAINED MODE: Maintain fixed marginals
-      newDist[index] = clampedValue;
-      
+      // CONSTRAINED MODE: Maintain fixed marginals using more robust approach
       const rowIndex = Math.floor(index / 3); // 0 for sun, 1 for cloud
       const colIndex = index % 3; // 0 for walk, 1 for bike, 2 for bus
       
-      // Adjust the other cell in same column to maintain transport marginal
+      const targetWeatherMarginals = [targetMarginals.sun, targetMarginals.cloud];
+      const targetTransportMarginals = [targetMarginals.walk, targetMarginals.bike, targetMarginals.bus];
+      
+      // Set the dragged cell
+      newDist[index] = clampedValue;
+      
+      // Step 1: Fix the column (transport) marginal by adjusting the other row
       const otherRowIndex = 1 - rowIndex;
       const otherCellInColumn = otherRowIndex * 3 + colIndex;
-      const targetTransportMarginal = colIndex === 0 ? targetMarginals.walk : 
-                                     colIndex === 1 ? targetMarginals.bike : targetMarginals.bus;
+      const targetTransportMarginal = targetTransportMarginals[colIndex];
       
-      newDist[otherCellInColumn] = Math.max(0, targetTransportMarginal - clampedValue);
+      // Ensure transport marginal is satisfied
+      const otherCellValue = Math.max(0, Math.min(targetTransportMarginal, targetTransportMarginal - clampedValue));
+      newDist[otherCellInColumn] = otherCellValue;
       
-      // Adjust this cell if the other cell hit zero
-      if (newDist[otherCellInColumn] === 0) {
-        newDist[index] = targetTransportMarginal;
+      // If we need to adjust the dragged cell due to constraints
+      if (clampedValue + otherCellValue > targetTransportMarginal) {
+        newDist[index] = targetTransportMarginal - otherCellValue;
       }
       
-      // Adjust other cells in this row to maintain weather marginal
-      const targetWeatherMarginal = rowIndex === 0 ? targetMarginals.sun : targetMarginals.cloud;
-      const remainingForRow = targetWeatherMarginal - newDist[index];
-      
-      const otherIndicesInRow = [];
-      for (let c = 0; c < 3; c++) {
-        if (c !== colIndex) {
-          otherIndicesInRow.push(rowIndex * 3 + c);
+      // Step 2: Fix the row (weather) marginals by distributing the remaining probability
+      for (let r = 0; r < 2; r++) {
+        const currentRowSum = newDist[r * 3] + newDist[r * 3 + 1] + newDist[r * 3 + 2];
+        const targetRowSum = targetWeatherMarginals[r];
+        const difference = targetRowSum - currentRowSum;
+        
+        // Find cells in this row that we can adjust (not the ones we just set)
+        const adjustableCells = [];
+        for (let c = 0; c < 3; c++) {
+          const cellIndex = r * 3 + c;
+          if (cellIndex !== index && cellIndex !== otherCellInColumn) {
+            adjustableCells.push(cellIndex);
+          }
+        }
+        
+        if (adjustableCells.length > 0 && Math.abs(difference) > 1e-10) {
+          const currentAdjustableSum = adjustableCells.reduce((sum, i) => sum + newDist[i], 0);
+          
+          if (currentAdjustableSum > 0) {
+            // Proportionally adjust the adjustable cells
+            adjustableCells.forEach(i => {
+              const proportion = newDist[i] / currentAdjustableSum;
+              newDist[i] = Math.max(0, newDist[i] + difference * proportion);
+            });
+          } else {
+            // Distribute equally among adjustable cells
+            const equalShare = Math.max(0, difference / adjustableCells.length);
+            adjustableCells.forEach(i => {
+              newDist[i] = equalShare;
+            });
+          }
         }
       }
       
-      const currentSumOtherInRow = otherIndicesInRow.reduce((sum, i) => sum + jointProbs[i], 0);
-      if (currentSumOtherInRow > 0 && remainingForRow >= 0) {
-        otherIndicesInRow.forEach(i => {
-          newDist[i] = (jointProbs[i] / currentSumOtherInRow) * remainingForRow;
-        });
-      } else if (remainingForRow >= 0) {
-        const equalShare = remainingForRow / otherIndicesInRow.length;
-        otherIndicesInRow.forEach(i => {
-          newDist[i] = equalShare;
-        });
-      }
-      
-      // Adjust corresponding cells in other row to maintain transport marginals
+      // Step 3: Final adjustment to ensure all transport marginals are satisfied
       for (let c = 0; c < 3; c++) {
-        if (c !== colIndex) {
-          const targetTransportC = c === 0 ? targetMarginals.walk : 
-                                 c === 1 ? targetMarginals.bike : targetMarginals.bus;
-          const cellThisRow = rowIndex * 3 + c;
-          const cellOtherRow = otherRowIndex * 3 + c;
-          newDist[cellOtherRow] = Math.max(0, targetTransportC - newDist[cellThisRow]);
+        const currentColSum = newDist[c] + newDist[3 + c];
+        const targetColSum = targetTransportMarginals[c];
+        const colDifference = targetColSum - currentColSum;
+        
+        if (Math.abs(colDifference) > 1e-10) {
+          // Adjust the cell in this column that we're not directly controlling
+          if (c === colIndex) continue; // Skip the column we're directly controlling
+          
+          // Find which cell in this column to adjust
+          const cell0 = newDist[c];
+          const cell1 = newDist[3 + c];
+          
+          if (cell0 >= cell1) {
+            newDist[c] = Math.max(0, cell0 + colDifference);
+          } else {
+            newDist[3 + c] = Math.max(0, cell1 + colDifference);
+          }
         }
       }
       
@@ -155,8 +182,7 @@ const MutualInformationWidget: React.FC<Props> = ({
   ) => {
     const svg = event.currentTarget.closest('svg')!;
     const svgRect = svg.getBoundingClientRect();
-    const barMaxHeight = 50;
-    const baseY = 50 + Math.floor(index / 3) * 65;
+    const baseY = 50 + Math.floor(index / 3) * 95;  // Increased spacing for taller bars
     
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const y = moveEvent.clientY - svgRect.top;
@@ -180,7 +206,7 @@ const MutualInformationWidget: React.FC<Props> = ({
     setJointProbs([0.14, 0.21, 0.35, 0.06, 0.09, 0.15]);
   }, []);
 
-  const barMaxHeight = 50;
+  const barMaxHeight = 80;  // Increased height for easier grabbing
   const barWidth = 35;
 
   // Define the 2x3 table structure
@@ -222,9 +248,9 @@ const MutualInformationWidget: React.FC<Props> = ({
         <h4 className="text-lg font-semibold text-gray-800 mb-4 text-center">Joint Distribution P(Weather, Transport)</h4>
         
         <div className="flex justify-center overflow-x-auto">
-          <svg width="450" height="220" className="border rounded bg-white">
+          <svg width="450" height="280" className="border rounded bg-white">
             {/* Background */}
-            <rect width="450" height="220" fill="#f9fafb" stroke="#e5e7eb" />
+            <rect width="450" height="280" fill="#f9fafb" stroke="#e5e7eb" />
             
             {/* Column headers (Transport) */}
             <text x="135" y="30" textAnchor="middle" fontSize="20" fill="#374151">🚶‍♀️</text>
@@ -232,17 +258,17 @@ const MutualInformationWidget: React.FC<Props> = ({
             <text x="335" y="30" textAnchor="middle" fontSize="20" fill="#374151">🚌</text>
             
             {/* Row headers (Weather) */}
-            <text x="50" y="75" textAnchor="middle" fontSize="20" fill="#374151">☀️</text>
-            <text x="50" y="145" textAnchor="middle" fontSize="20" fill="#374151">☁️</text>
+            <text x="50" y="90" textAnchor="middle" fontSize="20" fill="#374151">☀️</text>
+            <text x="50" y="185" textAnchor="middle" fontSize="20" fill="#374151">☁️</text>
             
             {/* Grid lines */}
             <line x1="85" y1="45" x2="385" y2="45" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="85" y1="110" x2="385" y2="110" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="85" y1="175" x2="385" y2="175" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="85" y1="45" x2="85" y2="175" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="185" y1="45" x2="185" y2="175" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="285" y1="45" x2="285" y2="175" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="385" y1="45" x2="385" y2="175" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="85" y1="140" x2="385" y2="140" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="85" y1="235" x2="385" y2="235" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="85" y1="45" x2="85" y2="235" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="185" y1="45" x2="185" y2="235" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="285" y1="45" x2="285" y2="235" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="385" y1="45" x2="385" y2="235" stroke="#d1d5db" strokeWidth="1" />
             
             {/* Probability bars */}
             {tableData.map((row, rowIndex) => 
@@ -250,7 +276,7 @@ const MutualInformationWidget: React.FC<Props> = ({
                 const prob = jointProbs[cell.index];
                 const barHeight = prob * barMaxHeight;
                 const x = 117.5 + colIndex * 100;
-                const baseY = 50 + rowIndex * 65;
+                const baseY = 50 + rowIndex * 95;  // Increased spacing for taller bars
                 const y = baseY + barMaxHeight - barHeight;
                 
                 return (
@@ -296,21 +322,21 @@ const MutualInformationWidget: React.FC<Props> = ({
             
             {/* Marginal probabilities */}
             {/* Weather marginals (right side) */}
-            <text x="395" y="80" fontSize="12" fontWeight="bold" fill="#059669" textAnchor="start">
+            <text x="395" y="100" fontSize="12" fontWeight="bold" fill="#059669" textAnchor="start">
               {(marginals.sun * 100).toFixed(1)}%
             </text>
-            <text x="395" y="145" fontSize="12" fontWeight="bold" fill="#059669" textAnchor="start">
+            <text x="395" y="195" fontSize="12" fontWeight="bold" fill="#059669" textAnchor="start">
               {(marginals.cloud * 100).toFixed(1)}%
             </text>
             
             {/* Transport marginals (bottom) */}
-            <text x="135" y="195" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#059669">
+            <text x="135" y="255" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#059669">
               {(marginals.walk * 100).toFixed(1)}%
             </text>
-            <text x="235" y="195" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#059669">
+            <text x="235" y="255" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#059669">
               {(marginals.bike * 100).toFixed(1)}%
             </text>
-            <text x="335" y="195" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#059669">
+            <text x="335" y="255" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#059669">
               {(marginals.bus * 100).toFixed(1)}%
             </text>
           </svg>
