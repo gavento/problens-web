@@ -268,14 +268,17 @@ def plot_and_compute_kl(ax, data_values, title, std_range=3):
     return kl_gauss, kl_laplace, kl_student_t
 
 ##############################################################################
-# EXTRACT PRICE DATA AND COMPUTE NORMALIZED DAILY DIFFERENCES
+# EXTRACT PRICE DATA AND COMPUTE BOTH TYPES OF RETURNS
 ##############################################################################
 all_prices = data['Close'].dropna().values.flatten()
-# Compute normalized differences: (a_{i+1}/a_i) - 1
 if len(all_prices) >= 2:
+    # Compute normalized differences: (a_{i+1}/a_i) - 1
     all_price_returns = (all_prices[1:] / all_prices[:-1]) - 1
+    # Compute log returns: ln(a_{i+1}/a_i)
+    all_log_returns = np.log(all_prices[1:] / all_prices[:-1])
 else:
     all_price_returns = []
+    all_log_returns = []
 
 max_days = len(all_price_returns)
 if max_days == 0:
@@ -328,6 +331,78 @@ for i in range(step, max_days + 1, step):
 
 print(f"\nAll plots saved in '{output_dir}/'")
 print(f"Files range from {filename_prefix}_plot0001.png to {filename_prefix}_plot{max_days:04d}.png")
+
+##############################################################################
+# CREATE SPECIAL LOG RETURNS PLOT FOR LAST 100 DAYS
+##############################################################################
+if ASSET_TO_ANALYZE == 'SAP' and len(all_log_returns) >= 100:
+    print(f"\nCreating special log returns plot for last 100 days...")
+    
+    # Get last 100 days of log returns
+    last_100_log_returns = all_log_returns[-100:]
+    
+    # Create figure
+    fig, ax = plt.subplots(1, 1, figsize=(12, 8))
+    
+    # Plot histogram of log returns
+    n_bins = 30
+    counts, bin_edges, patches = ax.hist(last_100_log_returns, bins=n_bins, density=True, 
+                                       alpha=0.7, color='lightblue', label='Log returns data')
+    
+    # Fit Gaussian distribution
+    mu_gauss = np.mean(last_100_log_returns)
+    std_gauss = np.std(last_100_log_returns, ddof=1)
+    
+    # Fit Laplace distribution  
+    loc_laplace = np.median(last_100_log_returns)
+    scale_laplace = np.mean(np.abs(last_100_log_returns - loc_laplace))
+    
+    # Create smooth x-range for plotting PDFs
+    x_min = np.min(last_100_log_returns)
+    x_max = np.max(last_100_log_returns)
+    x_range = x_max - x_min
+    x_plot = np.linspace(x_min - 0.2*x_range, x_max + 0.2*x_range, 400)
+    
+    # Plot Gaussian fit
+    gauss_pdf = norm.pdf(x_plot, mu_gauss, std_gauss)
+    ax.plot(x_plot, gauss_pdf, 'r-', linewidth=2, label=f'Gaussian fit (μ={mu_gauss:.4f}, σ={std_gauss:.4f})')
+    
+    # Plot Laplace fit
+    laplace_pdf = laplace.pdf(x_plot, loc_laplace, scale_laplace)
+    ax.plot(x_plot, laplace_pdf, 'g-', linewidth=2, label=f'Laplace fit (loc={loc_laplace:.4f}, scale={scale_laplace:.4f})')
+    
+    # Calculate KL divergences
+    bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2.0
+    empirical_probs = counts / np.sum(counts) * (bin_edges[1] - bin_edges[0])
+    
+    # Gaussian KL divergence
+    gauss_probs = norm.pdf(bin_centers, mu_gauss, std_gauss)
+    gauss_probs = gauss_probs / np.sum(gauss_probs) * (bin_edges[1] - bin_edges[0])
+    mask = empirical_probs > 1e-10
+    kl_gauss = np.sum(empirical_probs[mask] * np.log(empirical_probs[mask] / gauss_probs[mask]))
+    
+    # Laplace KL divergence  
+    laplace_probs = laplace.pdf(bin_centers, loc_laplace, scale_laplace)
+    laplace_probs = laplace_probs / np.sum(laplace_probs) * (bin_edges[1] - bin_edges[0])
+    kl_laplace = np.sum(empirical_probs[mask] * np.log(empirical_probs[mask] / laplace_probs[mask]))
+    
+    # Customize plot
+    ax.set_xlabel('Log Returns: ln(S_t / S_{t-1})', fontsize=14)
+    ax.set_ylabel('Probability Density', fontsize=14)
+    ax.set_title(f'{asset_name} Log Returns - Last 100 Days\nGaussian KL: {kl_gauss:.4f}, Laplace KL: {kl_laplace:.4f}', fontsize=16)
+    ax.legend(fontsize=12)
+    ax.grid(True, alpha=0.3)
+    
+    # Save the special plot
+    special_filename = f"{filename_prefix}_log_returns_100days.png"
+    special_filepath = os.path.join(output_dir, special_filename)
+    plt.savefig(special_filepath, dpi=150, bbox_inches='tight')
+    plt.show()  # Display the plot
+    
+    print(f"Special log returns plot saved as: {special_filename}")
+    print(f"Gaussian KL divergence: {kl_gauss:.6f}")
+    print(f"Laplace KL divergence: {kl_laplace:.6f}")
+    print(f"Better fit: {'Laplace' if kl_laplace < kl_gauss else 'Gaussian'}")
 
 ##############################################################################
 # PRINT FINAL STATISTICS FOR THE FULL DATASET
