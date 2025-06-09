@@ -219,34 +219,34 @@ const MutualInformationWidget: React.FC<Props> = ({
         <h4 className="text-lg font-semibold text-gray-800 mb-4 text-center">Joint Distribution P(Weather, Transport)</h4>
         
         <div className="flex justify-center overflow-x-auto">
-          <svg width="450" height="250" className="border rounded bg-white">
+          <svg width="500" height="250" className="border rounded bg-white">
             {/* Background */}
-            <rect width="450" height="250" fill="#f9fafb" stroke="#e5e7eb" />
+            <rect width="500" height="250" fill="#f9fafb" stroke="#e5e7eb" />
             
             {/* Column headers (Transport) - just emojis */}
-            <text x="175" y="35" textAnchor="middle" fontSize="24" fill="#374151">🚶‍♀️</text>
-            <text x="300" y="35" textAnchor="middle" fontSize="24" fill="#374151">🚲</text>
-            <text x="425" y="35" textAnchor="middle" fontSize="24" fill="#374151">🚌</text>
+            <text x="155" y="35" textAnchor="middle" fontSize="24" fill="#374151">🚶‍♀️</text>
+            <text x="280" y="35" textAnchor="middle" fontSize="24" fill="#374151">🚲</text>
+            <text x="405" y="35" textAnchor="middle" fontSize="24" fill="#374151">🚌</text>
             
             {/* Row headers (Weather) - just emojis */}
-            <text x="60" y="85" textAnchor="middle" fontSize="24" fill="#374151">☀️</text>
-            <text x="60" y="165" textAnchor="middle" fontSize="24" fill="#374151">☁️</text>
+            <text x="80" y="85" textAnchor="middle" fontSize="24" fill="#374151">☀️</text>
+            <text x="80" y="165" textAnchor="middle" fontSize="24" fill="#374151">☁️</text>
             
             {/* Grid lines */}
-            <line x1="90" y1="50" x2="450" y2="50" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="90" y1="130" x2="450" y2="130" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="90" y1="210" x2="450" y2="210" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="90" y1="50" x2="90" y2="210" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="225" y1="50" x2="225" y2="210" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="350" y1="50" x2="350" y2="210" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="450" y1="50" x2="450" y2="210" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="105" y1="50" x2="455" y2="50" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="105" y1="130" x2="455" y2="130" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="105" y1="210" x2="455" y2="210" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="105" y1="50" x2="105" y2="210" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="230" y1="50" x2="230" y2="210" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="355" y1="50" x2="355" y2="210" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="455" y1="50" x2="455" y2="210" stroke="#d1d5db" strokeWidth="1" />
             
             {/* Probability bars for each cell - now vertical */}
             {tableData.map((row, rowIndex) => 
               row.map((cell, colIndex) => {
                 const prob = jointProbs[cell.index];
                 const barHeight = prob * barMaxHeight;
-                const x = 115 + colIndex * 125;
+                const x = 135 + colIndex * 125;
                 const baseY = 60 + rowIndex * 80;
                 const y = baseY + barMaxHeight - barHeight; // Bar grows upward
                 
@@ -293,10 +293,10 @@ const MutualInformationWidget: React.FC<Props> = ({
             
             {/* Marginal probabilities (calculated dynamically) */}
             {/* Weather marginals (right side) */}
-            <text x="445" y="90" fontSize="13" fontWeight="bold" fill="#059669" textAnchor="end">
+            <text x="475" y="90" fontSize="13" fontWeight="bold" fill="#059669" textAnchor="start">
               {(marginals.sun * 100).toFixed(1)}%
             </text>
-            <text x="445" y="170" fontSize="13" fontWeight="bold" fill="#059669" textAnchor="end">
+            <text x="475" y="170" fontSize="13" fontWeight="bold" fill="#059669" textAnchor="start">
               {(marginals.cloud * 100).toFixed(1)}%
             </text>
             
