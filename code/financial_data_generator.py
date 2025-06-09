@@ -147,7 +147,9 @@ def compute_distribution_params(data_values):
         return None
     
     # Compute histogram for KL divergence calculations
-    n_bins = 50
+    # Use more bins to ensure good granularity for web display
+    # Aim for at least 100 bins, more for larger datasets
+    n_bins = max(100, min(200, len(data_values) // 10))
     counts, bin_edges = np.histogram(data_values, bins=n_bins)
     total_counts = counts.sum()
     if total_counts == 0:

@@ -162,54 +162,16 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
     const gaussianPDF = showGaussian ? computePDF(xValues, 'gaussian', distributions.gaussian) : null;
     const laplacePDF = showLaplace ? computePDF(xValues, 'laplace', distributions.laplace) : null;
 
-    // Prepare histogram data with minimum 20 bars in display range
-    const displayRange = xMax - xMin;
-    const minBars = 20;
-    const desiredBinWidth = displayRange / minBars;
+    // Process histogram data - now using high-resolution bins from source
+    let histogramData = [];
     const originalBinWidth = histogram.bin_edges[1] - histogram.bin_edges[0];
     
-    let histogramData = [];
-    
-    if (originalBinWidth <= desiredBinWidth) {
-      // Original bins are fine, use them directly
-      for (let i = 0; i < histogram.counts.length; i++) {
-        const binCenter = (histogram.bin_edges[i] + histogram.bin_edges[i + 1]) / 2;
-        if (binCenter >= xMin && binCenter <= xMax) {
-          histogramData.push({
-            x: binCenter,
-            y: histogram.counts[i] / (dayData.n_samples * originalBinWidth)
-          });
-        }
-      }
-    } else {
-      // Original bins are too wide, create finer bins by interpolation
-      const numNewBins = Math.max(minBars, Math.floor(displayRange / (originalBinWidth * 0.5)));
-      const newBinWidth = displayRange / numNewBins;
-      
-      for (let i = 0; i < numNewBins; i++) {
-        const binLeft = xMin + i * newBinWidth;
-        const binRight = xMin + (i + 1) * newBinWidth;
-        const binCenter = (binLeft + binRight) / 2;
-        
-        // Find overlapping original bins and interpolate
-        let interpolatedCount = 0;
-        for (let j = 0; j < histogram.bin_edges.length - 1; j++) {
-          const origLeft = histogram.bin_edges[j];
-          const origRight = histogram.bin_edges[j + 1];
-          
-          // Calculate overlap between new bin [binLeft, binRight] and original bin [origLeft, origRight]
-          const overlapLeft = Math.max(binLeft, origLeft);
-          const overlapRight = Math.min(binRight, origRight);
-          
-          if (overlapLeft < overlapRight) {
-            const overlapFraction = (overlapRight - overlapLeft) / (origRight - origLeft);
-            interpolatedCount += histogram.counts[j] * overlapFraction;
-          }
-        }
-        
+    for (let i = 0; i < histogram.counts.length; i++) {
+      const binCenter = (histogram.bin_edges[i] + histogram.bin_edges[i + 1]) / 2;
+      if (binCenter >= xMin && binCenter <= xMax) {
         histogramData.push({
           x: binCenter,
-          y: interpolatedCount / (dayData.n_samples * newBinWidth)
+          y: histogram.counts[i] / (dayData.n_samples * originalBinWidth)
         });
       }
     }
