@@ -133,7 +133,9 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
   
   // Adjust selected days if needed
   useEffect(() => {
-    if (selectedDays > maxDays) {
+    if (selectedDays < 2) {
+      setSelectedDays(2);
+    } else if (selectedDays > maxDays) {
       setSelectedDays(Math.min(1000, maxDays));
     }
   }, [selectedDays, maxDays]);
@@ -228,7 +230,7 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
           </label>
           <input
             type="range"
-            min="1"
+            min="2"
             max={maxDays}
             value={selectedDays}
             onChange={(e) => setSelectedDays(parseInt(e.target.value))}
