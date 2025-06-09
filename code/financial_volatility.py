@@ -171,92 +171,14 @@ print(f"Mean volatility: {np.mean(volatilities):.6f}")
 # CREATE VOLATILITY HISTOGRAM PLOT
 ##############################################################################
 
-# Create figure with 3 subplots
-fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(12, 15))
+# Create figure with single plot for variance distribution
+fig, ax = plt.subplots(1, 1, figsize=(12, 8))
 
-# Plot 1: Time series of volatility
-ax1.plot(volatility_dates, volatilities, linewidth=0.8, alpha=0.8, color='navy')
-ax1.set_title(f'{asset_name} Daily Volatility Over Time ({ROLLING_WINDOW_DAYS}-day rolling window)', fontsize=14)
-ax1.set_xlabel('Date', fontsize=12)
-ax1.set_ylabel('Volatility (Log Returns Std Dev)', fontsize=12)
-ax1.grid(True, alpha=0.3)
-
-# Add some statistics to the time series plot
-ax1.axhline(y=np.mean(volatilities), color='red', linestyle='--', alpha=0.7, label=f'Mean: {np.mean(volatilities):.4f}')
-ax1.axhline(y=np.median(volatilities), color='green', linestyle='--', alpha=0.7, label=f'Median: {np.median(volatilities):.4f}')
-ax1.legend()
-
-# Plot 2: Histogram of volatilities
-n_bins = max(30, min(100, len(volatilities) // 20))  # Adaptive bin count
-counts, bin_edges, patches = ax2.hist(volatilities, bins=n_bins, density=True, 
-                                     alpha=0.7, color='lightcoral', edgecolor='darkred', 
-                                     label='Volatility distribution')
-
-# Fit distributions to volatility data
-# Chi-square distribution is often used for volatility modeling
-# Also try log-normal and gamma distributions
-
-# Log-normal fit (volatilities are always positive)
-if np.all(volatilities > 0):
-    log_vol = np.log(volatilities)
-    mu_lognorm = np.mean(log_vol)
-    sigma_lognorm = np.std(log_vol, ddof=1)
-    
-    # Create x range for plotting
-    x_min, x_max = np.min(volatilities), np.max(volatilities)
-    x_plot = np.linspace(x_min, x_max, 400)
-    
-    # Log-normal PDF
-    from scipy.stats import lognorm
-    lognorm_pdf = lognorm.pdf(x_plot, s=sigma_lognorm, scale=np.exp(mu_lognorm))
-    ax2.plot(x_plot, lognorm_pdf, 'b-', linewidth=2, 
-             label=f'Log-normal (μ={mu_lognorm:.3f}, σ={sigma_lognorm:.3f})')
-
-# Gamma distribution fit
-from scipy.stats import gamma
-# Method of moments for gamma distribution
-vol_mean = np.mean(volatilities)
-vol_var = np.var(volatilities, ddof=1)
-if vol_var > 0:
-    # Gamma parameters via method of moments
-    scale_gamma = vol_var / vol_mean
-    shape_gamma = vol_mean / scale_gamma
-    
-    gamma_pdf = gamma.pdf(x_plot, a=shape_gamma, scale=scale_gamma)
-    ax2.plot(x_plot, gamma_pdf, 'g-', linewidth=2,
-             label=f'Gamma (α={shape_gamma:.3f}, β={scale_gamma:.6f})')
-
-# Customize histogram plot
-ax2.set_xlabel('Volatility (Standard Deviation)', fontsize=12)
-ax2.set_ylabel('Probability Density', fontsize=12)
-ax2.set_title(f'{asset_name} Volatility Distribution Histogram', fontsize=14)
-ax2.legend(fontsize=10)
-ax2.grid(True, alpha=0.3)
-
-# Add statistics text box
-vol_mean = np.mean(volatilities)
-vol_std = np.std(volatilities, ddof=1)
-vol_skewness = ((volatilities - vol_mean) / vol_std)**3
-vol_skewness_val = vol_skewness.mean()
-
-stats_text = f"""Statistics:
-Count: {len(volatilities)}
-Mean: {vol_mean:.4f}
-Median: {np.median(volatilities):.4f}
-Std: {vol_std:.4f}
-Min: {np.min(volatilities):.4f}
-Max: {np.max(volatilities):.4f}
-Skewness: {vol_skewness_val:.3f}"""
-
-ax2.text(0.02, 0.98, stats_text, transform=ax2.transAxes, fontsize=9,
-         verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
-
-# Plot 3: Histogram of squared volatilities (variance)
 variances = volatilities ** 2
 n_bins_var = max(30, min(100, len(variances) // 20))  # Adaptive bin count
-counts_var, bin_edges_var, patches_var = ax3.hist(variances, bins=n_bins_var, density=True, 
-                                                  alpha=0.7, color='lightsteelblue', edgecolor='darkblue', 
-                                                  label='Variance distribution')
+counts_var, bin_edges_var, patches_var = ax.hist(variances, bins=n_bins_var, density=True, 
+                                                 alpha=0.7, color='lightsteelblue', edgecolor='darkblue', 
+                                                 label='Variance distribution')
 
 # Fit distributions to variance data
 var_mean = np.mean(variances)
@@ -270,35 +192,40 @@ x_plot_var = np.linspace(x_min_var, x_max_var, 400)
 from scipy.stats import expon
 rate_exp = 1.0 / var_mean
 exp_pdf = expon.pdf(x_plot_var, scale=var_mean)
-ax3.plot(x_plot_var, exp_pdf, 'r-', linewidth=2, 
-         label=f'Exponential (λ={rate_exp:.3f})')
+ax.plot(x_plot_var, exp_pdf, 'r-', linewidth=2, 
+        label=f'Exponential (λ={rate_exp:.3f})')
 
 # Log-normal fit for variances
+from scipy.stats import lognorm
 if np.all(variances > 0):
     log_var = np.log(variances)
     mu_lognorm_var = np.mean(log_var)
     sigma_lognorm_var = np.std(log_var, ddof=1)
     
     lognorm_pdf_var = lognorm.pdf(x_plot_var, s=sigma_lognorm_var, scale=np.exp(mu_lognorm_var))
-    ax3.plot(x_plot_var, lognorm_pdf_var, 'b-', linewidth=2, 
-             label=f'Log-normal (μ={mu_lognorm_var:.3f}, σ={sigma_lognorm_var:.3f})')
+    ax.plot(x_plot_var, lognorm_pdf_var, 'b-', linewidth=2, 
+            label=f'Log-normal (μ={mu_lognorm_var:.3f}, σ={sigma_lognorm_var:.3f})')
 
-# Gamma distribution fit for variances
+# Inverse-gamma distribution fit for variances
+from scipy.stats import invgamma
 if var_var > 0:
-    # Gamma parameters via method of moments
-    scale_gamma_var = var_var / var_mean
-    shape_gamma_var = var_mean / scale_gamma_var
+    # Inverse-gamma parameters via method of moments
+    # For inverse-gamma: mean = β/(α-1), var = β²/((α-1)²(α-2))
+    # Solving: α = (mean²/var) + 2, β = mean * (α - 1)
+    alpha_invgamma = (var_mean**2 / var_var) + 2
+    beta_invgamma = var_mean * (alpha_invgamma - 1)
     
-    gamma_pdf_var = gamma.pdf(x_plot_var, a=shape_gamma_var, scale=scale_gamma_var)
-    ax3.plot(x_plot_var, gamma_pdf_var, 'g-', linewidth=2,
-             label=f'Gamma (α={shape_gamma_var:.3f}, β={scale_gamma_var:.6f})')
+    invgamma_pdf_var = invgamma.pdf(x_plot_var, a=alpha_invgamma, scale=beta_invgamma)
+    ax.plot(x_plot_var, invgamma_pdf_var, 'g-', linewidth=2,
+            label=f'Inverse-Gamma (α={alpha_invgamma:.3f}, β={beta_invgamma:.6f})')
 
 # Customize variance histogram plot
-ax3.set_xlabel('Variance (σ²)', fontsize=12)
-ax3.set_ylabel('Probability Density', fontsize=12)
-ax3.set_title(f'{asset_name} Variance Distribution Histogram', fontsize=14)
-ax3.legend(fontsize=10)
-ax3.grid(True, alpha=0.3)
+ax.set_xlabel('Variance (σ²)', fontsize=12)
+ax.set_ylabel('Probability Density', fontsize=12)
+ax.set_title(f'{asset_name} Variance Distribution Histogram', fontsize=14)
+ax.set_xlim(0, 0.005)
+ax.legend(fontsize=10)
+ax.grid(True, alpha=0.3)
 
 # Add statistics text box for variance
 var_std = np.std(variances, ddof=1)
@@ -314,8 +241,8 @@ Min: {np.min(variances):.6f}
 Max: {np.max(variances):.6f}
 Skewness: {var_skewness_val:.3f}"""
 
-ax3.text(0.02, 0.98, stats_text_var, transform=ax3.transAxes, fontsize=9,
-         verticalalignment='top', bbox=dict(boxstyle='round', facecolor='lightcyan', alpha=0.8))
+ax.text(0.02, 0.98, stats_text_var, transform=ax.transAxes, fontsize=9,
+        verticalalignment='top', bbox=dict(boxstyle='round', facecolor='lightcyan', alpha=0.8))
 
 # Adjust layout and save
 plt.tight_layout()
