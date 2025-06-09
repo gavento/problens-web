@@ -4,27 +4,6 @@ This web contains an introduction to Kullback-Leibler (KL) divergence.
 Check out [this page](about) for logistics. Here, we've got several riddles some of which will hopefully [nerd-snipe](https://xkcd.com/356/) you!
 
 
-<Expand headline="🦶 Average foot"> <a id="statistics"></a>
-
-![rod](00-introduction/rod.png "Determining the length of the foot in 1522; taken from https://commons.wikimedia.org/wiki/File:Determination_of_the_rute_and_the_feet_in_Frankfurt.png")
-
-Back in the day, people measured stuff in feet. Sure, we all kinda know how long a foot is, but eventually you need to nail it down precisely. One way (shown above) is to grab 16 random people and average their foot lengths:
-$$\bar X = \frac{1}{16} (X_1 + \dots + X_{16})$$
-
-This gives you a pretty stable number that shouldn't change much if you do it again. To measure how good your estimate is, you'd usually calculate the standard deviation. Remember the formula? Which one's right:
-
-<MultipleChoiceQuestion
-  options={[
-    <Math math="\bar{\sigma}^2 = \frac{1}{15} \sum_{i=1}^{16} (X_i - \bar{X})^2" />,
-    <Math math="\bar{\sigma}^2 = \frac{1}{16} \sum_{i=1}^{16} (X_i - \bar{X})^2" />,
-    <Math math="\bar{\sigma}^2 = \frac{1}{17} \sum_{i=1}^{16} (X_i - \bar{X})^2" />
-  ]}
-  correctIndices={[0, 1, 2]}
-  feedbackType="all-show"
-  explanation={<>In a sense, they're all correct! Well, more like they're all defensible options from the viewpoint of frequentist statistics. Using <Math math="1/(n-1)" /> gives you the <a href="https://en.wikipedia.org/wiki/Bias_of_an_estimator">unbiased estimate</a>, <Math math="1/n" /> gives the <a href="https://en.wikipedia.org/wiki/Maximum_likelihood_estimation">maximum likelihood estimate</a>, and <Math math="1/(n+1)" /> minimizes <a href="https://en.wikipedia.org/wiki/Mean_squared_error">the mean squared error</a> between your guess and the truth.<br/><br/>But here's the thing: out of all these ways to estimate stuff, only maximum likelihood became the rockstar of machine learning. Using KL divergence, <a href="03-minimizing#mle">we'll see</a> why maximum likelihood is so special and what makes it tick.</>}
-/>
-</Expand>
-
 <Expand headline="🔮 How good are your predictions?"> <a id="predictions"></a>
 
 It'd be awesome to know the future—or at least know someone who does. So you've gathered some experts and came up with five questions (Q1 to Q5). You ask the experts to give you probabilities for all 5 questions.
@@ -56,6 +35,27 @@ But here's the thing: US elections are super close. We already know both parties
   options={["about 10,000", "about 100,000", "about 1,000,000"]}
   correctIndices={[2]}
   explanation={<>It's about 1,000,000! That's a huge chunk of the whole US! The general rule: to get error margin <Math math="\eps" />, you need roughly <Math math="1/\eps^2" /> samples. That square is killer—it's why getting better estimates gets expensive fast! No wonder most polls stick to a few thousand people.<br/><br/>But why <Math math="1/\eps^2" />? Explore the relationship below:<br/><br/><PollingErrorCalculator /></>}
+/>
+</Expand>
+
+<Expand headline="🦶 Average foot"> <a id="statistics"></a>
+
+![rod](00-introduction/rod.png "Determining the length of the foot in 1522; taken from https://commons.wikimedia.org/wiki/File:Determination_of_the_rute_and_the_feet_in_Frankfurt.png")
+
+Back in the day, people measured stuff in feet. Sure, we all kinda know how long a foot is, but eventually you need to nail it down precisely. One way (shown above) is to grab 16 random people and average their foot lengths:
+$$\bar X = \frac{1}{16} (X_1 + \dots + X_{16})$$
+
+This gives you a pretty stable number that shouldn't change much if you do it again. To measure how good your estimate is, you'd usually calculate the standard deviation. Remember the formula? Which one's right:
+
+<MultipleChoiceQuestion
+  options={[
+    <Math math="\bar{\sigma}^2 = \frac{1}{15} \sum_{i=1}^{16} (X_i - \bar{X})^2" />,
+    <Math math="\bar{\sigma}^2 = \frac{1}{16} \sum_{i=1}^{16} (X_i - \bar{X})^2" />,
+    <Math math="\bar{\sigma}^2 = \frac{1}{17} \sum_{i=1}^{16} (X_i - \bar{X})^2" />
+  ]}
+  correctIndices={[0, 1, 2]}
+  feedbackType="all-show"
+  explanation={<>In a sense, they're all correct! Well, more like they're all defensible options from the viewpoint of frequentist statistics. Using <Math math="1/(n-1)" /> gives you the <a href="https://en.wikipedia.org/wiki/Bias_of_an_estimator">unbiased estimate</a>, <Math math="1/n" /> gives the <a href="https://en.wikipedia.org/wiki/Maximum_likelihood_estimation">maximum likelihood estimate</a>, and <Math math="1/(n+1)" /> minimizes <a href="https://en.wikipedia.org/wiki/Mean_squared_error">the mean squared error</a> between your guess and the truth.<br/><br/>But here's the thing: out of all these ways to estimate stuff, only maximum likelihood became the rockstar of machine learning. Using KL divergence, <a href="03-minimizing#mle">we'll see</a> why maximum likelihood is so special and what makes it tick.</>}
 />
 </Expand>
 

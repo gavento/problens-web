@@ -87,20 +87,20 @@ const MutualInformationWidget: React.FC<Props> = ({
     setJointProbs(newDist);
   }, [jointProbs]);
 
-  // Handle bar dragging with the same mechanism as DistributionComparisonWidget
+  // Handle bar dragging - vertical dragging like DistributionComparisonWidget
   const handleBarDrag = useCallback((
     index: number,
     event: React.MouseEvent<SVGRectElement>
   ) => {
-    const rect = event.currentTarget.getBoundingClientRect();
     const svg = event.currentTarget.closest('svg')!;
     const svgRect = svg.getBoundingClientRect();
+    const barMaxHeight = 60; // Maximum bar height
+    const baseY = 60 + Math.floor(index / 3) * 80; // Starting Y position for this row
     
     const handleMouseMove = (moveEvent: MouseEvent) => {
-      const x = moveEvent.clientX - svgRect.left;
-      const relativeX = x - 100; // Account for margin
-      const barMaxWidth = 140;
-      const probability = Math.max(0, Math.min(1, relativeX / barMaxWidth));
+      const y = moveEvent.clientY - svgRect.top;
+      const relativeY = y - baseY;
+      const probability = Math.max(0, Math.min(1, 1 - (relativeY / barMaxHeight)));
       
       updateDistribution(index, probability);
     };
@@ -120,8 +120,8 @@ const MutualInformationWidget: React.FC<Props> = ({
     setJointProbs([0.14, 0.21, 0.35, 0.06, 0.09, 0.15]);
   }, []);
 
-  const barMaxWidth = 140;
-  const maxProb = Math.max(...jointProbs, 0.001);
+  const barMaxHeight = 60;
+  const barWidth = 80;
 
   // Define the 2x3 table structure with indices
   const tableData = [
@@ -138,7 +138,7 @@ const MutualInformationWidget: React.FC<Props> = ({
   ];
 
   return (
-    <div className="p-6 bg-gray-50 rounded-lg space-y-6 max-w-5xl mx-auto">
+    <div className="p-6 bg-gray-50 rounded-lg space-y-6 max-w-3xl mx-auto">
       {title && (
         <h3 className="text-xl font-semibold text-center text-gray-800">
           {title}
@@ -159,78 +159,74 @@ const MutualInformationWidget: React.FC<Props> = ({
       <div className="bg-white rounded-lg p-6">
         <h4 className="text-lg font-semibold text-gray-800 mb-4 text-center">Joint Distribution P(Weather, Transport)</h4>
         
-        <div className="flex justify-center">
-          <svg width="600" height="300" className="border rounded bg-white">
+        <div className="flex justify-center overflow-x-auto">
+          <svg width="450" height="250" className="border rounded bg-white">
             {/* Background */}
-            <rect width="600" height="300" fill="#f9fafb" stroke="#e5e7eb" />
+            <rect width="450" height="250" fill="#f9fafb" stroke="#e5e7eb" />
             
-            {/* Column headers (Transport) */}
-            <text x="200" y="30" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#374151">🚶‍♀️ Walk</text>
-            <text x="350" y="30" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#374151">🚲 Bike</text>
-            <text x="500" y="30" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#374151">🚌 Bus</text>
+            {/* Column headers (Transport) - just emojis */}
+            <text x="175" y="35" textAnchor="middle" fontSize="24" fill="#374151">🚶‍♀️</text>
+            <text x="300" y="35" textAnchor="middle" fontSize="24" fill="#374151">🚲</text>
+            <text x="425" y="35" textAnchor="middle" fontSize="24" fill="#374151">🚌</text>
             
-            {/* Row headers (Weather) */}
-            <text x="80" y="100" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#374151">☀️ Sun</text>
-            <text x="80" y="200" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#374151">☁️ Cloud</text>
+            {/* Row headers (Weather) - just emojis */}
+            <text x="60" y="85" textAnchor="middle" fontSize="24" fill="#374151">☀️</text>
+            <text x="60" y="165" textAnchor="middle" fontSize="24" fill="#374151">☁️</text>
             
             {/* Grid lines */}
-            <line x1="100" y1="50" x2="550" y2="50" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="100" y1="150" x2="550" y2="150" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="100" y1="250" x2="550" y2="250" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="100" y1="50" x2="100" y2="250" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="250" y1="50" x2="250" y2="250" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="400" y1="50" x2="400" y2="250" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="550" y1="50" x2="550" y2="250" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="90" y1="50" x2="450" y2="50" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="90" y1="130" x2="450" y2="130" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="90" y1="210" x2="450" y2="210" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="90" y1="50" x2="90" y2="210" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="225" y1="50" x2="225" y2="210" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="350" y1="50" x2="350" y2="210" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="450" y1="50" x2="450" y2="210" stroke="#d1d5db" strokeWidth="1" />
             
-            {/* Probability bars for each cell */}
+            {/* Probability bars for each cell - now vertical */}
             {tableData.map((row, rowIndex) => 
               row.map((cell, colIndex) => {
                 const prob = jointProbs[cell.index];
-                const barWidth = (prob / maxProb) * barMaxWidth;
-                const x = 105 + colIndex * 150;
-                const y = 70 + rowIndex * 100;
+                const barHeight = prob * barMaxHeight;
+                const x = 115 + colIndex * 125;
+                const baseY = 60 + rowIndex * 80;
+                const y = baseY + barMaxHeight - barHeight; // Bar grows upward
                 
                 return (
                   <g key={cell.index}>
+                    {/* Background area for dragging */}
+                    <rect
+                      x={x}
+                      y={baseY}
+                      width={barWidth}
+                      height={barMaxHeight}
+                      fill="transparent"
+                      className="cursor-ns-resize"
+                      onMouseDown={(e) => handleBarDrag(cell.index, e)}
+                    />
+                    
                     {/* Probability bar */}
                     <rect
                       x={x}
                       y={y}
                       width={barWidth}
-                      height={30}
+                      height={barHeight}
                       fill="#3b82f6"
                       stroke="#2563eb"
                       strokeWidth="1"
-                      className="cursor-grab hover:fill-blue-500"
-                      onMouseDown={(e) => handleBarDrag(cell.index, e)}
+                      className="pointer-events-none"
                     />
                     
-                    {/* Probability text inside bar (if bar is wide enough) */}
-                    {barWidth > 50 && (
-                      <text
-                        x={x + barWidth / 2}
-                        y={y + 20}
-                        textAnchor="middle"
-                        fontSize="12"
-                        fill="white"
-                        fontWeight="bold"
-                      >
-                        {(prob * 100).toFixed(1)}%
-                      </text>
-                    )}
-                    
-                    {/* Probability text outside bar (if bar is too narrow) */}
-                    {barWidth <= 50 && (
-                      <text
-                        x={x + barWidth + 5}
-                        y={y + 20}
-                        fontSize="12"
-                        fill="#374151"
-                        fontWeight="bold"
-                      >
-                        {(prob * 100).toFixed(1)}%
-                      </text>
-                    )}
+                    {/* Probability text below bar */}
+                    <text
+                      x={x + barWidth / 2}
+                      y={baseY + barMaxHeight + 15}
+                      textAnchor="middle"
+                      fontSize="12"
+                      fill="#374151"
+                      fontWeight="bold"
+                    >
+                      {(prob * 100).toFixed(1)}%
+                    </text>
                   </g>
                 );
               })
@@ -238,27 +234,23 @@ const MutualInformationWidget: React.FC<Props> = ({
             
             {/* Marginal probabilities (calculated dynamically) */}
             {/* Weather marginals (right side) */}
-            <text x="570" y="100" fontSize="14" fontWeight="bold" fill="#059669">
+            <text x="420" y="90" fontSize="13" fontWeight="bold" fill="#059669" textAnchor="end">
               {(marginals.sun * 100).toFixed(1)}%
             </text>
-            <text x="570" y="200" fontSize="14" fontWeight="bold" fill="#059669">
+            <text x="420" y="170" fontSize="13" fontWeight="bold" fill="#059669" textAnchor="end">
               {(marginals.cloud * 100).toFixed(1)}%
             </text>
             
             {/* Transport marginals (bottom) */}
-            <text x="175" y="270" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#059669">
+            <text x="155" y="230" textAnchor="middle" fontSize="13" fontWeight="bold" fill="#059669">
               {(marginals.walk * 100).toFixed(1)}%
             </text>
-            <text x="325" y="270" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#059669">
+            <text x="280" y="230" textAnchor="middle" fontSize="13" fontWeight="bold" fill="#059669">
               {(marginals.bike * 100).toFixed(1)}%
             </text>
-            <text x="475" y="270" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#059669">
+            <text x="405" y="230" textAnchor="middle" fontSize="13" fontWeight="bold" fill="#059669">
               {(marginals.bus * 100).toFixed(1)}%
             </text>
-            
-            {/* Labels for marginals */}
-            <text x="570" y="40" fontSize="12" fill="#6b7280" textAnchor="middle">P(Weather)</text>
-            <text x="325" y="290" fontSize="12" fill="#6b7280" textAnchor="middle">P(Transport)</text>
           </svg>
         </div>
       </div>

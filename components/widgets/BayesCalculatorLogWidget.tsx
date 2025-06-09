@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import KatexMath from "@/components/content/KatexMath";
 
 type Props = {
   title?: string;
@@ -122,7 +123,9 @@ const BayesCalculatorLogWidget: React.FC<Props> = ({
           <div className="w-16 px-2 py-1 bg-blue-50 border border-blue-200 rounded text-center text-sm font-mono">
             {calculations.posteriorBiased.toFixed(2)}
           </div>
-          <span className="text-sm text-gray-500">(2^{calculations.posteriorLogFair.toFixed(2)} : 2^{calculations.posteriorLogBiased.toFixed(2)})</span>
+          <span className="text-sm text-gray-500 ml-2">
+            (<KatexMath math={`2^{${calculations.posteriorLogFair.toFixed(2)}} : 2^{${calculations.posteriorLogBiased.toFixed(2)}}`} />)
+          </span>
         </div>
 
         {/* Probability conversion */}
