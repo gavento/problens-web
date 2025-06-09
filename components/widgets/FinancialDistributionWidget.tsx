@@ -97,7 +97,7 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
         
         if (showSAP) {
           promises.push(
-            fetch('/financial_data/sap_data.json')
+            fetch('/financial_data/sap_data_test.json')
               .then(res => {
                 console.log('SAP fetch response:', res.status, res.statusText);
                 if (!res.ok) {
