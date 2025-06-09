@@ -390,15 +390,15 @@ The whole point is that the max-entropy principle leads us to a prior that puts 
 
 <Expand headline="Riddle: Understanding Financial Data"> <a id="application-understanding-financial-data"></a>
 
-Let's revisit our financial mathematics riddle [from the intro](00-introduction/financial-mathematics).
+Let's revisit our financial mathematics riddle [from the intro](00-introduction/financial-mathematics). 
 
 <FinancialDistributionWidget showBTC={true} showSAP={true} />
 
-We observed that the Laplace distribution seems to fit the data better than the normal distribution. <Footnote>How do we formalize the claim "the distribution X fits the data $p$ better than the distribution Y"? Of course by measuring $D(p, X)$ and $D(p, Y)$! In our case, for example, it says that Laplace starts to be a better fit for S&P for data from at least 1-2 months.</Footnote>
+You can observe that the Laplace distribution seems to fit the data better than the normal distribution, as measured by KL between the data and the model distribution. 
 
-The Laplace distribution has the shape <Math math = "p(x) \propto e^{-\lambda |x-\mu|}" />. What's the meaning of this formula? We could think of it as the max entropy distribution for fixing the value $E[|X-\mu|]$, but there's a more illuminating way to understand it. The Laplace distribution can be viewed as the result of the following process:<Footnote>I actually don't know any way to observe this fact directly. Let me know if you know a way to do that. The fact can be verified algebraically, but it's not so easy.</Footnote>
+The Laplace distribution has the shape <Math math = "p(x) \propto e^{-\lambda |x-\mu|}" />. What's the meaning of this formula? We could think of it as the max entropy distribution for fixing the value $E[|X-\mu|]$, but there's a more illuminating way to understand it. The Laplace distribution with parameter $\lambda$ can be viewed as the result of the following process:<Footnote>Let me know if you know a simple proof of this fact!</Footnote>
 
-1.  Sample a variance $\sigma^2$ from the exponential distribution.
+1.  Sample a variance $\sigma^2$ from the exponential distribution. <Footnote>If we want Laplace distribution <Math math = "p(x) \propto e^{-\lambda |x-\mu|}" />, we should sample $\sigma^2$ from exponential distribution <Math math = "p'(t) \propto e^{-2/\lambda^2 \cdot t}"/>. </Footnote>
 2.  Output a sample from $N(\mu, \sigma^2)$.
 
 To understand how this helps explain our financial data, consider the following two stories for price fluctuations:
@@ -410,6 +410,9 @@ To understand how this helps explain our financial data, consider the following 
 Perhaps we should try a more advanced two-layered model to predict the shape of our data: Maybe each month, we sample $\sigma^2$—the volatility for that month. Let's sample it from the max-entropy distribution, i.e., exponential. Next, for the rest of the month, we sample from a Gaussian with that variance. As we mentioned, this two-layered process actually samples from the Laplace distribution.
 
 Put differently, while a Gaussian fit implies "I'm pretty sure about today's volatility and unsure about the fluctuation around the mean," Laplace is saying, "I'm uncertain both about the volatility and the actual fluctuation of the day." This explains why Gaussian fits near-term data (volatility of the time period stays roughly the same), while more long-term data starts looking more like Laplace. 
+
+
+
 
 Notice that even though Laplace distribution fits S&P very well, it's not as good fit for Bitcoin (another option in the widget) which is even more "spiky". A distribution of the shape <Math math = "e^{-\sqrt{x}}"/> would be a better fit there. <Footnote>If we extended our "2-level" story to three levels, this is the shape would get. </Footnote> This just shows that Laplace distribution is, after all, just a model. <Footnote>As far as I know, one standard way of modeling financial data is the Student-t distribution. I won't bore you with its formula, but I'll tell you it's the distribution you get from a similar process to how we arrived at Laplace; but instead of sampling $\sigma^2$ from the exponential distribution, you sample it from the so-called inverse gamma distribution. The Gamma distribution is itself a max-entropy distribution for fixing $E[X]$ and $E[\log X]$ (and inverse gamma distribution means we measure volatility by $1/\sigma^2$ instead of $\sigma^2$).
 That is, the Student-t distribution takes our model a bit further and adds uncertainty about the _scale_ of the volatility. For example, maybe if you look far enough into the past, you start seeing some extreme events like world wars/the Great Depression/industrial revolution, so perhaps we should be open to power-law fits instead of exponential ones.</Footnote>

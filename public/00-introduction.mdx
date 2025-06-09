@@ -65,7 +65,7 @@ This gives you a pretty stable number that shouldn't change much if you do it ag
 
 Every day, the S&P index price jumps around a bit. <Footnote>If you don't know what the S&P is, just think Bitcoin, Apple stock, or how many euros you can buy with a dollar</Footnote>
 
-I grabbed some historical data, calculated the daily price changes, normalized them (so that $100 \rightarrow 101$ and $200 \rightarrow 202$ are the same increase) and threw them in a histogram. The x-axis shows how big the change was (positive about half the time, negative the other half) anad the y-axis shows how often that size change happens. Before I show you the plot, take a guess—what's it gonna look like? 
+I grabbed some historical data, calculated the daily price changes, normalized them <Footnote>I.e., I am plotting the so-called log-return <Math math = "\ln P_t/P_{t-1} \approx 1 + \frac{P_t - P_{t-1}}{P_{t-1}}" /> for each consecutive daily prices $P_{t-1}, P_t$. </Footnote> (so that $100 \rightarrow 101$ and $200 \rightarrow 202$ are the same increase) and threw them in a histogram. The x-axis shows how big the change was (positive about half the time, negative the other half) anad the y-axis shows how often that size change happens. Before I show you the plot, take a guess—what's it gonna look like? 
 
 ![shapes](00-introduction/shapes.png)
 

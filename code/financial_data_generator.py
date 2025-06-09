@@ -131,12 +131,12 @@ def compute_distribution_params(data_values):
     
     result = {
         'n_samples': len(data_values),
-        'mean': float(np.mean(data_values)),
-        'std': float(np.std(data_values, ddof=1)),
-        'min': float(np.min(data_values)),
-        'max': float(np.max(data_values)),
-        'median': float(np.median(data_values)),
-        'kurtosis': float(np.mean(((data_values - np.mean(data_values)) / np.std(data_values, ddof=1)) ** 4) - 3),
+        'mean': round(float(np.mean(data_values)), 6),
+        'std': round(float(np.std(data_values, ddof=1)), 6),
+        'min': round(float(np.min(data_values)), 6),
+        'max': round(float(np.max(data_values)), 6),
+        'median': round(float(np.median(data_values)), 6),
+        'kurtosis': round(float(np.mean(((data_values - np.mean(data_values)) / np.std(data_values, ddof=1)) ** 4) - 3), 4),
         'distributions': {}
     }
     
@@ -154,10 +154,10 @@ def compute_distribution_params(data_values):
     if total_counts == 0:
         return None
     
-    # Store histogram data
+    # Store histogram data with minimal precision to save space
     result['histogram'] = {
         'counts': counts.tolist(),
-        'bin_edges': bin_edges.tolist()
+        'bin_edges': [round(x, 4) for x in bin_edges.tolist()]  # 4 decimal places sufficient
     }
     
     # Empirical probability per bin
@@ -171,9 +171,9 @@ def compute_distribution_params(data_values):
     kl_gauss = float(np.sum(P[mask] * np.log(P[mask] / Q_gauss[mask])))
     
     result['distributions']['gaussian'] = {
-        'mu': mu,
-        'std': std,
-        'kl_divergence': kl_gauss
+        'mu': round(mu, 6),
+        'std': round(std, 6),
+        'kl_divergence': round(kl_gauss, 4)
     }
     
     # Laplace parameters and KL divergence
@@ -190,9 +190,9 @@ def compute_distribution_params(data_values):
         kl_laplace = float('inf')
     
     result['distributions']['laplace'] = {
-        'loc': float(loc_lap),
-        'scale': float(scale_lap),
-        'kl_divergence': kl_laplace
+        'loc': round(float(loc_lap), 6),
+        'scale': round(float(scale_lap), 6),
+        'kl_divergence': round(kl_laplace, 4)
     }
     
     return result
@@ -277,7 +277,8 @@ def save_data_to_json(asset='BTC', output_dir='financial_data'):
     if data:
         output_path = os.path.join(output_dir, f'{asset.lower()}_data.json')
         with open(output_path, 'w') as f:
-            json.dump(data, f, indent=2)
+            # Use compact JSON format to reduce file size significantly
+            json.dump(data, f, separators=(',', ':'))
         print(f"Data saved to {output_path}")
         return output_path
     else:
