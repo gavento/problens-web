@@ -14,12 +14,6 @@ const MutualInformationWidget: React.FC<Props> = ({
 }) => {
   // Joint distribution - 6 values that sum to 1
   const [jointProbs, setJointProbs] = useState<number[]>([0.14, 0.21, 0.35, 0.06, 0.09, 0.15]);
-  const [constrainMarginals, setConstrainMarginals] = useState(!showToggle); // If no toggle, always constrained
-  
-  // Fixed marginals for constrained mode
-  const targetMarginals = {
-    sun: 0.7, cloud: 0.3, walk: 0.2, bike: 0.3, bus: 0.5
-  };
 
   // Calculate marginal probabilities
   const marginals = useMemo(() => {
@@ -54,116 +48,33 @@ const MutualInformationWidget: React.FC<Props> = ({
     return mi / Math.log(2); // Convert to bits
   }, [jointProbs, marginals]);
 
-  // Update distribution function
+  // Update distribution function - SIMPLE: only maintain sum = 1
   const updateDistribution = useCallback((
     index: number,
     newValue: number
   ) => {
     const clampedValue = Math.max(0, Math.min(1, newValue));
     const newDist = [...jointProbs];
-
-    if (constrainMarginals) {
-      // CONSTRAINED MODE: Maintain fixed marginals using more robust approach
-      const rowIndex = Math.floor(index / 3); // 0 for sun, 1 for cloud
-      const colIndex = index % 3; // 0 for walk, 1 for bike, 2 for bus
-      
-      const targetWeatherMarginals = [targetMarginals.sun, targetMarginals.cloud];
-      const targetTransportMarginals = [targetMarginals.walk, targetMarginals.bike, targetMarginals.bus];
-      
-      // Set the dragged cell
-      newDist[index] = clampedValue;
-      
-      // Step 1: Fix the column (transport) marginal by adjusting the other row
-      const otherRowIndex = 1 - rowIndex;
-      const otherCellInColumn = otherRowIndex * 3 + colIndex;
-      const targetTransportMarginal = targetTransportMarginals[colIndex];
-      
-      // Ensure transport marginal is satisfied
-      const otherCellValue = Math.max(0, Math.min(targetTransportMarginal, targetTransportMarginal - clampedValue));
-      newDist[otherCellInColumn] = otherCellValue;
-      
-      // If we need to adjust the dragged cell due to constraints
-      if (clampedValue + otherCellValue > targetTransportMarginal) {
-        newDist[index] = targetTransportMarginal - otherCellValue;
-      }
-      
-      // Step 2: Fix the row (weather) marginals by distributing the remaining probability
-      for (let r = 0; r < 2; r++) {
-        const currentRowSum = newDist[r * 3] + newDist[r * 3 + 1] + newDist[r * 3 + 2];
-        const targetRowSum = targetWeatherMarginals[r];
-        const difference = targetRowSum - currentRowSum;
-        
-        // Find cells in this row that we can adjust (not the ones we just set)
-        const adjustableCells = [];
-        for (let c = 0; c < 3; c++) {
-          const cellIndex = r * 3 + c;
-          if (cellIndex !== index && cellIndex !== otherCellInColumn) {
-            adjustableCells.push(cellIndex);
-          }
-        }
-        
-        if (adjustableCells.length > 0 && Math.abs(difference) > 1e-10) {
-          const currentAdjustableSum = adjustableCells.reduce((sum, i) => sum + newDist[i], 0);
-          
-          if (currentAdjustableSum > 0) {
-            // Proportionally adjust the adjustable cells
-            adjustableCells.forEach(i => {
-              const proportion = newDist[i] / currentAdjustableSum;
-              newDist[i] = Math.max(0, newDist[i] + difference * proportion);
-            });
-          } else {
-            // Distribute equally among adjustable cells
-            const equalShare = Math.max(0, difference / adjustableCells.length);
-            adjustableCells.forEach(i => {
-              newDist[i] = equalShare;
-            });
-          }
+    
+    // Simple constraint: Just maintain sum = 1
+    const remainingMass = 1 - clampedValue;
+    const currentRemainingMass = jointProbs.reduce((sum, p, i) => i === index ? sum : sum + p, 0);
+    
+    if (currentRemainingMass > 0) {
+      const scaleFactor = remainingMass / currentRemainingMass;
+      for (let i = 0; i < newDist.length; i++) {
+        if (i === index) {
+          newDist[i] = clampedValue;
+        } else {
+          newDist[i] = jointProbs[i] * scaleFactor;
         }
       }
-      
-      // Step 3: Final adjustment to ensure all transport marginals are satisfied
-      for (let c = 0; c < 3; c++) {
-        const currentColSum = newDist[c] + newDist[3 + c];
-        const targetColSum = targetTransportMarginals[c];
-        const colDifference = targetColSum - currentColSum;
-        
-        if (Math.abs(colDifference) > 1e-10) {
-          // Adjust the cell in this column that we're not directly controlling
-          if (c === colIndex) continue; // Skip the column we're directly controlling
-          
-          // Find which cell in this column to adjust
-          const cell0 = newDist[c];
-          const cell1 = newDist[3 + c];
-          
-          if (cell0 >= cell1) {
-            newDist[c] = Math.max(0, cell0 + colDifference);
-          } else {
-            newDist[3 + c] = Math.max(0, cell1 + colDifference);
-          }
-        }
-      }
-      
     } else {
-      // UNCONSTRAINED MODE: Just maintain sum = 1
-      const remainingMass = 1 - clampedValue;
-      const currentRemainingMass = jointProbs.reduce((sum, p, i) => i === index ? sum : sum + p, 0);
-      
-      if (currentRemainingMass > 0) {
-        const scaleFactor = remainingMass / currentRemainingMass;
-        for (let i = 0; i < newDist.length; i++) {
-          if (i === index) {
-            newDist[i] = clampedValue;
-          } else {
-            newDist[i] = jointProbs[i] * scaleFactor;
-          }
-        }
-      } else {
-        newDist[index] = clampedValue;
-        const remaining = (1 - clampedValue) / (newDist.length - 1);
-        for (let i = 0; i < newDist.length; i++) {
-          if (i !== index) {
-            newDist[i] = remaining;
-          }
+      newDist[index] = clampedValue;
+      const remaining = (1 - clampedValue) / (newDist.length - 1);
+      for (let i = 0; i < newDist.length; i++) {
+        if (i !== index) {
+          newDist[i] = remaining;
         }
       }
     }
@@ -173,7 +84,7 @@ const MutualInformationWidget: React.FC<Props> = ({
     if (isValid) {
       setJointProbs(newDist);
     }
-  }, [jointProbs, constrainMarginals]);
+  }, [jointProbs]);
 
   // Handle bar dragging
   const handleBarDrag = useCallback((
@@ -234,12 +145,10 @@ const MutualInformationWidget: React.FC<Props> = ({
       {/* Instructions */}
       <div className="bg-blue-50 rounded-lg p-4 text-center">
         <p className="text-sm text-blue-700">
-          Drag the bars to adjust the joint distribution P(Weather, Transport)
+          Drag bars to adjust probabilities
         </p>
         <p className="text-xs text-blue-600 mt-1">
-          {constrainMarginals 
-            ? "Fixed marginals: P(☀️) = 70%, P(☁️) = 30%, P(🚶‍♀️) = 20%, P(🚲) = 30%, P(🚌) = 50%"
-            : "All 6 probabilities must sum to 1. Other bars adjust automatically."}
+          All 6 probabilities must sum to 1. Other bars adjust automatically.
         </p>
       </div>
 
@@ -253,13 +162,13 @@ const MutualInformationWidget: React.FC<Props> = ({
             <rect width="450" height="280" fill="#f9fafb" stroke="#e5e7eb" />
             
             {/* Column headers (Transport) */}
-            <text x="135" y="30" textAnchor="middle" fontSize="20" fill="#374151">🚶‍♀️</text>
-            <text x="235" y="30" textAnchor="middle" fontSize="20" fill="#374151">🚲</text>
-            <text x="335" y="30" textAnchor="middle" fontSize="20" fill="#374151">🚌</text>
+            <text x="135" y="30" textAnchor="middle" fontSize="28" fill="#374151">🚶‍♀️</text>
+            <text x="235" y="30" textAnchor="middle" fontSize="28" fill="#374151">🚲</text>
+            <text x="335" y="30" textAnchor="middle" fontSize="28" fill="#374151">🚌</text>
             
             {/* Row headers (Weather) */}
-            <text x="50" y="90" textAnchor="middle" fontSize="20" fill="#374151">☀️</text>
-            <text x="50" y="185" textAnchor="middle" fontSize="20" fill="#374151">☁️</text>
+            <text x="50" y="90" textAnchor="middle" fontSize="28" fill="#374151">☀️</text>
+            <text x="50" y="185" textAnchor="middle" fontSize="28" fill="#374151">☁️</text>
             
             {/* Grid lines */}
             <line x1="85" y1="45" x2="385" y2="45" stroke="#d1d5db" strokeWidth="1" />
@@ -357,18 +266,6 @@ const MutualInformationWidget: React.FC<Props> = ({
 
       {/* Controls */}
       <div className="flex justify-center gap-4">
-        {showToggle && (
-          <button
-            onClick={() => setConstrainMarginals(!constrainMarginals)}
-            className={`px-6 py-2 rounded-lg transition-colors ${
-              constrainMarginals 
-                ? 'bg-blue-500 text-white hover:bg-blue-600' 
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            {constrainMarginals ? 'Fixed Marginals' : 'Free Marginals'}
-          </button>
-        )}
         <button
           onClick={resetToDefault}
           className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
