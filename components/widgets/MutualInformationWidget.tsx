@@ -12,6 +12,12 @@ const MutualInformationWidget: React.FC<Props> = ({
 }) => {
   // Joint distribution - 6 values that sum to 1
   const [jointProbs, setJointProbs] = useState<number[]>([0.14, 0.21, 0.35, 0.06, 0.09, 0.15]);
+  const [constrainMarginals, setConstrainMarginals] = useState(false);
+  
+  // Target marginals when constrained
+  const targetMarginals = useMemo(() => ({
+    sun: 0.7, cloud: 0.3, walk: 0.2, bike: 0.3, bus: 0.5
+  }), []);
 
   // Calculate marginal probabilities
   const marginals = useMemo(() => {
@@ -50,42 +56,91 @@ const MutualInformationWidget: React.FC<Props> = ({
     return mi / Math.log(2); // Convert to bits
   }, [jointProbs, marginals]);
 
-  // Update distribution while maintaining sum = 1 (like DistributionComparisonWidget)
+  // Update distribution - either constrained or unconstrained
   const updateDistribution = useCallback((
     index: number,
     newValue: number
   ) => {
-    const clampedValue = Math.max(0, Math.min(1, newValue));
-    const newDist = [...jointProbs];
-    
-    // Calculate remaining mass to distribute
-    const remainingMass = 1 - clampedValue;
-    const currentRemainingMass = jointProbs.reduce((sum, p, i) => i === index ? sum : sum + p, 0);
-    
-    if (currentRemainingMass > 0) {
-      const scaleFactor = remainingMass / currentRemainingMass;
+    if (constrainMarginals) {
+      // Constrained mode - try to maintain target marginals
+      const clampedValue = Math.max(0, Math.min(1, newValue));
+      const newDist = [...jointProbs];
       
-      // Update all other probabilities proportionally
-      for (let i = 0; i < newDist.length; i++) {
-        if (i === index) {
-          newDist[i] = clampedValue;
-        } else {
-          newDist[i] = jointProbs[i] * scaleFactor;
-        }
-      }
-    } else {
-      // Edge case: if all other probabilities are 0
+      // First set the new value
       newDist[index] = clampedValue;
-      const remaining = (1 - clampedValue) / (newDist.length - 1);
-      for (let i = 0; i < newDist.length; i++) {
-        if (i !== index) {
-          newDist[i] = remaining;
+      
+      // Identify which marginals are affected
+      const rowIndex = Math.floor(index / 3); // 0 for sun, 1 for cloud
+      const colIndex = index % 3; // 0 for walk, 1 for bike, 2 for bus
+      
+      // Adjust row to maintain weather marginal
+      const rowIndices = rowIndex === 0 ? [0, 1, 2] : [3, 4, 5];
+      const targetRowSum = rowIndex === 0 ? targetMarginals.sun : targetMarginals.cloud;
+      const currentRowSum = rowIndices.reduce((sum, i) => sum + newDist[i], 0);
+      
+      if (currentRowSum > 0 && Math.abs(currentRowSum - targetRowSum) > 1e-10) {
+        const scale = targetRowSum / currentRowSum;
+        rowIndices.forEach(i => {
+          newDist[i] *= scale;
+        });
+      }
+      
+      // Adjust column to maintain transport marginal
+      const colIndices = [colIndex, colIndex + 3];
+      const targetColSum = colIndex === 0 ? targetMarginals.walk : 
+                          colIndex === 1 ? targetMarginals.bike : targetMarginals.bus;
+      const currentColSum = colIndices.reduce((sum, i) => sum + newDist[i], 0);
+      
+      if (currentColSum > 0 && Math.abs(currentColSum - targetColSum) > 1e-10) {
+        const scale = targetColSum / currentColSum;
+        colIndices.forEach(i => {
+          newDist[i] *= scale;
+        });
+      }
+      
+      // Normalize to ensure sum = 1
+      const totalSum = newDist.reduce((sum, p) => sum + p, 0);
+      if (totalSum > 0) {
+        newDist.forEach((_, i) => {
+          newDist[i] /= totalSum;
+        });
+      }
+      
+      setJointProbs(newDist);
+    } else {
+      // Unconstrained mode - just maintain sum = 1
+      const clampedValue = Math.max(0, Math.min(1, newValue));
+      const newDist = [...jointProbs];
+      
+      // Calculate remaining mass to distribute
+      const remainingMass = 1 - clampedValue;
+      const currentRemainingMass = jointProbs.reduce((sum, p, i) => i === index ? sum : sum + p, 0);
+      
+      if (currentRemainingMass > 0) {
+        const scaleFactor = remainingMass / currentRemainingMass;
+        
+        // Update all other probabilities proportionally
+        for (let i = 0; i < newDist.length; i++) {
+          if (i === index) {
+            newDist[i] = clampedValue;
+          } else {
+            newDist[i] = jointProbs[i] * scaleFactor;
+          }
+        }
+      } else {
+        // Edge case: if all other probabilities are 0
+        newDist[index] = clampedValue;
+        const remaining = (1 - clampedValue) / (newDist.length - 1);
+        for (let i = 0; i < newDist.length; i++) {
+          if (i !== index) {
+            newDist[i] = remaining;
+          }
         }
       }
+      
+      setJointProbs(newDist);
     }
-    
-    setJointProbs(newDist);
-  }, [jointProbs]);
+  }, [jointProbs, constrainMarginals, targetMarginals]);
 
   // Handle bar dragging - vertical dragging like DistributionComparisonWidget
   const handleBarDrag = useCallback((
@@ -151,7 +206,9 @@ const MutualInformationWidget: React.FC<Props> = ({
           Drag the bars to adjust the joint distribution P(Weather, Transport)
         </p>
         <p className="text-xs text-blue-600 mt-1">
-          All 6 probabilities must sum to 1. Other bars adjust automatically.
+          {constrainMarginals 
+            ? "Fixed marginals: P(☀️) = 70%, P(☁️) = 30%, P(🚶‍♀️) = 20%, P(🚲) = 30%, P(🚌) = 50%"
+            : "All 6 probabilities must sum to 1. Other bars adjust automatically."}
         </p>
       </div>
 
@@ -282,7 +339,17 @@ const MutualInformationWidget: React.FC<Props> = ({
       </div>
 
       {/* Controls */}
-      <div className="flex justify-center">
+      <div className="flex justify-center gap-4">
+        <button
+          onClick={() => setConstrainMarginals(!constrainMarginals)}
+          className={`px-6 py-2 rounded-lg transition-colors ${
+            constrainMarginals 
+              ? 'bg-blue-500 text-white hover:bg-blue-600' 
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
+        >
+          {constrainMarginals ? 'Fixed Marginals' : 'Free Marginals'}
+        </button>
         <button
           onClick={resetToDefault}
           className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
