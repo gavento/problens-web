@@ -180,8 +180,8 @@ const MutualInformationWidget: React.FC<Props> = ({
   ) => {
     const svg = event.currentTarget.closest('svg')!;
     const svgRect = svg.getBoundingClientRect();
-    const barMaxHeight = 60; // Maximum bar height
-    const baseY = 60 + Math.floor(index / 3) * 80; // Starting Y position for this row
+    const barMaxHeight = 50; // Maximum bar height
+    const baseY = 50 + Math.floor(index / 3) * 65; // Starting Y position for this row
     
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const y = moveEvent.clientY - svgRect.top;
@@ -206,8 +206,8 @@ const MutualInformationWidget: React.FC<Props> = ({
     setJointProbs([0.14, 0.21, 0.35, 0.06, 0.09, 0.15]);
   }, []);
 
-  const barMaxHeight = 60;
-  const barWidth = 40;
+  const barMaxHeight = 50;
+  const barWidth = 35;
 
   // Define the 2x3 table structure with indices
   const tableData = [
@@ -248,35 +248,35 @@ const MutualInformationWidget: React.FC<Props> = ({
         <h4 className="text-lg font-semibold text-gray-800 mb-4 text-center">Joint Distribution P(Weather, Transport)</h4>
         
         <div className="flex justify-center overflow-x-auto">
-          <svg width="500" height="250" className="border rounded bg-white">
+          <svg width="450" height="220" className="border rounded bg-white">
             {/* Background */}
-            <rect width="500" height="250" fill="#f9fafb" stroke="#e5e7eb" />
+            <rect width="450" height="220" fill="#f9fafb" stroke="#e5e7eb" />
             
             {/* Column headers (Transport) - just emojis */}
-            <text x="155" y="35" textAnchor="middle" fontSize="24" fill="#374151">🚶‍♀️</text>
-            <text x="280" y="35" textAnchor="middle" fontSize="24" fill="#374151">🚲</text>
-            <text x="405" y="35" textAnchor="middle" fontSize="24" fill="#374151">🚌</text>
+            <text x="135" y="30" textAnchor="middle" fontSize="20" fill="#374151">🚶‍♀️</text>
+            <text x="235" y="30" textAnchor="middle" fontSize="20" fill="#374151">🚲</text>
+            <text x="335" y="30" textAnchor="middle" fontSize="20" fill="#374151">🚌</text>
             
             {/* Row headers (Weather) - just emojis */}
-            <text x="80" y="85" textAnchor="middle" fontSize="24" fill="#374151">☀️</text>
-            <text x="80" y="165" textAnchor="middle" fontSize="24" fill="#374151">☁️</text>
+            <text x="50" y="75" textAnchor="middle" fontSize="20" fill="#374151">☀️</text>
+            <text x="50" y="145" textAnchor="middle" fontSize="20" fill="#374151">☁️</text>
             
             {/* Grid lines */}
-            <line x1="105" y1="50" x2="455" y2="50" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="105" y1="130" x2="455" y2="130" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="105" y1="210" x2="455" y2="210" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="105" y1="50" x2="105" y2="210" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="230" y1="50" x2="230" y2="210" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="355" y1="50" x2="355" y2="210" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="455" y1="50" x2="455" y2="210" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="85" y1="45" x2="385" y2="45" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="85" y1="110" x2="385" y2="110" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="85" y1="175" x2="385" y2="175" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="85" y1="45" x2="85" y2="175" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="185" y1="45" x2="185" y2="175" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="285" y1="45" x2="285" y2="175" stroke="#d1d5db" strokeWidth="1" />
+            <line x1="385" y1="45" x2="385" y2="175" stroke="#d1d5db" strokeWidth="1" />
             
             {/* Probability bars for each cell - now vertical */}
             {tableData.map((row, rowIndex) => 
               row.map((cell, colIndex) => {
                 const prob = jointProbs[cell.index];
                 const barHeight = prob * barMaxHeight;
-                const x = 135 + colIndex * 125;
-                const baseY = 60 + rowIndex * 80;
+                const x = 117.5 + colIndex * 100;
+                const baseY = 50 + rowIndex * 65;
                 const y = baseY + barMaxHeight - barHeight; // Bar grows upward
                 
                 return (
@@ -307,9 +307,9 @@ const MutualInformationWidget: React.FC<Props> = ({
                     {/* Probability text below bar */}
                     <text
                       x={x + barWidth / 2}
-                      y={baseY + barMaxHeight + 10}
+                      y={baseY + barMaxHeight + 8}
                       textAnchor="middle"
-                      fontSize="12"
+                      fontSize="10"
                       fill="#374151"
                       fontWeight="bold"
                     >
@@ -322,21 +322,21 @@ const MutualInformationWidget: React.FC<Props> = ({
             
             {/* Marginal probabilities (calculated dynamically) */}
             {/* Weather marginals (right side) */}
-            <text x="475" y="90" fontSize="13" fontWeight="bold" fill="#059669" textAnchor="start">
+            <text x="395" y="80" fontSize="12" fontWeight="bold" fill="#059669" textAnchor="start">
               {(marginals.sun * 100).toFixed(1)}%
             </text>
-            <text x="475" y="170" fontSize="13" fontWeight="bold" fill="#059669" textAnchor="start">
+            <text x="395" y="145" fontSize="12" fontWeight="bold" fill="#059669" textAnchor="start">
               {(marginals.cloud * 100).toFixed(1)}%
             </text>
             
             {/* Transport marginals (bottom) */}
-            <text x="155" y="230" textAnchor="middle" fontSize="13" fontWeight="bold" fill="#059669">
+            <text x="135" y="195" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#059669">
               {(marginals.walk * 100).toFixed(1)}%
             </text>
-            <text x="280" y="230" textAnchor="middle" fontSize="13" fontWeight="bold" fill="#059669">
+            <text x="235" y="195" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#059669">
               {(marginals.bike * 100).toFixed(1)}%
             </text>
-            <text x="405" y="230" textAnchor="middle" fontSize="13" fontWeight="bold" fill="#059669">
+            <text x="335" y="195" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#059669">
               {(marginals.bus * 100).toFixed(1)}%
             </text>
           </svg>
@@ -353,18 +353,6 @@ const MutualInformationWidget: React.FC<Props> = ({
             <KatexMath math="I(X;Y) = D((X,Y), X \otimes Y) = \sum_{x,y} P(x,y) \log_2 \frac{P(x,y)}{P(x)P(y)}" />
           </div>
           
-          {/* Independence indicator */}
-          <div className="mt-3">
-            {Math.abs(mutualInformation) < 0.001 ? (
-              <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                ✓ Variables are independent
-              </div>
-            ) : (
-              <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                ⚡ Variables are dependent
-              </div>
-            )}
-          </div>
         </div>
       </div>
 
