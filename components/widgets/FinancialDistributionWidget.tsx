@@ -29,12 +29,17 @@ interface DistributionData {
   };
 }
 
+interface ReturnTypes {
+  normalized_returns: DistributionData;
+  log_returns: DistributionData;
+}
+
 interface FinancialData {
   asset: string;
   start_date: string;
   end_date: string;
   max_days: number;
-  daily_data: Record<string, DistributionData>;
+  daily_data: Record<string, ReturnTypes>;
 }
 
 interface Props {
@@ -70,6 +75,7 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
   const [xAxisRange, setXAxisRange] = useState(3); // Standard deviations
   const [showGaussian, setShowGaussian] = useState(true);
   const [showLaplace, setShowLaplace] = useState(true);
+  const [returnType, setReturnType] = useState<'normalized_returns' | 'log_returns'>('normalized_returns');
 
   // Load data
   useEffect(() => {
@@ -147,7 +153,7 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
       return null;
     }
 
-    const dayData = currentData.daily_data[selectedDays];
+    const dayData = currentData.daily_data[selectedDays][returnType];
     const { mean, std, histogram, distributions } = dayData;
     
     // Create x-axis range
@@ -185,7 +191,7 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
       mean,
       std
     };
-  }, [currentData, selectedDays, xAxisRange, showGaussian, showLaplace]);
+  }, [currentData, selectedDays, xAxisRange, showGaussian, showLaplace, returnType]);
 
   if (loading) {
     return (
@@ -212,8 +218,8 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
     <div className="p-6 bg-gray-50 rounded-lg space-y-4">
       {/* Controls */}
       <div className="space-y-4">
-        {/* Top row: Asset selector and Distribution toggles */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Top row: Asset selector, Return type, and Distribution toggles */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Asset selector */}
           {showBTC && showSAP && (
             <div>
@@ -228,6 +234,19 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
               </select>
             </div>
           )}
+
+          {/* Return type selector */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Return type</label>
+            <select
+              value={returnType}
+              onChange={(e) => setReturnType(e.target.value as 'normalized_returns' | 'log_returns')}
+              className="w-full p-2 border border-gray-300 rounded-md"
+            >
+              <option value="normalized_returns">Normalized: (S_t - S_t-1) / S_t-1</option>
+              <option value="log_returns">Log returns: ln(S_t / S_t-1)</option>
+            </select>
+          </div>
 
           {/* Distribution toggles */}
           <div className="space-y-2">
@@ -372,7 +391,7 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
             
             {/* Title */}
             <text x="400" y="30" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#374151">
-              {currentData.asset} Daily Returns ({selectedDays} days)
+              {currentData.asset} {returnType === 'normalized_returns' ? 'Normalized' : 'Log'} Returns ({selectedDays} days)
             </text>
             
             {/* Legend */}

@@ -147,9 +147,12 @@ def compute_distribution_params(data_values):
         return None
     
     # Compute histogram for KL divergence calculations
-    # Use more bins to ensure good granularity for web display
-    # Aim for at least 100 bins, more for larger datasets
-    n_bins = max(100, min(200, len(data_values) // 10))
+    # Use adaptive bins to balance granularity with file size
+    # For large datasets, cap bins to keep file size manageable for web
+    if len(data_values) > 1000:
+        n_bins = min(50, max(30, len(data_values) // 50))  # Cap at 50 for large datasets
+    else:
+        n_bins = max(30, min(100, len(data_values) // 5))  # More bins for small datasets
     counts, bin_edges = np.histogram(data_values, bins=n_bins)
     total_counts = counts.sum()
     if total_counts == 0:
@@ -223,15 +226,18 @@ def generate_financial_data(asset='BTC'):
         print("No data available.")
         return None
     
-    # Extract price data and compute normalized daily returns
+    # Extract price data and compute both types of returns
     all_prices = data['Close'].dropna().values.flatten()
     if len(all_prices) >= 2:
-        all_price_returns = (all_prices[1:] / all_prices[:-1]) - 1
+        # Normalized differences: (S_t - S_{t-1}) / S_{t-1}
+        all_normalized_returns = (all_prices[1:] / all_prices[:-1]) - 1
+        # Log returns: ln(S_t / S_{t-1})
+        all_log_returns = np.log(all_prices[1:] / all_prices[:-1])
     else:
         print("Insufficient data for returns calculation.")
         return None
     
-    max_days = len(all_price_returns)
+    max_days = len(all_normalized_returns)
     if max_days == 0:
         print("No price returns to analyze.")
         return None
@@ -250,10 +256,18 @@ def generate_financial_data(asset='BTC'):
     
     print("Computing distribution parameters for each time window...")
     for i in range(1, max_days + 1):
-        price_returns = all_price_returns[-i:]
-        params = compute_distribution_params(price_returns)
-        if params:
-            results['daily_data'][i] = params
+        normalized_returns = all_normalized_returns[-i:]
+        log_returns = all_log_returns[-i:]
+        
+        # Compute parameters for both return types
+        normalized_params = compute_distribution_params(normalized_returns)
+        log_params = compute_distribution_params(log_returns)
+        
+        if normalized_params and log_params:
+            results['daily_data'][i] = {
+                'normalized_returns': normalized_params,
+                'log_returns': log_params
+            }
         
         if i % 100 == 0:
             print(f"Processed {i}/{max_days} days")
