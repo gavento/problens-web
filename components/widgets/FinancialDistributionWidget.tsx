@@ -79,8 +79,9 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
         const promises = [];
         
         if (showBTC) {
+          const btcUrl = `${process.env.NODE_ENV === 'production' ? '/problens-web' : ''}/financial_data/btc_data_test.json`;
           promises.push(
-            fetch('/financial_data/btc_data_test.json')
+            fetch(btcUrl)
               .then(res => {
                 console.log('BTC fetch response:', res.status, res.statusText);
                 if (!res.ok) {
@@ -96,12 +97,14 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
         }
         
         if (showSAP) {
+          const sapUrl = `${process.env.NODE_ENV === 'production' ? '/problens-web' : ''}/financial_data/sap_data_test.json`;
+          console.log('Attempting to fetch SAP data from:', sapUrl);
           promises.push(
-            fetch('/financial_data/sap_data_test.json')
+            fetch(sapUrl)
               .then(res => {
-                console.log('SAP fetch response:', res.status, res.statusText);
+                console.log('SAP fetch response:', res.status, res.statusText, 'URL:', res.url);
                 if (!res.ok) {
-                  throw new Error(`SAP fetch failed: ${res.status} ${res.statusText}`);
+                  throw new Error(`SAP fetch failed: ${res.status} ${res.statusText} from ${res.url}`);
                 }
                 return res.json();
               })
