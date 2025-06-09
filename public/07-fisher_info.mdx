@@ -2,6 +2,10 @@
 
 In this chapter, we will explain a bit more about how KL divergence connects to statistics. In particular, one of the key statistical concepts is a so-called Fisher information, and we will see how one can derive it using KL divergence.
 
+<Block headline = "If there is one thing you remember from this chapter...">
+Fisher information is the limit of KL divergence of close distributions.  
+</Block>
+
 ## The polling problem
 
 In [one of our riddles](00-introduction), we have been talking about the problem with polling: If you want to learn the percentage of the vote for one party up to $\eps$, you need sample about $1/\eps^2$ voters. <Footnote>More precisely, it's about $1/(2\eps^2) \cdot \log 1/\delta$ if you want your estimate to be within $\pm \eps$ with probability at least $1-\delta$. In practice, this means that if you want to be withing $\pm 2\%$ with 75\% probability, you should sample around 1700 voters. </Footnote>

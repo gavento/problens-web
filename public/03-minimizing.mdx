@@ -8,6 +8,10 @@ In this chapter, we'll explore what happens when we minimize the KL divergence b
 
 Let's dive into the details!
 
+<Block headline = "If there is one thing you remember from this chapter...">
+Maximum likelihood and maximum entropy principles are about minimizing KL divergence. 
+</Block>
+
 ## Simplifying models by minimizing KL <a id="mle"></a>
 
 Imagine we have some data—for instance, the 16 foot length measurements $X_1, \dots, X_{16}$ from [our statistics riddle](00-introduction#statistics). Assuming the order of the data doesn't matter, it's convenient to represent these data as an empirical distribution $p$, where each outcome is assigned a probability of $1/16$. This is what we call an _empirical distribution_. In one sense, this empirical distribution is the "best fit" for our data. However, in another sense, it's a terrible model—it assigns zero probability to outcomes not present in the data, even though, if we were to measure the 17th person's foot, it would likely fall outside the initial 16 measurements. Therefore, we need a different model.

@@ -4,6 +4,10 @@ In the [previous chapter](03-minimizing), we saw how minimizing KL divergence ge
 
 Let's now dive a bit deeper into maximum entropy. Specifically, we'll try to understand what maximum entropy distributions actually look like. For such a broad question, the answer turns out to be surprisingly straightforward!
 
+<Block headline = "If there is one thing you remember from this chapter...">
+Max-entropy principle constructs the most generic distributions satifying some constraints. 
+</Block>
+
 ## General form of maximum entropy distributions
 
 The core question we want to address is this: If we limit ourselves to a set of distributions $P$ that possess specific properties, what is the form of the maximum entropy distribution within that set?
@@ -415,7 +419,7 @@ Perhaps we should try a more advanced two-layered model to predict the shape of 
 
 Put differently, while a Gaussian fit implies "I'm pretty sure about today's volatility and unsure about the fluctuation around the mean," Laplace is saying, "I'm uncertain both about the volatility and the actual fluctuation of the day." This explains why Gaussian fits near-term data (volatility of the time period stays roughly the same), while more long-term data starts looking more like Laplace. 
 
-Our Laplace story suggests that the data should look more like Gaussian at the beginning and then look more and more like Laplace, which seems to be happening. 
+Our Laplace story suggests that the data should look more like Gaussian at the beginning and then look more and more like Laplace, which really seems to be happening. 
 
 ## Is Laplace a good model?
 

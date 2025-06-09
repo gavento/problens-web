@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useMemo, useCallback } from "react";
-import KatexMath from "@/components/content/KatexMath";
 
 type Props = {
   title?: string;
@@ -98,7 +97,7 @@ const MutualInformationWidget: React.FC<Props> = ({
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const y = moveEvent.clientY - svgRect.top;
       const relativeY = y - baseY;
-      const probability = Math.max(0, Math.min(1, 1 - (relativeY / barMaxHeight)));
+      const probability = Math.max(0, Math.min(1, 1 - (relativeY / 80)));  // 80 = barMaxHeight
       
       updateDistribution(index, probability);
     };
@@ -259,7 +258,7 @@ const MutualInformationWidget: React.FC<Props> = ({
             I(Weather; Transport) = {mutualInformation.toFixed(4)} bits
           </div>
           <div className="text-sm text-gray-600">
-            <KatexMath math="I(X;Y) = D((X,Y), X \otimes Y) = \sum_{x,y} P(x,y) \log_2 \frac{P(x,y)}{P(x)P(y)}" />
+            I(X;Y) = Σ P(x,y) log₂ [P(x,y) / (P(x)P(y))]
           </div>
         </div>
       </div>
