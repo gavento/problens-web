@@ -16,18 +16,15 @@ const MutualInformationWidget: React.FC<Props> = ({
   const [jointProbs, setJointProbs] = useState<number[]>([0.14, 0.21, 0.35, 0.06, 0.09, 0.15]);
   const [constrainMarginals, setConstrainMarginals] = useState(!showToggle); // If no toggle, always constrained
   
-  // Fixed marginals
-  const targetMarginals = useMemo(() => ({
+  // Fixed marginals for constrained mode
+  const targetMarginals = {
     sun: 0.7, cloud: 0.3, walk: 0.2, bike: 0.3, bus: 0.5
-  }), []);
+  };
 
   // Calculate marginal probabilities
   const marginals = useMemo(() => {
-    // Weather marginals: P(sun) = sum of first 3, P(cloud) = sum of last 3
     const sun = jointProbs[0] + jointProbs[1] + jointProbs[2];
     const cloud = jointProbs[3] + jointProbs[4] + jointProbs[5];
-    
-    // Transport marginals: P(walk) = jointProbs[0] + jointProbs[3], etc.
     const walk = jointProbs[0] + jointProbs[3];
     const bike = jointProbs[1] + jointProbs[4];
     const bus = jointProbs[2] + jointProbs[5];
@@ -37,179 +34,95 @@ const MutualInformationWidget: React.FC<Props> = ({
 
   // Calculate mutual information
   const mutualInformation = useMemo(() => {
-    try {
-      let mi = 0;
-      
-      // Validate inputs
-      if (!jointProbs || jointProbs.length !== 6) return 0;
-      if (!marginals || typeof marginals.sun !== 'number') return 0;
-      
-      // I(X;Y) = sum p(x,y) log(p(x,y) / (p(x)p(y)))
-      const entries = [
-        { joint: jointProbs[0], marginal: marginals.sun * marginals.walk },  // sun, walk
-        { joint: jointProbs[1], marginal: marginals.sun * marginals.bike },  // sun, bike
-        { joint: jointProbs[2], marginal: marginals.sun * marginals.bus },   // sun, bus
-        { joint: jointProbs[3], marginal: marginals.cloud * marginals.walk }, // cloud, walk
-        { joint: jointProbs[4], marginal: marginals.cloud * marginals.bike }, // cloud, bike
-        { joint: jointProbs[5], marginal: marginals.cloud * marginals.bus },  // cloud, bus
-      ];
+    let mi = 0;
+    
+    const entries = [
+      { joint: jointProbs[0], marginal: marginals.sun * marginals.walk },
+      { joint: jointProbs[1], marginal: marginals.sun * marginals.bike },
+      { joint: jointProbs[2], marginal: marginals.sun * marginals.bus },
+      { joint: jointProbs[3], marginal: marginals.cloud * marginals.walk },
+      { joint: jointProbs[4], marginal: marginals.cloud * marginals.bike },
+      { joint: jointProbs[5], marginal: marginals.cloud * marginals.bus },
+    ];
 
-      entries.forEach(({ joint, marginal }) => {
-        if (joint > 1e-10 && marginal > 1e-10 && isFinite(joint) && isFinite(marginal)) {
-          const logRatio = Math.log(joint / marginal);
-          if (isFinite(logRatio)) {
-            mi += joint * logRatio;
-          }
-        }
-      });
+    entries.forEach(({ joint, marginal }) => {
+      if (joint > 1e-10 && marginal > 1e-10) {
+        mi += joint * Math.log(joint / marginal);
+      }
+    });
 
-      const result = mi / Math.log(2); // Convert to bits
-      return isFinite(result) ? result : 0;
-    } catch (error) {
-      console.error('Error calculating mutual information:', error);
-      return 0;
-    }
+    return mi / Math.log(2); // Convert to bits
   }, [jointProbs, marginals]);
 
-  // Update distribution - either constrained or unconstrained
+  // Update distribution function
   const updateDistribution = useCallback((
     index: number,
     newValue: number
   ) => {
-    try {
-      if (constrainMarginals) {
-        // Constrained mode - maintain fixed marginals using iterative constraint satisfaction
-        let clampedValue = Math.max(0, Math.min(1, newValue));
-        
-        // Validate inputs
-        if (!isFinite(clampedValue) || index < 0 || index >= 6) {
-          return;
-        }
-        
-        const rowIndex = Math.floor(index / 3); // 0 for sun, 1 for cloud
-        const colIndex = index % 3; // 0 for walk, 1 for bike, 2 for bus
-        
-        // Get target marginals
-        const targetWeather = [targetMarginals.sun, targetMarginals.cloud];
-        const targetTransport = [targetMarginals.walk, targetMarginals.bike, targetMarginals.bus];
-        
-        // Check if the desired value is feasible given constraints
-        const otherRowIndex = 1 - rowIndex;
-        const targetTransportMarginal = targetTransport[colIndex];
-        const targetWeatherMarginal = targetWeather[rowIndex];
-        
-        // Constraint 1: Transport marginal constraint
-        // The value in the other row, same column must be: targetTransport[colIndex] - clampedValue
-        const requiredOtherCell = targetTransportMarginal - clampedValue;
-        if (requiredOtherCell < 0 || requiredOtherCell > 1) {
-          // Clamp the value to make it feasible
-          clampedValue = Math.max(0, Math.min(targetTransportMarginal, clampedValue));
-        }
-        
-        // Constraint 2: Weather marginal constraint  
-        // The sum of the row must equal targetWeather[rowIndex]
-        // So the other two cells in this row must sum to: targetWeather[rowIndex] - clampedValue
-        const requiredRowSum = targetWeatherMarginal - clampedValue;
-        if (requiredRowSum < 0) {
-          // Clamp the value to make it feasible
-          clampedValue = Math.max(0, targetWeatherMarginal);
-        }
-        
-        // Now build the new distribution
-        const newDist = [...jointProbs];
-        newDist[index] = clampedValue;
-        
-        // Set the transport constraint cell
-        const otherCellInColumn = otherRowIndex * 3 + colIndex;
-        newDist[otherCellInColumn] = targetTransportMarginal - clampedValue;
-        
-        // Handle the row constraint for the changed row
-        const rowStart = rowIndex * 3;
-        const otherCellsInRow = [];
-        for (let c = 0; c < 3; c++) {
-          if (c !== colIndex) {
-            otherCellsInRow.push(rowStart + c);
-          }
-        }
-        
-        // Distribute the remaining mass proportionally among other cells in row
-        const remainingRowMass = targetWeatherMarginal - newDist[index];
-        const currentSumOtherInRow = otherCellsInRow.reduce((sum, i) => sum + jointProbs[i], 0);
-        
-        if (remainingRowMass >= 0) {
-          if (currentSumOtherInRow > 0) {
-            otherCellsInRow.forEach(i => {
-              newDist[i] = (jointProbs[i] / currentSumOtherInRow) * remainingRowMass;
-            });
-          } else {
-            // Equal distribution if no prior distribution
-            const equalShare = remainingRowMass / otherCellsInRow.length;
-            otherCellsInRow.forEach(i => {
-              newDist[i] = equalShare;
-            });
-          }
-        }
-        
-        // Now satisfy the transport constraints for the other two columns
-        for (let c = 0; c < 3; c++) {
-          if (c !== colIndex) {
-            const targetTransportC = targetTransport[c];
-            const cellThisRow = rowIndex * 3 + c;
-            const cellOtherRow = otherRowIndex * 3 + c;
-            
-            // The cell in the other row must satisfy the transport constraint
-            const requiredOtherRowCell = targetTransportC - newDist[cellThisRow];
-            
-            if (requiredOtherRowCell >= 0 && requiredOtherRowCell <= 1) {
-              newDist[cellOtherRow] = requiredOtherRowCell;
-            } else {
-              // If not feasible, adjust both cells proportionally to satisfy constraint
-              const totalAvailable = Math.min(targetTransportC, 2.0); // Max we can allocate
-              const ratio = newDist[cellThisRow] / (newDist[cellThisRow] + newDist[cellOtherRow] || 1);
-              newDist[cellThisRow] = totalAvailable * ratio;
-              newDist[cellOtherRow] = totalAvailable * (1 - ratio);
-            }
-          }
-        }
-        
-        // Final validation and constraint checking
-        const isValid = newDist.every(val => isFinite(val) && val >= 0 && val <= 1);
-        
-        // Check if marginals are approximately satisfied (within small tolerance)
-        const tolerance = 0.001;
-        const actualWeatherMarginals = [
-          newDist[0] + newDist[1] + newDist[2], // sun
-          newDist[3] + newDist[4] + newDist[5]  // cloud
-        ];
-        const actualTransportMarginals = [
-          newDist[0] + newDist[3], // walk
-          newDist[1] + newDist[4], // bike
-          newDist[2] + newDist[5]  // bus
-        ];
-        
-        const marginalsValid = 
-          Math.abs(actualWeatherMarginals[0] - targetWeather[0]) < tolerance &&
-          Math.abs(actualWeatherMarginals[1] - targetWeather[1]) < tolerance &&
-          Math.abs(actualTransportMarginals[0] - targetTransport[0]) < tolerance &&
-          Math.abs(actualTransportMarginals[1] - targetTransport[1]) < tolerance &&
-          Math.abs(actualTransportMarginals[2] - targetTransport[2]) < tolerance;
-        
-        if (isValid && marginalsValid) {
-          setJointProbs(newDist);
-        }
-    } else {
-      // Unconstrained mode - just maintain sum = 1
-      const clampedValue = Math.max(0, Math.min(1, newValue));
-      const newDist = [...jointProbs];
+    const clampedValue = Math.max(0, Math.min(1, newValue));
+    const newDist = [...jointProbs];
+
+    if (constrainMarginals) {
+      // CONSTRAINED MODE: Maintain fixed marginals
+      newDist[index] = clampedValue;
       
-      // Calculate remaining mass to distribute
+      const rowIndex = Math.floor(index / 3); // 0 for sun, 1 for cloud
+      const colIndex = index % 3; // 0 for walk, 1 for bike, 2 for bus
+      
+      // Adjust the other cell in same column to maintain transport marginal
+      const otherRowIndex = 1 - rowIndex;
+      const otherCellInColumn = otherRowIndex * 3 + colIndex;
+      const targetTransportMarginal = colIndex === 0 ? targetMarginals.walk : 
+                                     colIndex === 1 ? targetMarginals.bike : targetMarginals.bus;
+      
+      newDist[otherCellInColumn] = Math.max(0, targetTransportMarginal - clampedValue);
+      
+      // Adjust this cell if the other cell hit zero
+      if (newDist[otherCellInColumn] === 0) {
+        newDist[index] = targetTransportMarginal;
+      }
+      
+      // Adjust other cells in this row to maintain weather marginal
+      const targetWeatherMarginal = rowIndex === 0 ? targetMarginals.sun : targetMarginals.cloud;
+      const remainingForRow = targetWeatherMarginal - newDist[index];
+      
+      const otherIndicesInRow = [];
+      for (let c = 0; c < 3; c++) {
+        if (c !== colIndex) {
+          otherIndicesInRow.push(rowIndex * 3 + c);
+        }
+      }
+      
+      const currentSumOtherInRow = otherIndicesInRow.reduce((sum, i) => sum + jointProbs[i], 0);
+      if (currentSumOtherInRow > 0 && remainingForRow >= 0) {
+        otherIndicesInRow.forEach(i => {
+          newDist[i] = (jointProbs[i] / currentSumOtherInRow) * remainingForRow;
+        });
+      } else if (remainingForRow >= 0) {
+        const equalShare = remainingForRow / otherIndicesInRow.length;
+        otherIndicesInRow.forEach(i => {
+          newDist[i] = equalShare;
+        });
+      }
+      
+      // Adjust corresponding cells in other row to maintain transport marginals
+      for (let c = 0; c < 3; c++) {
+        if (c !== colIndex) {
+          const targetTransportC = c === 0 ? targetMarginals.walk : 
+                                 c === 1 ? targetMarginals.bike : targetMarginals.bus;
+          const cellThisRow = rowIndex * 3 + c;
+          const cellOtherRow = otherRowIndex * 3 + c;
+          newDist[cellOtherRow] = Math.max(0, targetTransportC - newDist[cellThisRow]);
+        }
+      }
+      
+    } else {
+      // UNCONSTRAINED MODE: Just maintain sum = 1
       const remainingMass = 1 - clampedValue;
       const currentRemainingMass = jointProbs.reduce((sum, p, i) => i === index ? sum : sum + p, 0);
       
       if (currentRemainingMass > 0) {
         const scaleFactor = remainingMass / currentRemainingMass;
-        
-        // Update all other probabilities proportionally
         for (let i = 0; i < newDist.length; i++) {
           if (i === index) {
             newDist[i] = clampedValue;
@@ -218,7 +131,6 @@ const MutualInformationWidget: React.FC<Props> = ({
           }
         }
       } else {
-        // Edge case: if all other probabilities are 0
         newDist[index] = clampedValue;
         const remaining = (1 - clampedValue) / (newDist.length - 1);
         for (let i = 0; i < newDist.length; i++) {
@@ -227,29 +139,24 @@ const MutualInformationWidget: React.FC<Props> = ({
           }
         }
       }
-      
-        // Validate all values before setting
-        const isValid = newDist.every(val => isFinite(val) && val >= 0 && val <= 1);
-        if (isValid) {
-          setJointProbs(newDist);
-        }
-      }
-    } catch (error) {
-      console.error('Error updating distribution:', error);
-      // Reset to default on error
-      setJointProbs([0.14, 0.21, 0.35, 0.06, 0.09, 0.15]);
     }
-  }, [jointProbs, constrainMarginals, targetMarginals]);
+    
+    // Validate and set
+    const isValid = newDist.every(val => isFinite(val) && val >= 0 && val <= 1);
+    if (isValid) {
+      setJointProbs(newDist);
+    }
+  }, [jointProbs, constrainMarginals]);
 
-  // Handle bar dragging - vertical dragging like DistributionComparisonWidget
+  // Handle bar dragging
   const handleBarDrag = useCallback((
     index: number,
     event: React.MouseEvent<SVGRectElement>
   ) => {
     const svg = event.currentTarget.closest('svg')!;
     const svgRect = svg.getBoundingClientRect();
-    const barMaxHeight = 50; // Maximum bar height
-    const baseY = 50 + Math.floor(index / 3) * 65; // Starting Y position for this row
+    const barMaxHeight = 50;
+    const baseY = 50 + Math.floor(index / 3) * 65;
     
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const y = moveEvent.clientY - svgRect.top;
@@ -268,16 +175,15 @@ const MutualInformationWidget: React.FC<Props> = ({
     document.addEventListener('mouseup', handleMouseUp);
   }, [updateDistribution]);
 
-  // Reset to default distribution (independent)
+  // Reset to default distribution
   const resetToDefault = useCallback(() => {
-    // Independent distribution: 70% sun, 30% cloud; 20% walk, 30% bike, 50% bus
     setJointProbs([0.14, 0.21, 0.35, 0.06, 0.09, 0.15]);
   }, []);
 
   const barMaxHeight = 50;
   const barWidth = 35;
 
-  // Define the 2x3 table structure with indices
+  // Define the 2x3 table structure
   const tableData = [
     [
       { index: 0, weather: '☀️', transport: '🚶‍♀️', label: 'Sun, Walk' },
@@ -320,12 +226,12 @@ const MutualInformationWidget: React.FC<Props> = ({
             {/* Background */}
             <rect width="450" height="220" fill="#f9fafb" stroke="#e5e7eb" />
             
-            {/* Column headers (Transport) - just emojis */}
+            {/* Column headers (Transport) */}
             <text x="135" y="30" textAnchor="middle" fontSize="20" fill="#374151">🚶‍♀️</text>
             <text x="235" y="30" textAnchor="middle" fontSize="20" fill="#374151">🚲</text>
             <text x="335" y="30" textAnchor="middle" fontSize="20" fill="#374151">🚌</text>
             
-            {/* Row headers (Weather) - just emojis */}
+            {/* Row headers (Weather) */}
             <text x="50" y="75" textAnchor="middle" fontSize="20" fill="#374151">☀️</text>
             <text x="50" y="145" textAnchor="middle" fontSize="20" fill="#374151">☁️</text>
             
@@ -338,14 +244,14 @@ const MutualInformationWidget: React.FC<Props> = ({
             <line x1="285" y1="45" x2="285" y2="175" stroke="#d1d5db" strokeWidth="1" />
             <line x1="385" y1="45" x2="385" y2="175" stroke="#d1d5db" strokeWidth="1" />
             
-            {/* Probability bars for each cell - now vertical */}
+            {/* Probability bars */}
             {tableData.map((row, rowIndex) => 
               row.map((cell, colIndex) => {
                 const prob = jointProbs[cell.index];
                 const barHeight = prob * barMaxHeight;
                 const x = 117.5 + colIndex * 100;
                 const baseY = 50 + rowIndex * 65;
-                const y = baseY + barMaxHeight - barHeight; // Bar grows upward
+                const y = baseY + barMaxHeight - barHeight;
                 
                 return (
                   <g key={cell.index}>
@@ -388,7 +294,7 @@ const MutualInformationWidget: React.FC<Props> = ({
               })
             )}
             
-            {/* Marginal probabilities (calculated dynamically) */}
+            {/* Marginal probabilities */}
             {/* Weather marginals (right side) */}
             <text x="395" y="80" fontSize="12" fontWeight="bold" fill="#059669" textAnchor="start">
               {(marginals.sun * 100).toFixed(1)}%
@@ -420,7 +326,6 @@ const MutualInformationWidget: React.FC<Props> = ({
           <div className="text-sm text-gray-600">
             <KatexMath math="I(X;Y) = D((X,Y), X \otimes Y) = \sum_{x,y} P(x,y) \log_2 \frac{P(x,y)}{P(x)P(y)}" />
           </div>
-          
         </div>
       </div>
 

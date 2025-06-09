@@ -79,7 +79,8 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
         const promises = [];
         
         if (showBTC) {
-          const btcUrl = `${process.env.NODE_ENV === 'production' ? '/problens-web' : ''}/financial_data/btc_data_test.json`;
+          const btcUrl = `${process.env.NODE_ENV === 'production' ? '/problens-web' : ''}/financial_data/btc_data.json`;
+          console.log('Attempting to fetch BTC data from:', btcUrl, '(~8MB)');
           promises.push(
             fetch(btcUrl)
               .then(res => {
@@ -90,7 +91,7 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
                 return res.json();
               })
               .then(data => {
-                console.log('BTC data loaded, keys:', Object.keys(data));
+                console.log('BTC data loaded, max_days:', data.max_days, 'daily_data keys:', Object.keys(data.daily_data).length);
                 setBtcData(data);
               })
           );
@@ -190,7 +191,9 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
       <div className="flex items-center justify-center h-96 bg-gray-50 rounded-lg">
         <div className="text-gray-600 text-center">
           <div>Loading financial data...</div>
-          {showSAP && <div className="text-sm mt-2">SAP dataset is large (~22MB), please wait</div>}
+          {showBTC && showSAP && <div className="text-sm mt-2">Loading large datasets (BTC ~8MB, SAP ~22MB), please wait</div>}
+          {showBTC && !showSAP && <div className="text-sm mt-2">BTC dataset is large (~8MB), please wait</div>}
+          {!showBTC && showSAP && <div className="text-sm mt-2">SAP dataset is large (~22MB), please wait</div>}
         </div>
       </div>
     );
