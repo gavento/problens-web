@@ -78,87 +78,123 @@ const MutualInformationWidget: React.FC<Props> = ({
   ) => {
     try {
       if (constrainMarginals) {
-        // Constrained mode - maintain fixed marginals
-        const clampedValue = Math.max(0, Math.min(1, newValue));
-        const newDist = [...jointProbs];
+        // Constrained mode - maintain fixed marginals using iterative constraint satisfaction
+        let clampedValue = Math.max(0, Math.min(1, newValue));
         
         // Validate inputs
         if (!isFinite(clampedValue) || index < 0 || index >= 6) {
           return;
         }
         
-        // Set the new value
-        newDist[index] = clampedValue;
-      
-      // Identify which marginals are affected
-      const rowIndex = Math.floor(index / 3); // 0 for sun, 1 for cloud
-      const colIndex = index % 3; // 0 for walk, 1 for bike, 2 for bus
-      
-      // Get target marginals
-      const targetWeatherMarginal = rowIndex === 0 ? targetMarginals.sun : targetMarginals.cloud;
-      const targetTransportMarginal = colIndex === 0 ? targetMarginals.walk : 
-                                     colIndex === 1 ? targetMarginals.bike : targetMarginals.bus;
-      
-      // Find the other cell in the same column (transport marginal constraint)
-      const otherRowIndex = 1 - rowIndex; // If 0 then 1, if 1 then 0
-      const otherCellInColumn = otherRowIndex * 3 + colIndex;
-      
-      // Adjust the other cell in same column to maintain transport marginal
-      newDist[otherCellInColumn] = targetTransportMarginal - clampedValue;
-      
-      // Make sure the other cell is non-negative
-      if (newDist[otherCellInColumn] < 0) {
-        newDist[otherCellInColumn] = 0;
-        newDist[index] = targetTransportMarginal;
-      }
-      
-      // Now adjust the other two cells in the same row to maintain weather marginal
-      const rowStart = rowIndex * 3;
-      const otherIndicesInRow = [];
-      for (let i = 0; i < 3; i++) {
-        if (i !== colIndex) {
-          otherIndicesInRow.push(rowStart + i);
+        const rowIndex = Math.floor(index / 3); // 0 for sun, 1 for cloud
+        const colIndex = index % 3; // 0 for walk, 1 for bike, 2 for bus
+        
+        // Get target marginals
+        const targetWeather = [targetMarginals.sun, targetMarginals.cloud];
+        const targetTransport = [targetMarginals.walk, targetMarginals.bike, targetMarginals.bus];
+        
+        // Check if the desired value is feasible given constraints
+        const otherRowIndex = 1 - rowIndex;
+        const targetTransportMarginal = targetTransport[colIndex];
+        const targetWeatherMarginal = targetWeather[rowIndex];
+        
+        // Constraint 1: Transport marginal constraint
+        // The value in the other row, same column must be: targetTransport[colIndex] - clampedValue
+        const requiredOtherCell = targetTransportMarginal - clampedValue;
+        if (requiredOtherCell < 0 || requiredOtherCell > 1) {
+          // Clamp the value to make it feasible
+          clampedValue = Math.max(0, Math.min(targetTransportMarginal, clampedValue));
         }
-      }
-      
-      // Calculate how much probability mass we need for the other two cells in this row
-      const remainingForRow = targetWeatherMarginal - newDist[index];
-      
-      // Distribute proportionally among the other two cells in the row
-      const currentSumOtherInRow = otherIndicesInRow.reduce((sum, i) => sum + jointProbs[i], 0);
-      
-      if (currentSumOtherInRow > 0 && remainingForRow >= 0) {
-        otherIndicesInRow.forEach(i => {
-          newDist[i] = (jointProbs[i] / currentSumOtherInRow) * remainingForRow;
-        });
-      } else if (remainingForRow >= 0) {
-        // Equal distribution if no prior distribution
-        const equalShare = remainingForRow / otherIndicesInRow.length;
-        otherIndicesInRow.forEach(i => {
-          newDist[i] = equalShare;
-        });
-      }
-      
-        // Now adjust the corresponding cells in the other row to maintain transport marginals
+        
+        // Constraint 2: Weather marginal constraint  
+        // The sum of the row must equal targetWeather[rowIndex]
+        // So the other two cells in this row must sum to: targetWeather[rowIndex] - clampedValue
+        const requiredRowSum = targetWeatherMarginal - clampedValue;
+        if (requiredRowSum < 0) {
+          // Clamp the value to make it feasible
+          clampedValue = Math.max(0, targetWeatherMarginal);
+        }
+        
+        // Now build the new distribution
+        const newDist = [...jointProbs];
+        newDist[index] = clampedValue;
+        
+        // Set the transport constraint cell
+        const otherCellInColumn = otherRowIndex * 3 + colIndex;
+        newDist[otherCellInColumn] = targetTransportMarginal - clampedValue;
+        
+        // Handle the row constraint for the changed row
+        const rowStart = rowIndex * 3;
+        const otherCellsInRow = [];
         for (let c = 0; c < 3; c++) {
           if (c !== colIndex) {
-            const targetTransportMarginalForC = c === 0 ? targetMarginals.walk : 
-                                              c === 1 ? targetMarginals.bike : targetMarginals.bus;
+            otherCellsInRow.push(rowStart + c);
+          }
+        }
+        
+        // Distribute the remaining mass proportionally among other cells in row
+        const remainingRowMass = targetWeatherMarginal - newDist[index];
+        const currentSumOtherInRow = otherCellsInRow.reduce((sum, i) => sum + jointProbs[i], 0);
+        
+        if (remainingRowMass >= 0) {
+          if (currentSumOtherInRow > 0) {
+            otherCellsInRow.forEach(i => {
+              newDist[i] = (jointProbs[i] / currentSumOtherInRow) * remainingRowMass;
+            });
+          } else {
+            // Equal distribution if no prior distribution
+            const equalShare = remainingRowMass / otherCellsInRow.length;
+            otherCellsInRow.forEach(i => {
+              newDist[i] = equalShare;
+            });
+          }
+        }
+        
+        // Now satisfy the transport constraints for the other two columns
+        for (let c = 0; c < 3; c++) {
+          if (c !== colIndex) {
+            const targetTransportC = targetTransport[c];
             const cellThisRow = rowIndex * 3 + c;
             const cellOtherRow = otherRowIndex * 3 + c;
-            newDist[cellOtherRow] = targetTransportMarginalForC - newDist[cellThisRow];
             
-            // Ensure non-negative and finite
-            if (newDist[cellOtherRow] < 0 || !isFinite(newDist[cellOtherRow])) {
-              newDist[cellOtherRow] = 0;
-              newDist[cellThisRow] = targetTransportMarginalForC;
+            // The cell in the other row must satisfy the transport constraint
+            const requiredOtherRowCell = targetTransportC - newDist[cellThisRow];
+            
+            if (requiredOtherRowCell >= 0 && requiredOtherRowCell <= 1) {
+              newDist[cellOtherRow] = requiredOtherRowCell;
+            } else {
+              // If not feasible, adjust both cells proportionally to satisfy constraint
+              const totalAvailable = Math.min(targetTransportC, 2.0); // Max we can allocate
+              const ratio = newDist[cellThisRow] / (newDist[cellThisRow] + newDist[cellOtherRow] || 1);
+              newDist[cellThisRow] = totalAvailable * ratio;
+              newDist[cellOtherRow] = totalAvailable * (1 - ratio);
             }
           }
         }
         
-        // Validate all values are finite before setting
+        // Final validation and constraint checking
         const isValid = newDist.every(val => isFinite(val) && val >= 0 && val <= 1);
-        if (isValid) {
+        
+        // Check if marginals are approximately satisfied (within small tolerance)
+        const tolerance = 0.001;
+        const actualWeatherMarginals = [
+          newDist[0] + newDist[1] + newDist[2], // sun
+          newDist[3] + newDist[4] + newDist[5]  // cloud
+        ];
+        const actualTransportMarginals = [
+          newDist[0] + newDist[3], // walk
+          newDist[1] + newDist[4], // bike
+          newDist[2] + newDist[5]  // bus
+        ];
+        
+        const marginalsValid = 
+          Math.abs(actualWeatherMarginals[0] - targetWeather[0]) < tolerance &&
+          Math.abs(actualWeatherMarginals[1] - targetWeather[1]) < tolerance &&
+          Math.abs(actualTransportMarginals[0] - targetTransport[0]) < tolerance &&
+          Math.abs(actualTransportMarginals[1] - targetTransport[1]) < tolerance &&
+          Math.abs(actualTransportMarginals[2] - targetTransport[2]) < tolerance;
+        
+        if (isValid && marginalsValid) {
           setJointProbs(newDist);
         }
     } else {
