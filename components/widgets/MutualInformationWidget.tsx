@@ -37,25 +37,38 @@ const MutualInformationWidget: React.FC<Props> = ({
 
   // Calculate mutual information
   const mutualInformation = useMemo(() => {
-    let mi = 0;
-    
-    // I(X;Y) = sum p(x,y) log(p(x,y) / (p(x)p(y)))
-    const entries = [
-      { joint: jointProbs[0], marginal: marginals.sun * marginals.walk },  // sun, walk
-      { joint: jointProbs[1], marginal: marginals.sun * marginals.bike },  // sun, bike
-      { joint: jointProbs[2], marginal: marginals.sun * marginals.bus },   // sun, bus
-      { joint: jointProbs[3], marginal: marginals.cloud * marginals.walk }, // cloud, walk
-      { joint: jointProbs[4], marginal: marginals.cloud * marginals.bike }, // cloud, bike
-      { joint: jointProbs[5], marginal: marginals.cloud * marginals.bus },  // cloud, bus
-    ];
+    try {
+      let mi = 0;
+      
+      // Validate inputs
+      if (!jointProbs || jointProbs.length !== 6) return 0;
+      if (!marginals || typeof marginals.sun !== 'number') return 0;
+      
+      // I(X;Y) = sum p(x,y) log(p(x,y) / (p(x)p(y)))
+      const entries = [
+        { joint: jointProbs[0], marginal: marginals.sun * marginals.walk },  // sun, walk
+        { joint: jointProbs[1], marginal: marginals.sun * marginals.bike },  // sun, bike
+        { joint: jointProbs[2], marginal: marginals.sun * marginals.bus },   // sun, bus
+        { joint: jointProbs[3], marginal: marginals.cloud * marginals.walk }, // cloud, walk
+        { joint: jointProbs[4], marginal: marginals.cloud * marginals.bike }, // cloud, bike
+        { joint: jointProbs[5], marginal: marginals.cloud * marginals.bus },  // cloud, bus
+      ];
 
-    entries.forEach(({ joint, marginal }) => {
-      if (joint > 1e-10 && marginal > 1e-10) {
-        mi += joint * Math.log(joint / marginal);
-      }
-    });
+      entries.forEach(({ joint, marginal }) => {
+        if (joint > 1e-10 && marginal > 1e-10 && isFinite(joint) && isFinite(marginal)) {
+          const logRatio = Math.log(joint / marginal);
+          if (isFinite(logRatio)) {
+            mi += joint * logRatio;
+          }
+        }
+      });
 
-    return mi / Math.log(2); // Convert to bits
+      const result = mi / Math.log(2); // Convert to bits
+      return isFinite(result) ? result : 0;
+    } catch (error) {
+      console.error('Error calculating mutual information:', error);
+      return 0;
+    }
   }, [jointProbs, marginals]);
 
   // Update distribution - either constrained or unconstrained
@@ -63,13 +76,19 @@ const MutualInformationWidget: React.FC<Props> = ({
     index: number,
     newValue: number
   ) => {
-    if (constrainMarginals) {
-      // Constrained mode - maintain fixed marginals
-      const clampedValue = Math.max(0, Math.min(1, newValue));
-      const newDist = [...jointProbs];
-      
-      // Set the new value
-      newDist[index] = clampedValue;
+    try {
+      if (constrainMarginals) {
+        // Constrained mode - maintain fixed marginals
+        const clampedValue = Math.max(0, Math.min(1, newValue));
+        const newDist = [...jointProbs];
+        
+        // Validate inputs
+        if (!isFinite(clampedValue) || index < 0 || index >= 6) {
+          return;
+        }
+        
+        // Set the new value
+        newDist[index] = clampedValue;
       
       // Identify which marginals are affected
       const rowIndex = Math.floor(index / 3); // 0 for sun, 1 for cloud
@@ -120,24 +139,28 @@ const MutualInformationWidget: React.FC<Props> = ({
         });
       }
       
-      // Now adjust the corresponding cells in the other row to maintain transport marginals
-      for (let c = 0; c < 3; c++) {
-        if (c !== colIndex) {
-          const targetTransportMarginalForC = c === 0 ? targetMarginals.walk : 
-                                            c === 1 ? targetMarginals.bike : targetMarginals.bus;
-          const cellThisRow = rowIndex * 3 + c;
-          const cellOtherRow = otherRowIndex * 3 + c;
-          newDist[cellOtherRow] = targetTransportMarginalForC - newDist[cellThisRow];
-          
-          // Ensure non-negative
-          if (newDist[cellOtherRow] < 0) {
-            newDist[cellOtherRow] = 0;
-            newDist[cellThisRow] = targetTransportMarginalForC;
+        // Now adjust the corresponding cells in the other row to maintain transport marginals
+        for (let c = 0; c < 3; c++) {
+          if (c !== colIndex) {
+            const targetTransportMarginalForC = c === 0 ? targetMarginals.walk : 
+                                              c === 1 ? targetMarginals.bike : targetMarginals.bus;
+            const cellThisRow = rowIndex * 3 + c;
+            const cellOtherRow = otherRowIndex * 3 + c;
+            newDist[cellOtherRow] = targetTransportMarginalForC - newDist[cellThisRow];
+            
+            // Ensure non-negative and finite
+            if (newDist[cellOtherRow] < 0 || !isFinite(newDist[cellOtherRow])) {
+              newDist[cellOtherRow] = 0;
+              newDist[cellThisRow] = targetTransportMarginalForC;
+            }
           }
         }
-      }
-      
-      setJointProbs(newDist);
+        
+        // Validate all values are finite before setting
+        const isValid = newDist.every(val => isFinite(val) && val >= 0 && val <= 1);
+        if (isValid) {
+          setJointProbs(newDist);
+        }
     } else {
       // Unconstrained mode - just maintain sum = 1
       const clampedValue = Math.max(0, Math.min(1, newValue));
@@ -169,7 +192,16 @@ const MutualInformationWidget: React.FC<Props> = ({
         }
       }
       
-      setJointProbs(newDist);
+        // Validate all values before setting
+        const isValid = newDist.every(val => isFinite(val) && val >= 0 && val <= 1);
+        if (isValid) {
+          setJointProbs(newDist);
+        }
+      }
+    } catch (error) {
+      console.error('Error updating distribution:', error);
+      // Reset to default on error
+      setJointProbs([0.14, 0.21, 0.35, 0.06, 0.09, 0.15]);
     }
   }, [jointProbs, constrainMarginals, targetMarginals]);
 
