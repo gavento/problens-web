@@ -121,7 +121,7 @@ const MutualInformationWidget: React.FC<Props> = ({
   }, []);
 
   const barMaxHeight = 60;
-  const barWidth = 80;
+  const barWidth = 40;
 
   // Define the 2x3 table structure with indices
   const tableData = [
@@ -219,7 +219,7 @@ const MutualInformationWidget: React.FC<Props> = ({
                     {/* Probability text below bar */}
                     <text
                       x={x + barWidth / 2}
-                      y={baseY + barMaxHeight + 15}
+                      y={baseY + barMaxHeight + 10}
                       textAnchor="middle"
                       fontSize="12"
                       fill="#374151"
@@ -234,10 +234,10 @@ const MutualInformationWidget: React.FC<Props> = ({
             
             {/* Marginal probabilities (calculated dynamically) */}
             {/* Weather marginals (right side) */}
-            <text x="420" y="90" fontSize="13" fontWeight="bold" fill="#059669" textAnchor="end">
+            <text x="445" y="90" fontSize="13" fontWeight="bold" fill="#059669" textAnchor="end">
               {(marginals.sun * 100).toFixed(1)}%
             </text>
-            <text x="420" y="170" fontSize="13" fontWeight="bold" fill="#059669" textAnchor="end">
+            <text x="445" y="170" fontSize="13" fontWeight="bold" fill="#059669" textAnchor="end">
               {(marginals.cloud * 100).toFixed(1)}%
             </text>
             
