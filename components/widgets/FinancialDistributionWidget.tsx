@@ -162,15 +162,54 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
     const gaussianPDF = showGaussian ? computePDF(xValues, 'gaussian', distributions.gaussian) : null;
     const laplacePDF = showLaplace ? computePDF(xValues, 'laplace', distributions.laplace) : null;
 
-    // Prepare histogram data
-    const histogramData = [];
-    const binWidth = histogram.bin_edges[1] - histogram.bin_edges[0];
-    for (let i = 0; i < histogram.counts.length; i++) {
-      const binCenter = (histogram.bin_edges[i] + histogram.bin_edges[i + 1]) / 2;
-      if (binCenter >= xMin && binCenter <= xMax) {
+    // Prepare histogram data with minimum 20 bars in display range
+    const displayRange = xMax - xMin;
+    const minBars = 20;
+    const desiredBinWidth = displayRange / minBars;
+    const originalBinWidth = histogram.bin_edges[1] - histogram.bin_edges[0];
+    
+    let histogramData = [];
+    
+    if (originalBinWidth <= desiredBinWidth) {
+      // Original bins are fine, use them directly
+      for (let i = 0; i < histogram.counts.length; i++) {
+        const binCenter = (histogram.bin_edges[i] + histogram.bin_edges[i + 1]) / 2;
+        if (binCenter >= xMin && binCenter <= xMax) {
+          histogramData.push({
+            x: binCenter,
+            y: histogram.counts[i] / (dayData.n_samples * originalBinWidth)
+          });
+        }
+      }
+    } else {
+      // Original bins are too wide, create finer bins by interpolation
+      const numNewBins = Math.max(minBars, Math.floor(displayRange / (originalBinWidth * 0.5)));
+      const newBinWidth = displayRange / numNewBins;
+      
+      for (let i = 0; i < numNewBins; i++) {
+        const binLeft = xMin + i * newBinWidth;
+        const binRight = xMin + (i + 1) * newBinWidth;
+        const binCenter = (binLeft + binRight) / 2;
+        
+        // Find overlapping original bins and interpolate
+        let interpolatedCount = 0;
+        for (let j = 0; j < histogram.bin_edges.length - 1; j++) {
+          const origLeft = histogram.bin_edges[j];
+          const origRight = histogram.bin_edges[j + 1];
+          
+          // Calculate overlap between new bin [binLeft, binRight] and original bin [origLeft, origRight]
+          const overlapLeft = Math.max(binLeft, origLeft);
+          const overlapRight = Math.min(binRight, origRight);
+          
+          if (overlapLeft < overlapRight) {
+            const overlapFraction = (overlapRight - overlapLeft) / (origRight - origLeft);
+            interpolatedCount += histogram.counts[j] * overlapFraction;
+          }
+        }
+        
         histogramData.push({
           x: binCenter,
-          y: histogram.counts[i] / (dayData.n_samples * binWidth) // Normalize to density
+          y: interpolatedCount / (dayData.n_samples * newBinWidth)
         });
       }
     }
@@ -210,75 +249,81 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
   return (
     <div className="p-6 bg-gray-50 rounded-lg space-y-4">
       {/* Controls */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* Asset selector */}
-        {showBTC && showSAP && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Asset</label>
-            <select
-              value={selectedAsset}
-              onChange={(e) => setSelectedAsset(e.target.value as 'BTC' | 'SAP')}
-              className="w-full p-2 border border-gray-300 rounded-md"
-            >
-              <option value="BTC">Bitcoin (BTC)</option>
-              <option value="SAP">S&P 500 (SAP)</option>
-            </select>
+      <div className="space-y-4">
+        {/* Top row: Asset selector and Distribution toggles */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Asset selector */}
+          {showBTC && showSAP && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Asset</label>
+              <select
+                value={selectedAsset}
+                onChange={(e) => setSelectedAsset(e.target.value as 'BTC' | 'SAP')}
+                className="w-full p-2 border border-gray-300 rounded-md"
+              >
+                <option value="BTC">Bitcoin (BTC)</option>
+                <option value="SAP">S&P 500 (SAP)</option>
+              </select>
+            </div>
+          )}
+
+          {/* Distribution toggles */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Show distributions</label>
+            <div className="flex gap-4">
+              <label className="flex items-center text-sm">
+                <input
+                  type="checkbox"
+                  checked={showGaussian}
+                  onChange={(e) => setShowGaussian(e.target.checked)}
+                  className="mr-2"
+                />
+                <span className="text-red-600">Gaussian</span>
+              </label>
+              <label className="flex items-center text-sm">
+                <input
+                  type="checkbox"
+                  checked={showLaplace}
+                  onChange={(e) => setShowLaplace(e.target.checked)}
+                  className="mr-2"
+                />
+                <span className="text-green-600">Laplace</span>
+              </label>
+            </div>
           </div>
-        )}
-
-        {/* Days slider */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Days: {selectedDays}
-          </label>
-          <input
-            type="range"
-            min="2"
-            max={maxDays}
-            value={selectedDays}
-            onChange={(e) => setSelectedDays(parseInt(e.target.value))}
-            className="w-full"
-          />
         </div>
 
-        {/* X-axis range slider */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            X-axis range: ±{xAxisRange}σ
-          </label>
-          <input
-            type="range"
-            min="1"
-            max="5"
-            step="0.5"
-            value={xAxisRange}
-            onChange={(e) => setXAxisRange(parseFloat(e.target.value))}
-            className="w-full"
-          />
-        </div>
+        {/* Bottom row: Sliders stacked for longer bars */}
+        <div className="space-y-3">
+          {/* Days slider */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Days: {selectedDays}
+            </label>
+            <input
+              type="range"
+              min="2"
+              max={maxDays}
+              value={selectedDays}
+              onChange={(e) => setSelectedDays(parseInt(e.target.value))}
+              className="w-full"
+            />
+          </div>
 
-        {/* Distribution toggles */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Show distributions</label>
-          <div className="space-y-1">
-            <label className="flex items-center text-sm">
-              <input
-                type="checkbox"
-                checked={showGaussian}
-                onChange={(e) => setShowGaussian(e.target.checked)}
-                className="mr-2"
-              />
-              <span className="text-red-600">Gaussian</span>
+          {/* X-axis range slider */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              X-axis range: ±{xAxisRange}σ
             </label>
-            <label className="flex items-center text-sm">
-              <input
-                type="checkbox"
-                checked={showLaplace}
-                onChange={(e) => setShowLaplace(e.target.checked)}
-                className="mr-2"
-              />
-              <span className="text-green-600">Laplace</span>
-            </label>
+            <input
+              type="range"
+              min="1"
+              max="5"
+              step="0.5"
+              value={xAxisRange}
+              onChange={(e) => setXAxisRange(parseFloat(e.target.value))}
+              className="w-full"
+            />
           </div>
         </div>
       </div>

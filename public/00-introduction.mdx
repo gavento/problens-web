@@ -71,11 +71,11 @@ I grabbed some historical data, calculated the daily price changes, normalized t
 
 <MultipleChoiceQuestion
   options={["A", "B", "C"]}
-  correctIndices={[1, 2]}
+  correctIndices={[1]}
   feedbackType="all-show"
-  explanation={<>Trick question—both shapes B (Laplace distribution) and C (Gaussian distribution) kind of work! The shape totally depends on something I didn't tell you: how far back I looked. If you only check the last month, shape C fits better (though in that case it's hard to judge). But zoom out to longer periods and it starts looking more like B. 
+  explanation={<>I would expect the plot look like the shape C (Gaussian distribution), but it looks more like the shape B (Laplace distribution). 
   <FinancialDistributionWidget showBTC={false} showSAP={true} />
-  What's up with that? We will see in the <a href="04-max_entropy">chapter about the max-entropy principle</a>.<br/><br/></>}
+  What's up with that? We will discuss in the <a href="04-max_entropy">chapter about the max-entropy principle</a>.<br/><br/></>}
 />
 
 [We'll use KL divergence](04-max_entropy#application-understanding-financial-data) to understand this deep principle in probability called the maximum entropy principle. It'll give us tons of intuition about modeling this kind of data and what those different shapes actually mean. 
