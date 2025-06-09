@@ -66,7 +66,7 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<'BTC' | 'SAP'>(showBTC ? 'BTC' : 'SAP');
-  const [selectedDays, setSelectedDays] = useState(100);
+  const [selectedDays, setSelectedDays] = useState(1000);
   const [xAxisRange, setXAxisRange] = useState(3); // Standard deviations
   const [showGaussian, setShowGaussian] = useState(true);
   const [showLaplace, setShowLaplace] = useState(true);
@@ -97,8 +97,8 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
         }
         
         if (showSAP) {
-          const sapUrl = `${process.env.NODE_ENV === 'production' ? '/problens-web' : ''}/financial_data/sap_data_test.json`;
-          console.log('Attempting to fetch SAP data from:', sapUrl);
+          const sapUrl = `${process.env.NODE_ENV === 'production' ? '/problens-web' : ''}/financial_data/sap_data.json`;
+          console.log('Attempting to fetch SAP data from:', sapUrl, '(~22MB)');
           promises.push(
             fetch(sapUrl)
               .then(res => {
@@ -109,7 +109,7 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
                 return res.json();
               })
               .then(data => {
-                console.log('SAP data loaded, keys:', Object.keys(data));
+                console.log('SAP data loaded, max_days:', data.max_days, 'daily_data keys:', Object.keys(data.daily_data).length);
                 setSapData(data);
               })
           );
@@ -129,12 +129,12 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
 
   // Get current data
   const currentData = selectedAsset === 'BTC' ? btcData : sapData;
-  const maxDays = currentData ? currentData.max_days : 100;
+  const maxDays = currentData ? currentData.max_days : 1000;
   
   // Adjust selected days if needed
   useEffect(() => {
     if (selectedDays > maxDays) {
-      setSelectedDays(Math.min(100, maxDays));
+      setSelectedDays(Math.min(1000, maxDays));
     }
   }, [selectedDays, maxDays]);
 
@@ -186,7 +186,10 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96 bg-gray-50 rounded-lg">
-        <div className="text-gray-600">Loading financial data...</div>
+        <div className="text-gray-600 text-center">
+          <div>Loading financial data...</div>
+          {showSAP && <div className="text-sm mt-2">SAP dataset is large (~22MB), please wait</div>}
+        </div>
       </div>
     );
   }
