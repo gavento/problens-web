@@ -147,12 +147,8 @@ def compute_distribution_params(data_values):
         return None
     
     # Compute histogram for KL divergence calculations
-    # Use adaptive bins to balance granularity with file size
-    # For large datasets, cap bins to keep file size manageable for web
-    if len(data_values) > 1000:
-        n_bins = min(50, max(30, len(data_values) // 50))  # Cap at 50 for large datasets
-    else:
-        n_bins = max(30, min(100, len(data_values) // 5))  # More bins for small datasets
+    # Use consistent high-resolution bins for all datasets
+    n_bins = max(50, min(100, len(data_values) // 10))  # Always use 50-100 bins
     counts, bin_edges = np.histogram(data_values, bins=n_bins)
     total_counts = counts.sum()
     if total_counts == 0:

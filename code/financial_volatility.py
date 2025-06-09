@@ -171,8 +171,8 @@ print(f"Mean volatility: {np.mean(volatilities):.6f}")
 # CREATE VOLATILITY HISTOGRAM PLOT
 ##############################################################################
 
-# Create figure
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10))
+# Create figure with 3 subplots
+fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(12, 15))
 
 # Plot 1: Time series of volatility
 ax1.plot(volatility_dates, volatilities, linewidth=0.8, alpha=0.8, color='navy')
@@ -251,6 +251,72 @@ Skewness: {vol_skewness_val:.3f}"""
 ax2.text(0.02, 0.98, stats_text, transform=ax2.transAxes, fontsize=9,
          verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
 
+# Plot 3: Histogram of squared volatilities (variance)
+variances = volatilities ** 2
+n_bins_var = max(30, min(100, len(variances) // 20))  # Adaptive bin count
+counts_var, bin_edges_var, patches_var = ax3.hist(variances, bins=n_bins_var, density=True, 
+                                                  alpha=0.7, color='lightsteelblue', edgecolor='darkblue', 
+                                                  label='Variance distribution')
+
+# Fit distributions to variance data
+var_mean = np.mean(variances)
+var_var = np.var(variances, ddof=1)
+
+# Create x range for plotting
+x_min_var, x_max_var = np.min(variances), np.max(variances)
+x_plot_var = np.linspace(x_min_var, x_max_var, 400)
+
+# Exponential distribution fit (rate parameter = 1/mean)
+from scipy.stats import expon
+rate_exp = 1.0 / var_mean
+exp_pdf = expon.pdf(x_plot_var, scale=var_mean)
+ax3.plot(x_plot_var, exp_pdf, 'r-', linewidth=2, 
+         label=f'Exponential (λ={rate_exp:.3f})')
+
+# Log-normal fit for variances
+if np.all(variances > 0):
+    log_var = np.log(variances)
+    mu_lognorm_var = np.mean(log_var)
+    sigma_lognorm_var = np.std(log_var, ddof=1)
+    
+    lognorm_pdf_var = lognorm.pdf(x_plot_var, s=sigma_lognorm_var, scale=np.exp(mu_lognorm_var))
+    ax3.plot(x_plot_var, lognorm_pdf_var, 'b-', linewidth=2, 
+             label=f'Log-normal (μ={mu_lognorm_var:.3f}, σ={sigma_lognorm_var:.3f})')
+
+# Gamma distribution fit for variances
+if var_var > 0:
+    # Gamma parameters via method of moments
+    scale_gamma_var = var_var / var_mean
+    shape_gamma_var = var_mean / scale_gamma_var
+    
+    gamma_pdf_var = gamma.pdf(x_plot_var, a=shape_gamma_var, scale=scale_gamma_var)
+    ax3.plot(x_plot_var, gamma_pdf_var, 'g-', linewidth=2,
+             label=f'Gamma (α={shape_gamma_var:.3f}, β={scale_gamma_var:.6f})')
+
+# Customize variance histogram plot
+ax3.set_xlabel('Variance (σ²)', fontsize=12)
+ax3.set_ylabel('Probability Density', fontsize=12)
+ax3.set_title(f'{asset_name} Variance Distribution Histogram', fontsize=14)
+ax3.legend(fontsize=10)
+ax3.grid(True, alpha=0.3)
+
+# Add statistics text box for variance
+var_std = np.std(variances, ddof=1)
+var_skewness = ((variances - var_mean) / var_std)**3
+var_skewness_val = var_skewness.mean()
+
+stats_text_var = f"""Statistics:
+Count: {len(variances)}
+Mean: {var_mean:.6f}
+Median: {np.median(variances):.6f}
+Std: {var_std:.6f}
+Min: {np.min(variances):.6f}
+Max: {np.max(variances):.6f}
+Skewness: {var_skewness_val:.3f}"""
+
+ax3.text(0.02, 0.98, stats_text_var, transform=ax3.transAxes, fontsize=9,
+         verticalalignment='top', bbox=dict(boxstyle='round', facecolor='lightcyan', alpha=0.8))
+
 # Adjust layout and save
 plt.tight_layout()
 
@@ -279,6 +345,14 @@ print(f"Median volatility: {np.median(volatilities):.6f}")
 print(f"Standard deviation: {np.std(volatilities, ddof=1):.6f}")
 print(f"Minimum volatility: {np.min(volatilities):.6f}")
 print(f"Maximum volatility: {np.max(volatilities):.6f}")
+
+print(f"\n📈 VARIANCE STATISTICS:")
+print(f"-" * 40)
+print(f"Mean variance: {np.mean(variances):.8f}")
+print(f"Median variance: {np.median(variances):.8f}")
+print(f"Standard deviation: {np.std(variances, ddof=1):.8f}")
+print(f"Minimum variance: {np.min(variances):.8f}")
+print(f"Maximum variance: {np.max(variances):.8f}")
 
 # Percentiles
 percentiles = [5, 10, 25, 75, 90, 95]
