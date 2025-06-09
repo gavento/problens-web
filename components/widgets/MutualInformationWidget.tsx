@@ -5,16 +5,18 @@ import KatexMath from "@/components/content/KatexMath";
 
 type Props = {
   title?: string;
+  showToggle?: boolean;
 };
 
 const MutualInformationWidget: React.FC<Props> = ({
-  title = "Mutual Information Explorer"
+  title = "Mutual Information Explorer",
+  showToggle = false
 }) => {
   // Joint distribution - 6 values that sum to 1
   const [jointProbs, setJointProbs] = useState<number[]>([0.14, 0.21, 0.35, 0.06, 0.09, 0.15]);
-  const [constrainMarginals, setConstrainMarginals] = useState(false);
+  const [constrainMarginals, setConstrainMarginals] = useState(!showToggle); // If no toggle, always constrained
   
-  // Target marginals when constrained
+  // Fixed marginals
   const targetMarginals = useMemo(() => ({
     sun: 0.7, cloud: 0.3, walk: 0.2, bike: 0.3, bus: 0.5
   }), []);
@@ -313,18 +315,17 @@ const MutualInformationWidget: React.FC<Props> = ({
       </div>
 
       {/* Mutual Information Display */}
-      <div className="bg-white rounded-lg p-6">
+      <div className="bg-white rounded-lg p-4">
         <div className="text-center">
-          <h4 className="text-lg font-semibold text-gray-800 mb-2">Mutual Information</h4>
-          <div className="text-3xl font-bold text-blue-600 mb-2">
+          <div className="text-xl font-bold text-blue-600 mb-2">
             I(Weather; Transport) = {mutualInformation.toFixed(4)} bits
           </div>
           <div className="text-sm text-gray-600">
-            <KatexMath math="I(X;Y) = \sum_{x,y} P(x,y) \log_2 \frac{P(x,y)}{P(x)P(y)}" />
+            <KatexMath math="I(X;Y) = D((X,Y), X \otimes Y) = \sum_{x,y} P(x,y) \log_2 \frac{P(x,y)}{P(x)P(y)}" />
           </div>
           
           {/* Independence indicator */}
-          <div className="mt-4">
+          <div className="mt-3">
             {Math.abs(mutualInformation) < 0.001 ? (
               <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                 ✓ Variables are independent
@@ -340,16 +341,18 @@ const MutualInformationWidget: React.FC<Props> = ({
 
       {/* Controls */}
       <div className="flex justify-center gap-4">
-        <button
-          onClick={() => setConstrainMarginals(!constrainMarginals)}
-          className={`px-6 py-2 rounded-lg transition-colors ${
-            constrainMarginals 
-              ? 'bg-blue-500 text-white hover:bg-blue-600' 
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-          }`}
-        >
-          {constrainMarginals ? 'Fixed Marginals' : 'Free Marginals'}
-        </button>
+        {showToggle && (
+          <button
+            onClick={() => setConstrainMarginals(!constrainMarginals)}
+            className={`px-6 py-2 rounded-lg transition-colors ${
+              constrainMarginals 
+                ? 'bg-blue-500 text-white hover:bg-blue-600' 
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            {constrainMarginals ? 'Fixed Marginals' : 'Free Marginals'}
+          </button>
+        )}
         <button
           onClick={resetToDefault}
           className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"

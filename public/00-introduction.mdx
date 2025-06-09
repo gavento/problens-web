@@ -27,7 +27,7 @@ Question is: how do you find the best expert?
 
 <Expand headline="🗳️ Why polling sucks"><a id="polling"></a>
 
-[This Wikipedia page](https://en.wikipedia.org/wiki/Nationwide_opinion_polling_for_the_2024_United_States_presidential_election) has hundreds of election polls. A typical poll asks 1000-2000 random people. Do the math<Footnote>Like, use the central limit theorem to figure out what happens with the poll results.</Footnote> and you'll find polls are usually within 3% of the truth.<Footnote>Sure, this assumes you can actually sample random voters and they tell the truth, but stick with me.</Footnote> Pretty wild—doesn't matter if the country has millions of people, 1000 randos get you within a few percent!
+A typical [US election poll](https://en.wikipedia.org/wiki/Nationwide_opinion_polling_for_the_2024_United_States_presidential_election) asks 1000-2000 random people. Do the math and you'll find such polls are usually within 2-3% of the truth.<Footnote>This assumes you can actually sample random voters, they tell the truth, etc. This is never true but stick with me.</Footnote> Pretty wild—it doesn't even matter how many people live in the country, 1000 random ones get you within a few percent!
 
 But here's the thing: US elections are super close. We already know both parties will get around 50%. So maybe we should poll more people (or combine polls) to get within 0.1%. How many people would that take?
 
@@ -152,8 +152,7 @@ So... are the odds in our favor?
 <MultipleChoiceQuestion
   options={["Yes", "No", "depends"]}
   correctIndices={[1, 2]}
-  explanation={<>We'll use KL divergence to derive an important tool called the <a href="04-max_entropy">maximum entropy principle</a>. This will allow us to understand various distributions and construct new ones from scratch (see below). We will also use the principle to explain our gut feeling that we are not necessarily fine here.
-  <DistributionConstraintBuilder />
+  explanation={<>We'll use KL divergence to derive an important tool called the <a href="04-max_entropy">maximum entropy principle</a>. This will allow us to understand various distributions and construct new ones from scratch. We will use the principle to explain our gut feeling that we are not necessarily fine here.
   </>}
 /> 
 </Expand>
