@@ -64,48 +64,77 @@ const MutualInformationWidget: React.FC<Props> = ({
     newValue: number
   ) => {
     if (constrainMarginals) {
-      // Constrained mode - try to maintain target marginals
+      // Constrained mode - maintain fixed marginals
       const clampedValue = Math.max(0, Math.min(1, newValue));
       const newDist = [...jointProbs];
       
-      // First set the new value
+      // Set the new value
       newDist[index] = clampedValue;
       
       // Identify which marginals are affected
       const rowIndex = Math.floor(index / 3); // 0 for sun, 1 for cloud
       const colIndex = index % 3; // 0 for walk, 1 for bike, 2 for bus
       
-      // Adjust row to maintain weather marginal
-      const rowIndices = rowIndex === 0 ? [0, 1, 2] : [3, 4, 5];
-      const targetRowSum = rowIndex === 0 ? targetMarginals.sun : targetMarginals.cloud;
-      const currentRowSum = rowIndices.reduce((sum, i) => sum + newDist[i], 0);
+      // Get target marginals
+      const targetWeatherMarginal = rowIndex === 0 ? targetMarginals.sun : targetMarginals.cloud;
+      const targetTransportMarginal = colIndex === 0 ? targetMarginals.walk : 
+                                     colIndex === 1 ? targetMarginals.bike : targetMarginals.bus;
       
-      if (currentRowSum > 0 && Math.abs(currentRowSum - targetRowSum) > 1e-10) {
-        const scale = targetRowSum / currentRowSum;
-        rowIndices.forEach(i => {
-          newDist[i] *= scale;
+      // Find the other cell in the same column (transport marginal constraint)
+      const otherRowIndex = 1 - rowIndex; // If 0 then 1, if 1 then 0
+      const otherCellInColumn = otherRowIndex * 3 + colIndex;
+      
+      // Adjust the other cell in same column to maintain transport marginal
+      newDist[otherCellInColumn] = targetTransportMarginal - clampedValue;
+      
+      // Make sure the other cell is non-negative
+      if (newDist[otherCellInColumn] < 0) {
+        newDist[otherCellInColumn] = 0;
+        newDist[index] = targetTransportMarginal;
+      }
+      
+      // Now adjust the other two cells in the same row to maintain weather marginal
+      const rowStart = rowIndex * 3;
+      const otherIndicesInRow = [];
+      for (let i = 0; i < 3; i++) {
+        if (i !== colIndex) {
+          otherIndicesInRow.push(rowStart + i);
+        }
+      }
+      
+      // Calculate how much probability mass we need for the other two cells in this row
+      const remainingForRow = targetWeatherMarginal - newDist[index];
+      
+      // Distribute proportionally among the other two cells in the row
+      const currentSumOtherInRow = otherIndicesInRow.reduce((sum, i) => sum + jointProbs[i], 0);
+      
+      if (currentSumOtherInRow > 0 && remainingForRow >= 0) {
+        otherIndicesInRow.forEach(i => {
+          newDist[i] = (jointProbs[i] / currentSumOtherInRow) * remainingForRow;
+        });
+      } else if (remainingForRow >= 0) {
+        // Equal distribution if no prior distribution
+        const equalShare = remainingForRow / otherIndicesInRow.length;
+        otherIndicesInRow.forEach(i => {
+          newDist[i] = equalShare;
         });
       }
       
-      // Adjust column to maintain transport marginal
-      const colIndices = [colIndex, colIndex + 3];
-      const targetColSum = colIndex === 0 ? targetMarginals.walk : 
-                          colIndex === 1 ? targetMarginals.bike : targetMarginals.bus;
-      const currentColSum = colIndices.reduce((sum, i) => sum + newDist[i], 0);
-      
-      if (currentColSum > 0 && Math.abs(currentColSum - targetColSum) > 1e-10) {
-        const scale = targetColSum / currentColSum;
-        colIndices.forEach(i => {
-          newDist[i] *= scale;
-        });
-      }
-      
-      // Normalize to ensure sum = 1
-      const totalSum = newDist.reduce((sum, p) => sum + p, 0);
-      if (totalSum > 0) {
-        newDist.forEach((_, i) => {
-          newDist[i] /= totalSum;
-        });
+      // Now adjust the corresponding cells in the other row to maintain transport marginals
+      for (let c = 0; c < 3; c++) {
+        if (c !== colIndex) {
+          const targetTransportMarginalForC = c === 0 ? targetMarginals.walk : 
+                                            c === 1 ? targetMarginals.bike : targetMarginals.bus;
+          const cellThisRow = rowIndex * 3 + c;
+          const cellOtherRow = otherRowIndex * 3 + c;
+          newDist[cellOtherRow] = targetTransportMarginalForC - newDist[cellThisRow];
+          
+          // Ensure non-negative
+          if (newDist[cellOtherRow] < 0) {
+            newDist[cellOtherRow] = 0;
+            newDist[cellThisRow] = targetTransportMarginalForC;
+          }
+        }
       }
       
       setJointProbs(newDist);

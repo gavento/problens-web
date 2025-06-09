@@ -10,8 +10,8 @@ const DistributionComparisonWidget: React.FC<Props> = ({
   title = "Distribution Comparison"
 }) => {
   // Initial probability distributions (each sums to 1)
-  const [redDist, setRedDist] = useState<number[]>([0.2, 0.2, 0.2, 0.2, 0.2]);
-  const [blueDist, setBlueDist] = useState<number[]>([0.1, 0.4, 0.3, 0.15, 0.05]);
+  const [redDist, setRedDist] = useState<number[]>([0.1, 0.4, 0.3, 0.15, 0.05]);
+  const [blueDist, setBlueDist] = useState<number[]>([0.2, 0.2, 0.2, 0.2, 0.2]);
   const [containerWidth, setContainerWidth] = useState(500);
 
   useEffect(() => {
@@ -283,7 +283,7 @@ const DistributionComparisonWidget: React.FC<Props> = ({
       
       {/* Instructions */}
       <div className="text-center text-sm text-gray-600">
-        Drag any bar up or down to adjust probabilities. Other bars will adjust automatically to maintain valid distributions.
+        Drag bars to adjust probabilities
       </div>
       
       {/* Distance Metrics */}
@@ -315,8 +315,8 @@ const DistributionComparisonWidget: React.FC<Props> = ({
       <div className="text-center">
         <button
           onClick={() => {
-            setRedDist([0.2, 0.2, 0.2, 0.2, 0.2]);
-            setBlueDist([0.1, 0.4, 0.3, 0.15, 0.05]);
+            setRedDist([0.1, 0.4, 0.3, 0.15, 0.05]);
+            setBlueDist([0.2, 0.2, 0.2, 0.2, 0.2]);
           }}
           className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
         >
