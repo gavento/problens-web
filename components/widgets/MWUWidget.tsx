@@ -39,18 +39,18 @@ const MWUWidget: React.FC<Props> = ({
     {
       id: 1,
       name: "Steady Performers",
-      description: "Experts consistently perform with probabilities 2/3, 1/3, 1/3",
-      probabilities: [2/3, 1/3, 1/3]
+      description: "Experts consistently perform with probabilities 3/4, 1/2, 1/4",
+      probabilities: [3/4, 1/2, 1/4]
     },
     {
       id: 2, 
       name: "Regime Change",
-      description: "First 100 steps: 2/3, 1/3, 1/3. Last 100 steps: 1/3, 2/3, 1/3"
+      description: "First 100 steps: 2/3, 1/3, 1/3. Last 100 steps: 0, 0.9, 0"
     },
     {
       id: 3,
-      name: "Alternating Best",
-      description: "Even days: Expert 1 always wins. Odd days: Expert 2 always wins"
+      name: "Adversarial Alternating",
+      description: "Alternating wins, but the expert Follow the Leader picks always loses"
     }
   ];
 
@@ -61,6 +61,7 @@ const MWUWidget: React.FC<Props> = ({
   const [algorithmStates, setAlgorithmStates] = useState<Map<Algorithm, AlgorithmState>>(new Map());
   const [history, setHistory] = useState<Map<Algorithm, number[]>>(new Map());
   const [expertGains, setExpertGains] = useState<number[][]>([]);
+  const [expertTotalGains, setExpertTotalGains] = useState<number[]>([0, 0, 0]);
   
   const stepIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -81,6 +82,7 @@ const MWUWidget: React.FC<Props> = ({
     setAlgorithmStates(states);
     setHistory(hist);
     setExpertGains([]);
+    setExpertTotalGains([0, 0, 0]);
   };
 
   // Get expert gains for a scenario and step
@@ -92,15 +94,27 @@ const MWUWidget: React.FC<Props> = ({
       
       case 2:
         // Regime change
-        const probs = step < 100 ? [2/3, 1/3, 1/3] : [1/3, 2/3, 1/3];
+        const probs = step < 100 ? [2/3, 1/3, 1/3] : [0, 0.9, 0];
         return experts.map((_, i) => Math.random() < probs[i] ? 1 : 0);
       
       case 3:
-        // Alternating best
+        // Alternating best with symmetry breaking for Follow the Leader
+        // Follow the Leader picks the expert with highest total gains
+        // We make that expert earn 0 to ensure Follow the Leader gets 0
+        const leaderChoice = expertTotalGains.indexOf(Math.max(...expertTotalGains));
+        
         if (step % 2 === 0) {
-          return [1, 0, 0]; // Expert 1 wins on even steps
+          // Expert 1 should win on even steps, unless they're the leader
+          if (leaderChoice === 0) {
+            return [0, 1, 0]; // Expert 2 wins instead
+          }
+          return [1, 0, 0];
         } else {
-          return [0, 1, 0]; // Expert 2 wins on odd steps
+          // Expert 2 should win on odd steps, unless they're the leader
+          if (leaderChoice === 1) {
+            return [1, 0, 0]; // Expert 1 wins instead
+          }
+          return [0, 1, 0];
         }
       
       default:
@@ -195,6 +209,10 @@ const MWUWidget: React.FC<Props> = ({
     setExpertGains(prev => [...prev, gains]);
     updateAlgorithms(gains);
     setCurrentStep(prev => prev + 1);
+    // Update expert total gains for scenario 3
+    if (currentScenario === 3) {
+      setExpertTotalGains(prev => prev.map((total, i) => total + gains[i]));
+    }
   };
 
   // Start scenario
@@ -306,8 +324,8 @@ const MWUWidget: React.FC<Props> = ({
             </div>
           </div>
           
-          <div className="relative">
-            <svg width="100%" height="300" viewBox="0 0 800 300" className="border">
+          <div className="relative overflow-hidden">
+            <svg width="100%" height="300" viewBox="0 0 850 300" preserveAspectRatio="xMidYMid meet" className="border">
               {/* Grid lines */}
               {[0, 50, 100, 150, 200].map(x => (
                 <line key={x} x1={x * 3.8 + 40} y1={20} x2={x * 3.8 + 40} y2={280} 
@@ -377,7 +395,7 @@ const MWUWidget: React.FC<Props> = ({
               })}
 
               {/* Axes */}
-              <line x1="40" y1="280" x2="800" y2="280" stroke="#374151" strokeWidth="2" />
+              <line x1="40" y1="280" x2="810" y2="280" stroke="#374151" strokeWidth="2" />
               <line x1="40" y1="20" x2="40" y2="280" stroke="#374151" strokeWidth="2" />
               
               {/* Labels */}
@@ -387,34 +405,38 @@ const MWUWidget: React.FC<Props> = ({
           </div>
 
           {/* Legend */}
-          <div className="mt-4 flex flex-wrap gap-4">
-            <div className="text-sm text-gray-600">
-              <strong>Algorithms:</strong>
-            </div>
-            {Array.from(selectedAlgorithms).map(alg => {
-              const algInfo = algorithms.find(a => a.id === alg)!;
-              return (
-                <div key={alg} className="flex items-center space-x-2">
-                  <div 
-                    className="w-4 h-1" 
-                    style={{ backgroundColor: algInfo.color }}
-                  />
-                  <span className="text-sm">{algInfo.emoji} {algInfo.name}</span>
-                </div>
-              );
-            })}
-            <div className="text-sm text-gray-600 ml-4">
-              <strong>Experts:</strong>
-            </div>
-            {experts.map((expert, i) => (
-              <div key={i} className="flex items-center space-x-2">
-                <div 
-                  className="w-4 h-1 border-dashed border-2" 
-                  style={{ borderColor: expert.color }}
-                />
-                <span className="text-sm">{expert.emoji} {expert.name}</span>
+          <div className="mt-4">
+            <div className="flex flex-wrap gap-4 mb-2">
+              <div className="text-sm text-gray-600">
+                <strong>Algorithms:</strong>
               </div>
-            ))}
+              {Array.from(selectedAlgorithms).map(alg => {
+                const algInfo = algorithms.find(a => a.id === alg)!;
+                return (
+                  <div key={alg} className="flex items-center space-x-2">
+                    <div 
+                      className="w-4 h-1" 
+                      style={{ backgroundColor: algInfo.color }}
+                    />
+                    <span className="text-sm">{algInfo.emoji} {algInfo.name}</span>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="flex flex-wrap gap-4">
+              <div className="text-sm text-gray-600">
+                <strong>Experts:</strong>
+              </div>
+              {experts.map((expert, i) => (
+                <div key={i} className="flex items-center space-x-2">
+                  <div 
+                    className="w-4 h-1 border-dashed border-2" 
+                    style={{ borderColor: expert.color }}
+                  />
+                  <span className="text-sm">{expert.emoji} {expert.name}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}

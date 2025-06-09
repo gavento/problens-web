@@ -9,6 +9,7 @@ import { referencesPath } from "@/lib/config";
 import { Footnotes, FootnotesProvider } from "./content/Footnotes";
 import { EquationProvider } from "./content/EquationContext";
 import styles from "./Page.module.css";
+import CommentSection from "./CommentSection";
 
 interface PageProps {
   children: ReactNode;
@@ -41,6 +42,7 @@ export async function singlePage(path: string) {
             {content}
             <Footnotes headerLevel={0} />
             <References />
+            <CommentSection pageId={path} />
           </article>
         </FootnotesProvider>
       </CitationsProvider>
