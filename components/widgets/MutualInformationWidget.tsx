@@ -146,9 +146,6 @@ const MutualInformationWidget: React.FC<Props> = ({
         <p className="text-sm text-blue-700">
           Drag bars to adjust probabilities
         </p>
-        <p className="text-xs text-blue-600 mt-1">
-          All 6 probabilities must sum to 1. Other bars adjust automatically.
-        </p>
       </div>
 
       {/* Joint Distribution Table */}
