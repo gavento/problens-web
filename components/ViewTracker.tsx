@@ -25,12 +25,7 @@ export default function ViewTracker() {
           viewStats.push({ date: today, views: 1 });
         }
 
-        // Keep only last 30 days
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-        const cutoffDate = thirtyDaysAgo.toISOString().split('T')[0];
-        
-        viewStats = viewStats.filter((stat: any) => stat.date >= cutoffDate);
+        // Keep all view data permanently
 
         localStorage.setItem("problens-views", JSON.stringify(viewStats));
       } catch (error) {
