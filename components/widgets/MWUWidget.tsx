@@ -39,8 +39,8 @@ const MWUWidget: React.FC<Props> = ({
     {
       id: 1,
       name: "Steady Performers",
-      description: "Experts consistently perform with probabilities 1/4, 1/2, 3/4",
-      probabilities: [1/4, 1/2, 3/4]
+      description: "Experts consistently perform with probabilities 3/4, 1/2, 1/4",
+      probabilities: [3/4, 1/2, 1/4]
     },
     {
       id: 2, 
