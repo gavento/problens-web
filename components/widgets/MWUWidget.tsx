@@ -106,21 +106,30 @@ const MWUWidget: React.FC<Props> = ({
         return experts.map((_, i) => Math.random() < probs[i] ? 1 : 0);
       
       case 3:
-        // Alternating wins: Expert 1 wins on odd days (1, 3, 5...), Expert 2 wins on even days (2, 4, 6...)
-        // Follow the Leader breaks ties by preferring lower indices
-        // Since FTL always picks the "current best", it will always pick wrong
-        // Day 1 (step 0): FTL picks expert 1 (tie, prefers lower index), but expert 1 wins -> FTL gets 1
-        // Day 2 (step 1): FTL picks expert 1 (has 1 vs 0), but expert 2 wins -> FTL gets 0
-        // Day 3 (step 2): FTL picks expert 1 (tie at 1-1, prefers lower), but expert 1 wins -> FTL gets 1
-        // This continues with FTL always being one step behind
+        // Adversarial scenario: Always make the expert that Follow-the-Leader would pick lose
+        // FTL picks based on cumulative gains so far, but we need to simulate what it would pick
         
-        // Note: step is 0-indexed, so step 0 = day 1
-        if ((step + 1) % 2 === 1) {
-          // Odd day (1, 3, 5...): Expert 1 wins
-          return [1, 0, 0];
+        // Calculate what FTL would pick based on current expert total gains
+        const currentTotalGains = expertTotalGains.slice(); // Use the running totals
+        const maxCurrentGain = Math.max(...currentTotalGains);
+        let ftlChoice = currentTotalGains.indexOf(maxCurrentGain);
+        
+        // Tie-breaking: prefer lower index (same as FTL implementation)
+        for (let i = 0; i < currentTotalGains.length; i++) {
+          if (currentTotalGains[i] === maxCurrentGain) {
+            ftlChoice = i;
+            break;
+          }
+        }
+        
+        // Make the OTHER expert win (adversarial)
+        if (ftlChoice === 0) {
+          return [0, 1, 0]; // Expert 1 wins
+        } else if (ftlChoice === 1) {
+          return [1, 0, 0]; // Expert 0 wins
         } else {
-          // Even day (2, 4, 6...): Expert 2 wins
-          return [0, 1, 0];
+          // If FTL somehow picks expert 2, make expert 0 win
+          return [1, 0, 0];
         }
       
       default:
@@ -167,13 +176,14 @@ const MWUWidget: React.FC<Props> = ({
         case 'followLeader':
           // Follow the leader: choose expert with highest total gains so far
           // Breaks ties by preferring lower indices
-          const totalGains = currentState.gains.map((g, i) => g + expertGains[i]);
-          const maxGain = Math.max(...totalGains);
-          let bestExpert = totalGains.indexOf(maxGain);
+          // Note: We use currentState.gains (before adding current expertGains)
+          const totalGainsBeforeStep = currentState.gains;
+          const maxGainBeforeStep = Math.max(...totalGainsBeforeStep);
+          let bestExpert = totalGainsBeforeStep.indexOf(maxGainBeforeStep);
           
           // If there's a tie, prefer the lowest index
-          for (let i = 0; i < totalGains.length; i++) {
-            if (totalGains[i] === maxGain) {
+          for (let i = 0; i < totalGainsBeforeStep.length; i++) {
+            if (totalGainsBeforeStep[i] === maxGainBeforeStep) {
               bestExpert = i;
               break;
             }
