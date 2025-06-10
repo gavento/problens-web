@@ -55,6 +55,35 @@ export default function CommentSection({ pageId }: CommentSectionProps) {
     }
   };
 
+  const deleteComment = (commentId: string) => {
+    try {
+      const stored = localStorage.getItem("problens-comments");
+      if (stored) {
+        const allComments = JSON.parse(stored) as Comment[];
+        const updatedComments = allComments.filter(c => c.id !== commentId);
+        localStorage.setItem("problens-comments", JSON.stringify(updatedComments));
+        setComments(prev => prev.filter(c => c.id !== commentId));
+      }
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+    }
+  };
+
+  const renderMarkdown = (content: string): React.ReactElement => {
+    // Simple markdown rendering for basic formatting
+    let html = content
+      // Bold text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      // Italic text
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      // Inline code
+      .replace(/`(.*?)`/g, '<code class="bg-gray-200 px-1 py-0.5 rounded text-sm font-mono">$1</code>')
+      // Line breaks
+      .replace(/\n/g, '<br>');
+    
+    return <div dangerouslySetInnerHTML={{ __html: html }} />;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -122,7 +151,7 @@ export default function CommentSection({ pageId }: CommentSectionProps) {
               id="content"
               value={newComment.content}
               onChange={(e) => setNewComment(prev => ({ ...prev, content: e.target.value }))}
-              placeholder="Share your thoughts..."
+              placeholder="Share your thoughts... (Markdown supported: **bold**, *italic*, `code`, etc.)"
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows={4}
               maxLength={1000}
@@ -163,11 +192,22 @@ export default function CommentSection({ pageId }: CommentSectionProps) {
                 <span className="font-medium">
                   {comment.author || "Anonymous"}
                 </span>
-                <span className="text-sm text-gray-500">
-                  {new Date(comment.timestamp).toLocaleDateString()}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-500">
+                    {new Date(comment.timestamp).toLocaleDateString()}
+                  </span>
+                  <button
+                    onClick={() => deleteComment(comment.id)}
+                    className="text-red-500 hover:text-red-700 text-sm px-2 py-1 rounded hover:bg-red-50"
+                    title="Delete comment"
+                  >
+                    ×
+                  </button>
+                </div>
               </div>
-              <p className="text-gray-700 whitespace-pre-wrap">{comment.content}</p>
+              <div className="text-gray-700">
+                {renderMarkdown(comment.content)}
+              </div>
             </div>
           ))
         )}
