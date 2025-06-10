@@ -153,7 +153,7 @@ But entropy can also get way bigger than 1 bit. Rolling a die has entropy $\log_
 Try playing with this widget to get a feel!
 <EntropyWidget numCategories={6} title="Entropy of die-rolling" />
 
-<Example headline = "Example: correct horse battery staple">
+<Expand headline = "Example: correct horse battery staple">
 Here's an example. Let's say there are about $2^{11}$ English words that can be described as 'common'. If you generate uniformly four such common words and make your password the concatenation of them, the total entropy is thus going to be $44$ bits. That's because entropy is a special case of cross-entropy and is thus additive. 
 
 The following comic wisely teaches us that this is a pretty secure password! Even if an adversary knows how you generated it, cracking it means they have to check about $2^{44}$ possibilities. 
@@ -161,7 +161,7 @@ The following comic wisely teaches us that this is a pretty secure password! Eve
 <a href="https://xkcd.com/936/" target="_blank" rel="noopener noreferrer">
   <img src="02-crossentropy/password.png" alt="password" style={{cursor: 'pointer'}} />
 </a>
-</Example>
+</Expand>
 
 ### Relative entropy: 
 Finally, $D(p,q)$ is just the gap between cross-entropy and entropy. It tells you how far your average surprise (cross-entropy) is from the best possible (entropy). 
