@@ -65,6 +65,7 @@ const MWUWidget: React.FC<Props> = ({
   const [isZoomed, setIsZoomed] = useState(false);
   const [replayStep, setReplayStep] = useState<number | null>(null);
   const [isReplaying, setIsReplaying] = useState(false);
+  const [algorithmStateHistory, setAlgorithmStateHistory] = useState<Map<Algorithm, AlgorithmState[]>>(new Map());
   
   const stepIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -72,18 +73,22 @@ const MWUWidget: React.FC<Props> = ({
   const initializeAlgorithms = () => {
     const states = new Map<Algorithm, AlgorithmState>();
     const hist = new Map<Algorithm, number[]>();
+    const stateHist = new Map<Algorithm, AlgorithmState[]>();
     
     selectedAlgorithms.forEach(alg => {
-      states.set(alg, {
+      const initialState = {
         gains: [0, 0, 0],
         weights: [1/3, 1/3, 1/3],
         totalGain: 0
-      });
+      };
+      states.set(alg, initialState);
       hist.set(alg, [0]);
+      stateHist.set(alg, [initialState]);
     });
     
     setAlgorithmStates(states);
     setHistory(hist);
+    setAlgorithmStateHistory(stateHist);
     setExpertGains([]);
     setExpertTotalGains([0, 0, 0]);
   };
@@ -127,10 +132,12 @@ const MWUWidget: React.FC<Props> = ({
   const updateAlgorithms = (expertGains: number[]) => {
     const newStates = new Map<Algorithm, AlgorithmState>();
     const newHistory = new Map<Algorithm, number[]>();
+    const newStateHistory = new Map<Algorithm, AlgorithmState[]>();
 
     selectedAlgorithms.forEach(alg => {
       const currentState = algorithmStates.get(alg)!;
       const currentHist = history.get(alg) || [0];
+      const currentStateHist = algorithmStateHistory.get(alg) || [];
       
       let newWeights = [...currentState.weights];
       let algorithmGain = 0;
@@ -204,10 +211,12 @@ const MWUWidget: React.FC<Props> = ({
 
       newStates.set(alg, newState);
       newHistory.set(alg, [...currentHist, newState.totalGain]);
+      newStateHistory.set(alg, [...currentStateHist, newState]);
     });
 
     setAlgorithmStates(newStates);
     setHistory(newHistory);
+    setAlgorithmStateHistory(newStateHistory);
   };
 
   // Run simulation step
@@ -276,6 +285,23 @@ const MWUWidget: React.FC<Props> = ({
 
   // Get the current display step (either replay or current)
   const displayStep = isReplaying && replayStep !== null ? replayStep : currentStep;
+  
+  // Get the displayed algorithm states based on replay step
+  const getDisplayedAlgorithmStates = (): Map<Algorithm, AlgorithmState> => {
+    if (isReplaying && replayStep !== null) {
+      const replayStates = new Map<Algorithm, AlgorithmState>();
+      selectedAlgorithms.forEach(alg => {
+        const stateHist = algorithmStateHistory.get(alg);
+        if (stateHist && replayStep < stateHist.length) {
+          replayStates.set(alg, stateHist[replayStep]);
+        }
+      });
+      return replayStates;
+    }
+    return algorithmStates;
+  };
+  
+  const displayedAlgorithmStates = getDisplayedAlgorithmStates();
   
   const maxGain = Math.max(
     ...Array.from(history.values()).flat(),
@@ -453,6 +479,34 @@ const MWUWidget: React.FC<Props> = ({
                 </div>
               </div>
             )}
+            
+            {/* Current Algorithm States in Fullscreen */}
+            {currentScenario && displayedAlgorithmStates.size > 0 && (
+              <div className="mt-6 bg-white rounded-lg p-4">
+                <h4 className="text-xl font-semibold text-gray-800 mb-4">Current Algorithm States</h4>
+                <div className="grid md:grid-cols-3 gap-4">
+                  {Array.from(displayedAlgorithmStates.entries()).map(([alg, state]) => {
+                    const algInfo = algorithms.find(a => a.id === alg)!;
+                    return (
+                      <div key={alg} className="border rounded-lg p-4">
+                        <div className="text-lg font-semibold" style={{ color: algInfo.color }}>
+                          {algInfo.emoji} {algInfo.name}
+                        </div>
+                        <div className="text-base text-gray-600 mt-2">
+                          Total Gain: <span className="font-mono">{state.totalGain.toFixed(1)}</span>
+                        </div>
+                        <div className="text-sm text-gray-500 mt-1">
+                          Weights: {state.weights.map(w => w.toFixed(2)).join(', ')}
+                          {alg === 'followLeader' && state.weights.filter(w => w === 1).length === 1 && (
+                            <span className="text-gray-400"> (ties→first)</span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -603,11 +657,11 @@ const MWUWidget: React.FC<Props> = ({
       )}
 
       {/* Current Status */}
-      {currentScenario && algorithmStates.size > 0 && (
+      {currentScenario && displayedAlgorithmStates.size > 0 && (
         <div className="bg-white rounded-lg p-4">
           <h4 className="text-lg font-semibold text-gray-800 mb-3">Current Algorithm States</h4>
           <div className="grid md:grid-cols-3 gap-4">
-            {Array.from(algorithmStates.entries()).map(([alg, state]) => {
+            {Array.from(displayedAlgorithmStates.entries()).map(([alg, state]) => {
               const algInfo = algorithms.find(a => a.id === alg)!;
               return (
                 <div key={alg} className="border rounded-lg p-3">
