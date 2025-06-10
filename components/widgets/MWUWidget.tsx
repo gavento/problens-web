@@ -354,7 +354,7 @@ const MWUWidget: React.FC<Props> = ({
             {displayedGains.length > 0 && (
               <text
                 x={(displayedGains.length - 1) * 3.8 + 40 + 10}
-                y={280 - (displayedGains[displayedGains.length - 1] / Math.max(maxGain, 1)) * 240 + 5 - (algIdx * 18)}
+                y={280 - (displayedGains[displayedGains.length - 1] / Math.max(maxGain, 1)) * 240 + 5 - (algIdx * 6)}
                 fontSize="16"
                 textAnchor="start"
               >
@@ -392,7 +392,7 @@ const MWUWidget: React.FC<Props> = ({
             {expertCumulativeGains.length > 0 && (
               <text
                 x={(expertCumulativeGains.length - 1) * 3.8 + 40 - 10}
-                y={280 - (expertCumulativeGains[expertCumulativeGains.length - 1] / Math.max(maxGain, 1)) * 240 + 5 + (expertIdx * 18)}
+                y={280 - (expertCumulativeGains[expertCumulativeGains.length - 1] / Math.max(maxGain, 1)) * 240 + 5 + (expertIdx * 6)}
                 fontSize="16"
                 textAnchor="start"
               >
