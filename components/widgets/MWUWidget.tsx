@@ -430,6 +430,29 @@ const MWUWidget: React.FC<Props> = ({
                 ))}
               </div>
             </div>
+            
+            {/* Replay Slider in Fullscreen */}
+            {!isRunning && currentStep >= 200 && isReplaying && (
+              <div className="mt-6 bg-gray-50 rounded-lg p-4">
+                <div className="flex items-center gap-4">
+                  <span className="text-lg font-semibold text-gray-700">Replay:</span>
+                  <input
+                    type="range"
+                    min="0"
+                    max="200"
+                    value={replayStep || 200}
+                    onChange={(e) => setReplayStep(parseInt(e.target.value))}
+                    className="flex-1 h-2"
+                    style={{
+                      background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((replayStep || 200) / 200) * 100}%, #e5e7eb ${((replayStep || 200) / 200) * 100}%, #e5e7eb 100%)`
+                    }}
+                  />
+                  <span className="text-lg font-mono text-gray-600 w-20 text-right">
+                    {replayStep || 200}/200
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
