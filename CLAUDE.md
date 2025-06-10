@@ -58,3 +58,13 @@ pnpm e2e:build      # Run Cypress E2E tests against production build
 
 ### Component Registration
 New MDX components must be registered in `lib/lib.ts` in the `compileMDX` components object.
+
+## Workflow Instructions
+
+### Push Monitoring
+After pushing commits to GitHub:
+1. Check periodically if the workflow succeeded using `gh run list --limit 1` when you have no other work
+2. If the user reports "your push failed", immediately investigate using `gh run view --log` and fix the issues
+3. Push the fixes and repeat until the workflow succeeds
+
+This ensures the deployment pipeline remains healthy and the static site builds correctly without blocking conversation.

@@ -10,6 +10,8 @@ import { Footnotes, FootnotesProvider } from "./content/Footnotes";
 import { EquationProvider } from "./content/EquationContext";
 import styles from "./Page.module.css";
 import CommentSection from "./CommentSection";
+import AdminPanel from "./AdminPanel";
+import ViewTracker from "./ViewTracker";
 
 interface PageProps {
   children: ReactNode;
@@ -18,6 +20,7 @@ interface PageProps {
 export default async function Page({ children }: PageProps) {
   return (
     <div className="min-h-screen flex flex-col bg-white">
+      <ViewTracker />
       <Header />
       <div className="flex-1">
         <Sidebar
@@ -27,6 +30,7 @@ export default async function Page({ children }: PageProps) {
         <main className={`${styles.main} max-w-[var(--content-width)] mx-auto px-4 pt-12 pb-8`}>{children}</main>
       </div>
       <Footer />
+      <AdminPanel />
     </div>
   );
 }
@@ -43,6 +47,7 @@ export async function singlePage(path: string) {
             <Footnotes headerLevel={0} />
             <References />
             <CommentSection pageId={path} />
+            <AdminPanel />
           </article>
         </FootnotesProvider>
       </CitationsProvider>
