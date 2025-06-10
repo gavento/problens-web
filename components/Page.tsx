@@ -46,7 +46,7 @@ export async function singlePage(path: string) {
             {content}
             <Footnotes headerLevel={0} />
             <References />
-            <CommentSection pageId={path} />
+            {path !== "index" && <CommentSection pageId={path} />}
             <AdminPanel />
           </article>
         </FootnotesProvider>
