@@ -88,7 +88,7 @@ export default function CommentSection({ pageId }: CommentSectionProps) {
   };
 
   const renderMarkdown = (content: string): React.ReactElement => {
-    // Simple markdown rendering for basic formatting
+    // Enhanced markdown rendering for basic formatting
     let html = content
       // Bold text
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -96,6 +96,10 @@ export default function CommentSection({ pageId }: CommentSectionProps) {
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
       // Inline code
       .replace(/`(.*?)`/g, '<code class="bg-gray-200 px-1 py-0.5 rounded text-sm font-mono">$1</code>')
+      // Links
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline">$1</a>')
+      // Strikethrough
+      .replace(/~~(.*?)~~/g, '<del>$1</del>')
       // Line breaks
       .replace(/\n/g, '<br>');
     
@@ -204,12 +208,17 @@ export default function CommentSection({ pageId }: CommentSectionProps) {
         {comments.length === 0 ? (
           <p className="text-gray-500 italic">No comments yet. Be the first to comment!</p>
         ) : (
-          comments.map(comment => (
+          comments.map((comment, index) => (
             <div key={comment.id} className="bg-gray-50 p-4 rounded-lg">
               <div className="flex justify-between items-start mb-2">
-                <span className="font-medium">
-                  {comment.author || "Anonymous"}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-mono text-gray-500 bg-gray-200 px-2 py-1 rounded">
+                    #{index + 1}
+                  </span>
+                  <span className="font-medium">
+                    {comment.author || "Anonymous"}
+                  </span>
+                </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-500">
                     {new Date(comment.timestamp).toLocaleDateString()}

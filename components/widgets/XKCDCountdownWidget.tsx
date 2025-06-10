@@ -22,51 +22,28 @@ const XKCDCountdownWidget: React.FC = () => {
   
   // Calculate posterior probability based on selected prior
   const posteriorProbability = useMemo(() => {
+    const baseNumber = parseInt(evidenceDigits);
+    
     // For uniform prior (λ = 0): P(X = 2382 | evidence) = 1 / evidenceSpace
-    if (priorType === 'uniform' || lambda === 0) {
+    if (lambda === 0) {
       return 1 / evidenceSpace;
     }
     
-    // For log-uniform prior (λ = 1): P(X) ∝ 1/X
-    if (priorType === 'log-uniform' || lambda === 1) {
-      // Calculate normalizing constant for log-uniform over evidence space
-      // Numbers from 10^(totalDigits-evidenceDigits.length) * 10^(evidenceDigits.length) + targetNumber pattern
-      // Simplified: we need to sum 1/x for all x in evidence space
-      
-      // For log-uniform, the posterior is proportional to 1/targetNumber
-      // We need to normalize over all numbers ending in evidenceDigits
-      let normalizingSum = 0;
-      const baseNumber = parseInt(evidenceDigits);
-      
-      // Sum over all 6-digit prefixes (000000 to 999999) + evidenceDigits
-      for (let prefix = 0; prefix < evidenceSpace; prefix++) {
-        const fullNumber = prefix * Math.pow(10, evidenceDigits.length) + baseNumber;
-        if (fullNumber > 0) {
-          normalizingSum += 1 / fullNumber;
-        }
+    // For general power-law prior: P(X) ∝ X^(-λ)
+    let normalizingSum = 0;
+    
+    // Sum over all 6-digit prefixes + evidenceDigits  
+    for (let prefix = 0; prefix < evidenceSpace; prefix++) {
+      const fullNumber = prefix * Math.pow(10, evidenceDigits.length) + baseNumber;
+      if (fullNumber > 0) {
+        normalizingSum += Math.pow(fullNumber, -lambda);
       }
-      
-      return (1 / targetNumber) / normalizingSum;
     }
     
-    // For power-law prior (general λ): P(X) ∝ X^(-λ)
-    if (priorType === 'power-law') {
-      let normalizingSum = 0;
-      const baseNumber = parseInt(evidenceDigits);
-      
-      // Sum over all 6-digit prefixes + evidenceDigits  
-      for (let prefix = 0; prefix < evidenceSpace; prefix++) {
-        const fullNumber = prefix * Math.pow(10, evidenceDigits.length) + baseNumber;
-        if (fullNumber > 0) {
-          normalizingSum += Math.pow(fullNumber, -lambda);
-        }
-      }
-      
-      return Math.pow(targetNumber, -lambda) / normalizingSum;
-    }
+    if (normalizingSum === 0) return 1 / evidenceSpace; // Fallback to uniform
     
-    return 0;
-  }, [priorType, lambda, targetNumber, evidenceSpace, evidenceDigits]);
+    return Math.pow(targetNumber, -lambda) / normalizingSum;
+  }, [lambda, targetNumber, evidenceSpace, evidenceDigits]);
 
   const handlePriorChange = (newPrior: PriorType) => {
     setPriorType(newPrior);
@@ -184,10 +161,10 @@ const XKCDCountdownWidget: React.FC = () => {
           
           <div className="text-sm text-gray-600">
             <p className={`p-2 rounded ${lambda === 0 ? 'bg-yellow-100 border border-yellow-300' : ''}`}>
-              <strong>λ = 0:</strong> Uniform prior (all numbers equally likely)
+              <strong>λ = 0:</strong> Uniform prior (all scales equally likely)
             </p>
             <p className={`p-2 rounded mt-1 ${lambda === 1 ? 'bg-yellow-100 border border-yellow-300' : ''}`}>
-              <strong>λ = 1:</strong> Log-uniform prior (inverse relationship, like Benford&apos;s law)
+              <strong>λ = 1:</strong> Log-uniform prior (like Benford&apos;s law)
             </p>
           </div>
         </div>
@@ -196,12 +173,9 @@ const XKCDCountdownWidget: React.FC = () => {
       {/* Result */}
       <div className="bg-white rounded-lg p-4">
         <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <div className="text-sm text-gray-600 mb-1"><InlineMath math="P(X = 2382 \mid \text{evidence})" />:</div>
-          <div className="text-2xl font-bold text-blue-800">{formatProbability(posteriorProbability)}</div>
-          <div className="text-sm text-gray-500 mt-1">
-            {posteriorProbability < 1e-6 ? 'Very unlikely' : 
-             posteriorProbability < 0.001 ? 'Unlikely' :
-             posteriorProbability < 0.1 ? 'Possible' : 'Likely'}
+          <div className="text-lg text-center text-blue-800">
+            <InlineMath math="P(X = 2382 \mid \text{evidence}) = " />
+            <span className="font-bold">{formatProbability(posteriorProbability)}</span>
           </div>
         </div>
       </div>
