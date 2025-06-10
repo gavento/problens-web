@@ -521,6 +521,9 @@ const MWUWidget: React.FC<Props> = ({
                           {alg === 'followLeader' && state.weights.filter(w => w === 1).length === 1 && (
                             <span className="text-gray-400"> (ties→first)</span>
                           )}
+                          {alg === 'mwu' && (
+                            <span className="text-gray-400"> (ε=0.1)</span>
+                          )}
                         </div>
                       </div>
                     );
@@ -696,6 +699,9 @@ const MWUWidget: React.FC<Props> = ({
                     Weights: {state.weights.map(w => w.toFixed(2)).join(', ')}
                     {alg === 'followLeader' && state.weights.filter(w => w === 1).length === 1 && (
                       <span className="text-gray-400"> (ties→first)</span>
+                    )}
+                    {alg === 'mwu' && (
+                      <span className="text-gray-400"> (ε=0.1)</span>
                     )}
                   </div>
                 </div>
