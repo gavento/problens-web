@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { InlineMath } from 'react-katex';
 
 type PriorType = 'uniform' | 'log-uniform' | 'power-law';
 
@@ -122,24 +123,41 @@ const XKCDCountdownWidget: React.FC = () => {
       <div className="bg-white rounded-lg p-4">
         <h4 className="text-lg font-semibold text-gray-800 mb-3">Select Prior Distribution</h4>
         <div className="grid md:grid-cols-3 gap-3">
-          {[
-            { type: 'uniform' as PriorType, label: 'Uniform', description: 'All numbers equally likely' },
-            { type: 'log-uniform' as PriorType, label: 'Log-uniform', description: 'P(X) ∝ 1/X' },
-            { type: 'power-law' as PriorType, label: 'Power-law', description: 'P(X) ∝ X^(-λ)' }
-          ].map(prior => (
-            <button
-              key={prior.type}
-              onClick={() => handlePriorChange(prior.type)}
-              className={`p-3 rounded-lg border text-left transition-colors ${
-                priorType === prior.type
-                  ? 'bg-blue-100 border-blue-300'
-                  : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
-              }`}
-            >
-              <div className="font-semibold">{prior.label}</div>
-              <div className="text-sm text-gray-600">{prior.description}</div>
-            </button>
-          ))}
+          <button
+            onClick={() => handlePriorChange('uniform')}
+            className={`p-3 rounded-lg border text-left transition-colors ${
+              priorType === 'uniform'
+                ? 'bg-blue-100 border-blue-300'
+                : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+            }`}
+          >
+            <div className="font-semibold">Uniform</div>
+            <div className="text-sm text-gray-600"><InlineMath math="P(X) = \text{const}" /></div>
+          </button>
+          
+          <button
+            onClick={() => handlePriorChange('log-uniform')}
+            className={`p-3 rounded-lg border text-left transition-colors ${
+              priorType === 'log-uniform'
+                ? 'bg-blue-100 border-blue-300'
+                : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+            }`}
+          >
+            <div className="font-semibold">Log-uniform</div>
+            <div className="text-sm text-gray-600"><InlineMath math="P(X) \propto 1/X" /></div>
+          </button>
+          
+          <button
+            onClick={() => handlePriorChange('power-law')}
+            className={`p-3 rounded-lg border text-left transition-colors ${
+              priorType === 'power-law'
+                ? 'bg-blue-100 border-blue-300'
+                : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+            }`}
+          >
+            <div className="font-semibold">Power-law</div>
+            <div className="text-sm text-gray-600"><InlineMath math="P(X) \propto X^{-\lambda}" /></div>
+          </button>
         </div>
       </div>
 
@@ -175,30 +193,15 @@ const XKCDCountdownWidget: React.FC = () => {
         </div>
       </div>
 
-      {/* Results */}
+      {/* Result */}
       <div className="bg-white rounded-lg p-4">
-        <h4 className="text-lg font-semibold text-gray-800 mb-3">Results</h4>
-        <div className="space-y-3">
-          <div className="p-3 bg-gray-50 rounded">
-            <div className="text-sm text-gray-600 mb-1">Current Prior:</div>
-            <div className="font-medium">{getPriorDescription()}</div>
-          </div>
-          
-          <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <div className="text-sm text-gray-600 mb-1">Posterior Probability:</div>
-            <div className="text-2xl font-bold text-blue-800">
-              P(X = {targetNumber.toLocaleString()} | evidence) = {formatProbability(posteriorProbability)}
-            </div>
-            <div className="text-sm text-gray-500 mt-1">
-              {posteriorProbability < 1e-6 ? 'Very unlikely' : 
-               posteriorProbability < 0.001 ? 'Unlikely' :
-               posteriorProbability < 0.1 ? 'Possible' : 'Likely'}
-            </div>
-          </div>
-
-          <div className="text-xs text-gray-500">
-            <p><strong>Note:</strong> The uniform prior gives equal probability to all {evidenceSpace.toLocaleString()} numbers ending in {evidenceDigits}.</p>
-            <p>Power-law priors bias toward smaller numbers when λ {`>`} 0, larger numbers when λ {`<`} 0.</p>
+        <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="text-sm text-gray-600 mb-1"><InlineMath math="P(X = 2382 \mid \text{evidence})" />:</div>
+          <div className="text-2xl font-bold text-blue-800">{formatProbability(posteriorProbability)}</div>
+          <div className="text-sm text-gray-500 mt-1">
+            {posteriorProbability < 1e-6 ? 'Very unlikely' : 
+             posteriorProbability < 0.001 ? 'Unlikely' :
+             posteriorProbability < 0.1 ? 'Possible' : 'Likely'}
           </div>
         </div>
       </div>
