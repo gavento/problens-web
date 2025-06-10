@@ -117,15 +117,6 @@ const XKCDCountdownWidget: React.FC = () => {
         XKCD Countdown Probability Calculator
       </h3>
       
-      <div className="bg-white rounded-lg p-4">
-        <h4 className="text-lg font-semibold text-gray-800 mb-2">Problem Setup</h4>
-        <div className="text-sm text-gray-600 space-y-1">
-          <p><strong>Space:</strong> All {totalDigits}-digit decimal numbers (0 to {(totalSpace - 1).toLocaleString()})</p>
-          <p><strong>Evidence:</strong> Last 8 digits are {evidenceDigits}</p>
-          <p><strong>Question:</strong> What&apos;s P(X = {targetNumber.toLocaleString()} | evidence)?</p>
-          <p><strong>Numbers matching evidence:</strong> {evidenceSpace.toLocaleString()} possibilities</p>
-        </div>
-      </div>
 
       {/* Prior Selection */}
       <div className="bg-white rounded-lg p-4">
