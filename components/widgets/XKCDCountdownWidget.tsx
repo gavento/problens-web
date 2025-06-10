@@ -207,7 +207,7 @@ const XKCDCountdownWidget: React.FC = () => {
 
           <div className="text-xs text-gray-500">
             <p><strong>Note:</strong> The uniform prior gives equal probability to all {evidenceSpace.toLocaleString()} numbers ending in {evidenceDigits}.</p>
-            <p>Power-law priors bias toward smaller numbers when λ > 0, larger numbers when λ < 0.</p>
+            <p>Power-law priors bias toward smaller numbers when λ {`>`} 0, larger numbers when λ {`<`} 0.</p>
           </div>
         </div>
       </div>
