@@ -39,13 +39,13 @@ const MWUWidget: React.FC<Props> = ({
     {
       id: 1,
       name: "Steady Performers",
-      description: "Experts consistently perform with probabilities 3/4, 1/2, 1/4",
-      probabilities: [3/4, 1/2, 1/4]
+      description: "Experts consistently perform with probabilities 1/4, 1/2, 3/4",
+      probabilities: [1/4, 1/2, 3/4]
     },
     {
       id: 2, 
       name: "Regime Change",
-      description: "First 100 steps: 2/3, 1/3, 1/3. Last 100 steps: 0, 0.9, 0"
+      description: "First 100 steps: 2/3, 1/3, 0. Last 100 steps: 0, 1, 1/3"
     },
     {
       id: 3,
@@ -62,6 +62,9 @@ const MWUWidget: React.FC<Props> = ({
   const [history, setHistory] = useState<Map<Algorithm, number[]>>(new Map());
   const [expertGains, setExpertGains] = useState<number[][]>([]);
   const [expertTotalGains, setExpertTotalGains] = useState<number[]>([0, 0, 0]);
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [replayStep, setReplayStep] = useState<number | null>(null);
+  const [isReplaying, setIsReplaying] = useState(false);
   
   const stepIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -94,26 +97,24 @@ const MWUWidget: React.FC<Props> = ({
       
       case 2:
         // Regime change
-        const probs = step < 100 ? [2/3, 1/3, 1/3] : [0, 0.9, 0];
+        const probs = step < 100 ? [2/3, 1/3, 0] : [0, 1, 1/3];
         return experts.map((_, i) => Math.random() < probs[i] ? 1 : 0);
       
       case 3:
-        // Alternating best with symmetry breaking for Follow the Leader
-        // Follow the Leader picks the expert with highest total gains
-        // We make that expert earn 0 to ensure Follow the Leader gets 0
-        const leaderChoice = expertTotalGains.indexOf(Math.max(...expertTotalGains));
+        // Alternating wins: Expert 1 wins on odd days (1, 3, 5...), Expert 2 wins on even days (2, 4, 6...)
+        // Follow the Leader breaks ties by preferring lower indices
+        // Since FTL always picks the "current best", it will always pick wrong
+        // Day 1 (step 0): FTL picks expert 1 (tie, prefers lower index), but expert 1 wins -> FTL gets 1
+        // Day 2 (step 1): FTL picks expert 1 (has 1 vs 0), but expert 2 wins -> FTL gets 0
+        // Day 3 (step 2): FTL picks expert 1 (tie at 1-1, prefers lower), but expert 1 wins -> FTL gets 1
+        // This continues with FTL always being one step behind
         
-        if (step % 2 === 0) {
-          // Expert 1 should win on even steps, unless they're the leader
-          if (leaderChoice === 0) {
-            return [0, 1, 0]; // Expert 2 wins instead
-          }
+        // Note: step is 0-indexed, so step 0 = day 1
+        if ((step + 1) % 2 === 1) {
+          // Odd day (1, 3, 5...): Expert 1 wins
           return [1, 0, 0];
         } else {
-          // Expert 2 should win on odd steps, unless they're the leader
-          if (leaderChoice === 1) {
-            return [1, 0, 0]; // Expert 1 wins instead
-          }
+          // Even day (2, 4, 6...): Expert 2 wins
           return [0, 1, 0];
         }
       
@@ -158,8 +159,19 @@ const MWUWidget: React.FC<Props> = ({
 
         case 'followLeader':
           // Follow the leader: choose expert with highest total gains so far
+          // Breaks ties by preferring lower indices
           const totalGains = currentState.gains.map((g, i) => g + expertGains[i]);
-          const bestExpert = totalGains.indexOf(Math.max(...totalGains));
+          const maxGain = Math.max(...totalGains);
+          let bestExpert = totalGains.indexOf(maxGain);
+          
+          // If there's a tie, prefer the lowest index
+          for (let i = 0; i < totalGains.length; i++) {
+            if (totalGains[i] === maxGain) {
+              bestExpert = i;
+              break;
+            }
+          }
+          
           algorithmGain = expertGains[bestExpert];
           newWeights = [0, 0, 0];
           newWeights[bestExpert] = 1;
@@ -202,6 +214,10 @@ const MWUWidget: React.FC<Props> = ({
   const runStep = () => {
     if (currentStep >= 200 || !currentScenario) {
       setIsRunning(false);
+      if (currentStep >= 200) {
+        setIsReplaying(true);
+        setReplayStep(200);
+      }
       return;
     }
 
@@ -222,6 +238,8 @@ const MWUWidget: React.FC<Props> = ({
     setCurrentScenario(scenarioId);
     setCurrentStep(0);
     setIsRunning(true);
+    setIsReplaying(false);
+    setReplayStep(null);
     initializeAlgorithms();
   };
 
@@ -256,18 +274,172 @@ const MWUWidget: React.FC<Props> = ({
     });
   };
 
+  // Get the current display step (either replay or current)
+  const displayStep = isReplaying && replayStep !== null ? replayStep : currentStep;
+  
   const maxGain = Math.max(
     ...Array.from(history.values()).flat(),
     ...experts.map((_, i) => expertGains.reduce((sum, gains) => sum + gains[i], 0))
   );
+  
+  // Render chart content (shared between normal and fullscreen views)
+  const renderChartContent = () => (
+    <>
+      {/* Grid lines */}
+      {[0, 50, 100, 150, 200].map(x => (
+        <line key={x} x1={x * 3.8 + 40} y1={20} x2={x * 3.8 + 40} y2={280} 
+              stroke="#e5e7eb" strokeWidth="1" />
+      ))}
+      
+      {/* Algorithm lines */}
+      {Array.from(history.entries()).map(([alg, gains]) => {
+        const algInfo = algorithms.find(a => a.id === alg)!;
+        const displayedGains = gains.slice(0, displayStep + 1);
+        return (
+          <g key={alg}>
+            <path
+              d={displayedGains.map((gain, i) => 
+                `${i === 0 ? 'M' : 'L'} ${i * 3.8 + 40} ${280 - (gain / Math.max(maxGain, 1)) * 240}`
+              ).join(' ')}
+              fill="none"
+              stroke={algInfo.color}
+              strokeWidth="3"
+            />
+            {/* Current position dot */}
+            {displayedGains.length > 0 && (
+              <circle
+                cx={(displayedGains.length - 1) * 3.8 + 40}
+                cy={280 - (displayedGains[displayedGains.length - 1] / Math.max(maxGain, 1)) * 240}
+                r="4"
+                fill={algInfo.color}
+              />
+            )}
+          </g>
+        );
+      })}
+
+      {/* Expert lines */}
+      {experts.map((expert, expertIdx) => {
+        const expertCumulativeGains = [];
+        let cumSum = 0;
+        expertCumulativeGains.push(cumSum);
+        
+        const maxSteps = Math.min(displayStep, expertGains.length);
+        for (let i = 0; i < maxSteps; i++) {
+          cumSum += expertGains[i][expertIdx] || 0;
+          expertCumulativeGains.push(cumSum);
+        }
+
+        return (
+          <g key={expertIdx}>
+            <path
+              d={expertCumulativeGains.map((gain, i) => 
+                `${i === 0 ? 'M' : 'L'} ${i * 3.8 + 40} ${280 - (gain / Math.max(maxGain, 1)) * 240}`
+              ).join(' ')}
+              fill="none"
+              stroke={expert.color}
+              strokeWidth="2"
+              strokeDasharray="5,5"
+            />
+            {/* Expert emoji at the end */}
+            {expertCumulativeGains.length > 0 && (
+              <text
+                x={(expertCumulativeGains.length - 1) * 3.8 + 40}
+                y={280 - (expertCumulativeGains[expertCumulativeGains.length - 1] / Math.max(maxGain, 1)) * 240 + 5}
+                fontSize="16"
+                textAnchor="start"
+              >
+                {expert.emoji}
+              </text>
+            )}
+          </g>
+        );
+      })}
+
+      {/* Axes */}
+      <line x1="40" y1="280" x2="810" y2="280" stroke="#374151" strokeWidth="2" />
+      <line x1="40" y1="20" x2="40" y2="280" stroke="#374151" strokeWidth="2" />
+      
+      {/* Labels */}
+      <text x="420" y="295" textAnchor="middle" className="text-sm fill-gray-700">Steps</text>
+      <text x="25" y="15" textAnchor="middle" className="text-sm fill-gray-700">Gain</text>
+    </>
+  );
 
   return (
-    <div className="p-6 bg-gray-50 rounded-lg space-y-6 max-w-6xl mx-auto">
-      {title && (
-        <h3 className="text-xl font-semibold text-center text-gray-800">
-          {title}
-        </h3>
+    <>
+      {/* Fullscreen overlay */}
+      {isZoomed && currentScenario && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
+          onClick={() => setIsZoomed(false)}
+        >
+          <div 
+            className="bg-white rounded-lg p-6 w-full max-w-7xl max-h-[90vh] overflow-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h4 className="text-2xl font-semibold text-gray-800">
+                Cumulative Gains (Step {displayStep}/200) - {scenarios[currentScenario - 1].name}
+              </h4>
+              <button
+                onClick={() => setIsZoomed(false)}
+                className="text-3xl hover:bg-gray-100 rounded-full w-10 h-10 flex items-center justify-center"
+              >
+                ×
+              </button>
+            </div>
+            
+            <svg 
+              width="100%" 
+              height="600" 
+              viewBox="0 0 850 300" 
+              preserveAspectRatio="xMidYMid meet" 
+              className="border"
+            >
+              {renderChartContent()}
+            </svg>
+
+            {/* Legend */}
+            <div className="mt-6 text-lg">
+              <div className="flex flex-wrap gap-6 mb-3">
+                <div className="font-semibold">Algorithms:</div>
+                {Array.from(selectedAlgorithms).map(alg => {
+                  const algInfo = algorithms.find(a => a.id === alg)!;
+                  return (
+                    <div key={alg} className="flex items-center space-x-2">
+                      <div 
+                        className="w-6 h-1.5" 
+                        style={{ backgroundColor: algInfo.color }}
+                      />
+                      <span>{algInfo.emoji} {algInfo.name}</span>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="flex flex-wrap gap-6">
+                <div className="font-semibold">Experts:</div>
+                {experts.map((expert, i) => (
+                  <div key={i} className="flex items-center space-x-2">
+                    <div 
+                      className="w-6 h-1.5 border-dashed border-2" 
+                      style={{ borderColor: expert.color }}
+                    />
+                    <span>{expert.emoji} {expert.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       )}
+
+      <div className="p-6 bg-gray-50 rounded-lg space-y-6 max-w-6xl mx-auto">
+        {title && (
+          <h3 className="text-xl font-semibold text-center text-gray-800">
+            {title}
+          </h3>
+        )}
 
       {/* Algorithm Selection */}
       <div className="bg-white rounded-lg p-4">
@@ -317,95 +489,38 @@ const MWUWidget: React.FC<Props> = ({
         <div className="bg-white rounded-lg p-4">
           <div className="flex justify-between items-center mb-4">
             <h4 className="text-lg font-semibold text-gray-800">
-              Cumulative Gains (Step {currentStep}/200)
+              Cumulative Gains (Step {displayStep}/200)
             </h4>
-            <div className="text-sm text-gray-600">
-              Scenario {currentScenario}: {scenarios[currentScenario - 1].name}
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-gray-600">
+                Scenario {currentScenario}: {scenarios[currentScenario - 1].name}
+              </div>
+              <button
+                onClick={() => setIsZoomed(!isZoomed)}
+                className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+              >
+                {isZoomed ? '🗗 Exit Fullscreen' : '🔍 Zoom'}
+              </button>
             </div>
           </div>
           
-          <div className="relative overflow-hidden">
-            <svg width="100%" height="300" viewBox="0 0 850 300" preserveAspectRatio="xMidYMid meet" className="border">
-              {/* Grid lines */}
-              {[0, 50, 100, 150, 200].map(x => (
-                <line key={x} x1={x * 3.8 + 40} y1={20} x2={x * 3.8 + 40} y2={280} 
-                      stroke="#e5e7eb" strokeWidth="1" />
-              ))}
-              
-              {/* Algorithm lines */}
-              {Array.from(history.entries()).map(([alg, gains]) => {
-                const algInfo = algorithms.find(a => a.id === alg)!;
-                return (
-                  <g key={alg}>
-                    <path
-                      d={gains.map((gain, i) => 
-                        `${i === 0 ? 'M' : 'L'} ${i * 3.8 + 40} ${280 - (gain / Math.max(maxGain, 1)) * 240}`
-                      ).join(' ')}
-                      fill="none"
-                      stroke={algInfo.color}
-                      strokeWidth="3"
-                    />
-                    {/* Current position dot */}
-                    {gains.length > 0 && (
-                      <circle
-                        cx={(gains.length - 1) * 3.8 + 40}
-                        cy={280 - (gains[gains.length - 1] / Math.max(maxGain, 1)) * 240}
-                        r="4"
-                        fill={algInfo.color}
-                      />
-                    )}
-                  </g>
-                );
-              })}
-
-              {/* Expert lines */}
-              {experts.map((expert, expertIdx) => {
-                const expertCumulativeGains = [];
-                let cumSum = 0;
-                expertCumulativeGains.push(cumSum);
-                
-                for (let i = 0; i < expertGains.length; i++) {
-                  cumSum += expertGains[i][expertIdx] || 0;
-                  expertCumulativeGains.push(cumSum);
-                }
-
-                return (
-                  <g key={expertIdx}>
-                    <path
-                      d={expertCumulativeGains.map((gain, i) => 
-                        `${i === 0 ? 'M' : 'L'} ${i * 3.8 + 40} ${280 - (gain / Math.max(maxGain, 1)) * 240}`
-                      ).join(' ')}
-                      fill="none"
-                      stroke={expert.color}
-                      strokeWidth="2"
-                      strokeDasharray="5,5"
-                    />
-                    {/* Expert emoji at the end */}
-                    {expertCumulativeGains.length > 0 && (
-                      <text
-                        x={(expertCumulativeGains.length - 1) * 3.8 + 45}
-                        y={280 - (expertCumulativeGains[expertCumulativeGains.length - 1] / Math.max(maxGain, 1)) * 240 + 5}
-                        fontSize="16"
-                      >
-                        {expert.emoji}
-                      </text>
-                    )}
-                  </g>
-                );
-              })}
-
-              {/* Axes */}
-              <line x1="40" y1="280" x2="810" y2="280" stroke="#374151" strokeWidth="2" />
-              <line x1="40" y1="20" x2="40" y2="280" stroke="#374151" strokeWidth="2" />
-              
-              {/* Labels */}
-              <text x="420" y="295" textAnchor="middle" className="text-sm fill-gray-700">Steps</text>
-              <text x="25" y="15" textAnchor="middle" className="text-sm fill-gray-700">Gain</text>
+          <div 
+            className={`relative overflow-hidden ${isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'}`}
+            onClick={() => setIsZoomed(!isZoomed)}
+          >
+            <svg 
+              width="100%" 
+              height={isZoomed ? "600" : "300"} 
+              viewBox="0 0 850 300" 
+              preserveAspectRatio="xMidYMid meet" 
+              className="border transition-all duration-300"
+            >
+              {renderChartContent()}
             </svg>
           </div>
 
           {/* Legend */}
-          <div className="mt-4">
+          <div className={`mt-4 ${isZoomed ? 'text-lg' : ''}"}>
             <div className="flex flex-wrap gap-4 mb-2">
               <div className="text-sm text-gray-600">
                 <strong>Algorithms:</strong>
@@ -438,6 +553,29 @@ const MWUWidget: React.FC<Props> = ({
               ))}
             </div>
           </div>
+          
+          {/* Replay Slider */}
+          {!isRunning && currentStep >= 200 && isReplaying && (
+            <div className="mt-6 bg-gray-50 rounded-lg p-4">
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-semibold text-gray-700">Replay:</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="200"
+                  value={replayStep || 200}
+                  onChange={(e) => setReplayStep(parseInt(e.target.value))}
+                  className="flex-1"
+                  style={{
+                    background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((replayStep || 200) / 200) * 100}%, #e5e7eb ${((replayStep || 200) / 200) * 100}%, #e5e7eb 100%)`
+                  }}
+                />
+                <span className="text-sm font-mono text-gray-600 w-16 text-right">
+                  {replayStep || 200}/200
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -458,6 +596,9 @@ const MWUWidget: React.FC<Props> = ({
                   </div>
                   <div className="text-xs text-gray-500 mt-1">
                     Weights: {state.weights.map(w => w.toFixed(2)).join(', ')}
+                    {alg === 'followLeader' && state.weights.filter(w => w === 1).length === 1 && (
+                      <span className="text-gray-400"> (ties→first)</span>
+                    )}
                   </div>
                 </div>
               );
@@ -466,6 +607,7 @@ const MWUWidget: React.FC<Props> = ({
         </div>
       )}
     </div>
+    </>
   );
 };
 
