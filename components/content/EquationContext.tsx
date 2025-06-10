@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import React, { createContext, useContext, useState, useCallback, ReactNode, useRef } from "react";
 
 interface EquationContextType {
   getEquationNumber: (id: string) => number;
@@ -15,7 +15,7 @@ interface EquationProviderProps {
 
 export function EquationProvider({ children }: EquationProviderProps) {
   const [equations, setEquations] = useState<Record<string, number>>({});
-  const [nextNumber, setNextNumber] = useState(1);
+  const nextNumberRef = useRef(1);
 
   const getEquationNumber = useCallback((id: string) => {
     if (equations[id]) {
@@ -23,11 +23,12 @@ export function EquationProvider({ children }: EquationProviderProps) {
     }
     
     // Assign new number to this equation
-    const number = nextNumber;
+    const number = nextNumberRef.current;
+    nextNumberRef.current += 1;
+    
     setEquations(prev => ({ ...prev, [id]: number }));
-    setNextNumber(prev => prev + 1);
     return number;
-  }, [equations, nextNumber]);
+  }, [equations]);
 
   const getAllEquations = useCallback(() => equations, [equations]);
 

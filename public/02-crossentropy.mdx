@@ -132,6 +132,8 @@ Example time (check out the picture): You're flipping a fair coin, so $p =$ \{H:
 
 But what if your model is way off, like $q =$ \{H: 0.999, T: 0.001\}? You're not surprised by heads at all, but every time you see tails, your surprisal shoots up to $\log 1/0.001 \approx 10$. So your average surprise—the cross-entropy—is about 5. That's way bigger! 
 
+Analogously to KL divergence, cross-entropy is additive so if you keep flipping coins like in the picture below, the total cross-entropy for $n$ flips is going to be $n$ times larger than crossentropy for individual flip. 
+
 ![cross-entropy](02-crossentropy/crossentropy.png)
 
 Bottom line: better models are less surprised by the data, so they have smaller cross-entropy. 
@@ -151,9 +153,18 @@ But entropy can also get way bigger than 1 bit. Rolling a die has entropy $\log_
 Try playing with this widget to get a feel!
 <EntropyWidget numCategories={6} title="Entropy of die-rolling" />
 
+<Example headline = "Example: Entropy of 4 common English words">
+Here's an example. Let's say there are about $2^{11}$ English words that can be described as 'common'. If you generate uniformly four such common words and make your password the concatenation of them, the total entropy is thus going to be $44$ bits. That's because entropy is a special case of cross-entropy and is thus additive. 
+
+The following comic wisely teaches us that this is a pretty secure password! Even if an adversary knows how you generated it, cracking it means they have to check about $2^{44}$ possibilities. 
+
+<a href="https://xkcd.com/936/" target="_blank" rel="noopener noreferrer">
+  <img src="02-crossentropy/password.png" alt="password" style={{cursor: 'pointer'}} />
+</a>
+</Example>
 
 ### Relative entropy: 
-Finally, $D(p,q)$ is just the gap between these two. It tells you how far your average surprise (cross-entropy) is from the best possible (entropy). 
+Finally, $D(p,q)$ is just the gap between cross-entropy and entropy. It tells you how far your average surprise (cross-entropy) is from the best possible (entropy). 
 That's why some folks call KL divergence the _relative entropy_ between $p$ and $q$. <Footnote>Way better name than KL divergence if you ask me. But KL divergence is what everyone uses, so we're stuck with it. </Footnote>
 
 ### So what's the big deal?
