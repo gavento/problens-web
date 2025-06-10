@@ -122,7 +122,7 @@ const XKCDCountdownWidget: React.FC = () => {
         <div className="text-sm text-gray-600 space-y-1">
           <p><strong>Space:</strong> All {totalDigits}-digit decimal numbers (0 to {(totalSpace - 1).toLocaleString()})</p>
           <p><strong>Evidence:</strong> Last 8 digits are {evidenceDigits}</p>
-          <p><strong>Question:</strong> What's P(X = {targetNumber.toLocaleString()} | evidence)?</p>
+          <p><strong>Question:</strong> What&apos;s P(X = {targetNumber.toLocaleString()} | evidence)?</p>
           <p><strong>Numbers matching evidence:</strong> {evidenceSpace.toLocaleString()} possibilities</p>
         </div>
       </div>
@@ -178,7 +178,7 @@ const XKCDCountdownWidget: React.FC = () => {
               <strong>λ = 0:</strong> Uniform prior (all numbers equally likely)
             </p>
             <p className={`p-2 rounded mt-1 ${lambda === 1 ? 'bg-yellow-100 border border-yellow-300' : ''}`}>
-              <strong>λ = 1:</strong> Log-uniform prior (inverse relationship, like Benford's law)
+              <strong>λ = 1:</strong> Log-uniform prior (inverse relationship, like Benford&apos;s law)
             </p>
           </div>
         </div>
