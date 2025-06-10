@@ -168,6 +168,7 @@ export async function getMdxContent(path: string) {
       Math: NumberedMath,
       EqRef: EquationRef,
       Block: Block,
+      Example: Block,
       Expand: Expand,
     },
     options: {
