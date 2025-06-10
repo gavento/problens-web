@@ -328,7 +328,7 @@ const MWUWidget: React.FC<Props> = ({
       ))}
       
       {/* Algorithm lines */}
-      {Array.from(history.entries()).map(([alg, gains]) => {
+      {Array.from(history.entries()).map(([alg, gains], algIdx) => {
         const algInfo = algorithms.find(a => a.id === alg)!;
         const displayedGains = gains.slice(0, displayStep + 1);
         return (
@@ -349,6 +349,17 @@ const MWUWidget: React.FC<Props> = ({
                 r="4"
                 fill={algInfo.color}
               />
+            )}
+            {/* Algorithm emoji at the end */}
+            {displayedGains.length > 0 && (
+              <text
+                x={(displayedGains.length - 1) * 3.8 + 40 + 10}
+                y={280 - (displayedGains[displayedGains.length - 1] / Math.max(maxGain, 1)) * 240 + 5 - (algIdx * 18)}
+                fontSize="16"
+                textAnchor="start"
+              >
+                {algInfo.emoji}
+              </text>
             )}
           </g>
         );
@@ -380,7 +391,7 @@ const MWUWidget: React.FC<Props> = ({
             {/* Expert emoji at the end */}
             {expertCumulativeGains.length > 0 && (
               <text
-                x={(expertCumulativeGains.length - 1) * 3.8 + 40}
+                x={(expertCumulativeGains.length - 1) * 3.8 + 40 - 10}
                 y={280 - (expertCumulativeGains[expertCumulativeGains.length - 1] / Math.max(maxGain, 1)) * 240 + 5 + (expertIdx * 18)}
                 fontSize="16"
                 textAnchor="start"
