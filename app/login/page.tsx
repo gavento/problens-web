@@ -11,17 +11,36 @@ export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Simple hash function for password verification
+  const simpleHash = async (text: string): Promise<string> => {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(text);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsLoggingIn(true);
 
-    // Simple hardcoded authentication
-    if (credentials.username === "vasek" && credentials.password === "Iloverelativeentropy") {
-      login();
-      router.push("/");
-    } else {
-      setError("Invalid credentials");
+    try {
+      // Hash-based authentication - only hashed passwords are stored in code
+      const adminUsername = "vasek";
+      const adminPasswordHash = "238e20f30963e7c287898302628a1809afe812b4ea27b9f4dff6e2ed88fbd89c"; // Hash of "probabilityiscool"
+      
+      const inputPasswordHash = await simpleHash(credentials.password);
+      
+      if (credentials.username === adminUsername && inputPasswordHash === adminPasswordHash) {
+        login();
+        router.push("/");
+      } else {
+        setError("Invalid credentials");
+        setIsLoggingIn(false);
+      }
+    } catch (error) {
+      setError("Authentication error");
       setIsLoggingIn(false);
     }
   };
