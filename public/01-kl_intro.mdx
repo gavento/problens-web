@@ -90,16 +90,16 @@ We started with one bit favoring fair, so we end up with 1.26 bits for fair. Con
 Let's say the coin actually is biased. How fast will our Bayesian hero figure this out? We can calculate the average bits learned per flip. Heads give -1 bit (negative 'cause it points the wrong way), tails give +0.58 bits. On average, each flip gives:
 
 $$
-0.25 \cdot (-1) + 0.75 \cdot 0.58 \approx 0.185
+0.25 \cdot (-1) + 0.75 \cdot 0.58 \approx 0.19
 $$
 
 bits of evidence toward the truth. Boom—that's the KL divergence between the true 25%/75% distribution and the model 50%/50% distribution!
 
 What's this mean in practice? You need about 5.4 flips to get one bit of evidence. So if you start thinking 2:1 the coin is fair, after ~5 flips you'll be at 1:1. Another 5 flips gets you to 2:1 it's biased, then 4:1, and so on.
 
-The actual odds bounce around this average. But thanks to the law of large numbers, after $N$ flips the total evidence will be close to $0.185 \cdot N$. <Footnote> More precisely, it's $0.185N \pm O(\sqrt{N})$. We use logs and talk about bits because the law of large numbers works for adding stuff, not multiplying. </Footnote>
+The actual odds bounce around this average. But thanks to the law of large numbers, after $N$ flips the total evidence will be close to $0.19 \cdot N$. <Footnote> More precisely, it's $0.19N \pm O(\sqrt{N})$. We use logs and talk about bits because the law of large numbers works for adding stuff, not multiplying. </Footnote>
 
-Try it yourself!
+Try it yourself! I recommend checking edge cases like 50% vs 51% (to get  intuition about when the law of large numbers kicks in) or what's the difference between 50% vs 1% and 1% vs 50%. 
 
 <EvidenceAccumulationSimulator />
 
@@ -154,7 +154,7 @@ Remember our three joint distributions $p_1, p_2, p_3$:
 
 They all have the same marginals (same row and column totals). If the marginals were independent, we'd get this product distribution $q$:
 
-<img src = "00-introduction/independence2.png" style = "width : 34%;"/>
+<img src="00-introduction/independence2.png" style={{width: '34%'}} />
 
 Which one's "most" independent?
 
@@ -177,7 +177,7 @@ For example, in the widget below, make <Math math = "P(\textrm{☀️} AND \text
 Technically speaking, this is because the formula for mutual information can be rewritten as $I(X;Y) = H(X) - H(X|Y)$. See e.g. [Wikipedia](https://en.wikipedia.org/wiki/Mutual_information) for more discussion. 
 </Expand>
 
-<MutualInformationWidget />
+{/*<MutualInformationWidget />*/}
 
 </Expand>
 
