@@ -520,7 +520,7 @@ const MWUWidget: React.FC<Props> = ({
           </div>
 
           {/* Legend */}
-          <div className={`mt-4 ${isZoomed ? 'text-lg' : ''}"}>
+          <div className={`mt-4 ${isZoomed ? 'text-lg' : ''}`}>
             <div className="flex flex-wrap gap-4 mb-2">
               <div className="text-sm text-gray-600">
                 <strong>Algorithms:</strong>
