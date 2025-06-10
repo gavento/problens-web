@@ -137,6 +137,19 @@ const BayesSequenceWidget: React.FC<Props> = ({
           </button>
         </div>
 
+        {/* Slider for navigation */}
+        <div className="flex items-center space-x-3 mb-4">
+          <span className="text-sm text-gray-600">Step:</span>
+          <input
+            type="range"
+            min="0"
+            max={sequence.length}
+            value={currentStep}
+            onChange={(e) => setCurrentStep(parseInt(e.target.value))}
+            className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+          />
+          <span className="text-sm text-gray-600 w-8">{currentStep}</span>
+        </div>
 
         {/* Prior and flip rows */}
         <div className="bg-white rounded-lg p-4 space-y-2">
@@ -197,20 +210,6 @@ const BayesSequenceWidget: React.FC<Props> = ({
               </div>
             </div>
           </div>
-        </div>
-        
-        {/* Slider for navigation */}
-        <div className="flex items-center space-x-3 mt-4">
-          <span className="text-sm text-gray-600">Step:</span>
-          <input
-            type="range"
-            min="0"
-            max={sequence.length}
-            value={currentStep}
-            onChange={(e) => setCurrentStep(parseInt(e.target.value))}
-            className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-          />
-          <span className="text-sm text-gray-600 w-8">{currentStep}</span>
         </div>
       </div>
     </div>
