@@ -172,7 +172,7 @@ This works for any joint distribution $(r, s)$. The KL divergence between $(r, s
 <Expand headline = "Intuition">
 Intuitevely, mutual information tells you how many bits you learn about $r$ when you find out $s$ (or vice versa—it's symmetric).
 
-For example, in the widget below, make $P(\text{☀️ AND 🚶‍♀️}) = P(\text{☁️ AND 🚲}) = \frac{1}{2}$. The mutual information is 1 bit. That's because if learning the value of one distribution, say transport, makes the entropy of the other distribution smaller by 1 bit - the weather distribution changes from a coin flip with entropy of 1 bit to either determined ☀️ or determined ☁️ with 0 entropy. 
+For example, in the widget below, make $P(\text\{☀️ AND 🚶‍♀️\}) = P(\text\{☁️ AND 🚲\}) = \frac\{1\}\{2\}$. The mutual information is 1 bit. That's because if learning the value of one distribution, say transport, makes the entropy of the other distribution smaller by 1 bit - the weather distribution changes from a coin flip with entropy of 1 bit to either determined ☀️ or determined ☁️ with 0 entropy. 
 
 Technically speaking, this is because the formula for mutual information can be rewritten as $I(X;Y) = H(X) - H(X|Y)$. See e.g. [Wikipedia](https://en.wikipedia.org/wiki/Mutual_information) for more discussion. 
 </Expand>
