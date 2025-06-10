@@ -79,15 +79,6 @@ const BayesSequenceWidget: React.FC<Props> = ({
     setIsEditing(!isEditing);
   };
 
-  const handleStep = () => {
-    if (currentStep < sequence.length) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
-
-  const handleReset = () => {
-    setCurrentStep(0);
-  };
 
   const handleCoinClick = (index: number) => {
     if (!isEditing) return;
@@ -138,33 +129,14 @@ const BayesSequenceWidget: React.FC<Props> = ({
             </div>
           )}
           
-          <div className="flex space-x-2">
-            <button
-              onClick={handleEdit}
-              className="px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300"
-            >
-              {isEditing ? 'Save' : 'Edit'}
-            </button>
-            <button
-              onClick={handleStep}
-              disabled={currentStep >= sequence.length}
-              className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 disabled:bg-gray-300"
-            >
-              Step
-            </button>
-            <button
-              onClick={handleReset}
-              className="px-3 py-1 bg-gray-500 text-white rounded text-sm hover:bg-gray-600"
-            >
-              Reset
-            </button>
-          </div>
+          <button
+            onClick={handleEdit}
+            className="px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300"
+          >
+            {isEditing ? 'Save' : 'Edit'}
+          </button>
         </div>
 
-        {/* Progress */}
-        <div className="text-center text-sm text-gray-600 mb-4">
-          Current step: {currentStep}/{sequence.length}
-        </div>
 
         {/* Prior and flip rows */}
         <div className="bg-white rounded-lg p-4 space-y-2">
@@ -182,9 +154,7 @@ const BayesSequenceWidget: React.FC<Props> = ({
           {steps.slice(1, currentStep + 1).map((step, index) => (
             <div
               key={index}
-              className={`flex items-center py-2 px-3 rounded ${
-                index === currentStep - 1 ? 'bg-yellow-50 border border-yellow-300' : 'bg-gray-50'
-              }`}
+              className="flex items-center py-2 px-3 rounded bg-gray-50"
             >
               <span className="font-mono font-bold text-lg w-12 text-center">
                 {step.flip}
@@ -228,12 +198,20 @@ const BayesSequenceWidget: React.FC<Props> = ({
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Instructions */}
-      <div className="text-center text-sm text-gray-600">
-        Step through the sequence to see how each coin flip updates the posterior probabilities.
-        Click Edit to modify the sequence.
+        
+        {/* Slider for navigation */}
+        <div className="flex items-center space-x-3 mt-4">
+          <span className="text-sm text-gray-600">Step:</span>
+          <input
+            type="range"
+            min="0"
+            max={sequence.length}
+            value={currentStep}
+            onChange={(e) => setCurrentStep(parseInt(e.target.value))}
+            className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+          />
+          <span className="text-sm text-gray-600 w-8">{currentStep}</span>
+        </div>
       </div>
     </div>
   );
