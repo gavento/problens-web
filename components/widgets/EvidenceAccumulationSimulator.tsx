@@ -304,24 +304,6 @@ const EvidenceAccumulationSimulator = () => {
         </div>
       </div>
 
-      <div className="bg-blue-50 p-4 rounded-lg">
-        <h3 className="font-semibold mb-2">Try yourself:</h3>
-        <ul className="list-disc pl-5 space-y-1 text-sm">
-          <li>
-            Check that as you keep flipping the coin many times, the accumulated evidence tends to grow at a rate equal
-            to the KL divergence.
-          </li>
-          <li>
-            Try very similar true/model probabilities, e.g. 50% vs 51%, to get some intuition about how long it takes
-            until the law of large numbers kicks in.
-          </li>
-          <li>What happens if the true and model probability are the same?</li>
-          <li>
-            Consider two cases: the truth is 50%/50% and the model is 1%/99%, and the truth is 1%/99% and the model is
-            50%/50%. Which case corresponds to higher KL divergence?
-          </li>
-        </ul>
-      </div>
     </div>
   );
 };
