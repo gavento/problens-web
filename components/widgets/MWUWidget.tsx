@@ -381,7 +381,7 @@ const MWUWidget: React.FC<Props> = ({
             {expertCumulativeGains.length > 0 && (
               <text
                 x={(expertCumulativeGains.length - 1) * 3.8 + 40}
-                y={280 - (expertCumulativeGains[expertCumulativeGains.length - 1] / Math.max(maxGain, 1)) * 240 + 5}
+                y={280 - (expertCumulativeGains[expertCumulativeGains.length - 1] / Math.max(maxGain, 1)) * 240 + 5 + (expertIdx * 18)}
                 fontSize="16"
                 textAnchor="start"
               >
