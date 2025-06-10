@@ -427,7 +427,7 @@ const MWUWidget: React.FC<Props> = ({
           >
             <div className="flex justify-between items-center mb-4">
               <h4 className="text-2xl font-semibold text-gray-800">
-                Cumulative Gains (Step {displayStep}/200) - {scenarios[currentScenario - 1].name}
+                Cumulative Gains (Step {displayStep}/200)
               </h4>
               <button
                 onClick={() => setIsZoomed(false)}
