@@ -4,12 +4,14 @@ import React, { useState, useMemo } from "react";
 
 type Props = {
   title?: string;
+  logSpace?: boolean;
 };
 
 type CoinFlip = 'H' | 'T';
 
 const BayesSequenceWidget: React.FC<Props> = ({
-  title = "Bayes Sequence Explorer"
+  title = "Bayes Sequence Explorer",
+  logSpace = false
 }) => {
   const [sequence, setSequence] = useState<CoinFlip[]>(['H', 'T', 'T', 'H', 'T']);
   const [currentStep, setCurrentStep] = useState(0);
@@ -17,12 +19,12 @@ const BayesSequenceWidget: React.FC<Props> = ({
   const [editText, setEditText] = useState('HTTHT');
   
   // Fixed parameters for the coin example
-  const priorFair = 2;
-  const priorBiased = 1;
-  const probHeadsFair = 0.5;
-  const probHeadsBiased = 0.25;
-  const probTailsFair = 0.5;
-  const probTailsBiased = 0.75;
+  const priorFair = logSpace ? 1 : 2; // log₂(2) : 2
+  const priorBiased = logSpace ? 0 : 1; // log₂(1) : 1
+  const probHeadsFair = logSpace ? -1 : 0.5; // log₂(0.5) : 0.5
+  const probHeadsBiased = logSpace ? -2 : 0.25; // log₂(0.25) : 0.25
+  const probTailsFair = logSpace ? -1 : 0.5; // log₂(0.5) : 0.5
+  const probTailsBiased = logSpace ? Math.log2(0.75) : 0.75; // log₂(0.75) : 0.75
 
   const steps = useMemo(() => {
     const results = [];
@@ -30,16 +32,31 @@ const BayesSequenceWidget: React.FC<Props> = ({
     let oddsBiased = priorBiased;
     
     // Step 0: Prior
-    results.push({
-      step: 0,
-      flip: null,
-      likelihoodFair: null,
-      likelihoodBiased: null,
-      oddsFair,
-      oddsBiased,
-      probFair: (oddsFair / (oddsFair + oddsBiased)) * 100,
-      probBiased: (oddsBiased / (oddsFair + oddsBiased)) * 100
-    });
+    if (logSpace) {
+      results.push({
+        step: 0,
+        flip: null,
+        likelihoodFair: null,
+        likelihoodBiased: null,
+        logOddsFair: oddsFair,
+        logOddsBiased: oddsBiased,
+        oddsFair: Math.pow(2, oddsFair),
+        oddsBiased: Math.pow(2, oddsBiased),
+        probFair: (Math.pow(2, oddsFair) / (Math.pow(2, oddsFair) + Math.pow(2, oddsBiased))) * 100,
+        probBiased: (Math.pow(2, oddsBiased) / (Math.pow(2, oddsFair) + Math.pow(2, oddsBiased))) * 100
+      });
+    } else {
+      results.push({
+        step: 0,
+        flip: null,
+        likelihoodFair: null,
+        likelihoodBiased: null,
+        oddsFair,
+        oddsBiased,
+        probFair: (oddsFair / (oddsFair + oddsBiased)) * 100,
+        probBiased: (oddsBiased / (oddsFair + oddsBiased)) * 100
+      });
+    }
 
     // Each flip
     for (let i = 0; i < sequence.length; i++) {
@@ -47,23 +64,45 @@ const BayesSequenceWidget: React.FC<Props> = ({
       const likelihoodFair = flip === 'H' ? probHeadsFair : probTailsFair;
       const likelihoodBiased = flip === 'H' ? probHeadsBiased : probTailsBiased;
       
-      oddsFair *= likelihoodFair;
-      oddsBiased *= likelihoodBiased;
-      
-      results.push({
-        step: i + 1,
-        flip,
-        likelihoodFair,
-        likelihoodBiased,
-        oddsFair,
-        oddsBiased,
-        probFair: (oddsFair / (oddsFair + oddsBiased)) * 100,
-        probBiased: (oddsBiased / (oddsFair + oddsBiased)) * 100
-      });
+      if (logSpace) {
+        // In log space, multiplication becomes addition
+        oddsFair += likelihoodFair;
+        oddsBiased += likelihoodBiased;
+        
+        const regularOddsFair = Math.pow(2, oddsFair);
+        const regularOddsBiased = Math.pow(2, oddsBiased);
+        
+        results.push({
+          step: i + 1,
+          flip,
+          likelihoodFair,
+          likelihoodBiased,
+          logOddsFair: oddsFair,
+          logOddsBiased: oddsBiased,
+          oddsFair: regularOddsFair,
+          oddsBiased: regularOddsBiased,
+          probFair: (regularOddsFair / (regularOddsFair + regularOddsBiased)) * 100,
+          probBiased: (regularOddsBiased / (regularOddsFair + regularOddsBiased)) * 100
+        });
+      } else {
+        oddsFair *= likelihoodFair;
+        oddsBiased *= likelihoodBiased;
+        
+        results.push({
+          step: i + 1,
+          flip,
+          likelihoodFair,
+          likelihoodBiased,
+          oddsFair,
+          oddsBiased,
+          probFair: (oddsFair / (oddsFair + oddsBiased)) * 100,
+          probBiased: (oddsBiased / (oddsFair + oddsBiased)) * 100
+        });
+      }
     }
     
     return results;
-  }, [sequence]);
+  }, [sequence, logSpace, probHeadsFair, probHeadsBiased, probTailsFair, probTailsBiased, priorFair, priorBiased]);
 
   const handleEdit = () => {
     if (isEditing) {
@@ -116,9 +155,7 @@ const BayesSequenceWidget: React.FC<Props> = ({
                   key={index}
                   className={`w-8 h-8 flex items-center justify-center rounded border-2 font-mono font-bold cursor-pointer ${
                     index < currentStep
-                      ? 'bg-blue-100 border-blue-300 text-blue-700'
-                      : index === currentStep
-                      ? 'bg-yellow-100 border-yellow-400 text-yellow-700'
+                      ? logSpace ? 'bg-purple-100 border-purple-300 text-purple-700' : 'bg-blue-100 border-blue-300 text-blue-700'
                       : 'bg-gray-100 border-gray-300 text-gray-500'
                   }`}
                   onClick={() => handleCoinClick(index)}
@@ -154,7 +191,9 @@ const BayesSequenceWidget: React.FC<Props> = ({
         {/* Prior and flip rows */}
         <div className="bg-white rounded-lg p-4 space-y-2">
           {/* Prior row */}
-          <div className="flex items-center py-2 px-3 rounded bg-blue-50 border border-blue-200">
+          <div className={`flex items-center py-2 px-3 rounded border ${
+            logSpace ? 'bg-purple-50 border-purple-200' : 'bg-blue-50 border-blue-200'
+          }`}>
             <span className="text-sm font-medium text-gray-700 w-12">Prior</span>
             <div className="flex-1 flex items-center justify-center space-x-2">
               <span className="font-mono text-sm font-bold">{priorFair}</span>
@@ -182,15 +221,30 @@ const BayesSequenceWidget: React.FC<Props> = ({
 
           {/* Posterior section */}
           <div className="mt-4 pt-3 border-t border-gray-300 space-y-2">
+            {logSpace && (
+              <div className="flex items-center py-2 px-3 rounded bg-green-50">
+                <span className="text-sm font-medium text-gray-700 w-12">Log odds</span>
+                <div className="flex-1 flex items-center justify-center space-x-2">
+                  <span className="font-mono text-sm font-bold text-purple-600">
+                    {steps[currentStep]?.logOddsFair?.toFixed(2)}
+                  </span>
+                  <span className="text-gray-500">:</span>
+                  <span className="font-mono text-sm font-bold text-purple-600">
+                    {steps[currentStep]?.logOddsBiased?.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            )}
+            
             {/* Posterior odds */}
             <div className="flex items-center py-2 px-3 rounded bg-green-50">
               <span className="text-sm font-medium text-gray-700 w-12">Posterior</span>
               <div className="flex-1 flex items-center justify-center space-x-2">
-                <span className="font-mono text-sm font-bold text-blue-600">
+                <span className={`font-mono text-sm font-bold ${logSpace ? 'text-blue-600' : 'text-blue-600'}`}>
                   {steps[currentStep]?.oddsFair.toFixed(3)}
                 </span>
                 <span className="text-gray-500">:</span>
-                <span className="font-mono text-sm font-bold text-blue-600">
+                <span className={`font-mono text-sm font-bold ${logSpace ? 'text-blue-600' : 'text-blue-600'}`}>
                   {steps[currentStep]?.oddsBiased.toFixed(3)}
                 </span>
               </div>
