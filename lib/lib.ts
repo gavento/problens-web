@@ -39,6 +39,7 @@ import EquationRef from "@/components/content/EquationRef";
 import { EquationProvider } from "@/components/content/EquationContext";
 import Block from "@/components/content/Block";
 import Expand from "@/components/content/Expand";
+import ExpandableImage from "@/components/content/ExpandableImage";
 
 // Force color support for CI/build environments
 chalk.level = 3;
@@ -170,6 +171,7 @@ export async function getMdxContent(path: string) {
       Block: Block,
       Example: Block,
       Expand: Expand,
+      img: ExpandableImage,
     },
     options: {
       parseFrontmatter: true,
