@@ -313,6 +313,10 @@ Our coding discussion gives us a benchmark: treat each letter as independent fro
 
 ![huffman code](02-crossentropy/huffenc.svg "image taken from https://liucs.net/cs101s19/data/69/d3381f-1f93-433a-a85c-851c43ba6832/huffenc.svg")
 
+Try compressing different types of text yourself with the widget below. Notice how the compression ratio depends heavily on the structure and predictability of the text:
+
+<CompressionWidget />
+
 But what's the limit if we don't treat letters independently? 
 
 Claude Shannon, who [invented information theory](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication) in the late 40s, did this cool [experiment](https://www.princeton.edu/~wbialek/rome/refs/shannon_51.pdf) a few years later. He'd show people partial sentences and ask them to guess the next letter. This way, he figured English is at most about 0.5 - 1 bit per letter of entropy. So humans are able to compress text by a factor of 8, storing 1GB in just over 100MB. Interestingly, that's also the current [Marcus Hutter challenge](http://prize.hutter1.net/) record. 

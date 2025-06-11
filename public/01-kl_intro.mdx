@@ -8,15 +8,15 @@ KL divergence measures how well a distribution $p$ is fitted by a model distribu
 
 ## Definition of KL divergence <a id="definition-of-kl-divergence"></a>
 
-Here's the KL divergence formula <Footnote>KL stands for Kullback and Leibler, two guys who came up with this in the 1950s, right after Claude Shannon dropped his [game-changing paper](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication) about entropy.</Footnote> for two discrete distributions $p_1, \dots, p_n$ and $q_1, \dots, q_n$:<Footnote> About notation: Most people write $D_{KL}(p||q)$ instead of $D(p,q)$. The double bars are there to remind you that $D_{KL}(p||q) \not= D_{KL}(q||p)$. We'll keep it simple with $D(p,q)$ since we'll be using this a lot. 🙂 Also, whenever I write $\log$, I mean base-2 logarithm.</Footnote>
+Here's the KL divergence formula <Footnote>KL stands for Kullback and Leibler, two guys who came up with this in the 1950s, right after Claude Shannon dropped his [game-changing paper](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication) about entropy. Here's the first exercise: Try saying "Kullback-Leibler divergence" fast three times in a row. </Footnote> for two discrete distributions $p_1, \dots, p_n$ and $q_1, \dots, q_n$:<Footnote> About notation: Most people write $D_{KL}(p||q)$ instead of $D(p,q)$. The double bars are there to remind you that $D_{KL}(p||q) \not= D_{KL}(q||p)$. We'll keep it simple with $D(p,q)$ since we'll be using this a lot. 🙂 </Footnote>
 
 $$
-D(p,q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}
+D(p,q) = \sum_{i = 1}^n p_i \log_2 \frac{p_i}{q_i}
 $$
 
-You can think of it like a wonky distance measure between two distributions. 
+We will always use $\log_2$, so from now on I'll drop the subscript. 
 
-But a better intuition goes like this: When you keep sampling from the true distribution $p$, KL divergence tells you how fast you can figure out you're sampling from $p$ and not some other distribution $q$. Small KL means that $q$ is a pretty good imposter pretending to be $p$.
+You can think of KL divergence like a wonky distance measure between two distributions. But a better intuition goes like this: When you keep sampling from the true distribution $p$, KL divergence tells you how fast you can figure out you're sampling from $p$ and not some other distribution $q$. Small KL means that $q$ is a pretty good imposter pretending to be $p$.
 
 We'll break this down in the rest of the chapter, in a bit-by-bit fashion. 
 
@@ -136,7 +136,7 @@ What about using $\ell_1$ norm ($\sum |p_i - q_i|$) or $\ell_2$ norm ($\sum (p_i
 1. $p_i = 0.5, q_i = 0.49$
 2. $p_i = 0.01, q_i = 0.0$
 
-Regular norms ($\ell_1, \ell_2$) think these errors are about the same size. But KL knows better—the first one's basically fine, but the second is a disaster model! For example, the word "God" typically does not follow with "zilla", but your model should understand that this may sometimes happen. The distribution $q(\textrm{'zilla'} \mid \textrm{'God'}) = 0.0$ means that the model does not even begin to consider this option. 
+Regular norms ($\ell_1, \ell_2$) think these errors are about the same size. But KL knows better—the first one's basically fine, but the second is a disaster model! For example, the word "God" typically does not follow with "zilla", but your model should understand that this may sometimes happen. The distribution $q(\textrm{'zilla'} \mid \textrm{'God'}) = 0.0$ means that the model does not even begin to consider this option which makes it pretty bad!
 
 <DistributionComparisonWidget title="KL Divergence Explorer" />
 

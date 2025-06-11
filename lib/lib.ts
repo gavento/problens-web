@@ -30,6 +30,7 @@ import BayesCalculatorLogWidget from "@/components/widgets/BayesCalculatorLogWid
 import BayesSequenceWidget from "@/components/widgets/BayesSequenceWidget";
 import BayesSequenceLogWidget from "@/components/widgets/BayesSequenceLogWidget";
 import XKCDCountdownWidget from "@/components/widgets/XKCDCountdownWidget";
+import CompressionWidget from "@/components/widgets/CompressionWidget";
 import { compile, evaluate } from "@mdx-js/mdx";
 import chalk from "chalk";
 import * as runtime from "react/jsx-runtime";
@@ -168,6 +169,7 @@ export async function getMdxContent(path: string) {
       BayesSequenceWidget: BayesSequenceWidget,
       BayesSequenceLogWidget: BayesSequenceLogWidget,
       XKCDCountdownWidget: XKCDCountdownWidget,
+      CompressionWidget: CompressionWidget,
       Math: NumberedMath,
       EqRef: EquationRef,
       Block: Block,
