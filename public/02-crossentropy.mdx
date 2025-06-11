@@ -30,9 +30,7 @@ Now flip it around: truth is 100%/0%, model is 50%/50%. Then $D(p,q) = 1$. Every
 
 If you plug the same distribution into KL twice, you get:
 
-$$
-D(p, p) = \sum_{i = 1}^n p_i \cdot \log \frac{p_i}{p_i} = 0
-$$
+<Math displayMode={true} math="D(p, p) = \sum_{i = 1}^n p_i \cdot \log \frac{p_i}{p_i} = 0" />
 
 because $\log 1 = 0$.
 Makes sense—you can't tell the truth apart from the truth. 🤷
@@ -45,13 +43,13 @@ We'll use natural logarithm to keep things short. We want to prove that <Math ma
 
 Let's estimate what's inside the sum: $\ln \frac{p_i}{q_i}$. Since we know the inequality is tight when $p_i = q_i$, we need an estimate that's tight around 1. The best linear approximation near 1 is $\ln (1+x) \le x$. Using this trick:
 
-$$
+<Math displayMode={true} math="\begin{aligned}
 -D(p,q)
-= \sum_{i = 1}^n p_i \cdot \ln \frac{q_i}{p_i}
-\le \sum_{i = 1}^n p_i \cdot  \left( \frac{q_i}{p_i} - 1 \right)
-= \sum_{i = 1}^n \left( q_i - p_i \right)
-= 1 - 1 = 0
-$$
+&= \sum_{i = 1}^n p_i \cdot \ln \frac{q_i}{p_i}\\
+&\le \sum_{i = 1}^n p_i \cdot  \left( \frac{q_i}{p_i} - 1 \right)\\
+&= \sum_{i = 1}^n \left( q_i - p_i \right)\\
+&= 1 - 1 = 0
+\end{aligned}" />
 
 </Expand>
 
@@ -61,9 +59,7 @@ There's also a stronger version called monotonicity. We won't really use it, so 
 <Expand headline="Monotonicity explanation">
 Say you've got two distributions $p,q$ over countries (\{🇺🇸,🇨🇦,🇲🇽,🇯🇵,🇬🇧,🇮🇳,...\}). Now zoom out and group them into continents (\{North America, Europe, ...\}). You can convert $p,q$ to this rougher grouping to get $p', q'$. Like: <Math math = "p'(\textrm{North America}) = p(🇺🇸) + p(🇨🇦) + p(🇲🇽)" />. Then:
 
-$$
-D(p, q) \ge D(p', q')
-$$
+<Math displayMode={true} math="D(p, q) \ge D(p', q')" />
 
 This totally makes sense! Remember, KL divergence tells us how hard it is to tell $p$ apart from $q$ using Bayes' theorem. When you group outcomes together, it gets harder for our Bayesian detective to spot the difference. In the extreme, you could group everything into a single outcome SOMETHING_HAPPENED—then the inequality becomes $D(p,q) \ge 0$. So nonnegativity is just a special case of this!
 </Expand>
@@ -72,9 +68,7 @@ This totally makes sense! Remember, KL divergence tells us how hard it is to tel
 
 Say you've got two distribution pairs $(p, q)$ and $(p', q')$. Then:
 
-$$
-D(p \otimes p', q \otimes q') = D(p, q) + D(p', q')
-$$
+<Math displayMode={true} math="D(p \otimes p', q \otimes q') = D(p, q) + D(p', q')" />
 where $p \otimes p'$ means the product distribution where $p,p'$ are independent.
 
 We actually used this implicitly before—it's just saying that when you're computing KL divergence for many coin flips, you add up the divergences from each flip. 
@@ -163,6 +157,31 @@ The following comic wisely teaches us that this is a pretty secure password! Eve
 </a>
 </Expand>
 
+<Expand headline = "Advanced example: Conditional entropy">
+
+Let's go back to the mutual information that we [encountered in the first chapter](01-kl_intro/information-theory). This is a formula that we can apply to a joint distribution $(X,Y)$:
+
+<Math displayMode={true} math="I(X;Y) = D((X,Y), X \otimes Y)" />
+
+Intuitively, mutual information tells us how many bits we learn about $X$ when we find out the value of $Y$ (or vice versa—it's symmetric). This can be formalized using entropy. 
+
+First, recall the entropy formula $H(X) = \sum_{x} P(X = x) \log \frac{1}{P(X = x)}$. This formula still works if we condition on knowing that $Y$ takes a certain value $y$. We can write
+<Math displayMode={true} math="H(X | Y = y) = \sum_{x} P(X = x | Y = y) \log \frac{1}{P(X = x | Y = y)}" />
+The conditional entropy $H(X|Y)$ is defined as the entropy of $X$ after I sample $Y$ and learn its value, i.e.:
+<Math displayMode={true} math="H(X|Y) = \sum_{y} P(Y = y) H(X | Y =y)" />
+
+Conditional entropy has some nice properties. One of them is that $H(X|Y) \le H(X)$. That is, learning the value of $Y$ is on average only decreasing the uncertainty about $X$. In fact, the difference between the two is exactly the mutual information!
+
+<Math displayMode={true} math="I(X;Y) = H(X) - H(X|Y)" />
+It is a good exercise to write down all the definitions to check that this is true. To get some intuition about this, guess what happens if we make $P$(☀️ AND 🚶‍♀️$) = P$(☁️ AND 🚲$) = \frac{1}{2}$ in the widget below.  
+
+<MutualInformationWidget />
+
+The mutual information is then 1 bit. That's because learning the value of one distribution, say transport, makes the entropy of weather smaller by 1 bit - the weather distribution changes from a coin flip ($H(\textrm{weather}) = 1$) to either determined ☀️ or determined ☁️ ($H(\textrm{weather} | \textrm{transport}) = 0$). 
+
+</Expand>
+
+
 ### Relative entropy: 
 Finally, $D(p,q)$ is just the gap between cross-entropy and entropy. It tells you how far your average surprise (cross-entropy) is from the best possible (entropy). 
 That's why some folks call KL divergence the _relative entropy_ between $p$ and $q$. <Footnote>Way better name than KL divergence if you ask me. But KL divergence is what everyone uses, so we're stuck with it. </Footnote>
@@ -173,7 +192,7 @@ Splitting a sum into two parts isn't exactly rocket science—the real win is th
 
 Let's see this in action. 
 
-<Expand headline = "Riddle: Evaluating Predictions"> <a id="application-evaluating-predictions"></a>
+<Expand headline = "🔮 How good are your predictions?"> <a id="application-evaluating-predictions"></a>
 
 Time to solve our [prediction riddle](00-introduction#predictions). We asked experts to predict future events—how do we score them?
 
@@ -181,17 +200,13 @@ Time to solve our [prediction riddle](00-introduction#predictions). We asked exp
 
 To grade predictions, let $p = (p_1, \dots, p_n)$ be the true probabilities and $q$ be what the expert predicted. Seems like a good idea to score them with:
 
-$$
-S_{KL}(q) = D(p,q)
-$$
+<Math displayMode={true} math="S_{KL}(q) = D(p,q)" />
 
 If all $n$ events are independent, this becomes:
 
-$$
-S_{KL}(q) = \sum_{i = 1}^n  \left(
+<Math displayMode={true} math="S_{KL}(q) = \sum_{i = 1}^n  \left(
     p_i\log\frac{p_i}{q_i} + (1-p_i)\log\frac{1-p_i}{1-q_i}
-    \right)
-$$
+    \right)" />
 
 {/*
 For example, if we ask an expert about two independent events that happen with probabilities $30\%$ and 90\%, and she estimates the probabilities as $50\%$ and $80\%$, her score would be
@@ -291,7 +306,7 @@ We talked about "average surprisal," but we could also ask: how many bits do you
 Cross-entropy makes sense too: it's the bits you need when data comes from $p$ but you built your code for $q$. And relative entropy is how much worse your mismatched code is compared to the optimal one. 
 
 
-<Expand headline = "Riddle: Size of Wikipedia"><a id = "hutter"></a>
+<Expand headline = "🌐 How large is Wikipedia?"><a id = "hutter"></a>
 Back to [our Wikipedia riddle](00-introduction#wikipedia) and Hutter's compression challenge. 
 
 Our coding discussion gives us a benchmark: treat each letter as independent from English letter frequency distribution $p$, optimize a code for it, and you need about $H(p)$ bits per letter. You can find English letter frequencies [online](https://en.wikipedia.org/wiki/Letter_frequency); the entropy is $H(p) \approx 4$ bits. There are codes that get close (see below). Since Wikipedia stores each letter in 8 bits<Footnote>Wikipedia uses [UTF-8](https://en.wikipedia.org/wiki/UTF-8), the standard text encoding. English letters take 8 bits, fancier letters take 16, and emojis like 😀 or hieroglyphs like 𓀀 take 32. Classic coding theory—rare stuff gets longer codes. </Footnote>, we can shrink it to about 500MB. Pretty good, and we haven't even used tricks like "'th' is usually followed by 'e'". 

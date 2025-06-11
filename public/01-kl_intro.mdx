@@ -123,7 +123,7 @@ Notice KL divergence is about the evidence, not your starting beliefs. It tells 
 
 ## Cracking some riddles
 
-<Expand headline = "Riddle: How to train your LLM" > <a id="application-training-smaller-models"></a>
+<Expand headline = "🧠 LLM training" > <a id="application-training-smaller-models"></a>
 
 Remember [our riddle](00-introduction#deep-learning) about training a language model? We've got some true distribution $p$ of what letter typically follows short pieces of text like "My name is A". We also have our model's guess $q$, and we need to measure how good the match is.
 
@@ -140,7 +140,7 @@ Regular norms ($\ell_1, \ell_2$) think these errors are about the same size. But
 
 </Expand>
 
-<Expand headline = "Riddle: Measuring distance from independence">
+<Expand headline = "🔗 Distance from independence">
 <a id="information-theory"></a>
 
 Back to our riddle: [How do you measure distance from independence](00-introduction#information-theory)?
@@ -151,30 +151,32 @@ Remember our three joint distributions $p_1, p_2, p_3$:
 
 They all have the same marginals (same row and column totals). If the marginals were independent, we'd get this product distribution $q$:
 
-<img src="00-introduction/independence2.png" style={{width: '34%'}} />
+<img src="00-introduction/independence2.png" style={{width: '66%', align: 'center'}} />
 
-Which one's "most" independent?
+Which table is the "most" independent?
 
-We need to measure how different each table is from the ideal independent one. There are tons of ways to do this<Footnote>People often use [correlation](https://en.wikipedia.org/wiki/Correlation), but that's not great. First, correlation only works for numbers, not general stuff like \{☀️, ☁️\}. Plus, zero correlation doesn't mean independence. </Footnote>, but KL divergence is perfect. We've got two distributions: the "truth" (one of our tables) and the "model" (the ideal independent table). The KL between them tells us how well the model matches reality—basically, how long until a Bayesian detective figures out the data isn't coming from the independent model.
+We need to measure how different each table is from the ideal independent one. There are more reasonable ways to do this<Footnote>People often use [correlation](https://en.wikipedia.org/wiki/Correlation), but that has problems. First, correlation only works for numbers, not general stuff like \{☀️, ☁️\}. Plus, zero correlation doesn't mean independence. </Footnote>, but using KL divergence is a very principled way to do this. We've got two distributions: the "truth" (one of our tables) and the "model" (the ideal independent table). The KL between them tells us how well the model matches reality—basically, how long until a Bayesian detective figures out the data isn't coming from the independent model.
 
 The KL divergences for our tables:
 
-<Math displayMode = {true} math = "D(p_1, q) \approx 0.40, D(p_2, q) \approx 0.04,  D(p_3, q) \approx 0.21"/>
+$$
+D(p_1, q) \approx 0.40
+$$
+$$
+D(p_2, q) \approx 0.04
+$$
+$$
+D(p_3, q) \approx 0.21
+$$
 
 So table 2 is "closest" to independence!
 
-This works for any joint distribution $(r, s)$. The KL divergence between $(r, s)$ and the independent version $r \otimes s$ is called [mutual information](http://en.wikipedia.org/wiki/Mutual_information) between $r$ and $s$—it's huge in information theory. 
+This works for any joint distribution $(r, s)$. The KL divergence between $(r, s)$ and the independent version $r \otimes s$ is called [mutual information](http://en.wikipedia.org/wiki/Mutual_information) between $r$ and $s$—it's a super-important quantity in information theory.
+
+<MutualInformationWidget /> 
 
 
-<Expand headline = "Intuition">
-Intuitevely, mutual information tells you how many bits you learn about $r$ when you find out $s$ (or vice versa—it's symmetric).
 
-For example, in the widget below, make $P(\text\{☀️ AND 🚶‍♀️\}) = P(\text\{☁️ AND 🚲\}) = \frac\{1\}\{2\}$. The mutual information is 1 bit. That's because if learning the value of one distribution, say transport, makes the entropy of the other distribution smaller by 1 bit - the weather distribution changes from a coin flip with entropy of 1 bit to either determined ☀️ or determined ☁️ with 0 entropy. 
-
-Technically speaking, this is because the formula for mutual information can be rewritten as $I(X;Y) = H(X) - H(X|Y)$. See e.g. [Wikipedia](https://en.wikipedia.org/wiki/Mutual_information) for more discussion. 
-</Expand>
-
-{/*<MutualInformationWidget />*/}
 
 </Expand>
 
