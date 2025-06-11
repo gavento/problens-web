@@ -22,19 +22,19 @@ Let's break this down in the rest of the chapter.
 
 ## Bayes' theorem
 
-Before we dive into KL, let's refresh on Bayes' theorem—it's how you update your beliefs when you get new info. Example time:
+Before we dive into KL, let's refresh on Bayes' theorem—it's how you update your beliefs when you get new info. 
 
-You've got a coin that might be rigged. To keep it simple, let's say there are only two options: it's either fair (50/50 for heads/tails) or it's biased toward tails (25% heads, 75% tails).
+Example: You've got a coin that might be rigged. To keep it simple, let's say there are only two options: it's either fair (50/50 for heads/tails) or it's biased toward tails (25/75 for heads/tails).
 
 To use Bayes, you need a starting guess (a _prior_) about which it is. Let's say you think there's a 2/3 chance it's fair and 1/3 chance it's biased.
 
-You flip the coin—Heads! This is evidence for the fair coin (since heads are more likely with a fair coin). But how do we calculate the new probability (the _posterior_) that it's fair?
+You flip the coin—Heads! This is evidence for the hypothesis that the coin is fair since heads are more likely with a fair coin. 
 
-Bayes' theorem to the rescue! The usual way this rule is written is like this:
+Bayes' rule calculates the new probability (the _posterior_) that it's fair. The standard way to write the rule goes like this:
 
 <Math displayMode={true} math='P(\textrm{fair} | \textrm{heads}) = \frac{P(\textrm{heads} | \textrm{fair}) \cdot P(\textrm{fair})}{P(\textrm{heads})}' />
 
-No big deal—multiply both sides by $P(\textrm{heads})$ and you'll see both sides are just <Math math = "P(\textrm{fair AND heads})" />.
+This is no rocket science —multiply both sides by $P(\textrm{heads})$ and both sides become formulas for the expression <Math math = "P(\textrm{fair AND heads})" />.
 
 But I like to think about it differently:
 
