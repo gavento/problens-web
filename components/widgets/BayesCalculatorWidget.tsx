@@ -101,40 +101,36 @@ const BayesCalculatorWidget: React.FC<Props> = ({
         {/* Horizontal line */}
         <div className="border-t border-gray-300"></div>
 
-        {/* Posterior odds result */}
-        <div className="space-y-2">
-          <span className="text-sm font-medium text-gray-700 block text-center">Posterior odds:</span>
-          <div className="flex items-center justify-center space-x-2">
-            <div className="w-20 px-2 py-2 bg-blue-50 border border-blue-200 rounded text-center text-sm font-mono">
-              {calculations.posteriorFair.toFixed(2)}
-            </div>
-            <span className="text-gray-500 text-lg">:</span>
-            <div className="w-20 px-2 py-2 bg-blue-50 border border-blue-200 rounded text-center text-sm font-mono">
-              {calculations.posteriorBiased.toFixed(2)}
+        {/* Posterior results */}
+        <div className="mt-4 space-y-3">
+          {/* Posterior odds */}
+          <div className="flex items-center py-2 px-3 rounded bg-gray-50">
+            <span className="text-sm font-medium text-gray-700 w-24">Posterior odds</span>
+            <div className="flex-1 flex items-center justify-center space-x-2">
+              <span className="font-mono text-sm font-bold">
+                {calculations.posteriorFair.toFixed(2)}
+              </span>
+              <span className="text-gray-500">:</span>
+              <span className="font-mono text-sm font-bold">
+                {calculations.posteriorBiased.toFixed(2)}
+              </span>
             </div>
           </div>
-        </div>
 
-        {/* Probability conversion */}
-        <div className="bg-green-50 rounded-lg p-3 sm:p-4 mt-4">
-          <div className="text-center space-y-2">
-            <span className="text-sm font-medium text-gray-700 block">Posterior probabilities:</span>
-            <div className="flex items-center justify-center space-x-2">
-              <span className="font-mono text-base sm:text-lg font-bold text-blue-600">
+          {/* Posterior probabilities */}
+          <div className="flex items-center py-2 px-3 rounded bg-green-50">
+            <span className="text-sm font-medium text-gray-700 w-24">Probabilities</span>
+            <div className="flex-1 flex items-center justify-center space-x-2">
+              <span className="font-mono text-sm font-bold text-blue-600">
                 {calculations.probFair.toFixed(1)}%
               </span>
               <span className="text-gray-500">:</span>
-              <span className="font-mono text-base sm:text-lg font-bold text-blue-600">
+              <span className="font-mono text-sm font-bold text-blue-600">
                 {calculations.probBiased.toFixed(1)}%
               </span>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Instructions */}
-      <div className="text-center text-sm text-gray-600">
-        Adjust the prior odds and likelihood values to see how Bayes theorem updates beliefs
       </div>
     </div>
   );
