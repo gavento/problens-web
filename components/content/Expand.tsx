@@ -10,14 +10,21 @@ interface ExpandProps {
   img?: string;
   color?: string;
   startOpen?: boolean;
+  advanced?: boolean;
+  id?: string;
 }
 
-export default function Expand({ children, headline, img, color = "#f5f5f5", startOpen = false }: ExpandProps) {
+export default function Expand({ children, headline, img, color = "#f5f5f5", startOpen = false, advanced = false, id }: ExpandProps) {
   const [isOpen, setIsOpen] = useState(startOpen);
 
   return (
-    <div className={styles.expand} style={{ backgroundColor: color }}>
+    <div className={styles.expand} style={{ backgroundColor: color }} id={id}>
       <div className={styles.header} onClick={() => setIsOpen(!isOpen)}>
+        {advanced && (
+          <div className={styles.advancedIcon} title="This is an advanced section">
+            ⚠️
+          </div>
+        )}
         {img && (
           <div className={styles.image}>
             <Image src={img} alt="" width={24} height={24} />
