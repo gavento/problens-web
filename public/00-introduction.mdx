@@ -87,7 +87,7 @@ Here's a riddle that's behind a ton of recent algorithms in CS and ML. Say you w
 
 Your strategy: Start with equal trust in everyone—$p_i^{(0)} = 1/n$ for all investors. Each morning, randomly pick an investor based on your trust distribution and follow their advice. After seeing how everyone did, update your distribution to $p^{(t+1)}$.
 
-How should you update? What's best?
+How should you update? What's best? <Footnote>The symbol $\propto$ means that the probability is only _proportional_ to this, you have to normalize the numbers so that they sum to one. </Footnote>
 
 <MultipleChoiceQuestion
   options={[

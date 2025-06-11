@@ -42,9 +42,10 @@ const BayesCalculatorWidget: React.FC<Props> = ({
 
       <div className="bg-white rounded-lg p-4 sm:p-6 space-y-4">
         {/* Prior odds input */}
-        <div className="space-y-2">
-          <span className="text-sm font-medium text-gray-700 block">Prior odds:</span>
-          <div className="flex items-center justify-center space-x-2">
+        <div className="flex items-center">
+          <span className="text-sm font-medium text-gray-700 w-32 text-right">Prior odds:</span>
+          <div className="flex-1 flex items-center justify-center space-x-2">
+            <span className="text-xs text-gray-500 w-12 text-right">(fair)</span>
             <input
               type="number"
               value={priorFair}
@@ -62,14 +63,15 @@ const BayesCalculatorWidget: React.FC<Props> = ({
               step="0.1"
               min="0"
             />
+            <span className="text-xs text-gray-500 w-12">(biased)</span>
           </div>
-          <div className="text-xs text-gray-500 text-center">(Fair : Biased)</div>
         </div>
 
         {/* Likelihood input */}
-        <div className="space-y-2">
-          <span className="text-sm font-medium text-gray-700 block">Likelihood of heads:</span>
-          <div className="flex items-center justify-center space-x-2">
+        <div className="flex items-center">
+          <span className="text-sm font-medium text-gray-700 w-32 text-right">Likelihood of heads:</span>
+          <div className="flex-1 flex items-center justify-center space-x-2">
+            <span className="text-xs text-gray-500 w-12 text-right"></span>
             <input
               type="number"
               value={likelihoodFair}
@@ -89,45 +91,52 @@ const BayesCalculatorWidget: React.FC<Props> = ({
               min="0"
               max="1"
             />
+            <span className="text-xs text-gray-500 w-12"></span>
           </div>
-          <div className="text-xs text-gray-500 text-center">(Fair : Biased)</div>
         </div>
 
         {/* Multiplication symbols */}
-        <div className="flex justify-center items-center space-x-8 text-gray-400 text-xl">
-          <span>×</span>
+        <div className="flex items-center">
+          <span className="w-32"></span>
+          <div className="flex-1 flex items-center justify-center">
+            <span className="text-gray-400 text-xl">×</span>
+          </div>
         </div>
 
         {/* Horizontal line */}
-        <div className="border-t border-gray-300"></div>
+        <div className="border-t border-gray-300 ml-32"></div>
 
         {/* Posterior results */}
         <div className="mt-4 space-y-3">
           {/* Posterior odds */}
-          <div className="flex items-center py-2 px-3 rounded bg-gray-50">
-            <span className="text-sm font-medium text-gray-700 w-24">Posterior odds</span>
-            <div className="flex-1 flex items-center justify-center space-x-2">
-              <span className="font-mono text-sm font-bold">
+          <div className="flex items-center">
+            <span className="text-sm font-medium text-gray-700 w-32 text-right">Posterior odds:</span>
+            <div className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded bg-gray-50 ml-4">
+              <span className="text-xs text-gray-500 w-12 text-right"></span>
+              <span className="font-mono text-sm font-bold w-20 text-center">
                 {calculations.posteriorFair.toFixed(2)}
               </span>
-              <span className="text-gray-500">:</span>
-              <span className="font-mono text-sm font-bold">
+              <span className="text-gray-500 text-lg">:</span>
+              <span className="font-mono text-sm font-bold w-20 text-center">
                 {calculations.posteriorBiased.toFixed(2)}
               </span>
+              <span className="text-xs text-gray-500 w-12"></span>
             </div>
           </div>
 
           {/* Posterior probabilities */}
-          <div className="flex items-center py-2 px-3 rounded bg-green-50">
-            <span className="text-sm font-medium text-gray-700 w-24">Probabilities</span>
-            <div className="flex-1 flex items-center justify-center space-x-2">
-              <span className="font-mono text-sm font-bold text-blue-600">
+          <div className="flex items-center">
+            <span className="text-sm font-medium text-gray-700 w-32 text-right">Probabilities:</span>
+            <div className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded bg-green-50 ml-4">
+              <span className="text-xs text-gray-500 w-12 text-right"></span>
+              <span className="font-mono text-sm font-bold text-blue-600 w-20 text-center">
                 {calculations.probFair.toFixed(1)}%
               </span>
-              <span className="text-gray-500">:</span>
-              <span className="font-mono text-sm font-bold text-blue-600">
+              <span className="text-gray-500 text-lg">:</span>
+              <span className="font-mono text-sm font-bold text-blue-600 w-20 text-center">
                 {calculations.probBiased.toFixed(1)}%
               </span>
+              <span className="text-xs text-gray-500 w-12"></span>
             </div>
           </div>
         </div>
