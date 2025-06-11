@@ -287,9 +287,8 @@ export default function CompressionWidget() {
         <div className="mt-6">
           <div className="bg-gray-50 p-4 rounded-lg mb-4">
             <h4 className="font-medium mb-2">Sample Text: {selectedSample.name}</h4>
-            <div className="text-sm font-mono bg-white p-3 rounded border max-h-32 overflow-y-auto">
-              {selectedSample.text.substring(0, 200)}
-              {selectedSample.text.length > 200 && "..."}
+            <div className="text-sm font-mono bg-white p-3 rounded border overflow-y-auto" style={{ height: '6rem', lineHeight: '1.2rem' }}>
+              {selectedSample.text}
             </div>
             <div className="text-xs text-gray-500 mt-2">
               Total length: {selectedSample.text.length} characters
