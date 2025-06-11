@@ -194,7 +194,7 @@ const BayesSequenceWidget: React.FC<Props> = ({
           <div className={`flex items-center py-2 px-3 rounded border ${
             logSpace ? 'bg-purple-50 border-purple-200' : 'bg-blue-50 border-blue-200'
           }`}>
-            <span className="text-sm font-medium text-gray-700 w-12">Prior</span>
+            <span className="text-sm font-medium text-gray-700 w-20">Prior odds</span>
             <div className="flex-1 flex items-center justify-center space-x-2">
               <span className="font-mono text-sm font-bold">{priorFair}</span>
               <span className="text-gray-500">:</span>
@@ -208,7 +208,7 @@ const BayesSequenceWidget: React.FC<Props> = ({
               key={index}
               className="flex items-center py-2 px-3 rounded bg-gray-50"
             >
-              <span className="font-mono font-bold text-lg w-12 text-center">
+              <span className="font-mono font-bold text-lg w-20 text-center">
                 {step.flip}
               </span>
               <div className="flex-1 flex items-center justify-center space-x-2">
@@ -221,24 +221,9 @@ const BayesSequenceWidget: React.FC<Props> = ({
 
           {/* Posterior section */}
           <div className="mt-4 pt-3 border-t border-gray-300 space-y-2">
-            {logSpace && (
-              <div className="flex items-center py-2 px-3 rounded bg-green-50">
-                <span className="text-sm font-medium text-gray-700 w-12">Log odds</span>
-                <div className="flex-1 flex items-center justify-center space-x-2">
-                  <span className="font-mono text-sm font-bold text-purple-600">
-                    {steps[currentStep]?.logOddsFair?.toFixed(2)}
-                  </span>
-                  <span className="text-gray-500">:</span>
-                  <span className="font-mono text-sm font-bold text-purple-600">
-                    {steps[currentStep]?.logOddsBiased?.toFixed(2)}
-                  </span>
-                </div>
-              </div>
-            )}
-            
             {/* Posterior odds */}
             <div className="flex items-center py-2 px-3 rounded bg-green-50">
-              <span className="text-sm font-medium text-gray-700 w-12">Posterior</span>
+              <span className="text-sm font-medium text-gray-700 w-20">Posterior odds</span>
               <div className="flex-1 flex items-center justify-center space-x-2">
                 <span className={`font-mono text-sm font-bold ${logSpace ? 'text-blue-600' : 'text-blue-600'}`}>
                   {steps[currentStep]?.oddsFair.toFixed(3)}
@@ -247,6 +232,19 @@ const BayesSequenceWidget: React.FC<Props> = ({
                 <span className={`font-mono text-sm font-bold ${logSpace ? 'text-blue-600' : 'text-blue-600'}`}>
                   {steps[currentStep]?.oddsBiased.toFixed(3)}
                 </span>
+                {logSpace && (
+                  <>
+                    <span className="text-gray-400 mx-2">|</span>
+                    <span className="text-sm text-gray-600">log:</span>
+                    <span className="font-mono text-sm font-bold text-purple-600">
+                      {steps[currentStep]?.logOddsFair?.toFixed(2)}
+                    </span>
+                    <span className="text-gray-500">:</span>
+                    <span className="font-mono text-sm font-bold text-purple-600">
+                      {steps[currentStep]?.logOddsBiased?.toFixed(2)}
+                    </span>
+                  </>
+                )}
               </div>
             </div>
             
