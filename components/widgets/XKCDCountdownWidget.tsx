@@ -90,7 +90,7 @@ const XKCDCountdownWidget: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 rounded-lg space-y-6 max-w-4xl mx-auto">
+    <div className="p-4 sm:p-6 bg-gray-50 rounded-lg space-y-4 sm:space-y-6 max-w-4xl mx-auto">
       <h3 className="text-xl font-semibold text-center text-gray-800">
         XKCD Countdown Probability Calculator
       </h3>
@@ -99,7 +99,7 @@ const XKCDCountdownWidget: React.FC = () => {
       {/* Prior Selection */}
       <div className="bg-white rounded-lg p-4">
         <h4 className="text-lg font-semibold text-gray-800 mb-3">Select Prior Distribution</h4>
-        <div className="grid md:grid-cols-3 gap-3">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <button
             onClick={() => handlePriorChange('uniform')}
             className={`p-3 rounded-lg border text-left transition-colors ${

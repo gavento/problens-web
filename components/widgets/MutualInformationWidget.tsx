@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 
 type Props = {
   title?: string;
@@ -13,6 +13,16 @@ const MutualInformationWidget: React.FC<Props> = ({
 }) => {
   // Joint distribution - 6 values that sum to 1
   const [jointProbs, setJointProbs] = useState<number[]>([0.14, 0.21, 0.35, 0.06, 0.09, 0.15]);
+  const [containerWidth, setContainerWidth] = useState(450);
+
+  useEffect(() => {
+    const updateWidth = () => {
+      setContainerWidth(Math.min(450, window.innerWidth - 80));
+    };
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
 
   // Calculate marginal probabilities
   const marginals = useMemo(() => {
@@ -116,8 +126,12 @@ const MutualInformationWidget: React.FC<Props> = ({
     setJointProbs([0.14, 0.21, 0.35, 0.06, 0.09, 0.15]);
   }, []);
 
-  const barMaxHeight = 80;  // Increased height for easier grabbing
-  const barWidth = 35;
+  // Responsive dimensions
+  const svgWidth = containerWidth;
+  const svgHeight = Math.min(280, containerWidth * 0.62);
+  const scale = containerWidth / 450;
+  const barMaxHeight = Math.max(60, 80 * scale);
+  const barWidth = Math.max(25, 35 * scale);
 
   // Define the 2x3 table structure
   const tableData = [
@@ -134,7 +148,7 @@ const MutualInformationWidget: React.FC<Props> = ({
   ];
 
   return (
-    <div className="p-6 bg-gray-50 rounded-lg space-y-6 max-w-3xl mx-auto">
+    <div className="p-4 sm:p-6 bg-gray-50 rounded-lg space-y-4 sm:space-y-6 max-w-3xl mx-auto">
       {title && (
         <h3 className="text-xl font-semibold text-center text-gray-800">
           {title}
@@ -149,39 +163,39 @@ const MutualInformationWidget: React.FC<Props> = ({
       </div>
 
       {/* Joint Distribution Table */}
-      <div className="bg-white rounded-lg p-6">
+      <div className="bg-white rounded-lg p-4 sm:p-6">
         <h4 className="text-lg font-semibold text-gray-800 mb-4 text-center">Joint Distribution P(Weather, Transport)</h4>
         
         <div className="flex justify-center overflow-x-auto">
-          <svg width="450" height="280" className="border rounded bg-white">
+          <svg width={svgWidth} height={svgHeight} className="border rounded bg-white min-w-0 max-w-full">
             {/* Background */}
-            <rect width="450" height="280" fill="#f9fafb" stroke="#e5e7eb" />
+            <rect width={svgWidth} height={svgHeight} fill="#f9fafb" stroke="#e5e7eb" />
             
             {/* Column headers (Transport) */}
-            <text x="135" y="30" textAnchor="middle" fontSize="28" fill="#374151">🚶‍♀️</text>
-            <text x="235" y="30" textAnchor="middle" fontSize="28" fill="#374151">🚲</text>
-            <text x="335" y="30" textAnchor="middle" fontSize="28" fill="#374151">🚌</text>
+            <text x={135 * scale} y={30 * scale} textAnchor="middle" fontSize={Math.max(18, 28 * scale)} fill="#374151">🚶‍♀️</text>
+            <text x={235 * scale} y={30 * scale} textAnchor="middle" fontSize={Math.max(18, 28 * scale)} fill="#374151">🚲</text>
+            <text x={335 * scale} y={30 * scale} textAnchor="middle" fontSize={Math.max(18, 28 * scale)} fill="#374151">🚌</text>
             
             {/* Row headers (Weather) */}
-            <text x="50" y="90" textAnchor="middle" fontSize="28" fill="#374151">☀️</text>
-            <text x="50" y="185" textAnchor="middle" fontSize="28" fill="#374151">☁️</text>
+            <text x={50 * scale} y={90 * scale} textAnchor="middle" fontSize={Math.max(18, 28 * scale)} fill="#374151">☀️</text>
+            <text x={50 * scale} y={185 * scale} textAnchor="middle" fontSize={Math.max(18, 28 * scale)} fill="#374151">☁️</text>
             
             {/* Grid lines */}
-            <line x1="85" y1="45" x2="385" y2="45" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="85" y1="140" x2="385" y2="140" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="85" y1="235" x2="385" y2="235" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="85" y1="45" x2="85" y2="235" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="185" y1="45" x2="185" y2="235" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="285" y1="45" x2="285" y2="235" stroke="#d1d5db" strokeWidth="1" />
-            <line x1="385" y1="45" x2="385" y2="235" stroke="#d1d5db" strokeWidth="1" />
+            <line x1={85 * scale} y1={45 * scale} x2={385 * scale} y2={45 * scale} stroke="#d1d5db" strokeWidth="1" />
+            <line x1={85 * scale} y1={140 * scale} x2={385 * scale} y2={140 * scale} stroke="#d1d5db" strokeWidth="1" />
+            <line x1={85 * scale} y1={235 * scale} x2={385 * scale} y2={235 * scale} stroke="#d1d5db" strokeWidth="1" />
+            <line x1={85 * scale} y1={45 * scale} x2={85 * scale} y2={235 * scale} stroke="#d1d5db" strokeWidth="1" />
+            <line x1={185 * scale} y1={45 * scale} x2={185 * scale} y2={235 * scale} stroke="#d1d5db" strokeWidth="1" />
+            <line x1={285 * scale} y1={45 * scale} x2={285 * scale} y2={235 * scale} stroke="#d1d5db" strokeWidth="1" />
+            <line x1={385 * scale} y1={45 * scale} x2={385 * scale} y2={235 * scale} stroke="#d1d5db" strokeWidth="1" />
             
             {/* Probability bars */}
             {tableData.map((row, rowIndex) => 
               row.map((cell, colIndex) => {
                 const prob = jointProbs[cell.index];
                 const barHeight = prob * barMaxHeight;
-                const x = 117.5 + colIndex * 100;
-                const baseY = 50 + rowIndex * 95;  // Increased spacing for taller bars
+                const x = (117.5 + colIndex * 100) * scale;
+                const baseY = (50 + rowIndex * 95) * scale;
                 const y = baseY + barMaxHeight - barHeight;
                 
                 return (
@@ -212,9 +226,9 @@ const MutualInformationWidget: React.FC<Props> = ({
                     {/* Probability text below bar */}
                     <text
                       x={x + barWidth / 2}
-                      y={baseY + barMaxHeight + 8}
+                      y={baseY + barMaxHeight + 8 * scale}
                       textAnchor="middle"
-                      fontSize="10"
+                      fontSize={Math.max(8, 10 * scale)}
                       fill="#374151"
                       fontWeight="bold"
                     >
@@ -227,21 +241,21 @@ const MutualInformationWidget: React.FC<Props> = ({
             
             {/* Marginal probabilities */}
             {/* Weather marginals (right side) */}
-            <text x="395" y="100" fontSize="12" fontWeight="bold" fill="#059669" textAnchor="start">
+            <text x={395 * scale} y={100 * scale} fontSize={Math.max(10, 12 * scale)} fontWeight="bold" fill="#059669" textAnchor="start">
               {(marginals.sun * 100).toFixed(1)}%
             </text>
-            <text x="395" y="195" fontSize="12" fontWeight="bold" fill="#059669" textAnchor="start">
+            <text x={395 * scale} y={195 * scale} fontSize={Math.max(10, 12 * scale)} fontWeight="bold" fill="#059669" textAnchor="start">
               {(marginals.cloud * 100).toFixed(1)}%
             </text>
             
             {/* Transport marginals (bottom) */}
-            <text x="135" y="255" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#059669">
+            <text x={135 * scale} y={255 * scale} textAnchor="middle" fontSize={Math.max(10, 12 * scale)} fontWeight="bold" fill="#059669">
               {(marginals.walk * 100).toFixed(1)}%
             </text>
-            <text x="235" y="255" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#059669">
+            <text x={235 * scale} y={255 * scale} textAnchor="middle" fontSize={Math.max(10, 12 * scale)} fontWeight="bold" fill="#059669">
               {(marginals.bike * 100).toFixed(1)}%
             </text>
-            <text x="335" y="255" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#059669">
+            <text x={335 * scale} y={255 * scale} textAnchor="middle" fontSize={Math.max(10, 12 * scale)} fontWeight="bold" fill="#059669">
               {(marginals.bus * 100).toFixed(1)}%
             </text>
           </svg>
