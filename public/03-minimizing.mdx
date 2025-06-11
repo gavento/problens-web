@@ -69,7 +69,7 @@ Similarly,
 Setting <Math displayMode={false} math="\frac{\partial \mathcal{L}}{\partial \sigma} = 0"/> then leads to <Math displayMode={false} math="\hat\sigma = \frac{1}{N} \sum_{i = 1}^N (X_i - \mu)^2"/>
 </Expand>
 
-## Updating models by minimum relative entropy principle <a id="finding-better-model"></a>
+## Updating models by minimizing KL <a id="finding-better-model"></a>
 
 So, minimizing <Math math="\min_{q \in Q} D(p,q)" /> is quite useful. But what about the other direction, <Math math="\min_{p \in P} D(p,q)" />? This is also extremely valuable, so let's explore an example of what it signifies.
 
@@ -87,7 +87,6 @@ Let's try again. I eat many more lunches, but this time I keep recording the ave
 
 We simply can't do this. In probability theory, we can condition on events like $X \le 30$, i.e., facts that are true for some values $X$ can attend but not others. But now we would like to condition on $E[X] = 15$ which is not an event, just a fact that's true for some _distributions_ over $X$. The good part is that we can use KL divergence to "condition on $E[X] = 15$. 
 
-
 Here's how. I propose that, among all distributions <Math math="p" /> with an average of 15 minutes, I should select the distribution <Math math = "p_{\textrm{new}} = \arg\min_{p: E_p[X]=15} D(p,q)"/> where <Math math="q" /> is my original uniform model. In general, if I have an existing model distribution $q$ and discover that the true distribution belongs to some set $P$ (e.g., the set of distributions with a mean of 15), I claim that I should update my model $q$ to a new model <Math math = "p_{\textrm{new}}"/> like this:
 
 <Math id="min-relative-entropy" displayMode={true} math="p_{\textrm{new}} = \arg\min_{p \in P} D(p,q)" /> 
@@ -101,7 +100,7 @@ Admittedly, this line of reasoning can feel a bit shaky, as we typically prefer 
 However, we can also justify the principle directly from Bayes' rule. Remember how we discussed that using maximum likelihood essentially means "choosing a model $q$ that's hardest to distinguish from $p$ by Bayes' rule"? <EqRef id="min-relative-entropy" format="full" /> can be similarly explained as "updating a model $q$ to incorporate new evidence that the model should be from $P$, using Bayes' rule."
 The reasoning behind this is a bit more involved, so it's placed in an expand box.
 
-<Expand headline="Detailed discussion of how this follows from Bayes' rule">
+<Expand headline="Detailed discussion of how this follows from Bayes' rule" advanced={true}>
 The following argument is a version of the so-called [Wallis derivation](https://en.wikipedia.org/wiki/Principle_of_maximum_entropy#The_Wallis_derivation). 
 We will reformulate our setup slighlty to sidestep the "syntax-error" issue and to be able to condition on facts of the type "our model distribution should come from the set $P$". 
 
@@ -126,12 +125,9 @@ Now, with a bit of hand-waving, we can observe that the probability distribution
 </Expand>
 
 
-One more advanced point. We've already seen that KL divergence is intimately related to the philosophy of updating your beliefs via conditioning and using Bayes' theorem. 
-In fact, I like to view the minimum relative entropy principle as "Conditioning on steroids". While Bayes' theorem tells you how to update your probability distribution after seeing new evidence like $X \le 10$, the min relative entropy principle allows you to update your distribution based on "evidence" like $E[X] = 15$, which is a priori not sensible information to update from. 
+One more technical point. In the next Expand box, we confirm that we can view classical updating as a special case of the min relative entropy principle. This justifies the intuition that minimum relative principle is "conditioning on steroids". 
 
-In the Expand box, we confirm that we can view classical updating as a special case of the min relative entropy principle, so this intuition of min-relative entropy _extending_ normal conditioning makes sense. 
-
-<Expand headline = "Min relative entropy implies Bayes' updating">
+<Expand headline = "Min relative entropy implies Bayes' updating" advanced={true}>
 Consider the general problem of updating after seeing evidence: We have a joint distribution <Math math = "p_{old}" /> over two random variables $X$ (which we're interested in) and $Y$ (representing possible evidence we might observe).
 Then, we observe some evidence $Y=y$. We want to compute the new distribution <Math math = "p_{new}" /> that incorporates this observation. The rules of conditional probability say that <Math math = "p_{new}" /> should be $0$ for $Y \not= y$ and, for $Y = y$, it should be the conditional distribution of $p$ given $Y = y$.
 

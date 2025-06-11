@@ -43,23 +43,33 @@
 
 .link {
   display: block;
-  padding: 0.25em 0;
+  padding: 0.25em 0.75em;
+  margin-left: -0.75em;
   color: var(--neutral-600);
   text-decoration: none;
   /* font-size: 1rem; */
   line-height: 1.4em;
-  transition: color 0.15s ease;
+  transition: all 0.15s ease;
+  border-left: 3px solid transparent;
+  border-radius: 0 4px 4px 0;
 }
 
 .link:hover {
   color: var(--neutral-800);
+  background-color: rgba(0, 0, 0, 0.03);
 }
 
 .active {
-  color: var(--neutral-800);
-  font-weight: 500;
+  color: var(--primary);
+  font-weight: 600;
+  background-color: rgba(37, 99, 235, 0.08);
+  border-left: 3px solid var(--primary);
+  padding-left: 0.75em;
+  margin-left: -0.75em;
+  border-radius: 0 4px 4px 0;
 }
 
 .active:hover {
-  color: var(--neutral-900);
+  color: var(--primary-dark);
+  background-color: rgba(37, 99, 235, 0.12);
 }

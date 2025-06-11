@@ -8,7 +8,7 @@ Fisher information is the limit of KL divergence of close distributions.
 
 ## The polling problem
 
-In [one of our riddles](00-introduction), we have been talking about the problem with polling: If you want to learn the percentage of the vote for one party up to $\eps$, you need sample about $1/\eps^2$ voters. <Footnote>More precisely, it's about $1/(2\eps^2) \cdot \log 1/\delta$ if you want your estimate to be within $\pm \eps$ with probability at least $1-\delta$. In practice, this means that if you want to be withing $\pm 2\%$ with 75\% probability, you should sample around 1700 voters. </Footnote>
+In [one of our riddles](00-introduction), we have been talking about the problem with polling: If you want to learn the percentage of the vote for one party up to $\eps$, you need sample about $1/\eps^2$ voters. 
 
 <PollingErrorCalculator />
 
@@ -27,9 +27,6 @@ D((0.5 + \eps, 0.5 - \eps), (0.5, 0.5)) \approx 2\eps^2
 $$
 
 The intuition we should take from this is that each time we flip a coin, we get around "$2\eps^2$ bits of information" about whether the coin is fair or biased by $\eps$. Intuitively, once we get around 1 bit of information, we begin to be able to say which of the two coins we are looking at. We conclude that the number of trials we need to estimate the bias of a coin should scale like $n = 1/\eps^2$. 
-
-/*{
-<Footnote>Here's one concrete place where this way of thinking is helpful. It's rather easy to prove that $O(1/\eps^2)$ samples suffice to estimate the bias up to $\eps$ (Chebyshev inequality). But how do you prove that you need $\Omega(1/\eps^2)$ samples? A fast way to do that is to compute that KL is $\le 2\eps^2$, hence it is at most $1/10$ even after $1/(100\eps^2)$ samples. Then you can use the so-called [Pinsker inequality](https://en.m.wikipedia.org/wiki/Pinsker%27s_inequality) to get bound on variation distance which in turn implies that you can't distinguish the two distributions with a good success probability. </Footnote>}*/
 
 ## Fisher information
 
@@ -96,14 +93,5 @@ Although KL divergence is asymetrical, it gets symmetrical in the limit. That is
 ![Fisher metric](07-fisher_info/fisher2.png)
 
 The Fisher information metric says that locally, the KL distance around a point $p$ is proportional to $I(p) = 1/(p(1-p))$. That is, the probabilities around $1/2$ are "closer together" than the probabilities at the edges. 
+This is a supercharged-abstract-fancy way of saying what we have already seen many times -- probabilities should often be handled multiplicatively, not additively.
 
-Ultimatily, we want to measure the distance between any two points $p,q$ on a segment, not just know the local distortion. 
-
-
-
- its just $d(p,q) = |p-q|$. But Fisher information metric is saying that this normal way of doing it is not the right one -- around a point $p$, the distances should be scaled by $1/p$. This for example means that the distance between any two points $p$ and $q$ (with $p \le q \le \frac12$), is equal to $d(p,q) = \int_{p}^{q} 1/x dx = \ln \frac{q}{p}$. So, the distance equals the ratio of the two points. In other words, this is a supercharged-abstract-fancy way of saying what we have already seen many times -- probabilities should often be handled multiplicatively, not additively.
-
-
-
-## What's next
-In the [next chapter](08-kolmogorov), we will discuss Kolmogorov complexity.
