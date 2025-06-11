@@ -6,24 +6,21 @@ In this chapter, we'll break down what KL divergence is and how it's tied to Bay
 KL divergence measures how well a distribution $p$ is fitted by a model distribution $q$.
 </Block>
 
-## Definition of KL divergence <a id="definition-of-kl-divergence"></a>
+## 📊 Definition of KL divergence <a id="definition-of-kl-divergence"></a>
 
-Here's the deal with KL divergence. <Footnote>KL stands for Kullback and Leibler, two smart cookies who came up with this in the 1950s, right after Claude Shannon dropped his [game-changing paper](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication) about entropy.</Footnote>
-
-
-Think of it like a wonky distance measure between two distributions.
-
-Here's the formula for discrete distributions $p_1, \dots, p_n$ and $q_1, \dots, q_n$:<Footnote> Most people write $D_{KL}(p||q)$ instead of $D(p,q)$. The double bars are there to remind you that $D_{KL}(p||q) \not= D_{KL}(q||p)$. We'll keep it simple with $D(p,q)$ since we'll be using this a lot. 🙂 </Footnote><Footnote>When we write $\log$, we mean base-2 logarithm. </Footnote>
+Here's the KL divergence formula <Footnote>KL stands for Kullback and Leibler, two guys who came up with this in the 1950s, right after Claude Shannon dropped his [game-changing paper](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication) about entropy.</Footnote> for two discrete distributions $p_1, \dots, p_n$ and $q_1, \dots, q_n$:<Footnote> About notation: Most people write $D_{KL}(p||q)$ instead of $D(p,q)$. The double bars are there to remind you that $D_{KL}(p||q) \not= D_{KL}(q||p)$. We'll keep it simple with $D(p,q)$ since we'll be using this a lot. 🙂 Also, whenever I write $\log$, I mean base-2 logarithm.</Footnote>
 
 $$
 D(p,q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}
 $$
 
-What's this actually mean? When you keep sampling from the true distribution $p$, KL divergence tells you how fast you can figure out you're sampling from $p$ and not some other distribution $q$. Small KL = $q$ is a pretty good fake of $p$.
+You can think of it like a wonky distance measure between two distributions. 
 
-Let me break this down properly.
+But a better intuition goes like this: When you keep sampling from the true distribution $p$, KL divergence tells you how fast you can figure out you're sampling from $p$ and not some other distribution $q$. Small KL means that $q$ is a pretty good imposter pretending to be $p$.
 
-## Bayes' theorem
+Let's break this down in the rest of the chapter. 
+
+## 🎲 Bayes' theorem
 
 Before we dive into KL, let's refresh on Bayes' theorem—it's how you update your beliefs when you get new info. Example time:
 
@@ -53,7 +50,7 @@ Here's how it works in practice: <Footnote>Getting Bayes' rule is super importan
 
 {/*Bayes' theorem simply says we should do the simplest thing possible with the two relevant ratios -- multiply them -- to arrive at the posterior odds $P(\textrm{fair} | \textrm{heads}) : P(\textrm{biased} | \textrm{heads})$ .*/}
 
-## Go forth and multiply
+## ✖️ Go forth and multiply
 
 KL divergence is about what happens when you keep flipping. Picture our Bayesian hero flipping over and over, updating her beliefs each time using Bayes. If she gets $\{H, T, T, H, T\}$, here's what's happening:
 
@@ -63,7 +60,7 @@ Every flip, she multiplies her odds by a likelihood ratio: $2/1$ for heads, $2/3
 
 In this example, three tails out of five slightly favor the biased coin. After converting back to probabilities, her initial 67% belief in fairness drops to about 64%. Gonna need way more flips to know for sure!
 
-## Measuring evidence in bits
+## 🔢 Measuring evidence in bits
 
 Before we see what happens long-term, let's switch gears. <Footnote>No pun intended. </Footnote> We'll take logs of everything so we can add instead of multiply. Instead of multiplying odds, we just add log-odds—much simpler arithmetic!
 
@@ -85,7 +82,7 @@ $$
 
 We started with one bit favoring fair, so we end up with 1.26 bits for fair. Convert that back and you get about 75% probability it's fair.
 
-## Expected Distinguishing Evidence <a id="expected-distinguishing-evidence"></a>
+## 📈 Expected Distinguishing Evidence <a id="expected-distinguishing-evidence"></a>
 
 Let's say the coin actually is biased. How fast will our Bayesian hero figure this out? We can calculate the average bits learned per flip. Heads give -1 bit (negative 'cause it points the wrong way), tails give +0.58 bits. On average, each flip gives:
 
@@ -103,7 +100,7 @@ Try it yourself! I recommend checking edge cases like 50% vs 51% (to get  intuit
 
 <EvidenceAccumulationSimulator />
 
-## KL divergence, in general
+## 🌐 KL divergence, in general
 
 KL divergence is just the general formula for expected evidence accumulation. Say you've got two distributions $p$ and $q$, where $p$ is what's really happening:
 
@@ -124,7 +121,7 @@ Even though we've been all Bayesian here, KL divergence doesn't pick sides—it'
 
 ---
 
-## Cracking some riddles
+## 🧩 Cracking some riddles
 
 <Expand headline = "Riddle: How to train your LLM" > <a id="application-training-smaller-models"></a>
 
@@ -181,6 +178,6 @@ Technically speaking, this is because the formula for mutual information can be 
 
 </Expand>
 
-## What's next?
+## 🚀 What's next?
 
 In the [next section](02-crossentropy), we'll dig deeper into the KL formula and see how it connects to entropy and cross-entropy.
