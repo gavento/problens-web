@@ -44,7 +44,7 @@ const BayesCalculatorWidget: React.FC<Props> = ({
         {/* Prior odds input */}
         <div className="flex items-center">
           <span className="text-sm font-medium text-gray-700 w-32 text-right">Prior odds:</span>
-          <div className="flex-1 flex items-center justify-center space-x-2">
+          <div className="flex-1 flex items-center justify-center space-x-2 ml-4">
             <span className="text-xs text-gray-500 w-12 text-right">(fair)</span>
             <input
               type="number"
@@ -70,8 +70,8 @@ const BayesCalculatorWidget: React.FC<Props> = ({
         {/* Likelihood input */}
         <div className="flex items-center">
           <span className="text-sm font-medium text-gray-700 w-32 text-right">Likelihood of heads:</span>
-          <div className="flex-1 flex items-center justify-center space-x-2">
-            <span className="text-xs text-gray-500 w-12 text-right"></span>
+          <div className="flex-1 flex items-center justify-center space-x-2 ml-4">
+            <span className="text-xs text-gray-500 w-12 text-right">(fair)</span>
             <input
               type="number"
               value={likelihoodFair}
@@ -91,14 +91,14 @@ const BayesCalculatorWidget: React.FC<Props> = ({
               min="0"
               max="1"
             />
-            <span className="text-xs text-gray-500 w-12"></span>
+            <span className="text-xs text-gray-500 w-12">(biased)</span>
           </div>
         </div>
 
         {/* Multiplication symbols */}
         <div className="flex items-center">
           <span className="w-32"></span>
-          <div className="flex-1 flex items-center justify-center">
+          <div className="flex-1 flex items-center justify-center ml-4">
             <span className="text-gray-400 text-xl">×</span>
           </div>
         </div>
