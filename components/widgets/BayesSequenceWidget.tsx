@@ -223,7 +223,7 @@ const BayesSequenceWidget: React.FC<Props> = ({
           <div className="mt-4 pt-3 border-t border-gray-300 space-y-2">
             {logSpace && (
               <div className="flex items-center py-2 px-3 rounded bg-green-50">
-                <span className="text-sm font-medium text-gray-700 w-24">Log odds</span>
+                <span className="text-sm font-medium text-gray-700 w-28">Log odds</span>
                 <div className="flex-1 flex items-center justify-center space-x-2">
                   <span className="font-mono text-sm font-bold text-purple-600">
                     {steps[currentStep]?.logOddsFair?.toFixed(2)}
@@ -238,7 +238,7 @@ const BayesSequenceWidget: React.FC<Props> = ({
             
             {/* Posterior odds */}
             <div className="flex items-center py-2 px-3 rounded bg-green-50">
-              <span className="text-sm font-medium text-gray-700 w-24">Posterior odds</span>
+              <span className="text-sm font-medium text-gray-700 w-28">Posterior odds</span>
               <div className="flex-1 flex items-center justify-center space-x-2">
                 <span className={`font-mono text-sm font-bold ${logSpace ? 'text-blue-600' : 'text-blue-600'}`}>
                   {steps[currentStep]?.oddsFair.toFixed(3)}
@@ -252,7 +252,7 @@ const BayesSequenceWidget: React.FC<Props> = ({
             
             {/* Probabilities */}
             <div className="flex items-center py-2 px-3 rounded bg-green-50">
-              <span className="text-sm font-medium text-gray-700 w-24">Probability</span>
+              <span className="text-sm font-medium text-gray-700 w-28">Probability</span>
               <div className="flex-1 flex items-center justify-center space-x-2">
                 <span className="font-mono text-sm font-bold text-blue-600">
                   {steps[currentStep]?.probFair.toFixed(1)}%
