@@ -103,9 +103,9 @@ Try it yourself! I recommend checking edge cases like 50% vs 51% (to get  intuit
 
 ## KL divergence, in general
 
-KL divergence is just the general formula for expected evidence accumulation. Say you've got two distributions $p$ and $q$, where $p$ is what's really happening:
+KL divergence is just the general formula for expected evidence accumulation. Say you've got two distributions $p$ and $q$, where $p$ is what's really happening, but you only know it's either $p$ or $q$. 
 
-You can repeat the experiment and play the Bayesian game: For each outcome $i$, compare the likelihoods $p_i$ and $q_i$ and update your beliefs. This means adding $\log 1/p_i$ bits to $p$'s surprise total and $\log 1/q_i$ bits to $q$'s. 
+You can keep sampling from the unknown distribution and play the Bayesian game: Whenever you sample outcome $i$, compare the likelihoods $p_i$ and $q_i$ and update your beliefs. This means adding $\log 1/p_i$ bits to $p$'s surprise total and $\log 1/q_i$ bits to $q$'s. 
 
 On average, each sample from the true distribution $p$ gives you:
 
@@ -117,8 +117,7 @@ bits of evidence toward the truth.
 
 When this number is small (less than 1), you can think of $1/D(p,q)$ as "how many samples until I get one bit of evidence." One bit means the odds for the true hypothesis doubled. <Footnote>This isn't the same as doubling the probability. Going from 1:1 to 2:1 odds means 50% → 66.7% probability. But with lopsided odds like 1:1000, gaining a bit toward the underdog (making it 2:1000) almost doubles its probability. And gaining a bit the other way (1:2000) almost halves the underdog's probability. The truth's probability shoots up exponentially until it's comparable to the alternative, then the alternative's probability tanks exponentially. </Footnote>
 
-Notice KL divergence is about the evidence, not your starting beliefs. It tells you how fast beliefs change, no matter where you start.
-Even though we've been all Bayesian here, KL divergence doesn't pick sides—it's useful whether you're a Bayesian or frequentist statistician.
+Notice KL divergence is about the evidence, not your starting beliefs. It tells you how fast beliefs change, no matter where you start. Even though we've been all about Bayes' rule here, KL divergence works for both Bayesian and frequentist statistics. 
 
 ---
 
@@ -126,16 +125,16 @@ Even though we've been all Bayesian here, KL divergence doesn't pick sides—it'
 
 <Expand headline = "Riddle: How to train your LLM" > <a id="application-training-smaller-models"></a>
 
-Remember [our riddle](00-introduction#deep-learning) about training a smaller language model to copy a bigger one like GPT-4? We've got the true distribution $p$ and our model's guess $q$, and we need to measure how good the match is.
+Remember [our riddle](00-introduction#deep-learning) about training a language model? We've got some true distribution $p$ of what letter typically follows short pieces of text like "My name is A". We also have our model's guess $q$, and we need to measure how good the match is.
 
-That's literally what KL divergence does!
+This is done by optimizing KL divergence, because this literally means that we want to make it hard for a Bayesian detective to distinguish between the true language $p$ and language model $q$. Later on, we will discuss that we can't optimize KL divergence, but instead optimize cross-entropy, but the story stays the same. 
 
-What about using $\ell_1$ norm ($\sum |p_i - q_i|$) or $\ell_2$ norm ($\sum (p_i - q_i)^2$)? They might work okay, but they've got a big problem. Check these out:
+What about using $\ell_1$ norm ($\sum |p_i - q_i|$) or $\ell_2$ norm ($\sum (p_i - q_i)^2$)? They might work okay, but they don't have the probability story behind them, which leads to some iffy behavior. Take these two possibilities. 
 
 1. $p_i = 0.5, q_i = 0.49$
 2. $p_i = 0.01, q_i = 0.0$
 
-Regular norms ($\ell_1, \ell_2$) think these errors are about the same size. But KL knows better—the first one's basically fine, but the second is a total disaster!
+Regular norms ($\ell_1, \ell_2$) think these errors are about the same size. But KL knows better—the first one's basically fine, but the second is a disaster model! For example, the word "God" typically does not follow with "zilla", but your model should understand that this may sometimes happen. The distribution $q(\textrm{'zilla'} \mid \textrm{'God'}) = 0.0$ means that the model does not even begin to consider this option. 
 
 <DistributionComparisonWidget title="KL Divergence Explorer" />
 
