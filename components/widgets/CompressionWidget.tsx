@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import * as HoverCard from "@radix-ui/react-hover-card";
 
 interface CompressionResult {
   algorithm: string;
@@ -232,27 +233,48 @@ const textSamples: TextSample[] = [
 
 export default function CompressionWidget() {
   const [selectedSample, setSelectedSample] = useState<TextSample | null>(null);
-  const [hoveredResult, setHoveredResult] = useState<CompressionResult | null>(null);
 
   const formatBits = (bits: number): string => {
     if (bits >= 8000) return `${(bits / 8000).toFixed(1)}KB`;
     return `${bits} bits`;
   };
 
-  const getBarWidth = (bits: number, maxBits: number): number => {
-    // Use log scale for better visualization
+  const getBarWidth = (bits: number, minBits: number, maxBits: number): number => {
+    // Scale so that the best compression (minBits) gets 25% width and worst gets 100%
     const logBits = Math.log10(bits);
+    const logMin = Math.log10(minBits);
     const logMax = Math.log10(maxBits);
-    return (logBits / logMax) * 100;
+    
+    // Map to 25-100% range
+    const normalized = (logBits - logMin) / (logMax - logMin);
+    return 25 + (normalized * 75);
   };
 
-  const getBarColor = (bits: number, maxBits: number): string => {
-    const ratio = bits / maxBits;
-    if (ratio > 0.8) return "bg-red-500";
-    if (ratio > 0.6) return "bg-orange-500";
-    if (ratio > 0.4) return "bg-yellow-500";
-    if (ratio > 0.2) return "bg-lime-500";
-    return "bg-green-500";
+  const getBarColor = (percent: number): string => {
+    // Color based on position (0-100%)
+    if (percent < 25) return "#22c55e"; // green
+    if (percent < 50) return "#84cc16"; // lime
+    if (percent < 75) return "#eab308"; // yellow
+    if (percent < 90) return "#f97316"; // orange
+    return "#ef4444"; // red
+  };
+
+  const getCompressionRatioMarkers = (minBits: number, maxBits: number) => {
+    const baselineBytes = maxBits / 8;
+    const markers = [];
+    
+    // Generate markers at 2x, 4x, 8x, 16x compression ratios
+    const ratios = [2, 4, 8, 16, 32, 64];
+    
+    for (const ratio of ratios) {
+      const targetBits = maxBits / ratio;
+      if (targetBits >= minBits && targetBits <= maxBits) {
+        const position = getBarWidth(targetBits, minBits, maxBits);
+        markers.push({ ratio: `${ratio}x`, position });
+      }
+    }
+    
+    return markers;
   };
 
   return (
@@ -260,7 +282,7 @@ export default function CompressionWidget() {
       <h3 className="text-lg font-semibold mb-4">Text Compression Explorer</h3>
       <p className="text-gray-600 mb-6">
         Explore how different compression algorithms perform on various types of text. 
-        Click a sample to see compression results as logarithmically-scaled bars.
+        Click a sample to see compression results.
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
@@ -295,54 +317,102 @@ export default function CompressionWidget() {
             </div>
           </div>
 
-          <div className="space-y-3">
-            <h4 className="font-medium mb-4">Compression Results (log scale):</h4>
+          <div className="mt-6">
+            <h4 className="font-medium mb-2">Compression Results:</h4>
+            
             {(() => {
               const maxBits = Math.max(...selectedSample.results.map(r => r.bits));
-              return selectedSample.results.map((result, index) => (
-                <div key={index} className="relative">
-                  <div 
-                    className={`relative h-12 rounded transition-all cursor-pointer ${getBarColor(result.bits, maxBits)}`}
-                    style={{ width: `${getBarWidth(result.bits, maxBits)}%` }}
-                    onMouseEnter={() => setHoveredResult(result)}
-                    onMouseLeave={() => setHoveredResult(null)}
-                  >
-                    <div className="absolute inset-0 flex items-center px-3">
-                      <span className="text-white font-medium text-sm">
-                        {result.algorithm}
-                      </span>
+              const minBits = Math.min(...selectedSample.results.map(r => r.bits));
+              const markers = getCompressionRatioMarkers(minBits, maxBits);
+
+              return (
+                <>
+                  {/* Color gradient axis */}
+                  <div className="relative mb-6">
+                    <div 
+                      className="h-2 rounded-full relative"
+                      style={{
+                        background: 'linear-gradient(to right, #22c55e 0%, #22c55e 25%, #84cc16 50%, #eab308 75%, #f97316 90%, #ef4444 100%)'
+                      }}
+                    >
+                      {/* Compression ratio markers */}
+                      {markers.map((marker, i) => (
+                        <div
+                          key={i}
+                          className="absolute top-0 h-2 w-px bg-gray-600"
+                          style={{ left: `${marker.position}%` }}
+                        >
+                          <span className="absolute -top-5 text-xs text-gray-600 transform -translate-x-1/2">
+                            {marker.ratio}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                      <span>Better compression →</span>
+                      <span>← Worse compression</span>
                     </div>
                   </div>
-                  <div className="text-xs text-gray-500 mt-1">
-                    {formatBits(result.bits)} ({result.ratio})
+
+                  {/* Compression bars */}
+                  <div className="space-y-3">
+                    {selectedSample.results.map((result, index) => {
+                      const width = getBarWidth(result.bits, minBits, maxBits);
+                      const color = getBarColor(width);
+                      
+                      return (
+                        <HoverCard.Root key={index} openDelay={100} closeDelay={300}>
+                          <HoverCard.Trigger asChild>
+                            <div className="relative cursor-pointer">
+                              <div 
+                                className="relative h-12 rounded transition-all hover:opacity-90"
+                                style={{ 
+                                  width: `${width}%`,
+                                  backgroundColor: color
+                                }}
+                              >
+                                <div className="absolute inset-0 flex items-center px-3">
+                                  <span className="text-white font-medium text-sm">
+                                    {result.algorithm}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="text-xs text-gray-500 mt-1">
+                                {formatBits(result.bits)} ({result.ratio})
+                              </div>
+                            </div>
+                          </HoverCard.Trigger>
+                          <HoverCard.Portal>
+                            <HoverCard.Content 
+                              className="z-50 bg-white border border-gray-200 rounded-md shadow-lg p-4 max-w-sm"
+                              sideOffset={5}
+                            >
+                              <div className="text-sm">
+                                <div className="font-medium mb-2 text-gray-900">{result.algorithm} Algorithm</div>
+                                <div className="mb-2 text-gray-700">
+                                  <strong>How it works:</strong> {result.generalDescription}
+                                </div>
+                                <div className="text-gray-700">
+                                  <strong>For this text:</strong> {result.specificDescription}
+                                </div>
+                              </div>
+                            </HoverCard.Content>
+                          </HoverCard.Portal>
+                        </HoverCard.Root>
+                      );
+                    })}
                   </div>
-                </div>
-              ));
+                </>
+              );
             })()}
           </div>
 
-          {hoveredResult && (
-            <div className="mt-4 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
-              <div className="text-sm text-blue-900">
-                <div className="font-medium mb-2">{hoveredResult.algorithm} Algorithm</div>
-                <div className="mb-2">
-                  <strong>How it works:</strong> {hoveredResult.generalDescription}
-                </div>
-                <div>
-                  <strong>For this text:</strong> {hoveredResult.specificDescription}
-                </div>
-              </div>
+          <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+            <div className="text-sm text-gray-700">
+              <strong>Hover over bars</strong> to see how each algorithm works. 
+              Bar length shows compressed size on a logarithmic scale.
             </div>
-          )}
-
-          {!hoveredResult && (
-            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-              <div className="text-sm text-gray-700">
-                <strong>Hover over bars</strong> to see how each algorithm works. 
-                Bar length shows compressed size on a logarithmic scale - shorter bars mean better compression.
-              </div>
-            </div>
-          )}
+          </div>
         </div>
       )}
     </div>
