@@ -1,0 +1,101 @@
+Chunk_ID,Text_Chunk,Predicted_Token,Bits_Per_Token,Bits_Per_Char,Top_Alternative_1,Top_Alternative_2,Top_Alternative_3,Method
+0,'KL divergence measures how well a distri...','...approximates',14.000,4.000,'','','',real_logprobs_hf_inference
+1,'s fitted by a model distribution q.\n\nHer...','It seems like',14.000,4.000,'','','',real_logprobs_hf_inference
+2,' divergence formula for two discrete dis...',"""I assume you're""",14.000,4.000,'','','',real_logprobs_hf_inference
+3,"' p_1, ..., p_n and q_1, ..., q_n:\n\nD(p,q...'",'It seems like',14.000,4.000,'','','',real_logprobs_hf_inference
+4,'log₂(p_i/q_i)\n\nYou can think of KL diver...','The Kull',14.000,4.000,'','','',real_logprobs_hf_inference
+5,' a wonky distance measure between two di...','A wonky',14.000,4.000,'','','',real_logprobs_hf_inference
+6,'s. But a better intuition goes like this...','But a better',14.000,4.000,'','','',real_logprobs_hf_inference
+7,' keep sampling from the true distributio...','It seems like',14.000,4.000,'','','',real_logprobs_hf_inference
+8,'vergence tells you how fast you can figu...','...are looking',14.000,4.000,'','','',real_logprobs_hf_inference
+9,"""'re sampling from p and not some other d...""",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+10,'n q. Small KL means that q is a pretty g...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+11,'er pretending to be p.\n\nBefore we dive i...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+12,"""t's refresh on Bayes' theorem—it's how y...""",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+13,'your beliefs when you get new info. Exam...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+14,'e got a coin that might be rigged. To ke...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+15,"""le, let's say there are only two options...""",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+16,"""her fair (50/50 for heads/tails) or it's...""",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+17,'ward tails (25/75 for heads/tails).\n\nTo ...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+18,' you need a starting guess (a prior) abo...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+19,"""t is. Let's say you think there's a 2/3 ...""",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+20,"""s fair and 1/3 chance it's biased. You f...""",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+21,'in—Heads! This is evidence for the hypot...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+22,' the coin is fair since heads are more l...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+23,""" a fair coin.\n\nBayes' rule calculates th...""",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+24,"""ability (the posterior) that it's fair. ...""",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+25,'rd way to write the rule goes like this:...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+26,' heads) = P(heads | fair) · P(fair) / P(...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+27,'is is no rocket science — if you multipl...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+28,"'es by P(heads), both sides express the q...'",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+29,'fair AND heads) using conditional probab...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+30,"""I like to think about Bayes' rule a bit ...""",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+31,'y:\n\nPosterior odds = Prior odds × Likeli...','A great start',14.000,4.000,'','','',real_logprobs_hf_inference
+32,'\n\nThis formula is just another way of wr...','...the equation',14.000,4.000,'','','',real_logprobs_hf_inference
+33,""" the Bayes' rule. To understand the mess...""",'It seems like',14.000,4.000,'','','',real_logprobs_hf_inference
+34,"""s version, let's think in odds instead o...""",'Thinking in',14.000,4.000,'','','',real_logprobs_hf_inference
+35,"'ities. Gamblers love this—instead of ""1/...'","'f winning,""'",14.000,4.000,'','','',real_logprobs_hf_inference
+36,"'f this, 2/3 chance of that,"" they say ""o...'","'If this,'",14.000,4.000,'','','',real_logprobs_hf_inference
+37,"'2."" Odds don\'t need to add to one (1:2 i...'",'as 2',14.000,4.000,'','','',real_logprobs_hf_inference
+38,"' as 2:4), which is actually often pretty...'",'lot of times',14.000,4.000,'','','',real_logprobs_hf_inference
+39,'llows you to focus on the more important...','...your work',14.000,4.000,'','','',real_logprobs_hf_inference
+40,"""the picture.\n\nWith odds, Bayes' formula ...""",'It seems like',14.000,4.000,'','','',real_logprobs_hf_inference
+41,'lean! You just have to multiply your pri...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+42,""" P(heads | fair)/P(heads | biased)—that'...""",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+43,' more likely heads are under each hypoth...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+44,'e conditional probabilities P(event | hy...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+45,"'are called likelihoods, so this ratio is...'",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+46,'ihood ratio.\n\nKL divergence is about wha...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+47,'when you keep flipping. Picture our Baye...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+48,"'flipping over and over, updating her bel...'",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+49,"'time using Bayes. If she gets {H, T, T, ...'",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+50,"'ry flip, she multiplies her odds by a li...'",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+51,"'atio: 2/1 for heads, 2/3 for tails.\n\nBef...'",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+52,""" what happens long-term, let's improve o...""",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+53,"""tor a bit. We'll get a bit more clarity ...""",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+54,' logs of everything so we can add instea...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+55,"'ply. Instead of multiplying odds, we jus...'",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+56,'alled log-odds.\n\nNotice that all the lik...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+57,'numbers in yellow rows) are now negative...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+58,'That makes sense - probabilities are sma...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+59,"'one, so after taking the log, they becom...'",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+60,""" numbers. It's often useful to talk abou...""",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+61,"' values of those numbers, which is why p...'",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+62,'ne a quantity called surprisal: Whenever...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+63,"'something happening with probability p, ...'",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+64,'sion log 1/p can be called a surprisal a...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+65,'ues are bits.\n\nThis is a logarithmic vie...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+66,'how surprised you are when something hap...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+67,'ing heads when you thought it was 1% lik...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+68,' surprising (log 1/0.01 ≈ 6.6 bits). Get...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+69,' on a fair coin? Meh (log 1/0.5 = 1 bit)...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+70,' subtract surprisals for the same outcom...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+71,"'fferent hypotheses, we get how much evid...'",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+72,"'outcome provides. For our coin example, ...'",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+73,' us 1 bit of surprisal given the fair hy...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+74,'nd two bits of surprisal given the biase...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+75,"'is, so we get 1 bit of evidence towards ...'",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+76,"'ypothesis. Analogously, tails give 0.58 ...'",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+77,'idence towards the biased hypothesis.\n\nT...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+78,"'final probability, add up all the surpri...'",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+79,"""ach hypothesis, exponentiate, and don't ...""",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+80,"' prior. In our example, the total eviden...'",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+81,' fair hypothesis is:\n\n1 - 0.58 - 0.58 + ...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+82,' 0.25.\n\nWe started with one bit favoring...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+83,"'hypothesis, so we end up with 1.25 bits ...'",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+84,'Convert that back and you get about 70% ...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+85,"""y the coin is fair.\n\nLet's say the coin ...""",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+86,'s biased. How fast will our Bayesian her...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+87,'his out? We can calculate the average nu...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+88,'ts that she learns per flip. Heads give ...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+89,"'gative because it points the wrong way),...'",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+90,"'e +0.58 bits. On average, each flip give...'",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+91,' (-1) + 0.75 × 0.58 ≈ 0.19\n\nbits of evid...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+92,'d the truth. This is the KL divergence b...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+93,' true 25%/75% distribution and the model...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+94,'istribution!\n\nWhat does this mean in pra...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+95,"'er about 5 flips, you get one bit of evi...'",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+96,'verage. So if you start thinking 2:1 the...','Error',14.000,4.000,'','','',real_logprobs_hf_inference
+97,"""air, after ~5 flips you'll be at 1:1. An...""",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+98,"""ips gets you to 2:1 it's biased, then 4:...""",'Error',14.000,4.000,'','','',real_logprobs_hf_inference
+99,'on.\n\nThe actual odds bounce around this ...','Error',14.000,4.000,'','','',real_logprobs_hf_inference

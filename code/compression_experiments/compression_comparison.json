@@ -1,0 +1,42 @@
+{
+  "kl_intro_10kb": {
+    "original_size": 9455,
+    "gzip_size": 3966,
+    "gzip_ratio": 2.3840141200201717,
+    "rar_size": null,
+    "rar_ratio": null,
+    "timestamp": "2025-06-12T13:38:25.536918"
+  },
+  "pi_digits_10kb": {
+    "original_size": 10000,
+    "gzip_size": 5163,
+    "gzip_ratio": 1.936858415649816,
+    "rar_size": null,
+    "rar_ratio": null,
+    "timestamp": "2025-06-12T13:38:25.539687"
+  },
+  "declaration": {
+    "original_size": 9263,
+    "gzip_size": 4067,
+    "gzip_ratio": 2.277600196705188,
+    "rar_size": null,
+    "rar_ratio": null,
+    "timestamp": "2025-06-12T13:38:25.542432"
+  },
+  "human_mitochondrial_dna": {
+    "original_size": 16569,
+    "gzip_size": 5031,
+    "gzip_ratio": 3.2933810375670842,
+    "rar_size": null,
+    "rar_ratio": null,
+    "timestamp": "2025-06-12T13:38:25.553348"
+  },
+  "huffman_code_10kb": {
+    "original_size": 11943,
+    "gzip_size": 3174,
+    "gzip_ratio": 3.7627599243856333,
+    "rar_size": null,
+    "rar_ratio": null,
+    "timestamp": "2025-06-12T13:38:25.556506"
+  }
+}

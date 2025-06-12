@@ -1,0 +1,29 @@
+{
+  "text_name": "kl_intro_10kb",
+  "text_path": "texts/kl_intro_10kb.txt",
+  "text_length": 9371,
+  "original_bits": 74968,
+  "algorithms": {
+    "gzip": {
+      "compressed_bits": 31728,
+      "compression_ratio": 2.3840141200201717,
+      "bits_per_char": 3.3857645928929676
+    },
+    "zlib": {
+      "compressed_bits": 31632,
+      "compression_ratio": 2.391249367728882,
+      "bits_per_char": 3.37552022196137
+    },
+    "bz2": {
+      "compressed_bits": 30096,
+      "compression_ratio": 2.513290802764487,
+      "bits_per_char": 3.2116102870558105
+    },
+    "lzma": {
+      "compressed_bits": 31264,
+      "compression_ratio": 2.419396110542477,
+      "bits_per_char": 3.3362501333902466
+    }
+  },
+  "timestamp": "2025-06-12T11:33:10.207643"
+}

@@ -1,0 +1,29 @@
+{
+  "text_name": "human_mitochondrial_dna",
+  "text_path": "texts/human_mitochondrial_dna.txt",
+  "text_length": 16569,
+  "original_bits": 132552,
+  "algorithms": {
+    "gzip": {
+      "compressed_bits": 40248,
+      "compression_ratio": 3.2933810375670842,
+      "bits_per_char": 2.4291146116241173
+    },
+    "zlib": {
+      "compressed_bits": 40152,
+      "compression_ratio": 3.301255230125523,
+      "bits_per_char": 2.423320659062104
+    },
+    "bz2": {
+      "compressed_bits": 36664,
+      "compression_ratio": 3.615317477634737,
+      "bits_per_char": 2.2128070493089504
+    },
+    "lzma": {
+      "compressed_bits": 38336,
+      "compression_ratio": 3.4576377295492486,
+      "bits_per_char": 2.3137183897640172
+    }
+  },
+  "timestamp": "2025-06-12T10:42:19.881901"
+}

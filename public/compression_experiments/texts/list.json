@@ -1,0 +1,32 @@
+[
+  {
+    "filename": "kl_intro_10kb.txt",
+    "name": "KL Introduction (~10KB)",
+    "description": "Academic text about information theory and KL divergence"
+  },
+  {
+    "filename": "pi_digits_10kb.txt", 
+    "name": "Pi Digits (~10KB)",
+    "description": "First 10,000 digits of π (mathematically random)"
+  },
+  {
+    "filename": "declaration_full.txt",
+    "name": "Declaration of Independence", 
+    "description": "Natural English prose with historical vocabulary"
+  },
+  {
+    "filename": "human_mitochondrial_dna.txt",
+    "name": "Human Mitochondrial DNA",
+    "description": "Complete human mitochondrial genome (16,569 bases)"
+  },
+  {
+    "filename": "huffman_code_10kb.txt",
+    "name": "Code Snippet",
+    "description": "JavaScript function with typical programming patterns"
+  },
+  {
+    "filename": "repeated_phrase.txt",
+    "name": "Repeated Pattern",
+    "description": "Highly structured repetitive text"
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "text_name": "kl_intro_10kb",
+  "text_path": "texts/kl_intro_10kb.txt",
+  "text_length": 9371,
+  "analyzed_length": 5000,
+  "num_chunks": 100,
+  "total_bits": 20000.0,
+  "bits_per_char": 4.0,
+  "compression_ratio": 2.0,
+  "model": "meta-llama/Llama-4-Scout-17B-16E-Instruct",
+  "method": "real_logprobs_hf_inference",
+  "timestamp": "2025-06-12T11:36:00.202516"
+}

@@ -1,0 +1,29 @@
+{
+  "text_name": "historical_text_10kb",
+  "text_path": "texts/historical_text_10kb.txt",
+  "text_length": 9892,
+  "original_bits": 79136,
+  "algorithms": {
+    "gzip": {
+      "compressed_bits": 28808,
+      "compression_ratio": 2.7470147181338516,
+      "bits_per_char": 2.912252325111201
+    },
+    "zlib": {
+      "compressed_bits": 28712,
+      "compression_ratio": 2.7561994984675398,
+      "bits_per_char": 2.9025475131419327
+    },
+    "bz2": {
+      "compressed_bits": 26608,
+      "compression_ratio": 2.974143114852676,
+      "bits_per_char": 2.6898503841488073
+    },
+    "lzma": {
+      "compressed_bits": 28544,
+      "compression_ratio": 2.772421524663677,
+      "bits_per_char": 2.8855640921957137
+    }
+  },
+  "timestamp": "2025-06-12T10:42:19.961983"
+}

@@ -1,0 +1,29 @@
+{
+  "text_name": "huffman_code_10kb",
+  "text_path": "texts/huffman_code_10kb.txt",
+  "text_length": 12021,
+  "original_bits": 96168,
+  "algorithms": {
+    "gzip": {
+      "compressed_bits": 25608,
+      "compression_ratio": 3.7553889409559513,
+      "bits_per_char": 2.1302720239580735
+    },
+    "zlib": {
+      "compressed_bits": 25512,
+      "compression_ratio": 3.7695202257761053,
+      "bits_per_char": 2.1222859995008734
+    },
+    "bz2": {
+      "compressed_bits": 24768,
+      "compression_ratio": 3.882751937984496,
+      "bits_per_char": 2.0603943099575743
+    },
+    "lzma": {
+      "compressed_bits": 25184,
+      "compression_ratio": 3.8186149936467597,
+      "bits_per_char": 2.095000415938774
+    }
+  },
+  "timestamp": "2025-06-12T10:42:19.847661"
+}

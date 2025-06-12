@@ -1,0 +1,74 @@
+{
+  "kl_intro_10kb": {
+    "original_size": 9455,
+    "algorithms": {
+      "GZIP": 3966,
+      "BZIP2": 3762,
+      "LZMA": 3908,
+      "ZIP": 4080
+    },
+    "best_algorithm": "BZIP2",
+    "best_ratio": 2.513290802764487,
+    "timestamp": "2025-06-12T13:40:30.967391"
+  },
+  "pi_digits_10kb": {
+    "original_size": 10000,
+    "algorithms": {
+      "GZIP": 5163,
+      "BZIP2": 4491,
+      "LZMA": 4544,
+      "ZIP": 5279
+    },
+    "best_algorithm": "BZIP2",
+    "best_ratio": 2.22667557336896,
+    "timestamp": "2025-06-12T13:40:31.021712"
+  },
+  "declaration": {
+    "original_size": 9263,
+    "algorithms": {
+      "GZIP": 4067,
+      "BZIP2": 3783,
+      "LZMA": 4060,
+      "ZIP": 4177
+    },
+    "best_algorithm": "BZIP2",
+    "best_ratio": 2.448585778482686,
+    "timestamp": "2025-06-12T13:40:31.074756"
+  },
+  "human_mitochondrial_dna": {
+    "original_size": 16569,
+    "algorithms": {
+      "GZIP": 5031,
+      "BZIP2": 4583,
+      "LZMA": 4792,
+      "ZIP": 5165
+    },
+    "best_algorithm": "BZIP2",
+    "best_ratio": 3.615317477634737,
+    "timestamp": "2025-06-12T13:40:31.146578"
+  },
+  "huffman_code_10kb": {
+    "original_size": 11943,
+    "algorithms": {
+      "GZIP": 3174,
+      "BZIP2": 3066,
+      "LZMA": 3116,
+      "ZIP": 3296
+    },
+    "best_algorithm": "BZIP2",
+    "best_ratio": 3.895303326810176,
+    "timestamp": "2025-06-12T13:40:31.199977"
+  },
+  "repeated_10kb": {
+    "original_size": 9108,
+    "algorithms": {
+      "GZIP": 106,
+      "BZIP2": 138,
+      "LZMA": 152,
+      "ZIP": 220
+    },
+    "best_algorithm": "GZIP",
+    "best_ratio": 85.9245283018868,
+    "timestamp": "2025-06-12T13:40:31.249521"
+  }
+}

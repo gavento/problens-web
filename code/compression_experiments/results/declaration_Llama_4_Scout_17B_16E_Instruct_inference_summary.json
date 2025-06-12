@@ -1,0 +1,13 @@
+{
+  "text_name": "declaration",
+  "text_path": "/home/vasek/problens-web/code/compression_experiments/texts/declaration.txt",
+  "text_length": 1062,
+  "analyzed_length": 1100,
+  "num_chunks": 11,
+  "total_estimated_bits": 1766.1818181818182,
+  "bits_per_char": 1.6630713918849513,
+  "compression_ratio": 4.810376775787523,
+  "model": "meta-llama/Llama-4-Scout-17B-16E-Instruct",
+  "method": "inference_providers_chat",
+  "timestamp": "2025-06-12T11:01:32.281661"
+}

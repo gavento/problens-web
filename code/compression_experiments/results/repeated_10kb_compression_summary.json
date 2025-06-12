@@ -1,0 +1,29 @@
+{
+  "text_name": "repeated_10kb",
+  "text_path": "texts/repeated_10kb.txt",
+  "text_length": 11114,
+  "original_bits": 88912,
+  "algorithms": {
+    "gzip": {
+      "compressed_bits": 888,
+      "compression_ratio": 100.12612612612612,
+      "bits_per_char": 0.0798992262011877
+    },
+    "zlib": {
+      "compressed_bits": 792,
+      "compression_ratio": 112.26262626262626,
+      "bits_per_char": 0.0712614720172755
+    },
+    "bz2": {
+      "compressed_bits": 1128,
+      "compression_ratio": 78.822695035461,
+      "bits_per_char": 0.10149361166096815
+    },
+    "lzma": {
+      "compressed_bits": 1248,
+      "compression_ratio": 71.24358974358974,
+      "bits_per_char": 0.11229080439085838
+    }
+  },
+  "timestamp": "2025-06-12T10:42:19.909373"
+}

@@ -1,0 +1,780 @@
+{
+  "results": [
+    {
+      "text_name": "kl_intro_10kb",
+      "text_path": "texts/kl_intro_10kb.txt",
+      "analysis": {
+        "text_length": 9371,
+        "original_bits": 74968,
+        "optimal_bits": 43947.91772083161,
+        "entropy_per_char": 4.689778862536721,
+        "compression_ratio": 1.7058373613106284,
+        "unique_characters": 95,
+        "character_analysis": [
+          {
+            "character": "' '",
+            "count": 1577,
+            "probability": 0.16828513499092945,
+            "bits_per_occurrence": 2.571020349128672,
+            "total_bits": 4054.499090575916,
+            "percentage_of_text": 16.828513499092946
+          },
+          {
+            "character": "'e'",
+            "count": 848,
+            "probability": 0.09049194322911108,
+            "bits_per_occurrence": 3.466066839355983,
+            "total_bits": 2939.2246797738735,
+            "percentage_of_text": 9.049194322911108
+          },
+          {
+            "character": "'t'",
+            "count": 643,
+            "probability": 0.0686159428022623,
+            "bits_per_occurrence": 3.865312366591235,
+            "total_bits": 2485.395851718164,
+            "percentage_of_text": 6.86159428022623
+          },
+          {
+            "character": "'i'",
+            "count": 579,
+            "probability": 0.06178636218119731,
+            "bits_per_occurrence": 4.0165677559299455,
+            "total_bits": 2325.5927306834383,
+            "percentage_of_text": 6.178636218119731
+          },
+          {
+            "character": "'o'",
+            "count": 522,
+            "probability": 0.055703766940561304,
+            "bits_per_occurrence": 4.166081297349298,
+            "total_bits": 2174.694437216334,
+            "percentage_of_text": 5.57037669405613
+          },
+          {
+            "character": "'s'",
+            "count": 488,
+            "probability": 0.052075552235620534,
+            "bits_per_occurrence": 4.2632499563562956,
+            "total_bits": 2080.4659787018722,
+            "percentage_of_text": 5.2075552235620535
+          },
+          {
+            "character": "'a'",
+            "count": 478,
+            "probability": 0.051008430263579124,
+            "bits_per_occurrence": 4.2931204859384335,
+            "total_bits": 2052.111592278571,
+            "percentage_of_text": 5.1008430263579125
+          },
+          {
+            "character": "'n'",
+            "count": 396,
+            "probability": 0.04225803009283961,
+            "bits_per_occurrence": 4.564630673839573,
+            "total_bits": 1807.5937468404709,
+            "percentage_of_text": 4.225803009283961
+          },
+          {
+            "character": "'r'",
+            "count": 373,
+            "probability": 0.03980364955714438,
+            "bits_per_occurrence": 4.650955473663944,
+            "total_bits": 1734.8063916766512,
+            "percentage_of_text": 3.980364955714438
+          },
+          {
+            "character": "'h'",
+            "count": 321,
+            "probability": 0.03425461530252908,
+            "bits_per_occurrence": 4.867557806796879,
+            "total_bits": 1562.486055981798,
+            "percentage_of_text": 3.425461530252908
+          },
+          {
+            "character": "'l'",
+            "count": 298,
+            "probability": 0.03180023476683385,
+            "bits_per_occurrence": 4.974818773457021,
+            "total_bits": 1482.4959944901923,
+            "percentage_of_text": 3.180023476683385
+          },
+          {
+            "character": "'d'",
+            "count": 272,
+            "probability": 0.0290257176395262,
+            "bits_per_occurrence": 5.106524452668843,
+            "total_bits": 1388.9746511259254,
+            "percentage_of_text": 2.90257176395262
+          },
+          {
+            "character": "'u'",
+            "count": 230,
+            "probability": 0.0245438053569523,
+            "bits_per_occurrence": 5.348497242974807,
+            "total_bits": 1230.1543658842056,
+            "percentage_of_text": 2.45438053569523
+          },
+          {
+            "character": "'p'",
+            "count": 184,
+            "probability": 0.01963504428556184,
+            "bits_per_occurrence": 5.670425337862169,
+            "total_bits": 1043.3582621666392,
+            "percentage_of_text": 1.9635044285561838
+          },
+          {
+            "character": "'b'",
+            "count": 165,
+            "probability": 0.01760751253868317,
+            "bits_per_occurrence": 5.827665079673366,
+            "total_bits": 961.5647381461055,
+            "percentage_of_text": 1.760751253868317
+          },
+          {
+            "character": "'c'",
+            "count": 146,
+            "probability": 0.015579980791804502,
+            "bits_per_occurrence": 6.0041627350391655,
+            "total_bits": 876.6077593157181,
+            "percentage_of_text": 1.5579980791804502
+          },
+          {
+            "character": "'y'",
+            "count": 146,
+            "probability": 0.015579980791804502,
+            "bits_per_occurrence": 6.0041627350391655,
+            "total_bits": 876.6077593157181,
+            "percentage_of_text": 1.5579980791804502
+          },
+          {
+            "character": "'m'",
+            "count": 141,
+            "probability": 0.015046419805783801,
+            "bits_per_occurrence": 6.0544359415203886,
+            "total_bits": 853.6754677543748,
+            "percentage_of_text": 1.5046419805783802
+          },
+          {
+            "character": "'f'",
+            "count": 139,
+            "probability": 0.01483299541137552,
+            "bits_per_occurrence": 6.075046221195675,
+            "total_bits": 844.4314247461988,
+            "percentage_of_text": 1.483299541137552
+          },
+          {
+            "character": "'g'",
+            "count": 137,
+            "probability": 0.01461957101696724,
+            "bits_per_occurrence": 6.095955210958656,
+            "total_bits": 835.1458639013358,
+            "percentage_of_text": 1.4619571016967239
+          },
+          {
+            "character": "'.'",
+            "count": 114,
+            "probability": 0.01216519048127201,
+            "bits_per_occurrence": 6.361097279754441,
+            "total_bits": 725.1650898920062,
+            "percentage_of_text": 1.216519048127201
+          },
+          {
+            "character": "'w'",
+            "count": 113,
+            "probability": 0.012058478284067869,
+            "bits_per_occurrence": 6.373808331503994,
+            "total_bits": 720.2403414599514,
+            "percentage_of_text": 1.2058478284067868
+          },
+          {
+            "character": "'\\n'",
+            "count": 93,
+            "probability": 0.00992423433998506,
+            "bits_per_occurrence": 6.654828482811151,
+            "total_bits": 618.899048901437,
+            "percentage_of_text": 0.992423433998506
+          },
+          {
+            "character": "','",
+            "count": 90,
+            "probability": 0.009604097748372639,
+            "bits_per_occurrence": 6.7021341975895075,
+            "total_bits": 603.1920777830557,
+            "percentage_of_text": 0.9604097748372639
+          },
+          {
+            "character": "'v'",
+            "count": 79,
+            "probability": 0.008430263579127094,
+            "bits_per_occurrence": 6.890206545742079,
+            "total_bits": 544.3263171136242,
+            "percentage_of_text": 0.8430263579127094
+          },
+          {
+            "character": "\"'\"",
+            "count": 56,
+            "probability": 0.005975883043431864,
+            "bits_per_occurrence": 7.3866323718615785,
+            "total_bits": 413.6514128242484,
+            "percentage_of_text": 0.5975883043431864
+          },
+          {
+            "character": "'k'",
+            "count": 51,
+            "probability": 0.005442322057411162,
+            "bits_per_occurrence": 7.521561951947687,
+            "total_bits": 383.59965954933205,
+            "percentage_of_text": 0.5442322057411162
+          },
+          {
+            "character": "'0'",
+            "count": 43,
+            "probability": 0.004588624479778039,
+            "bits_per_occurrence": 7.767722539217084,
+            "total_bits": 334.0120691863346,
+            "percentage_of_text": 0.4588624479778039
+          },
+          {
+            "character": "'1'",
+            "count": 42,
+            "probability": 0.0044819122825738985,
+            "bits_per_occurrence": 7.8016698711404215,
+            "total_bits": 327.6701345878977,
+            "percentage_of_text": 0.44819122825738983
+          },
+          {
+            "character": "'('",
+            "count": 42,
+            "probability": 0.0044819122825738985,
+            "bits_per_occurrence": 7.8016698711404215,
+            "total_bits": 327.6701345878977,
+            "percentage_of_text": 0.44819122825738983
+          },
+          {
+            "character": "')'",
+            "count": 42,
+            "probability": 0.0044819122825738985,
+            "bits_per_occurrence": 7.8016698711404215,
+            "total_bits": 327.6701345878977,
+            "percentage_of_text": 0.44819122825738983
+          },
+          {
+            "character": "'q'",
+            "count": 30,
+            "probability": 0.003201365916124213,
+            "bits_per_occurrence": 8.287096698310664,
+            "total_bits": 248.61290094931994,
+            "percentage_of_text": 0.3201365916124213
+          },
+          {
+            "character": "':'",
+            "count": 29,
+            "probability": 0.0030946537189200725,
+            "bits_per_occurrence": 8.33600629879161,
+            "total_bits": 241.74418266495667,
+            "percentage_of_text": 0.30946537189200723
+          },
+          {
+            "character": "'T'",
+            "count": 29,
+            "probability": 0.0030946537189200725,
+            "bits_per_occurrence": 8.33600629879161,
+            "total_bits": 241.74418266495667,
+            "percentage_of_text": 0.30946537189200723
+          },
+          {
+            "character": "'5'",
+            "count": 24,
+            "probability": 0.0025610927328993706,
+            "bits_per_occurrence": 8.609024793198026,
+            "total_bits": 206.61659503675264,
+            "percentage_of_text": 0.25610927328993704
+          },
+          {
+            "character": "'L'",
+            "count": 23,
+            "probability": 0.00245438053569523,
+            "bits_per_occurrence": 8.67042533786217,
+            "total_bits": 199.4197827708299,
+            "percentage_of_text": 0.24543805356952297
+          },
+          {
+            "character": "'_'",
+            "count": 22,
+            "probability": 0.0023476683384910896,
+            "bits_per_occurrence": 8.734555675281886,
+            "total_bits": 192.1602248562015,
+            "percentage_of_text": 0.23476683384910896
+          },
+          {
+            "character": "'/'",
+            "count": 22,
+            "probability": 0.0023476683384910896,
+            "bits_per_occurrence": 8.734555675281886,
+            "total_bits": 192.1602248562015,
+            "percentage_of_text": 0.23476683384910896
+          },
+          {
+            "character": "'B'",
+            "count": 21,
+            "probability": 0.0022409561412869493,
+            "bits_per_occurrence": 8.801669871140422,
+            "total_bits": 184.83506729394887,
+            "percentage_of_text": 0.22409561412869491
+          },
+          {
+            "character": "'2'",
+            "count": 20,
+            "probability": 0.0021342439440828085,
+            "bits_per_occurrence": 8.87205919903182,
+            "total_bits": 177.44118398063642,
+            "percentage_of_text": 0.21342439440828084
+          },
+          {
+            "character": "'\"'",
+            "count": 20,
+            "probability": 0.0021342439440828085,
+            "bits_per_occurrence": 8.87205919903182,
+            "total_bits": 177.44118398063642,
+            "percentage_of_text": 0.21342439440828084
+          },
+          {
+            "character": "'K'",
+            "count": 19,
+            "probability": 0.0020275317468786682,
+            "bits_per_occurrence": 8.946059780475597,
+            "total_bits": 169.97513582903633,
+            "percentage_of_text": 0.20275317468786683
+          },
+          {
+            "character": "'W'",
+            "count": 16,
+            "probability": 0.001707395155266247,
+            "bits_per_occurrence": 9.193987293919182,
+            "total_bits": 147.10379670270692,
+            "percentage_of_text": 0.1707395155266247
+          },
+          {
+            "character": "'-'",
+            "count": 15,
+            "probability": 0.0016006829580621064,
+            "bits_per_occurrence": 9.287096698310664,
+            "total_bits": 139.30645047465995,
+            "percentage_of_text": 0.16006829580621065
+          },
+          {
+            "character": "'P'",
+            "count": 13,
+            "probability": 0.0013872585636538256,
+            "bits_per_occurrence": 9.49354757577809,
+            "total_bits": 123.41611848511516,
+            "percentage_of_text": 0.13872585636538257
+          },
+          {
+            "character": "'x'",
+            "count": 12,
+            "probability": 0.0012805463664496853,
+            "bits_per_occurrence": 9.609024793198026,
+            "total_bits": 115.30829751837632,
+            "percentage_of_text": 0.12805463664496852
+          },
+          {
+            "character": "'='",
+            "count": 10,
+            "probability": 0.0010671219720414043,
+            "bits_per_occurrence": 9.87205919903182,
+            "total_bits": 98.72059199031821,
+            "percentage_of_text": 0.10671219720414042
+          },
+          {
+            "character": "'I'",
+            "count": 9,
+            "probability": 0.0009604097748372639,
+            "bits_per_occurrence": 10.02406229247687,
+            "total_bits": 90.21656063229183,
+            "percentage_of_text": 0.09604097748372639
+          },
+          {
+            "character": "'\u2014'",
+            "count": 8,
+            "probability": 0.0008536975776331235,
+            "bits_per_occurrence": 10.193987293919182,
+            "total_bits": 81.55189835135346,
+            "percentage_of_text": 0.08536975776331235
+          },
+          {
+            "character": "'|'",
+            "count": 8,
+            "probability": 0.0008536975776331235,
+            "bits_per_occurrence": 10.193987293919182,
+            "total_bits": 81.55189835135346,
+            "percentage_of_text": 0.08536975776331235
+          },
+          {
+            "character": "'%'",
+            "count": 8,
+            "probability": 0.0008536975776331235,
+            "bits_per_occurrence": 10.193987293919182,
+            "total_bits": 81.55189835135346,
+            "percentage_of_text": 0.08536975776331235
+          },
+          {
+            "character": "'?'",
+            "count": 8,
+            "probability": 0.0008536975776331235,
+            "bits_per_occurrence": 10.193987293919182,
+            "total_bits": 81.55189835135346,
+            "percentage_of_text": 0.08536975776331235
+          },
+          {
+            "character": "'H'",
+            "count": 7,
+            "probability": 0.000746985380428983,
+            "bits_per_occurrence": 10.386632371861579,
+            "total_bits": 72.70642660303105,
+            "percentage_of_text": 0.0746985380428983
+          },
+          {
+            "character": "'D'",
+            "count": 7,
+            "probability": 0.000746985380428983,
+            "bits_per_occurrence": 10.386632371861579,
+            "total_bits": 72.70642660303105,
+            "percentage_of_text": 0.0746985380428983
+          },
+          {
+            "character": "'N'",
+            "count": 7,
+            "probability": 0.000746985380428983,
+            "bits_per_occurrence": 10.386632371861579,
+            "total_bits": 72.70642660303105,
+            "percentage_of_text": 0.0746985380428983
+          },
+          {
+            "character": "'z'",
+            "count": 7,
+            "probability": 0.000746985380428983,
+            "bits_per_occurrence": 10.386632371861579,
+            "total_bits": 72.70642660303105,
+            "percentage_of_text": 0.0746985380428983
+          },
+          {
+            "character": "'!'",
+            "count": 6,
+            "probability": 0.0006402731832248426,
+            "bits_per_occurrence": 10.609024793198026,
+            "total_bits": 63.65414875918816,
+            "percentage_of_text": 0.06402731832248426
+          },
+          {
+            "character": "'A'",
+            "count": 6,
+            "probability": 0.0006402731832248426,
+            "bits_per_occurrence": 10.609024793198026,
+            "total_bits": 63.65414875918816,
+            "percentage_of_text": 0.06402731832248426
+          },
+          {
+            "character": "'j'",
+            "count": 6,
+            "probability": 0.0006402731832248426,
+            "bits_per_occurrence": 10.609024793198026,
+            "total_bits": 63.65414875918816,
+            "percentage_of_text": 0.06402731832248426
+          },
+          {
+            "character": "'G'",
+            "count": 6,
+            "probability": 0.0006402731832248426,
+            "bits_per_occurrence": 10.609024793198026,
+            "total_bits": 63.65414875918816,
+            "percentage_of_text": 0.06402731832248426
+          },
+          {
+            "character": "'\u2248'",
+            "count": 6,
+            "probability": 0.0006402731832248426,
+            "bits_per_occurrence": 10.609024793198026,
+            "total_bits": 63.65414875918816,
+            "percentage_of_text": 0.06402731832248426
+          },
+          {
+            "character": "'8'",
+            "count": 6,
+            "probability": 0.0006402731832248426,
+            "bits_per_occurrence": 10.609024793198026,
+            "total_bits": 63.65414875918816,
+            "percentage_of_text": 0.06402731832248426
+          },
+          {
+            "character": "'\u2082'",
+            "count": 5,
+            "probability": 0.0005335609860207021,
+            "bits_per_occurrence": 10.87205919903182,
+            "total_bits": 54.360295995159106,
+            "percentage_of_text": 0.05335609860207021
+          },
+          {
+            "character": "'Y'",
+            "count": 5,
+            "probability": 0.0005335609860207021,
+            "bits_per_occurrence": 10.87205919903182,
+            "total_bits": 54.360295995159106,
+            "percentage_of_text": 0.05335609860207021
+          },
+          {
+            "character": "'S'",
+            "count": 5,
+            "probability": 0.0005335609860207021,
+            "bits_per_occurrence": 10.87205919903182,
+            "total_bits": 54.360295995159106,
+            "percentage_of_text": 0.05335609860207021
+          },
+          {
+            "character": "'7'",
+            "count": 5,
+            "probability": 0.0005335609860207021,
+            "bits_per_occurrence": 10.87205919903182,
+            "total_bits": 54.360295995159106,
+            "percentage_of_text": 0.05335609860207021
+          },
+          {
+            "character": "'3'",
+            "count": 5,
+            "probability": 0.0005335609860207021,
+            "bits_per_occurrence": 10.87205919903182,
+            "total_bits": 54.360295995159106,
+            "percentage_of_text": 0.05335609860207021
+          },
+          {
+            "character": "'O'",
+            "count": 5,
+            "probability": 0.0005335609860207021,
+            "bits_per_occurrence": 10.87205919903182,
+            "total_bits": 54.360295995159106,
+            "percentage_of_text": 0.05335609860207021
+          },
+          {
+            "character": "'4'",
+            "count": 5,
+            "probability": 0.0005335609860207021,
+            "bits_per_occurrence": 10.87205919903182,
+            "total_bits": 54.360295995159106,
+            "percentage_of_text": 0.05335609860207021
+          },
+          {
+            "character": "'\u03a3'",
+            "count": 4,
+            "probability": 0.00042684878881656173,
+            "bits_per_occurrence": 11.193987293919182,
+            "total_bits": 44.77594917567673,
+            "percentage_of_text": 0.042684878881656174
+          },
+          {
+            "character": "'\u00d7'",
+            "count": 4,
+            "probability": 0.00042684878881656173,
+            "bits_per_occurrence": 11.193987293919182,
+            "total_bits": 44.77594917567673,
+            "percentage_of_text": 0.042684878881656174
+          },
+          {
+            "character": "'6'",
+            "count": 4,
+            "probability": 0.00042684878881656173,
+            "bits_per_occurrence": 11.193987293919182,
+            "total_bits": 44.77594917567673,
+            "percentage_of_text": 0.042684878881656174
+          },
+          {
+            "character": "'9'",
+            "count": 4,
+            "probability": 0.00042684878881656173,
+            "bits_per_occurrence": 11.193987293919182,
+            "total_bits": 44.77594917567673,
+            "percentage_of_text": 0.042684878881656174
+          },
+          {
+            "character": "'\u2113'",
+            "count": 4,
+            "probability": 0.00042684878881656173,
+            "bits_per_occurrence": 11.193987293919182,
+            "total_bits": 44.77594917567673,
+            "percentage_of_text": 0.042684878881656174
+          },
+          {
+            "character": "'\u2081'",
+            "count": 4,
+            "probability": 0.00042684878881656173,
+            "bits_per_occurrence": 11.193987293919182,
+            "total_bits": 44.77594917567673,
+            "percentage_of_text": 0.042684878881656174
+          },
+          {
+            "character": "'M'",
+            "count": 3,
+            "probability": 0.0003201365916124213,
+            "bits_per_occurrence": 11.609024793198026,
+            "total_bits": 34.82707437959408,
+            "percentage_of_text": 0.03201365916124213
+          },
+          {
+            "character": "'F'",
+            "count": 3,
+            "probability": 0.0003201365916124213,
+            "bits_per_occurrence": 11.609024793198026,
+            "total_bits": 34.82707437959408,
+            "percentage_of_text": 0.03201365916124213
+          },
+          {
+            "character": "'+'",
+            "count": 3,
+            "probability": 0.0003201365916124213,
+            "bits_per_occurrence": 11.609024793198026,
+            "total_bits": 34.82707437959408,
+            "percentage_of_text": 0.03201365916124213
+          },
+          {
+            "character": "'R'",
+            "count": 3,
+            "probability": 0.0003201365916124213,
+            "bits_per_occurrence": 11.609024793198026,
+            "total_bits": 34.82707437959408,
+            "percentage_of_text": 0.03201365916124213
+          },
+          {
+            "character": "'E'",
+            "count": 2,
+            "probability": 0.00021342439440828086,
+            "bits_per_occurrence": 12.193987293919182,
+            "total_bits": 24.387974587838364,
+            "percentage_of_text": 0.021342439440828087
+          },
+          {
+            "character": "'\u00b7'",
+            "count": 2,
+            "probability": 0.00021342439440828086,
+            "bits_per_occurrence": 12.193987293919182,
+            "total_bits": 24.387974587838364,
+            "percentage_of_text": 0.021342439440828087
+          },
+          {
+            "character": "'{'",
+            "count": 2,
+            "probability": 0.00021342439440828086,
+            "bits_per_occurrence": 12.193987293919182,
+            "total_bits": 24.387974587838364,
+            "percentage_of_text": 0.021342439440828087
+          },
+          {
+            "character": "'}'",
+            "count": 2,
+            "probability": 0.00021342439440828086,
+            "bits_per_occurrence": 12.193987293919182,
+            "total_bits": 24.387974587838364,
+            "percentage_of_text": 0.021342439440828087
+          },
+          {
+            "character": "'\u2083'",
+            "count": 2,
+            "probability": 0.00021342439440828086,
+            "bits_per_occurrence": 12.193987293919182,
+            "total_bits": 24.387974587838364,
+            "percentage_of_text": 0.021342439440828087
+          },
+          {
+            "character": "'\ufe0f'",
+            "count": 2,
+            "probability": 0.00021342439440828086,
+            "bits_per_occurrence": 12.193987293919182,
+            "total_bits": 24.387974587838364,
+            "percentage_of_text": 0.021342439440828087
+          },
+          {
+            "character": "'C'",
+            "count": 1,
+            "probability": 0.00010671219720414043,
+            "bits_per_occurrence": 13.193987293919182,
+            "total_bits": 13.193987293919182,
+            "percentage_of_text": 0.010671219720414044
+          },
+          {
+            "character": "'~'",
+            "count": 1,
+            "probability": 0.00010671219720414043,
+            "bits_per_occurrence": 13.193987293919182,
+            "total_bits": 13.193987293919182,
+            "percentage_of_text": 0.010671219720414044
+          },
+          {
+            "character": "'\u00b1'",
+            "count": 1,
+            "probability": 0.00010671219720414043,
+            "bits_per_occurrence": 13.193987293919182,
+            "total_bits": 13.193987293919182,
+            "percentage_of_text": 0.010671219720414044
+          },
+          {
+            "character": "'\u221a'",
+            "count": 1,
+            "probability": 0.00010671219720414043,
+            "bits_per_occurrence": 13.193987293919182,
+            "total_bits": 13.193987293919182,
+            "percentage_of_text": 0.010671219720414044
+          },
+          {
+            "character": "'U'",
+            "count": 1,
+            "probability": 0.00010671219720414043,
+            "bits_per_occurrence": 13.193987293919182,
+            "total_bits": 13.193987293919182,
+            "percentage_of_text": 0.010671219720414044
+          },
+          {
+            "character": "'\u2192'",
+            "count": 1,
+            "probability": 0.00010671219720414043,
+            "bits_per_occurrence": 13.193987293919182,
+            "total_bits": 13.193987293919182,
+            "percentage_of_text": 0.010671219720414044
+          },
+          {
+            "character": "'\u00b2'",
+            "count": 1,
+            "probability": 0.00010671219720414043,
+            "bits_per_occurrence": 13.193987293919182,
+            "total_bits": 13.193987293919182,
+            "percentage_of_text": 0.010671219720414044
+          },
+          {
+            "character": "'\u2600'",
+            "count": 1,
+            "probability": 0.00010671219720414043,
+            "bits_per_occurrence": 13.193987293919182,
+            "total_bits": 13.193987293919182,
+            "percentage_of_text": 0.010671219720414044
+          },
+          {
+            "character": "'\u2601'",
+            "count": 1,
+            "probability": 0.00010671219720414043,
+            "bits_per_occurrence": 13.193987293919182,
+            "total_bits": 13.193987293919182,
+            "percentage_of_text": 0.010671219720414044
+          },
+          {
+            "character": "'\u2297'",
+            "count": 1,
+            "probability": 0.00010671219720414043,
+            "bits_per_occurrence": 13.193987293919182,
+            "total_bits": 13.193987293919182,
+            "percentage_of_text": 0.010671219720414044
+          }
+        ]
+      },
+      "timestamp": "2025-06-12T14:35:07.872615"
+    }
+  ],
+  "timestamp": "2025-06-12T14:35:07.874064"
+}
