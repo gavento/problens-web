@@ -1,0 +1,50 @@
+{
+  "kl_intro_10kb": {
+    "original_size": 9369,
+    "gpt2_bits": 4598.952076194123,
+    "gpt2_ratio": 7.128580480258124,
+    "num_tokens": 1023,
+    "description": "Academic text about information theory and KL divergence",
+    "timestamp": "2025-06-12T14:16:34.780776"
+  },
+  "pi_digits_10kb": {
+    "original_size": 10000,
+    "gpt2_bits": 8142.770728653483,
+    "gpt2_ratio": 2.3480950940591874,
+    "num_tokens": 1023,
+    "description": "First 10,000 digits of \u03c0 (mathematically random)",
+    "timestamp": "2025-06-12T14:16:38.211048"
+  },
+  "declaration": {
+    "original_size": 1062,
+    "gpt2_bits": 587.8065824863435,
+    "gpt2_ratio": 14.453734022615148,
+    "num_tokens": 207,
+    "description": "Natural English prose with historical vocabulary",
+    "timestamp": "2025-06-12T14:16:38.895865"
+  },
+  "human_mitochondrial_dna": {
+    "original_size": 16569,
+    "gpt2_bits": 4388.511570826022,
+    "gpt2_ratio": 3.658643651924536,
+    "num_tokens": 1023,
+    "description": "Complete human mitochondrial genome (16,569 bases)",
+    "timestamp": "2025-06-12T14:16:42.139264"
+  },
+  "huffman_code_10kb": {
+    "original_size": 11943,
+    "gpt2_bits": 2606.3161392894744,
+    "gpt2_ratio": 6.6699506395026855,
+    "num_tokens": 1023,
+    "description": "JavaScript function with typical programming patterns",
+    "timestamp": "2025-06-12T14:16:46.494961"
+  },
+  "repeated_phrase": {
+    "original_size": 8799,
+    "gpt2_bits": 99.54058267270139,
+    "gpt2_ratio": 402.32836622708464,
+    "num_tokens": 1023,
+    "description": "Highly structured repetitive text",
+    "timestamp": "2025-06-12T14:16:49.791206"
+  }
+}
