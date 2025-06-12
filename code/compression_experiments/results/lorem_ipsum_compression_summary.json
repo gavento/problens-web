@@ -1,0 +1,29 @@
+{
+  "text_name": "lorem_ipsum",
+  "text_path": "texts/lorem_ipsum.txt",
+  "text_length": 975,
+  "original_bits": 7800,
+  "algorithms": {
+    "gzip": {
+      "compressed_bits": 3912,
+      "compression_ratio": 1.9938650306748467,
+      "bits_per_char": 4.012307692307692
+    },
+    "zlib": {
+      "compressed_bits": 3816,
+      "compression_ratio": 2.0440251572327046,
+      "bits_per_char": 3.913846153846154
+    },
+    "bz2": {
+      "compressed_bits": 4152,
+      "compression_ratio": 1.8786127167630058,
+      "bits_per_char": 4.258461538461538
+    },
+    "lzma": {
+      "compressed_bits": 4864,
+      "compression_ratio": 1.6036184210526316,
+      "bits_per_char": 4.988717948717949
+    }
+  },
+  "timestamp": "2025-06-12T10:12:01.263475"
+}

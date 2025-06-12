@@ -40,8 +40,8 @@ const textSamples: TextSample[] = [
       },
       { 
         algorithm: "ZIP", 
-        bits: 3840, 
-        ratio: "1.74x", 
+        bits: 3912, 
+        ratio: "2.0x", 
         generalDescription: "Dictionary-based compression finding repeated substrings", 
         specificDescription: "Finds repeated words and phrases in the Latin text"
       },
@@ -75,10 +75,10 @@ const textSamples: TextSample[] = [
       },
       { 
         algorithm: "ZIP", 
-        bits: 7200, 
-        ratio: "1.11x", 
+        bits: 7616, 
+        ratio: "2.1x", 
         generalDescription: "Dictionary-based compression finding repeated substrings", 
-        specificDescription: "Poor compression - π digits appear random with few repeated patterns"
+        specificDescription: "Limited compression - π digits have some structure but appear mostly random"
       },
       { 
         algorithm: "LLM (GPT-2)", 
@@ -110,8 +110,8 @@ const textSamples: TextSample[] = [
       },
       { 
         algorithm: "ZIP", 
-        bits: 4320, 
-        ratio: "2.30x", 
+        bits: 4552, 
+        ratio: "1.9x", 
         generalDescription: "Dictionary-based compression finding repeated substrings", 
         specificDescription: "Finds common words like 'the', 'and', 'that' repeated throughout"
       },
@@ -145,8 +145,8 @@ const textSamples: TextSample[] = [
       },
       { 
         algorithm: "ZIP", 
-        bits: 480, 
-        ratio: "16.67x", 
+        bits: 352, 
+        ratio: "18.3x", 
         generalDescription: "Dictionary-based compression finding repeated substrings", 
         specificDescription: "Exceptional compression - highly repetitive ATGC pattern detected"
       },
@@ -180,8 +180,8 @@ const textSamples: TextSample[] = [
       },
       { 
         algorithm: "ZIP", 
-        bits: 3680, 
-        ratio: "2.44x", 
+        bits: 3144, 
+        ratio: "2.3x", 
         generalDescription: "Dictionary-based compression finding repeated substrings", 
         specificDescription: "Good compression from repeated keywords: function, return, console.log"
       },
@@ -215,10 +215,10 @@ const textSamples: TextSample[] = [
       },
       { 
         algorithm: "ZIP", 
-        bits: 120, 
-        ratio: "66.67x", 
+        bits: 440, 
+        ratio: "18.0x", 
         generalDescription: "Dictionary-based compression finding repeated substrings", 
-        specificDescription: "Perfect compression - detects simple ABCDEFGH...XYZ repeating pattern"
+        specificDescription: "Excellent compression - detects the repeating 'The quick brown fox...' pattern"
       },
       { 
         algorithm: "LLM (GPT-2)", 

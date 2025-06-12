@@ -1,0 +1,29 @@
+{
+  "text_name": "pi_digits",
+  "text_path": "texts/pi_digits.txt",
+  "text_length": 1976,
+  "original_bits": 15808,
+  "algorithms": {
+    "gzip": {
+      "compressed_bits": 7616,
+      "compression_ratio": 2.0756302521008405,
+      "bits_per_char": 3.854251012145749
+    },
+    "zlib": {
+      "compressed_bits": 7520,
+      "compression_ratio": 2.1021276595744682,
+      "bits_per_char": 3.805668016194332
+    },
+    "bz2": {
+      "compressed_bits": 7312,
+      "compression_ratio": 2.1619256017505473,
+      "bits_per_char": 3.700404858299595
+    },
+    "lzma": {
+      "compressed_bits": 7680,
+      "compression_ratio": 2.058333333333333,
+      "bits_per_char": 3.88663967611336
+    }
+  },
+  "timestamp": "2025-06-12T10:12:01.331704"
+}

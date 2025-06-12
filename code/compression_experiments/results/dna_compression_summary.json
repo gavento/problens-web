@@ -1,0 +1,29 @@
+{
+  "text_name": "dna",
+  "text_path": "texts/dna.txt",
+  "text_length": 805,
+  "original_bits": 6440,
+  "algorithms": {
+    "gzip": {
+      "compressed_bits": 352,
+      "compression_ratio": 18.295454545454547,
+      "bits_per_char": 0.4372670807453416
+    },
+    "zlib": {
+      "compressed_bits": 256,
+      "compression_ratio": 25.15625,
+      "bits_per_char": 0.31801242236024846
+    },
+    "bz2": {
+      "compressed_bits": 472,
+      "compression_ratio": 13.64406779661017,
+      "bits_per_char": 0.5863354037267081
+    },
+    "lzma": {
+      "compressed_bits": 736,
+      "compression_ratio": 8.75,
+      "bits_per_char": 0.9142857142857143
+    }
+  },
+  "timestamp": "2025-06-12T10:12:01.285368"
+}

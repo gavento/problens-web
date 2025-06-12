@@ -1,0 +1,29 @@
+{
+  "text_name": "code",
+  "text_path": "texts/code.txt",
+  "text_length": 900,
+  "original_bits": 7200,
+  "algorithms": {
+    "gzip": {
+      "compressed_bits": 3144,
+      "compression_ratio": 2.2900763358778624,
+      "bits_per_char": 3.493333333333333
+    },
+    "zlib": {
+      "compressed_bits": 3048,
+      "compression_ratio": 2.3622047244094486,
+      "bits_per_char": 3.3866666666666667
+    },
+    "bz2": {
+      "compressed_bits": 3552,
+      "compression_ratio": 2.027027027027027,
+      "bits_per_char": 3.9466666666666668
+    },
+    "lzma": {
+      "compressed_bits": 3648,
+      "compression_ratio": 1.9736842105263157,
+      "bits_per_char": 4.053333333333334
+    }
+  },
+  "timestamp": "2025-06-12T10:12:01.307376"
+}

@@ -1,0 +1,208 @@
+{
+  "results": [
+    {
+      "text_name": "test_sample",
+      "text_path": "texts/test_sample.txt",
+      "text_length": 130,
+      "original_bits": 1040,
+      "algorithms": {
+        "gzip": {
+          "compressed_bits": 936,
+          "compression_ratio": 1.1111111111111112,
+          "bits_per_char": 7.2
+        },
+        "zlib": {
+          "compressed_bits": 840,
+          "compression_ratio": 1.2380952380952381,
+          "bits_per_char": 6.461538461538462
+        },
+        "bz2": {
+          "compressed_bits": 1088,
+          "compression_ratio": 0.9558823529411765,
+          "bits_per_char": 8.36923076923077
+        },
+        "lzma": {
+          "compressed_bits": 1408,
+          "compression_ratio": 0.7386363636363636,
+          "bits_per_char": 10.830769230769231
+        }
+      },
+      "timestamp": "2025-06-12T10:12:01.240010"
+    },
+    {
+      "text_name": "lorem_ipsum",
+      "text_path": "texts/lorem_ipsum.txt",
+      "text_length": 975,
+      "original_bits": 7800,
+      "algorithms": {
+        "gzip": {
+          "compressed_bits": 3912,
+          "compression_ratio": 1.9938650306748467,
+          "bits_per_char": 4.012307692307692
+        },
+        "zlib": {
+          "compressed_bits": 3816,
+          "compression_ratio": 2.0440251572327046,
+          "bits_per_char": 3.913846153846154
+        },
+        "bz2": {
+          "compressed_bits": 4152,
+          "compression_ratio": 1.8786127167630058,
+          "bits_per_char": 4.258461538461538
+        },
+        "lzma": {
+          "compressed_bits": 4864,
+          "compression_ratio": 1.6036184210526316,
+          "bits_per_char": 4.988717948717949
+        }
+      },
+      "timestamp": "2025-06-12T10:12:01.263475"
+    },
+    {
+      "text_name": "dna",
+      "text_path": "texts/dna.txt",
+      "text_length": 805,
+      "original_bits": 6440,
+      "algorithms": {
+        "gzip": {
+          "compressed_bits": 352,
+          "compression_ratio": 18.295454545454547,
+          "bits_per_char": 0.4372670807453416
+        },
+        "zlib": {
+          "compressed_bits": 256,
+          "compression_ratio": 25.15625,
+          "bits_per_char": 0.31801242236024846
+        },
+        "bz2": {
+          "compressed_bits": 472,
+          "compression_ratio": 13.64406779661017,
+          "bits_per_char": 0.5863354037267081
+        },
+        "lzma": {
+          "compressed_bits": 736,
+          "compression_ratio": 8.75,
+          "bits_per_char": 0.9142857142857143
+        }
+      },
+      "timestamp": "2025-06-12T10:12:01.285368"
+    },
+    {
+      "text_name": "code",
+      "text_path": "texts/code.txt",
+      "text_length": 900,
+      "original_bits": 7200,
+      "algorithms": {
+        "gzip": {
+          "compressed_bits": 3144,
+          "compression_ratio": 2.2900763358778624,
+          "bits_per_char": 3.493333333333333
+        },
+        "zlib": {
+          "compressed_bits": 3048,
+          "compression_ratio": 2.3622047244094486,
+          "bits_per_char": 3.3866666666666667
+        },
+        "bz2": {
+          "compressed_bits": 3552,
+          "compression_ratio": 2.027027027027027,
+          "bits_per_char": 3.9466666666666668
+        },
+        "lzma": {
+          "compressed_bits": 3648,
+          "compression_ratio": 1.9736842105263157,
+          "bits_per_char": 4.053333333333334
+        }
+      },
+      "timestamp": "2025-06-12T10:12:01.307376"
+    },
+    {
+      "text_name": "pi_digits",
+      "text_path": "texts/pi_digits.txt",
+      "text_length": 1976,
+      "original_bits": 15808,
+      "algorithms": {
+        "gzip": {
+          "compressed_bits": 7616,
+          "compression_ratio": 2.0756302521008405,
+          "bits_per_char": 3.854251012145749
+        },
+        "zlib": {
+          "compressed_bits": 7520,
+          "compression_ratio": 2.1021276595744682,
+          "bits_per_char": 3.805668016194332
+        },
+        "bz2": {
+          "compressed_bits": 7312,
+          "compression_ratio": 2.1619256017505473,
+          "bits_per_char": 3.700404858299595
+        },
+        "lzma": {
+          "compressed_bits": 7680,
+          "compression_ratio": 2.058333333333333,
+          "bits_per_char": 3.88663967611336
+        }
+      },
+      "timestamp": "2025-06-12T10:12:01.331704"
+    },
+    {
+      "text_name": "repeated",
+      "text_path": "texts/repeated.txt",
+      "text_length": 988,
+      "original_bits": 7904,
+      "algorithms": {
+        "gzip": {
+          "compressed_bits": 440,
+          "compression_ratio": 17.963636363636365,
+          "bits_per_char": 0.44534412955465585
+        },
+        "zlib": {
+          "compressed_bits": 344,
+          "compression_ratio": 22.976744186046513,
+          "bits_per_char": 0.3481781376518219
+        },
+        "bz2": {
+          "compressed_bits": 760,
+          "compression_ratio": 10.4,
+          "bits_per_char": 0.7692307692307693
+        },
+        "lzma": {
+          "compressed_bits": 832,
+          "compression_ratio": 9.5,
+          "bits_per_char": 0.8421052631578947
+        }
+      },
+      "timestamp": "2025-06-12T10:12:01.353093"
+    },
+    {
+      "text_name": "declaration",
+      "text_path": "texts/declaration.txt",
+      "text_length": 1062,
+      "original_bits": 8496,
+      "algorithms": {
+        "gzip": {
+          "compressed_bits": 4552,
+          "compression_ratio": 1.866432337434095,
+          "bits_per_char": 4.2862523540489645
+        },
+        "zlib": {
+          "compressed_bits": 4456,
+          "compression_ratio": 1.9066427289048473,
+          "bits_per_char": 4.195856873822976
+        },
+        "bz2": {
+          "compressed_bits": 4672,
+          "compression_ratio": 1.8184931506849316,
+          "bits_per_char": 4.39924670433145
+        },
+        "lzma": {
+          "compressed_bits": 5344,
+          "compression_ratio": 1.589820359281437,
+          "bits_per_char": 5.032015065913371
+        }
+      },
+      "timestamp": "2025-06-12T10:12:01.376164"
+    }
+  ],
+  "timestamp": "2025-06-12T10:12:01.376600"
+}

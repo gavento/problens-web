@@ -1,0 +1,29 @@
+{
+  "text_name": "declaration",
+  "text_path": "texts/declaration.txt",
+  "text_length": 1062,
+  "original_bits": 8496,
+  "algorithms": {
+    "gzip": {
+      "compressed_bits": 4552,
+      "compression_ratio": 1.866432337434095,
+      "bits_per_char": 4.2862523540489645
+    },
+    "zlib": {
+      "compressed_bits": 4456,
+      "compression_ratio": 1.9066427289048473,
+      "bits_per_char": 4.195856873822976
+    },
+    "bz2": {
+      "compressed_bits": 4672,
+      "compression_ratio": 1.8184931506849316,
+      "bits_per_char": 4.39924670433145
+    },
+    "lzma": {
+      "compressed_bits": 5344,
+      "compression_ratio": 1.589820359281437,
+      "bits_per_char": 5.032015065913371
+    }
+  },
+  "timestamp": "2025-06-12T10:12:01.376164"
+}

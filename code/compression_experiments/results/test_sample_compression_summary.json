@@ -1,0 +1,29 @@
+{
+  "text_name": "test_sample",
+  "text_path": "texts/test_sample.txt",
+  "text_length": 130,
+  "original_bits": 1040,
+  "algorithms": {
+    "gzip": {
+      "compressed_bits": 936,
+      "compression_ratio": 1.1111111111111112,
+      "bits_per_char": 7.2
+    },
+    "zlib": {
+      "compressed_bits": 840,
+      "compression_ratio": 1.2380952380952381,
+      "bits_per_char": 6.461538461538462
+    },
+    "bz2": {
+      "compressed_bits": 1088,
+      "compression_ratio": 0.9558823529411765,
+      "bits_per_char": 8.36923076923077
+    },
+    "lzma": {
+      "compressed_bits": 1408,
+      "compression_ratio": 0.7386363636363636,
+      "bits_per_char": 10.830769230769231
+    }
+  },
+  "timestamp": "2025-06-12T10:12:01.240010"
+}
