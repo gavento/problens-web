@@ -279,19 +279,46 @@ Try the log-score on our example! Also, you can compare it with other popular sc
 
 KL divergence and entropy are deeply connected to coding theory. There are [tons of great explainers out there](resources), so let's just get a quick taste of why this connection matters.  
 
-<Expand headline = "Coding Theory Intuitions"> <a id="coding"></a>
+Say you've got a long DNA string built from letters \{A,C,G,T\}. You want to store it using as little disk space as possible.  
 
-Say you've got a long DNA string over the alphabet \{A,C,G,T\}. You want to store it using as little disk space as possible.  
+To understand this question, it's very helpful to make our life easier by ignoring correlations between letters. What I mean by that is that we will achieve the same compression factor for the string 'AAAACCCCGGGGTTTT' as for the string 'ACACTATTCGGCGAGT' - both strings contain the same letters and the first one has some additional structure, but we will not try to exploit it. Technically speaking, we assume that there's some distribution $p$ over the alphabet, and our string comes from sampling repeatedly and independently from $p$.  
 
-We'll make life easier by ignoring correlations between letters. Basically, we'll assume there's some distribution $p$ over the alphabet, and our string comes from sampling repeatedly from $p$.  
+If this distribution $p$ is uniform over \{A,C,G,T\}, the best encoding is to use two bits per letter: <Math math = "A \rightarrow \textsf{00}, C \rightarrow \textsf{01}, G \rightarrow \textsf{10}, T \rightarrow \textsf{11} " />. An $N$-letter string takes $2N$ bits. Done! 
 
-If $p$ is uniform, the best encoding uses two bits per letter: <Math math = "A \rightarrow \textsf{00}, C \rightarrow \textsf{01}, G \rightarrow \textsf{10}, T \rightarrow \textsf{11} " />. An $N$-letter string takes $2N$ bits. Done! 
-
-But what if $p$ is skewed? Say A shows up half the time, C a quarter, and G,T each an eighth. Now we can do better: <Math math = "A \rightarrow \textsf{0}, C \rightarrow \textsf{10}, G \rightarrow \textsf{110}, T \rightarrow \textsf{111} " />. This only uses $1.75N$ bits on average. Sweet! 
+But what if $p$ is skewed? Say A shows up half the time in our string, C a quarter, and G,T each an eighth. Now we can do better: <Math math = "A \rightarrow \textsf{0}, C \rightarrow \textsf{10}, G \rightarrow \textsf{110}, T \rightarrow \textsf{111} " />. This only uses 
+<Math displayMode={true} id = "code-example" math = "\left( \frac12 \cdot 1 + \frac14 \cdot 2 + \frac18 \cdot 3 + \frac18 \cdot 3 \right) \cdot N = 1.75N" />
+bits on average. Cool! 
 
 ![encoding](02-crossentropy/encoding.png)
 
-Sure, giving frequent letters shorter codes makes sense, but what's the best way to do it? Turns out coding theory says: give a letter with frequency $p$ a code of length roughly $\log 1/p$. In our example, A had probability 1/2, so it got length $\log 1/(1/2) = 1$. Perfect! <Footnote>I cheated by picking probabilities that are powers of two. Then the $\log 1/p$ formula works exactly. For messier probabilities, you can't have codes of length 2.3 bits or whatever. Good codes fix this by encoding pairs or triples of letters, getting arbitrarily close to $\log 1/p$ bits per letter on average. </Footnote> 
+Sure, giving frequent letters shorter codes makes sense, but what's the best way to do it? Coding theory says: __try to give a letter $i$ with frequency $p_i$ a code-name of length $\log 1/p_i$__. 
+
+For example, looking at <EqRef id = "code-example"/>, you can rewrite it like this: 
+<Math displayMode={true} id = "code-example2" math = "\left( \frac12 \cdot \log \frac{1}{1/2} + \frac14 \cdot \log \frac{1}{1/4} + \frac18 \cdot \log \frac{1}{1/8} + \frac18 \cdot \log\frac{1}{1/8} \right) \cdot N = 1.75N" />
+Every letter with frequency $p$ got code-name of length exactly $\log 1/p$! Notice that in general, the length of codes satisfying the $p \rightarrow \log 1/p$ rule is this: 
+<Math displayMode={true} math = "N \cdot \sum_{i = 1}^k p_i \cdot \log \frac{1}{p_i} = N \cdot H(p). ">
+That is, if you manage to construct a code with $p \rightarrow \log 1/p$, you spend $H(p)$ bits per letter on average. 
+
+One of the most beautiful and basic results of coding theory is that you can always construct a code that spends close to $H(p)$ bits per letter on average, and there's no better code (if we treat letters independently). Details in the expand box, we will not build on this later on. 
+
+<Expand headline = "Code construction details">
+### Construction of a good code
+First, given a distribution of letter frequencies $p_1, \dots, p_k$, I will show you a construction that's called the [Shannon's code](https://en.wikipedia.org/wiki/Shannon_coding). I will assume that $p_1 \ge p_2 \ge \dots \ge p_k$. 
+
+The first step is that we "round" each probability down to be a power of two. For example, the frequency of the letter 'e' is 12.7% which is between $\frac{1}{2^3} = 12.5\%$ and $\frac{1}{2^2} = 25\%$. The number 3 is important - we will assign a binary code of length 3 to e. Which one? We will assign the codes "greedily" as shown in the following widget. The widget starts with the real English letter frequencies, but you can play with it!
+
+<ShannonCodeWidget />
+
+The problem of Shannon's code is that it only achieves the desired compression of average $H(p)$ bits per letter only if all probabilities are power of two. Only then are all the expressions $\log 1/p_i$ integers and we can make code names of exactly that length. Otherwise, "rounding probabilities down" hurts us and the compression rate of Shannon's code can be up to $H(p)+1$ bits per letter, i.e., a bit worse. 
+
+That's not the end of the world though. One trick we can do is construct this code not for every letter, but for every _pair of letters_. In the case of English, our alphabet would then have size $26^2$. The good thing is that if we construct the Shannon's code for this larger alphabet and lose up to $1$ bit per encoded letter-pair, this means we are only losing $1/2$ bits per actual letter! Doing this trick not for pair of letters but a tuple of $k$ letters can bring us arbitrarily close to a code that spends $H(p)$ bits per letter. It's just that these codes are a bit less intuitive since they are not giving code names to single letter, but to their tuples. 
+
+### Why we can't do better
+
+
+</Expand>
+
+In our example, A had probability 1/2, so it got length $\log 1/(1/2) = 1$. Perfect! <Footnote>I cheated by picking probabilities that are powers of two. Then the $\log 1/p$ formula works exactly. For messier probabilities, you can't have codes of length 2.3 bits or whatever. Good codes fix this by encoding pairs or triples of letters, getting arbitrarily close to $\log 1/p$ bits per letter on average. </Footnote> 
 
 Here's the intuition: A natural way to build a code is by a recursive algorithm: You always split your alphabet in half so that both half have roughly the same total frequency. Then, the first half gets code names starting with  <Math math = "\textsf{0}" />, and the rest starts with <Math math = "\textsf{1}" />. In our example, this means giving A (50% frequency) the code <Math math = "\textsf{0}" />, while C,G,T (50% frequency in total) start with <Math math = "\textsf{1}" />. Keep splitting recursively and letters with frequency $p$ get get code names of length $\log 1/p$. <Footnote>Again, this works perfectly when probabilities are powers of two. Otherwise it gets trickier. </Footnote> 
 
