@@ -1,0 +1,11 @@
+{
+  "text_name": "lorem_ipsum",
+  "text_path": "texts/lorem_ipsum.txt",
+  "text_length": 975,
+  "num_tokens": 330,
+  "total_bits": 1566.6259889846606,
+  "bits_per_token": 4.7617811215339225,
+  "bits_per_char": 1.6067958861381133,
+  "compression_ratio": 4.978852677565515,
+  "timestamp": "2025-06-12T06:07:40.043887"
+}

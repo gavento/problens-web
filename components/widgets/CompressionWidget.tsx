@@ -46,11 +46,11 @@ const textSamples: TextSample[] = [
         specificDescription: "Finds repeated words and phrases in the Latin text"
       },
       { 
-        algorithm: "LLM", 
-        bits: 2800, 
-        ratio: "2.39x", 
+        algorithm: "LLM (GPT-2)", 
+        bits: 1343, 
+        ratio: "5.0x", 
         generalDescription: "Use language model probabilities for next token prediction", 
-        specificDescription: "Recognizes Latin word patterns despite not being primarily trained on Latin"
+        specificDescription: "Latin has different statistics than English, but still structured"
       }
     ]
   },
@@ -81,11 +81,11 @@ const textSamples: TextSample[] = [
         specificDescription: "Poor compression - π digits appear random with few repeated patterns"
       },
       { 
-        algorithm: "LLM", 
-        bits: 6800, 
-        ratio: "1.18x", 
+        algorithm: "LLM (GPT-2)", 
+        bits: 3167, 
+        ratio: "2.5x", 
         generalDescription: "Use language model probabilities for next token prediction", 
-        specificDescription: "Struggles with mathematical sequences - not trained to predict π digits"
+        specificDescription: "Mathematical constants appear random to LLMs"
       }
     ]
   },
@@ -116,11 +116,11 @@ const textSamples: TextSample[] = [
         specificDescription: "Finds common words like 'the', 'and', 'that' repeated throughout"
       },
       { 
-        algorithm: "LLM", 
-        bits: 3200, 
-        ratio: "3.10x", 
+        algorithm: "LLM (GPT-2)", 
+        bits: 687, 
+        ratio: "14.5x", 
         generalDescription: "Use language model probabilities for next token prediction", 
-        specificDescription: "Excellent performance - trained extensively on similar historical texts"
+        specificDescription: "Historical documents are well-represented in training data"
       }
     ]
   },
@@ -151,11 +151,11 @@ const textSamples: TextSample[] = [
         specificDescription: "Exceptional compression - highly repetitive ATGC pattern detected"
       },
       { 
-        algorithm: "LLM", 
-        bits: 1200, 
-        ratio: "6.67x", 
+        algorithm: "LLM (GPT-2)", 
+        bits: 236, 
+        ratio: "33.9x", 
         generalDescription: "Use language model probabilities for next token prediction", 
-        specificDescription: "Recognizes biological sequence patterns from training data"
+        specificDescription: "Repetitive biological sequences compress extremely well"
       }
     ]
   },
@@ -186,11 +186,11 @@ const textSamples: TextSample[] = [
         specificDescription: "Good compression from repeated keywords: function, return, console.log"
       },
       { 
-        algorithm: "LLM", 
-        bits: 2400, 
-        ratio: "3.74x", 
+        algorithm: "LLM (GPT-2)", 
+        bits: 1536, 
+        ratio: "5.9x", 
         generalDescription: "Use language model probabilities for next token prediction", 
-        specificDescription: "Excellent performance - extensively trained on programming code"
+        specificDescription: "Programming languages have strict syntax - good compression"
       }
     ]
   },
@@ -221,11 +221,11 @@ const textSamples: TextSample[] = [
         specificDescription: "Perfect compression - detects simple ABCDEFGH...XYZ repeating pattern"
       },
       { 
-        algorithm: "LLM", 
-        bits: 280, 
-        ratio: "28.57x", 
+        algorithm: "LLM (GPT-2)", 
+        bits: 34, 
+        ratio: "234.1x", 
         generalDescription: "Use language model probabilities for next token prediction", 
-        specificDescription: "Excellent compression - easily predicts A→B→C→D alphabet sequence"
+        specificDescription: "Simple repeating pattern is nearly perfectly predicted by LLMs"
       }
     ]
   }
@@ -263,15 +263,55 @@ export default function CompressionWidget() {
     const baselineBytes = maxBits / 8;
     const markers = [];
     
-    // Generate markers at 2x, 4x, 8x, 16x compression ratios
-    const ratios = [2, 4, 8, 16, 32, 64];
+    // Calculate the range of compression ratios
+    const maxRatio = maxBits / minBits;
     
-    for (const ratio of ratios) {
+    // Generate smart markers based on the range
+    let candidateRatios = [];
+    
+    if (maxRatio <= 3) {
+      // Small range: use fractional ratios
+      candidateRatios = [1.2, 1.5, 1.8, 2.0, 2.5, 3.0];
+    } else if (maxRatio <= 10) {
+      // Medium range
+      candidateRatios = [1.5, 2, 3, 4, 5, 6, 8, 10];
+    } else if (maxRatio <= 50) {
+      // Large range
+      candidateRatios = [2, 5, 10, 15, 20, 30, 40, 50];
+    } else if (maxRatio <= 200) {
+      // Very large range
+      candidateRatios = [5, 10, 20, 50, 100, 150, 200];
+    } else {
+      // Extreme range
+      candidateRatios = [10, 25, 50, 100, 200, 300, 500];
+    }
+    
+    // Filter to only include ratios that fit in our range
+    for (const ratio of candidateRatios) {
       const targetBits = maxBits / ratio;
-      if (targetBits >= minBits && targetBits <= maxBits) {
+      if (targetBits >= minBits * 0.9 && targetBits <= maxBits) {
         const position = getBarWidth(targetBits, minBits, maxBits);
-        markers.push({ ratio: `${ratio}x`, position });
+        
+        // Format the ratio nicely
+        let label;
+        if (ratio < 10 && ratio % 1 !== 0) {
+          label = `${ratio.toFixed(1)}x`;
+        } else {
+          label = `${Math.round(ratio)}x`;
+        }
+        
+        markers.push({ ratio: label, position });
       }
+    }
+    
+    // Ensure we have 3-6 markers by adjusting if needed
+    if (markers.length > 6) {
+      // Keep every other marker if too many
+      const filtered = [];
+      for (let i = 0; i < markers.length; i += Math.ceil(markers.length / 5)) {
+        filtered.push(markers[i]);
+      }
+      return filtered;
     }
     
     return markers;

@@ -1,0 +1,11 @@
+{
+  "text_name": "code",
+  "text_path": "texts/code.txt",
+  "text_length": 900,
+  "num_tokens": 416,
+  "total_bits": 1229.7570619872922,
+  "bits_per_token": 2.9632700288850415,
+  "bits_per_char": 1.3663967355414357,
+  "compression_ratio": 5.8548149244735965,
+  "timestamp": "2025-06-12T06:12:52.838716"
+}

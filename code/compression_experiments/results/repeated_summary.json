@@ -1,0 +1,11 @@
+{
+  "text_name": "repeated",
+  "text_path": "texts/repeated.txt",
+  "text_length": 988,
+  "num_tokens": 570,
+  "total_bits": 33.76351294433654,
+  "bits_per_token": 0.05933833557879884,
+  "bits_per_char": 0.03417359609750662,
+  "compression_ratio": 234.0988632619702,
+  "timestamp": "2025-06-12T06:27:22.683953"
+}

@@ -1,0 +1,11 @@
+{
+  "text_name": "dna",
+  "text_path": "texts/dna.txt",
+  "text_length": 805,
+  "num_tokens": 428,
+  "total_bits": 190.02290099445983,
+  "bits_per_token": 0.4450185034999059,
+  "bits_per_char": 0.23605329316081966,
+  "compression_ratio": 33.890651949302466,
+  "timestamp": "2025-06-12T06:10:28.063317"
+}

@@ -1,0 +1,4 @@
+Chunk_ID,Text_Chunk,Estimated_Bits_Per_Char,GPT4_Assessment
+0,'The quick brown fox jumps over the lazy dog. This ',2.06,Predictability: 5.0/10
+1,'is a test sentence with some predictable and unpre',2.06,Predictability: 5.0/10
+2,'dictable words like xylophone.',2.68,Predictability: 3.0/10

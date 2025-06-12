@@ -1,0 +1,11 @@
+{
+  "text_name": "pi_digits",
+  "text_path": "texts/pi_digits.txt",
+  "text_length": 1976,
+  "num_tokens": 845,
+  "total_bits": 6258.810071250198,
+  "bits_per_token": 7.415651743187438,
+  "bits_per_char": 3.1674140036691285,
+  "compression_ratio": 2.5257197166940633,
+  "timestamp": "2025-06-12T06:22:59.700998"
+}

@@ -1,0 +1,12 @@
+{
+  "text_name": "test_sample",
+  "text_path": "texts/test_sample.txt",
+  "text_length": 130,
+  "num_chunks": 3,
+  "total_estimated_bits": 285.88888888888886,
+  "bits_per_char": 2.199145299145299,
+  "compression_ratio": 3.6377769141080454,
+  "model": "gpt-4",
+  "method": "predictability_assessment",
+  "timestamp": "2025-06-12T06:11:58.146871"
+}

@@ -1,0 +1,11 @@
+{
+  "text_name": "test_sample",
+  "text_path": "texts/test_sample.txt",
+  "text_length": 130,
+  "num_tokens": 26,
+  "total_bits": 183.28569240489645,
+  "bits_per_token": 7.331427696195858,
+  "bits_per_char": 1.4098899415761266,
+  "compression_ratio": 5.6742017685839645,
+  "timestamp": "2025-06-12T06:06:06.963975"
+}

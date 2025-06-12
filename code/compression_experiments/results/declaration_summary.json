@@ -1,0 +1,11 @@
+{
+  "text_name": "declaration",
+  "text_path": "texts/declaration.txt",
+  "text_length": 1062,
+  "num_tokens": 208,
+  "total_bits": 587.8063443635294,
+  "bits_per_token": 2.8396441756692243,
+  "bits_per_char": 0.5534899664440014,
+  "compression_ratio": 14.453739877883386,
+  "timestamp": "2025-06-12T06:27:58.003719"
+}
