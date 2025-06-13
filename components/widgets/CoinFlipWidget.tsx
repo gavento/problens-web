@@ -60,7 +60,7 @@ export default function CrossEntropyWidget({
   const [bottomCoins, setBottomCoins] = useState<BottomCoin[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [nextCoinId, setNextCoinId] = useState(0);
-  const [speed, setSpeed] = useState(50); // pixels per second
+  const [speed, setSpeed] = useState(100); // pixels per second (2/3 of max 150)
   
   const canvasRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>(0);
