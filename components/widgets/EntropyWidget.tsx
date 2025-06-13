@@ -115,9 +115,9 @@ const EntropyWidget: React.FC<Props> = ({
   // Generate some preset distributions
   const presets = [
     { name: "Uniform", dist: Array(numCategories).fill(1 / numCategories) },
-    { name: "Skewed", dist: [0.7, 0.2, 0.07, 0.03].slice(0, numCategories) },
-    { name: "Binary", dist: [0.5, 0.5, 0, 0].slice(0, numCategories) },
-    { name: "Extreme", dist: [1, 0, 0, 0].slice(0, numCategories) },
+    { name: "Skewed", dist: [0.7, 0.2, 0.07, 0.03, 0, 0].slice(0, numCategories) },
+    { name: "Binary", dist: [0.5, 0.5, 0, 0, 0, 0].slice(0, numCategories) },
+    { name: "Extreme", dist: [1, 0, 0, 0, 0, 0].slice(0, numCategories) },
   ];
   
   return (
