@@ -71,13 +71,16 @@ export default function CrossEntropyWidget({
   // ====================================================================
   
   // ===== WIDGET CONSTANTS =====
-  const COIN_SIZE = 70;                    // Pixel size of coin images
   const CANVAS_WIDTH = 200;                // Width of top coin animation canvas
   const CANVAS_HEIGHT = 100;               // Height of top coin animation canvas
   const GRAPH_HEIGHT = 300;                // Height of bottom graph area
   const GRAPH_WIDTH = 600;                 // Width of bottom graph area
-  const COIN_SPACING = 100;                // Consistent spacing between coins
-  const TRIGGER_POSITION = CANVAS_WIDTH / 2;   // Where coins trigger bottom canvas (center)
+  
+  // All sizes relative to canvas dimensions
+  const TOP_COIN_SIZE = CANVAS_HEIGHT * 0.7;     // 70% of canvas height
+  const BOTTOM_COIN_SIZE = GRAPH_HEIGHT * 0.08;  // 8% of graph height
+  const COIN_SPACING = CANVAS_WIDTH * 0.5;       // 50% of canvas width spacing
+  const TRIGGER_POSITION = CANVAS_WIDTH * 0.5;   // Center of canvas
   
   // ====================================================================
   // SIMPLIFIED LOGIC
@@ -159,7 +162,7 @@ export default function CrossEntropyWidget({
         const updated = prev.map(coin => ({
           ...coin,
           x: coin.x - pixelsPerMs * deltaTime
-        })).filter(coin => coin.x > -COIN_SIZE);
+        })).filter(coin => coin.x > -TOP_COIN_SIZE);
         
         // Check for trigger crossings
         updated.forEach(coin => {
@@ -197,7 +200,7 @@ export default function CrossEntropyWidget({
           ...coin,
           x: coin.x - bottomPixelsPerMs * deltaTime
         }))
-        .filter(coin => coin.x > -20) // Remove off-screen coins
+        .filter(coin => coin.x > -BOTTOM_COIN_SIZE) // Remove off-screen coins
       );
       
       lastUpdateRef.current = timestamp;
@@ -367,9 +370,9 @@ export default function CrossEntropyWidget({
               className="absolute transition-none"
               style={{
                 left: coin.x,
-                top: (CANVAS_HEIGHT - COIN_SIZE) / 2,
-                width: COIN_SIZE,
-                height: COIN_SIZE,
+                top: (CANVAS_HEIGHT - TOP_COIN_SIZE) / 2,
+                width: TOP_COIN_SIZE,
+                height: TOP_COIN_SIZE,
               }}
             >
               {coin.isHeads ? (
@@ -528,9 +531,9 @@ export default function CrossEntropyWidget({
                 className="absolute"
                 style={{
                   left: `${(coin.x / GRAPH_WIDTH) * 100}%`,
-                  top: coin.y - 12,
-                  width: 24,
-                  height: 24,
+                  top: coin.y - (BOTTOM_COIN_SIZE / 2),
+                  width: BOTTOM_COIN_SIZE,
+                  height: BOTTOM_COIN_SIZE,
                   transform: 'translateX(-50%)',
                 }}
               >
