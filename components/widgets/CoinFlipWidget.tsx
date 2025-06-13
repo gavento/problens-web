@@ -127,18 +127,19 @@ export default function HeartRateWidget({
   useEffect(() => {
     const initialCoins: Coin[] = [];
     
-    // Create 3 initial coins positioned off-screen to the right
-    // They start at CANVAS_WIDTH and are spaced using VISUAL_COIN_SPACING
-    for (let i = 0; i < 3; i++) {
+    // Create initial coins with consistent spacing
+    // Start them further off-screen to give seismometer time to prepare
+    const startX = CANVAS_WIDTH + VISUAL_COIN_SPACING;
+    for (let i = 0; i < 4; i++) {  // Create 4 coins for smoother start
       initialCoins.push({
-        id: i,                                          // Unique identifier for each coin
-        isHeads: Math.random() < p,                     // Random outcome based on true probability p
-        x: CANVAS_WIDTH + i * VISUAL_COIN_SPACING,      // Start off-screen, visually spaced
+        id: i,
+        isHeads: Math.random() < p,
+        x: startX + i * VISUAL_COIN_SPACING,
       });
     }
     
     setCoins(initialCoins);
-    setNextCoinId(3);  // Next coin will have ID 3
+    setNextCoinId(4);
     
     // NOTE: This only runs when p changes, not when q changes
     // because coin outcomes are determined by p, not q
@@ -148,13 +149,13 @@ export default function HeartRateWidget({
   // COIN GENERATION: CREATE NEW COINS AS NEEDED
   // ====================================================================
   
-  const generateNewCoin = useCallback(() => {
+  const generateNewCoin = useCallback((rightmostX: number) => {
     // Generate a new coin with random outcome based on true probability p
     const isHeads = Math.random() < p;
     const newCoin: Coin = {
       id: nextCoinId,                           // Unique identifier
       isHeads,                                  // Outcome based on true probability p
-      x: CANVAS_WIDTH + VISUAL_COIN_SPACING,   // Start off-screen right, visually positioned
+      x: rightmostX + VISUAL_COIN_SPACING,     // Place relative to rightmost coin with visual spacing
     };
     
     setCoins(prev => [...prev, newCoin]);
@@ -323,8 +324,8 @@ export default function HeartRateWidget({
     if (!isRunning) return;
     
     const rightmostCoin = Math.max(...coins.map(c => c.x), -Infinity);
-    if (rightmostCoin < CANVAS_WIDTH - LOGICAL_COIN_SPACING/2) {
-      generateNewCoin();
+    if (rightmostCoin < CANVAS_WIDTH) {
+      generateNewCoin(rightmostCoin);
     }
   }, [coins, isRunning, generateNewCoin]);
 
@@ -343,7 +344,7 @@ export default function HeartRateWidget({
   }, [isRunning, animate]);
 
   const startAnimation = () => {
-    setIsRunning(true);
+    // Clear any existing animation state
     timeRef.current = 0;
     seismometerYRef.current = 0;
     targetYRef.current = 0;
@@ -357,6 +358,26 @@ export default function HeartRateWidget({
     setPaperOffset(0);
     setActiveCoinId(null);
     setCoinMarkers([]);
+    
+    // Find the first coin and start transitioning to its value
+    const firstCoin = coins.find(c => c.x > LOGICAL_TRIGGER_POSITION);
+    if (firstCoin) {
+      const firstSurprise = firstCoin.isHeads 
+        ? (q === 0 ? 7 : Math.log2(1/q))
+        : (q === 1 ? 7 : Math.log2(1/(1-q)));
+      
+      // Calculate time until first coin hits trigger
+      const distanceToTrigger = firstCoin.x - LOGICAL_TRIGGER_POSITION;
+      const timeToTrigger = distanceToTrigger / speed;
+      
+      // Start transition to first coin's value
+      startYRef.current = 0;
+      targetYRef.current = firstSurprise;
+      transitionStartRef.current = 0;
+      transitionDurationRef.current = timeToTrigger;
+    }
+    
+    setIsRunning(true);
   };
 
   const stopAnimation = () => {
@@ -381,17 +402,18 @@ export default function HeartRateWidget({
     timeRef.current = 0;
     setNextCoinId(0);
     
-    // Re-initialize
+    // Re-initialize with consistent spacing
     const initialCoins: Coin[] = [];
-    for (let i = 0; i < 3; i++) {
+    const startX = CANVAS_WIDTH + VISUAL_COIN_SPACING;
+    for (let i = 0; i < 4; i++) {
       initialCoins.push({
         id: i,
         isHeads: Math.random() < p,
-        x: CANVAS_WIDTH + i * VISUAL_COIN_SPACING,
+        x: startX + i * VISUAL_COIN_SPACING,
       });
     }
     setCoins(initialCoins);
-    setNextCoinId(3);
+    setNextCoinId(4);
   };
 
   return (
