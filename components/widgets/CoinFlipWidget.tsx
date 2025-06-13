@@ -74,8 +74,8 @@ export default function CrossEntropyWidget({
   const COIN_SIZE = 70;                    // Pixel size of coin images
   const CANVAS_WIDTH = 200;                // Width of top coin animation canvas
   const CANVAS_HEIGHT = 100;               // Height of top coin animation canvas
-  const GRAPH_HEIGHT = 200;                // Height of bottom graph area
-  const GRAPH_WIDTH = 400;                 // Width of bottom graph area
+  const GRAPH_HEIGHT = 300;                // Height of bottom graph area
+  const GRAPH_WIDTH = 600;                 // Width of bottom graph area
   const COIN_SPACING = 100;                // Consistent spacing between coins
   const TRIGGER_POSITION = CANVAS_WIDTH / 2;   // Where coins trigger bottom canvas (center)
   
@@ -392,10 +392,10 @@ export default function CrossEntropyWidget({
 
       {/* Bottom Graph */}
       <div className="bg-gray-100 rounded-lg p-4">
-        <div className="bg-white rounded border-2 border-gray-300 relative overflow-hidden" 
-             style={{ width: GRAPH_WIDTH, height: GRAPH_HEIGHT, margin: '0 auto' }}>
+        <div className="bg-white rounded border-2 border-gray-300 relative overflow-hidden w-full" 
+             style={{ height: GRAPH_HEIGHT }}>
           
-          <svg width={GRAPH_WIDTH} height={GRAPH_HEIGHT} className="absolute inset-0">
+          <svg width="100%" height={GRAPH_HEIGHT} className="absolute inset-0" viewBox={`0 0 ${GRAPH_WIDTH} ${GRAPH_HEIGHT}`}>
             {/* Grid lines */}
             <defs>
               <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -527,10 +527,11 @@ export default function CrossEntropyWidget({
                 key={`bottom-${coin.id}`}
                 className="absolute"
                 style={{
-                  left: coin.x - 12,
+                  left: `${(coin.x / GRAPH_WIDTH) * 100}%`,
                   top: coin.y - 12,
                   width: 24,
                   height: 24,
+                  transform: 'translateX(-50%)',
                 }}
               >
                 <img 
