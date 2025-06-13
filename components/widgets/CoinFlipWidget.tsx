@@ -90,7 +90,7 @@ export default function CrossEntropyWidget({
   const GRAPH_PADDING_BOTTOM = GRAPH_HEIGHT * 0.1; // 10% padding at bottom for 0-line visibility
   const USABLE_GRAPH_HEIGHT = GRAPH_HEIGHT - GRAPH_PADDING_BOTTOM;
   const COIN_VERTICAL_OFFSET = BOTTOM_COIN_SIZE * 0.8; // Magic offset to align coins with SVG lines
-  const TOP_COIN_VERTICAL_OFFSET = TOP_COIN_SIZE * -0.2; // Negative offset to push coins up
+  const TOP_COIN_VERTICAL_OFFSET = TOP_COIN_SIZE * 0.2; // Positive offset to push coins down
   
   // ====================================================================
   // SIMPLIFIED LOGIC

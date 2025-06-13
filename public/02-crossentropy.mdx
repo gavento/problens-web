@@ -347,13 +347,13 @@ and plug in <Math math="q_i = 2^{-\ell_i}" />, we get
 That is, the average code-name length is at least $H(p)$. In yet another words, no code can beat $H(p)$ bits on average as we wanted to observe. 
 </Expand>
 
-The tl;dr is that there is another way to think about entropy. Remember this widget? 
+The tl;dr is that there is another way to think about entropy. Remember how we defined it as the "average surprisal" of a distribution, say a coin flip? We could also ask: how many bits do we need to store coin flip results? 
 
-![entropy](02-crossentropy/entropy.png)
+If we are flipping a fair coin and want to keep results, there is nothing smarter to do then just remember a file like 'HTTHTHTHTTHH' (just exchange H, T to 0, 1) which is 1 bit per flip. 
 
-We talked about "average surprisal," but we could also ask: how many bits do you need to store coin flip results? On the left, it's 1 bit per flip. On the right, you'd be smart to just store where the rare heads show up—way less than 1 bit per flip on average. 
+But if we are flipping a coind where heads have only $0.01$ probability, there are better ways to store the results! For example, using code names $TTTTT \rightarrow 0, H \rightarrow 10, T \rightarrow 11$, we spend around $0.2$ bits per flip! Entropy is the limit on how much space we need to store the results, "how much there is to store". 
 
-Cross-entropy makes sense too: it's the bits you need when data comes from $p$ but you built your code for $q$. And relative entropy is how much worse your mismatched code is compared to the optimal one. 
+With coding theory intuitions, cross-entropy becomes also very natural: it's the bits you need when data comes from $p$ but you built your code for a different distribution $q$. And relative entropy is how much worse your mismatched code is compared to the optimal one. 
 
 
 We can now revisit the riddle about how much Wikipedia (and other texts) can be compressed. 
