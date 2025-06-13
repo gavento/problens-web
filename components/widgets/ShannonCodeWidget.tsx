@@ -34,135 +34,115 @@ export default function ShannonCodeWidget() {
     return normalized;
   }, [frequencies]);
 
-  // Build Shannon-Fano tree
-  const tree = useMemo(() => {
+  // Build Shannon code and calculate metrics
+  const { codeAssignments, entropy, averageCodeLength } = useMemo(() => {
     // Sort letters by frequency (descending)
     const sorted = Object.entries(normalizedFrequencies)
       .sort(([, a], [, b]) => b - a)
-      .map(([letter, prob]) => ({ letter, probability: prob / 100 }));
+      .map(([letter, freq]) => ({ letter, probability: freq / 100 }));
 
-    // Shannon-Fano algorithm
-    function buildTree(items: { letter: string; probability: number }[]): TreeNode {
-      if (items.length === 1) {
-        return { letter: items[0].letter, probability: items[0].probability };
-      }
-
-      // Find split point that minimizes difference in probabilities
-      const total = items.reduce((sum, item) => sum + item.probability, 0);
-      let leftSum = 0;
-      let bestSplit = 1;
-      let bestDiff = Infinity;
-
-      for (let i = 1; i < items.length; i++) {
-        leftSum += items[i - 1].probability;
-        const rightSum = total - leftSum;
-        const diff = Math.abs(leftSum - rightSum);
-        if (diff < bestDiff) {
-          bestDiff = diff;
-          bestSplit = i;
-        }
-      }
-
-      const leftItems = items.slice(0, bestSplit);
-      const rightItems = items.slice(bestSplit);
-
-      return {
-        left: buildTree(leftItems),
-        right: buildTree(rightItems),
-        probability: total
-      };
+    // Shannon's coding algorithm
+    const codeAssignments: { letter: string; probability: number; codeLength: number; code: string; roundedProb: number }[] = [];
+    
+    // Step 1: Determine code lengths by rounding probabilities down to powers of 2
+    for (const { letter, probability } of sorted) {
+      if (probability <= 0) continue;
+      
+      // Find the largest power of 2 that is ≤ probability
+      // If probability = 0.127, then 1/8 = 0.125 ≤ 0.127 < 1/4 = 0.25, so code length = 3
+      const codeLength = Math.max(1, Math.ceil(-Math.log2(probability)));
+      const roundedProb = Math.pow(2, -codeLength);
+      
+      codeAssignments.push({
+        letter,
+        probability,
+        codeLength,
+        code: '', // Will be assigned in step 2
+        roundedProb
+      });
     }
 
-    const root = buildTree(sorted);
-    
-    // Assign codes
-    function assignCodes(node: TreeNode, code: string = ""): void {
-      if (node.letter) {
-        node.code = code;
-      } else {
-        if (node.left) assignCodes(node.left, code + "0");
-        if (node.right) assignCodes(node.right, code + "1");
+    // Step 2: Greedily assign binary codes left-to-right
+    // We assign codes by maintaining a "current position" in the binary tree
+    let currentPrefix = 0;
+    for (const assignment of codeAssignments) {
+      // Convert current prefix to binary string of the required length
+      assignment.code = currentPrefix.toString(2).padStart(assignment.codeLength, '0');
+      
+      // Move to next available prefix: add the "width" of this code block
+      // A code of length L occupies 2^(maxLength - L) leaf positions
+      // Since we're working greedily, we just move by 1 in the prefix space
+      currentPrefix += 1;
+    }
+
+    // Calculate entropy: H = -Σ p(x) * log₂(p(x))
+    let entropy = 0;
+    for (const { probability } of codeAssignments) {
+      if (probability > 0) {
+        entropy -= probability * Math.log2(probability);
       }
     }
-    
-    assignCodes(root);
-    return root;
+
+    // Calculate average code length: Σ p(x) * length(code(x))
+    let averageCodeLength = 0;
+    for (const { probability, codeLength } of codeAssignments) {
+      averageCodeLength += probability * codeLength;
+    }
+
+    return { codeAssignments, entropy, averageCodeLength };
   }, [normalizedFrequencies]);
 
-  // Calculate tree layout
-  const treeLayout = useMemo(() => {
-    const width = 800;
-    const height = 400;
-    const nodeRadius = 20;
-    const levelHeight = 60;
+  // Calculate display layout for Shannon codes
+  const displayLayout = useMemo(() => {
+    const width = Math.max(600, codeAssignments.length * 100);
+    const height = 200;
+    
+    return { width, height, codeAssignments };
+  }, [codeAssignments]);
 
-    function layoutTree(node: TreeNode, x: number, y: number, spread: number): void {
-      node.x = x;
-      node.y = y;
-
-      if (node.left && node.right) {
-        const leftSpread = spread * 0.6;
-        const rightSpread = spread * 0.6;
-        layoutTree(node.left, x - spread/2, y + levelHeight, leftSpread);
-        layoutTree(node.right, x + spread/2, y + levelHeight, rightSpread);
-      }
-    }
-
-    layoutTree(tree, width / 2, 40, width * 0.8);
-
-    // Collect all nodes for rendering
-    const nodes: TreeNode[] = [];
-    function collectNodes(node: TreeNode) {
-      nodes.push(node);
-      if (node.left) collectNodes(node.left);
-      if (node.right) collectNodes(node.right);
-    }
-    collectNodes(tree);
-
-    return { nodes, width, height, nodeRadius };
-  }, [tree]);
-
-  const handleMouseDown = (letter: string) => {
+  const handleMouseDown = (letter: string, e: React.MouseEvent) => {
     setIsDragging(letter);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
     
-    const rect = e.currentTarget.getBoundingClientRect();
-    const y = e.clientY - rect.top;
-    const maxHeight = rect.height;
-    const percentage = Math.max(0.01, Math.min(20, (1 - y / maxHeight) * 20));
+    // Get the container element for calculating relative positions
+    const container = e.currentTarget.closest('.frequency-bars-container') as HTMLElement;
+    const containerRect = container.getBoundingClientRect();
     
-    setFrequencies(prev => ({
-      ...prev,
-      [isDragging]: percentage
-    }));
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(null);
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const y = moveEvent.clientY - containerRect.top;
+      const maxHeight = containerRect.height;
+      const percentage = Math.max(0.01, Math.min(20, (1 - y / maxHeight) * 20));
+      
+      setFrequencies(prev => ({
+        ...prev,
+        [letter]: percentage
+      }));
+    };
+    
+    const handleMouseUp = () => {
+      setIsDragging(null);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
   };
 
   return (
     <div className="shannon-code-widget bg-white border border-gray-200 rounded-lg p-6 my-6">
-      <h3 className="text-lg font-semibold mb-4">Shannon-Fano Code Constructor</h3>
+      <h3 className="text-lg font-semibold mb-4">Shannon Code Constructor</h3>
       <p className="text-gray-600 mb-6">
-        Drag the bars to adjust letter probabilities. The binary tree below shows the 
-        resulting Shannon-Fano code, which assigns shorter codes to more frequent letters.
+        Drag the bars to adjust letter probabilities. Shannon&apos;s method rounds each probability 
+        down to a power of 2, then assigns codes greedily left-to-right.
       </p>
 
       {/* Letter frequency bars */}
-      <div 
-        className="relative select-none"
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-      >
+      <div className="relative select-none frequency-bars-container">
         <div className="grid grid-cols-9 gap-2 mb-8">
           {Object.entries(normalizedFrequencies).map(([letter, freq]) => {
-            const codeLength = tree.code?.length || Math.ceil(-Math.log2(freq / 100));
-            const threshold = Math.pow(2, -Math.floor(-Math.log2(freq / 100)));
+            const assignment = codeAssignments.find(a => a.letter === letter);
+            const codeLength = assignment?.codeLength || Math.ceil(-Math.log2(freq / 100));
+            const roundedProb = assignment?.roundedProb || Math.pow(2, -codeLength);
             
             return (
               <div key={letter} className="relative">
@@ -170,16 +150,18 @@ export default function ShannonCodeWidget() {
                   <div
                     className="absolute bottom-0 left-0 right-0 bg-blue-500 cursor-ns-resize hover:bg-blue-600 transition-colors"
                     style={{ height: `${freq * 5}%` }}
-                    onMouseDown={() => handleMouseDown(letter)}
+                    onMouseDown={(e) => handleMouseDown(letter, e)}
                   />
                   <div className="absolute inset-x-0 top-2 text-center">
                     <div className="font-mono font-bold">{letter}</div>
                   </div>
                 </div>
                 <div className="text-xs text-center mt-1 text-gray-600">
-                  {freq.toFixed(2)}%
+                  {freq.toFixed(1)}%
                   <br />
-                  &lt; 1/2<sup>{codeLength}</sup>
+                  → 1/2<sup>{codeLength}</sup> = {(roundedProb * 100).toFixed(1)}%
+                  <br />
+                  <span className="font-mono text-green-600">{assignment?.code || '...'}</span>
                 </div>
               </div>
             );
@@ -187,122 +169,76 @@ export default function ShannonCodeWidget() {
         </div>
       </div>
 
-      {/* Shannon-Fano Tree Visualization */}
+      {/* Shannon Code Assignment Table */}
       <div className="mt-8">
-        <h4 className="font-medium mb-4">Shannon-Fano Binary Tree</h4>
+        <h4 className="font-medium mb-4">Shannon Code Assignments</h4>
         <div className="bg-gray-50 rounded-lg p-4 overflow-auto">
-          <svg 
-            width={treeLayout.width} 
-            height={treeLayout.height}
-            className="mx-auto"
-          >
-            {/* Draw edges */}
-            {treeLayout.nodes.map((node, i) => {
-              if (!node.left || !node.right || !node.x || !node.y || !node.left.x || !node.left.y || !node.right.x || !node.right.y) return null;
-              
-              const isRoot = node === tree;
-              
-              return (
-                <g key={`edges-${i}`}>
-                  {/* Left edge */}
-                  <line
-                    x1={node.x}
-                    y1={node.y}
-                    x2={node.left.x}
-                    y2={node.left.y}
-                    stroke="#666"
-                    strokeWidth="2"
-                  />
-                  {isRoot && node.x && node.left.x && node.y && node.left.y && (
-                    <text
-                      x={(node.x + node.left.x) / 2 - 10}
-                      y={(node.y + node.left.y) / 2}
-                      fill="#666"
-                      fontSize="14"
-                      fontWeight="bold"
-                    >
-                      0
-                    </text>
-                  )}
-                  
-                  {/* Right edge */}
-                  <line
-                    x1={node.x}
-                    y1={node.y}
-                    x2={node.right.x}
-                    y2={node.right.y}
-                    stroke="#666"
-                    strokeWidth="2"
-                  />
-                  {isRoot && node.x && node.right.x && node.y && node.right.y && (
-                    <text
-                      x={(node.x + node.right.x) / 2 + 5}
-                      y={(node.y + node.right.y) / 2}
-                      fill="#666"
-                      fontSize="14"
-                      fontWeight="bold"
-                    >
-                      1
-                    </text>
-                  )}
-                </g>
-              );
-            })}
-            
-            {/* Draw nodes */}
-            {treeLayout.nodes.map((node, i) => {
-              if (!node.x || !node.y) return null;
-              
-              return (
-                <g key={`node-${i}`}>
-                  <circle
-                    cx={node.x}
-                    cy={node.y}
-                    r={node.letter ? 16 : 8}
-                    fill={node.letter ? "#3b82f6" : "#9ca3af"}
-                    stroke="#fff"
-                    strokeWidth="2"
-                  />
-                  {node.letter && (
-                    <>
-                      <text
-                        x={node.x}
-                        y={node.y + 5}
-                        textAnchor="middle"
-                        fill="white"
-                        fontSize="14"
-                        fontWeight="bold"
-                      >
-                        {node.letter}
-                      </text>
-                      <text
-                        x={node.x}
-                        y={node.y + 35}
-                        textAnchor="middle"
-                        fill="#666"
-                        fontSize="11"
-                        className="font-mono"
-                      >
-                        {node.code}
-                      </text>
-                    </>
-                  )}
-                </g>
-              );
-            })}
-          </svg>
+          <div className="grid grid-cols-4 gap-4 text-sm font-semibold text-gray-700 mb-3">
+            <div>Letter</div>
+            <div>Probability</div>
+            <div>Rounded to 2⁻ⁿ</div>
+            <div>Code</div>
+          </div>
+          {codeAssignments.map((assignment, i) => (
+            <div key={assignment.letter} className={`grid grid-cols-4 gap-4 text-sm py-2 ${i % 2 === 0 ? 'bg-white' : 'bg-gray-100'} rounded`}>
+              <div className="font-mono font-bold text-blue-600">{assignment.letter}</div>
+              <div>{(assignment.probability * 100).toFixed(2)}%</div>
+              <div>1/2<sup>{assignment.codeLength}</sup> = {(assignment.roundedProb * 100).toFixed(1)}%</div>
+              <div className="font-mono text-green-600 font-bold">{assignment.code}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Metrics Display */}
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-blue-50 rounded-lg p-4">
+          <h5 className="font-semibold text-blue-800 mb-2">Entropy (Information Content)</h5>
+          <div className="text-2xl font-bold text-blue-600">
+            {entropy.toFixed(3)} bits
+          </div>
+          <div className="text-sm text-blue-700 mt-1">
+            H = -Σ p(x) log₂ p(x)
+          </div>
+        </div>
+        
+        <div className="bg-green-50 rounded-lg p-4">
+          <h5 className="font-semibold text-green-800 mb-2">Average Code Length</h5>
+          <div className="text-2xl font-bold text-green-600">
+            {averageCodeLength.toFixed(3)} bits
+          </div>
+          <div className="text-sm text-green-700 mt-1">
+            L = Σ p(x) × length(code(x))
+          </div>
+        </div>
+      </div>
+
+      {/* Efficiency Display */}
+      <div className="mt-4 bg-gray-50 rounded-lg p-4">
+        <div className="text-center">
+          <span className="text-gray-700">Compression Efficiency: </span>
+          <span className="font-bold text-purple-600">
+            {((entropy / averageCodeLength) * 100).toFixed(1)}%
+          </span>
+          <span className="text-gray-600 text-sm ml-2">
+            (Optimal would be {((entropy / entropy) * 100).toFixed(0)}%)
+          </span>
+        </div>
+        <div className="text-xs text-gray-600 text-center mt-2">
+          Shannon&apos;s method achieves at most H(p) + 1 bits per symbol (vs optimal H(p))
         </div>
       </div>
 
       <div className="mt-6 text-sm text-gray-600">
         <p className="mb-2">
-          <strong>How it works:</strong> The Shannon-Fano algorithm recursively splits 
-          letters into groups with approximately equal total probability, assigning 0 to 
-          the left group and 1 to the right group.
+          <strong>How Shannon&apos;s method works:</strong> 
+          1) Round each probability down to nearest power of 2: 1/2ⁿ
+          2) Assign code length n to that symbol
+          3) Assign actual binary codes greedily from left to right
         </p>
         <p>
-          Letters with higher probabilities get shorter codes, achieving compression close 
-          to the entropy limit: H = -Σ p(x) log₂ p(x)
+          This method is simple but suboptimal when probabilities aren&apos;t exact powers of 2.
+          The &quot;rounding down&quot; step causes inefficiency compared to Huffman coding.
         </p>
       </div>
     </div>

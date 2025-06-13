@@ -65,6 +65,10 @@ const MutualInformationWidget: React.FC<Props> = ({
     const clampedValue = Math.max(0, Math.min(1, newValue));
     const newDist = [...jointProbs];
     
+    // Special case: if we're increasing from zero, we need to take mass from others
+    const wasZero = jointProbs[index] === 0;
+    const isIncreasing = clampedValue > jointProbs[index];
+    
     // Simple constraint: Just maintain sum = 1
     const remainingMass = 1 - clampedValue;
     const currentRemainingMass = jointProbs.reduce((sum, p, i) => i === index ? sum : sum + p, 0);
@@ -79,11 +83,28 @@ const MutualInformationWidget: React.FC<Props> = ({
         }
       }
     } else {
+      // When all other probabilities are zero
       newDist[index] = clampedValue;
-      const remaining = (1 - clampedValue) / (newDist.length - 1);
-      for (let i = 0; i < newDist.length; i++) {
-        if (i !== index) {
-          newDist[i] = remaining;
+      
+      // If we're not taking the full mass, distribute the remainder
+      if (clampedValue < 1) {
+        // Find bars with non-zero values to redistribute to, or distribute equally
+        const nonZeroIndices = newDist.map((_, i) => i).filter(i => i !== index && jointProbs[i] > 0);
+        
+        if (nonZeroIndices.length > 0) {
+          // Redistribute to existing non-zero bars
+          const remaining = (1 - clampedValue) / nonZeroIndices.length;
+          nonZeroIndices.forEach(i => {
+            newDist[i] = remaining;
+          });
+        } else {
+          // All other bars are zero, distribute equally among them
+          const remaining = (1 - clampedValue) / (newDist.length - 1);
+          for (let i = 0; i < newDist.length; i++) {
+            if (i !== index) {
+              newDist[i] = remaining;
+            }
+          }
         }
       }
     }

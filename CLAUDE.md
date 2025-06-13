@@ -69,3 +69,6 @@ After pushing commits to GitHub:
 3. Push the fixes and repeat until the workflow succeeds
 
 This ensures the deployment pipeline remains healthy and the static site builds correctly without blocking conversation.
+
+## Memories
+- Remember how `<Math>` tag works: Used for complex math expressions with curly braces in MDX, helps avoid parsing errors by wrapping equations that would break standard MDX parsing
