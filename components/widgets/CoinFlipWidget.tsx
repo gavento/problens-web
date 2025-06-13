@@ -344,13 +344,13 @@ export default function HeartRateWidget({
             >
               {coin.isHeads ? (
                 <img 
-                  src="/cent_front.png" 
+                  src="/problens-web/cent_front.png" 
                   alt="Heads" 
                   className="w-full h-full"
                 />
               ) : (
                 <img 
-                  src="/cent_back.png" 
+                  src="/problens-web/cent_back.png" 
                   alt="Tails" 
                   className="w-full h-full"
                 />
