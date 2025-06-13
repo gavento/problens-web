@@ -120,28 +120,40 @@ export default function HeartRateWidget({
         updated.forEach(coin => {
           if (coin.x <= TRIGGER_POSITION && coin.id !== activeCoinId) {
             // This coin just reached the trigger position
-            const surprise = coin.isHeads 
+            // The seismometer should already be at this coin's target value
+            // Now we need to start transitioning to the NEXT coin's target
+            
+            // Add marker for the current coin (seismometer should be at its value now)
+            const currentSurprise = coin.isHeads 
               ? (q === 0 ? 7 : Math.log2(1/q))
               : (q === 1 ? 7 : Math.log2(1/(1-q)));
             
-            // Add coin marker immediately at the center
             const centerX = GRAPH_WIDTH / 2;
-            const screenY = GRAPH_HEIGHT - Math.min(surprise / 7, 1) * GRAPH_HEIGHT;
+            const screenY = GRAPH_HEIGHT - Math.min(currentSurprise / 7, 1) * GRAPH_HEIGHT;
             setCoinMarkers(prev => [...prev, { 
               x: centerX, 
               y: screenY, 
               isHeads: coin.isHeads 
             }]);
             
-            // Calculate transition duration: time for next coin to reach trigger
-            const nextCoinDistance = COIN_SPACING; // Distance between coins
-            const duration = nextCoinDistance / speed; // seconds
+            // Find the next coin to start transitioning to
+            const nextCoin = updated.find(c => c.x > coin.x);
+            if (nextCoin) {
+              const nextSurprise = nextCoin.isHeads 
+                ? (q === 0 ? 7 : Math.log2(1/q))
+                : (q === 1 ? 7 : Math.log2(1/(1-q)));
+              
+              // Calculate transition duration: time for next coin to reach trigger
+              const nextCoinDistance = COIN_SPACING; // Distance between coins
+              const duration = nextCoinDistance / speed; // seconds
+              
+              // Start new transition to NEXT coin
+              setStartY(seismometerY);
+              setTargetY(nextSurprise);
+              setTransitionStart(timeRef.current);
+              setTransitionDuration(duration);
+            }
             
-            // Start new transition
-            setStartY(seismometerY);
-            setTargetY(surprise);
-            setTransitionStart(timeRef.current);
-            setTransitionDuration(duration);
             setActiveCoinId(coin.id);
           }
         });
