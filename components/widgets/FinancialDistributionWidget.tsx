@@ -65,7 +65,7 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
   const [sapData, setSapData] = useState<FinancialData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedAsset, setSelectedAsset] = useState<'BTC' | 'SAP'>(showBTC ? 'BTC' : 'SAP');
+  const [selectedAsset, setSelectedAsset] = useState<'BTC' | 'SAP'>(showSAP ? 'SAP' : 'BTC');
   const [selectedDays, setSelectedDays] = useState(1000);
   const [xAxisRange, setXAxisRange] = useState(3); // Standard deviations
   const [showGaussian, setShowGaussian] = useState(true);
