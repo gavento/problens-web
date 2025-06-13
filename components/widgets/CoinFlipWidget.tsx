@@ -40,6 +40,7 @@ interface Props {
   default_p?: number;
   default_q?: number;
   maxSurprise?: number;
+  bottomSpeedMultiplier?: number;
 }
 
 export default function CrossEntropyWidget({
@@ -50,6 +51,7 @@ export default function CrossEntropyWidget({
   change_p = true,
   change_q = true,
   maxSurprise = 7,
+  bottomSpeedMultiplier = 1.5,
 }: Props) {
   const [p, setP] = useState(initialP ?? default_p);
   const [q, setQ] = useState(initialQ ?? default_q);
@@ -170,7 +172,7 @@ export default function CrossEntropyWidget({
             // Only show if within max height
             if (surprise <= maxSurprise) {
               const centerX = GRAPH_WIDTH / 2;
-              const screenY = GRAPH_HEIGHT - (surprise / maxSurprise) * GRAPH_HEIGHT;
+              const screenY = Math.max(12, Math.min(GRAPH_HEIGHT - 12, GRAPH_HEIGHT - (surprise / maxSurprise) * GRAPH_HEIGHT));
               
               const bottomCoin: BottomCoin = {
                 id: coin.id,
@@ -187,11 +189,12 @@ export default function CrossEntropyWidget({
         return updated;
       });
       
-      // Update bottom canvas coins (scroll left)
+      // Update bottom canvas coins (scroll left at different speed)
+      const bottomPixelsPerMs = (speed / bottomSpeedMultiplier) / 1000;
       setBottomCoins(prev => prev
         .map(coin => ({
           ...coin,
-          x: coin.x - pixelsPerMs * deltaTime
+          x: coin.x - bottomPixelsPerMs * deltaTime
         }))
         .filter(coin => coin.x > -20) // Remove off-screen coins
       );
@@ -202,7 +205,7 @@ export default function CrossEntropyWidget({
     if (isRunning) {
       animationRef.current = requestAnimationFrame(animate);
     }
-  }, [isRunning, speed, calculateSurprise, maxSurprise]);
+  }, [isRunning, speed, calculateSurprise, maxSurprise, bottomSpeedMultiplier]);
 
   // Check if we need to generate a new coin
   useEffect(() => {
@@ -425,6 +428,7 @@ export default function CrossEntropyWidget({
               </text>
             ) : (
               <>
+                {/* Cross-entropy line */}
                 <line 
                   x1={0} 
                   y1={GRAPH_HEIGHT - (crossEntropy / maxSurprise) * GRAPH_HEIGHT} 
@@ -442,6 +446,64 @@ export default function CrossEntropyWidget({
                 >
                   Cross-entropy: {crossEntropy.toFixed(2)}
                 </text>
+                
+                {/* Heads surprisal line */}
+                {(() => {
+                  const headsSurprise = calculateSurprise(true);
+                  if (headsSurprise <= maxSurprise) {
+                    return (
+                      <>
+                        <line 
+                          x1={0} 
+                          y1={GRAPH_HEIGHT - (headsSurprise / maxSurprise) * GRAPH_HEIGHT} 
+                          x2={GRAPH_WIDTH} 
+                          y2={GRAPH_HEIGHT - (headsSurprise / maxSurprise) * GRAPH_HEIGHT}
+                          stroke="#4CAF50" 
+                          strokeWidth="1" 
+                          strokeDasharray="3,3"
+                        />
+                        <text 
+                          x={10} 
+                          y={GRAPH_HEIGHT - (headsSurprise / maxSurprise) * GRAPH_HEIGHT - 5} 
+                          fontSize="11" 
+                          fill="#4CAF50"
+                        >
+                          Heads: {headsSurprise.toFixed(2)}
+                        </text>
+                      </>
+                    );
+                  }
+                  return null;
+                })()}
+                
+                {/* Tails surprisal line */}
+                {(() => {
+                  const tailsSurprise = calculateSurprise(false);
+                  if (tailsSurprise <= maxSurprise) {
+                    return (
+                      <>
+                        <line 
+                          x1={0} 
+                          y1={GRAPH_HEIGHT - (tailsSurprise / maxSurprise) * GRAPH_HEIGHT} 
+                          x2={GRAPH_WIDTH} 
+                          y2={GRAPH_HEIGHT - (tailsSurprise / maxSurprise) * GRAPH_HEIGHT}
+                          stroke="#2196F3" 
+                          strokeWidth="1" 
+                          strokeDasharray="3,3"
+                        />
+                        <text 
+                          x={10} 
+                          y={GRAPH_HEIGHT - (tailsSurprise / maxSurprise) * GRAPH_HEIGHT + 15} 
+                          fontSize="11" 
+                          fill="#2196F3"
+                        >
+                          Tails: {tailsSurprise.toFixed(2)}
+                        </text>
+                      </>
+                    );
+                  }
+                  return null;
+                })()}
               </>
             )}
             
@@ -480,13 +542,21 @@ export default function CrossEntropyWidget({
         
         {/* Legend */}
         <div className="mt-3 text-sm text-gray-600 text-center">
-          <div className="flex justify-center gap-6">
+          <div className="flex justify-center gap-4 flex-wrap">
             <div className="flex items-center gap-2">
               <span>Surprise: <KatexMath math="\log_2\left(\frac{1}{q}\right)" /> for heads, <KatexMath math="\log_2\left(\frac{1}{1-q}\right)" /> for tails</span>
             </div>
             <div className="flex items-center gap-2">
+              <div className="w-4 h-0.5 bg-green-500 border-dashed border-t-2"></div>
+              <span>Heads surprisal</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-0.5 bg-blue-500 border-dashed border-t-2"></div>
+              <span>Tails surprisal</span>
+            </div>
+            <div className="flex items-center gap-2">
               <div className="w-4 h-0.5 bg-red-500 border-dashed border-t-2"></div>
-              <span>Cross-entropy (average surprise)</span>
+              <span>Cross-entropy</span>
             </div>
           </div>
         </div>
