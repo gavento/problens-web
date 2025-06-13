@@ -148,9 +148,9 @@ Try playing with this widget to get a feel!
 <EntropyWidget numCategories={6} title="Entropy of die-rolling" />
 
 <Expand headline = "Example: correct horse battery staple">
-Here's an example. Let's say there are about $2^{11}$ English words that can be described as 'common'. If you generate uniformly four such common words and make your password the concatenation of them, the total entropy of your password is thus going to be $44$ bits. That's because entropy is a special case of cross-entropy and is thus additive. 
+Here's an example. Let's say there are about <Math math="2^{11}" /> English words that can be described as 'common'. If you generate uniformly four such common words and make your password the concatenation of them, the total entropy of your password is thus going to be $44$ bits. That's because entropy is a special case of cross-entropy and is thus additive. 
 
-The following comic wisely teaches us that this is a pretty secure password! Even if an adversary knows how you generated it, cracking it means they have to check about $2^{44}$ possibilities. 
+The following comic wisely teaches us that this is a pretty secure password! Even if an adversary knows how you generated it, cracking it means they have to check about <Math math="2^{44}" /> possibilities. 
 
 <a href="https://xkcd.com/936/" target="_blank" rel="noopener noreferrer">
   <img src="02-crossentropy/password.png" alt="password" style={{cursor: 'pointer'}} />
@@ -299,7 +299,7 @@ Every letter with frequency $p$ got code-name of length exactly $\log 1/p$! Noti
 <Math displayMode={true} math = "N \cdot \sum_{i = 1}^k p_i \cdot \log \frac{1}{p_i} = N \cdot H(p)." />
 That is, if you manage to construct a code with $p \rightarrow \log 1/p$, you spend $H(p)$ bits per letter on average. 
 
-One of the most beautiful and basic results of coding theory is that you can always construct a code that spends close to $H(p)$ bits per letter on average, and there's no better code (if we treat letters independently). Details in the expand box, we will not build on this later on. 
+One of the most beautiful and important results of coding theory is that you can always construct a code that spends close to $H(p)$ bits per letter on average, and there's no better code (if we treat letters independently). Details in the expand box, we will not build on this later on. 
 
 <Expand headline = "Code construction details">
 ### Construction of a good code
@@ -315,18 +315,25 @@ That's not the end of the world though. One trick we can do is construct this co
 
 ### Why we can't do better
 
-To see why we can't do better than $H(p)$ bits per letter on average, we can first observe [Kraft's inequlaity](https://en.wikipedia.org/wiki/Kraft%E2%80%93McMillan_inequality). This inquality says that if we give our $k$ letters code words of lengths $\ell_1, \dots, \ell_k$, then it has to be the case that 
-$$\sum_{i = 1}^k 2^{- \ell_i} \le 1. $$
+To see why we can't do better than $H(p)$ bits per letter on average, we will have to understand [Kraft's inequlaity](https://en.wikipedia.org/wiki/Kraft%E2%80%93McMillan_inequality). This inequality says that if we give our $k$ letters code words of lengths $\ell_1, \dots, \ell_k$, then it has to be the case that 
+<Math id = "kraft" displayMode = {true} math = "\sum_{i = 1}^k 2^{- \ell_i} \le 1. " />
 
-Why? 
+To understand this inequality, look at the widget above. Whenever we give a code-name to a letter, like $e \rightarrow 000$, we can no longer use codewords that start with '000' for other letters, since that would create clashes. The node with '000' has to be a _leaf_. Some leaves 'take more space' than others - for example, using code name of '0' intuitively kills off half of the space of possibilities. 
 
+A bit more formally, imagine continuing the full binary tree up to some very large depth $N$. Then a code word of length $\ell_i$ is above <Math math="2^{N - \ell_i}" /> of nodes at depth $N$. Since different code words cover disjoint intervals of depth-$N$ nodes, and there are $2^N$ nodes at depth $N$, it has to be the case that 
+<Math displayMode={true} math="\sum_{i = 1}^k 2^{N - \ell_i} \le 2^N" />
+Divide by $2^N$ and you get Kraft's inequality <EqRef id = "kraft"/>. 
+
+I actually like to think about Kraft's inequality as equality. Why? Well, if your code is such that the left-hand side is really smaller than $1$, then you are stupid. You can improve the code like in the picture below and get <Math math="\sum_{i = 1}^k 2^{- \ell_i} = 1" />. 
+
+The reason why this is helpful is that I like to think about the numbers <Math math="q_i = 2^{-\ell_i}" /> as some kind of idealized probabilities. Widget above shows that we can pretty much assume that the numbers $q_i$ always sum up to 1. You can think about the numbers $q_i$ as the probability distribution _implied_ by your code-name lengths $\ell_i$. Intuitively, the code is optimized for the distribution $q$, not $p$. 
+
+This setup with $p$ and $q$ is little bit like our discussions of surprises. In fact, let's write down the fact that KL divergence between $p$ and $q$ is always nonnegative. Remember, KL is the difference between crossentropy and entropy, so this is equivalently saying that $H(p, q) \ge H(p)$. If we write the formulas down:
+$$\sum_{i = 1}^k p_i \log \frac{1}{q_i} \ge \sum_{i = 1}^k p_i \log \frac{1}{p_i} $$
+and plug in <Math math="q_i = 2^{-\ell_i}" />, we get
+$$\sum_{i = 1}^k p_i \ell_i \ge H(p). $$
+That is, the average code-name length is at least $H(p)$. In yet another words, no code can beat $H(p)$ bits on average as we wanted to observe. 
 </Expand>
-
-In our example, A had probability 1/2, so it got length $\log 1/(1/2) = 1$. Perfect! <Footnote>I cheated by picking probabilities that are powers of two. Then the $\log 1/p$ formula works exactly. For messier probabilities, you can't have codes of length 2.3 bits or whatever. Good codes fix this by encoding pairs or triples of letters, getting arbitrarily close to $\log 1/p$ bits per letter on average. </Footnote> 
-
-Here's the intuition: A natural way to build a code is by a recursive algorithm: You always split your alphabet in half so that both half have roughly the same total frequency. Then, the first half gets code names starting with  <Math math = "\textsf{0}" />, and the rest starts with <Math math = "\textsf{1}" />. In our example, this means giving A (50% frequency) the code <Math math = "\textsf{0}" />, while C,G,T (50% frequency in total) start with <Math math = "\textsf{1}" />. Keep splitting recursively and letters with frequency $p$ get get code names of length $\log 1/p$. <Footnote>Again, this works perfectly when probabilities are powers of two. Otherwise it gets trickier. </Footnote> 
-
-The punchline: if your string comes from sampling $N$ letters from distribution $p$, you can encode it in about $N \cdot \sum_{i = 1}^k p_i \cdot \log 1/p_i = N \cdot H(p)$ bits. And you can prove you can't do better than $N \cdot H(p)$ bits. 
 
 This gives us another way to think about entropy. Remember this picture? 
 

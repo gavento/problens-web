@@ -52,8 +52,9 @@ pnpm e2e:build      # Run Cypress E2E tests against production build
 3. Use custom components: `<Cite>`, `<Footnote>`, `<Math>`, `<EqRef>`
 
 ### MDX Gotchas
-- Curly braces `{}` are JSX expressions in MDX - use `\{` and `\}` for literal braces
-- Math equations: inline `$...$` or display `$$...$$`
+- Curly braces `{}` are JSX expressions in MDX - DO NOT escape them with backslashes
+- When math equations contain curly braces that cause MDX parsing errors, convert them to `<Math>` tags instead of escaping
+- Math equations: inline `$...$` or display `$$...$$` for simple cases, use `<Math>` tag for complex expressions with curly braces
 - Custom KaTeX macros defined in `lib/lib.ts` (e.g., `\R` for `\mathbb{R}`)
 
 ### Component Registration
