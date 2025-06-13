@@ -113,9 +113,9 @@ But we can also read the table column-by-column. The detective could add up the 
 <Math id="cross-entropy-decomp" displayMode={true} math='
 \underbrace{\sum_{i = 1}^n p_i \log \frac{p_i}{q_i}}_{D(p,q)}
  =
-\underbrace{\sum_{i = 1}^n p_i \log 1 / q_i}_{H(p,q)}
+\underbrace{\sum_{i = 1}^n p_i \log \frac{1}{q_i}}_{H(p,q)}
  -
-\underbrace{\sum_{i = 1}^n p_i \log 1 / p_i}_{H(p)}
+\underbrace{\sum_{i = 1}^n p_i \log \frac{1}{p_i}}_{H(p)}
 '/>
 
 These two pieces on the right are super important. Let's get a feel for what they mean. 

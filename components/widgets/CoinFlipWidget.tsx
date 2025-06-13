@@ -40,9 +40,17 @@ export default function HeartRateWidget({
   const [coins, setCoins] = useState<Coin[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [nextCoinId, setNextCoinId] = useState(0);
-  const [heartRateData, setHeartRateData] = useState<HeartRatePoint[]>([]);
   const [speed, setSpeed] = useState(50); // pixels per second
-  const [currentTime, setCurrentTime] = useState(0); // For smooth interpolation
+  
+  // Seismometer state
+  const [seismometerY, setSeismometerY] = useState(0); // Current Y position of the point
+  const [targetY, setTargetY] = useState(0); // Target Y position
+  const [transitionStart, setTransitionStart] = useState(0); // When transition started
+  const [transitionDuration, setTransitionDuration] = useState(0); // How long transition should take
+  const [startY, setStartY] = useState(0); // Y position when transition started
+  const [activeCoinId, setActiveCoinId] = useState<number | null>(null); // Which coin we're targeting
+  const [tracePoints, setTracePoints] = useState<Array<{x: number, y: number}>>([]);
+  const [paperOffset, setPaperOffset] = useState(0); // How far the "paper" has scrolled
   
   const canvasRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>(0);
@@ -56,7 +64,8 @@ export default function HeartRateWidget({
   
   const GRAPH_HEIGHT = 200;
   const GRAPH_WIDTH = 400;
-  const MAX_POINTS = 50; // Keep last 50 data points
+  const TRIGGER_POSITION = CANVAS_WIDTH / 3; // When seismometer should reach target
+  const PAPER_SCROLL_SPEED = 30; // Constant pixels per second for paper movement
   
   // Calculate cross-entropy (average surprise)
   const crossEntropy = p * Math.log2(1/q) + (1-p) * Math.log2(1/(1-q));
@@ -87,25 +96,9 @@ export default function HeartRateWidget({
       x: CANVAS_WIDTH + COIN_SPACING,
     };
     
-    // Calculate when this coin will reach the center for smooth timing
-    const timeToCenter = (CANVAS_WIDTH / 2 + COIN_SPACING) / speed; // seconds to reach center
-    const surpriseTime = timeRef.current + timeToCenter;
-    
-    // Add surprise value to heart rate data with future timestamp
-    let surprise: number;
-    if (isHeads) {
-      surprise = q === 0 ? 7 : Math.log2(1/q); // Cap at 7 for visualization
-    } else {
-      surprise = q === 1 ? 7 : Math.log2(1/(1-q)); // Cap at 7 for visualization
-    }
-    setHeartRateData(prev => {
-      const newData = [...prev, { time: surpriseTime, surprise }];
-      return newData.slice(-MAX_POINTS); // Keep only last MAX_POINTS
-    });
-    
     setCoins(prev => [...prev, newCoin]);
     setNextCoinId(prev => prev + 1);
-  }, [p, q, nextCoinId, speed]);
+  }, [p, nextCoinId]);
 
   const animate = useCallback((timestamp: number) => {
     if (!isRunning) return;
@@ -113,25 +106,70 @@ export default function HeartRateWidget({
     const deltaTime = timestamp - lastUpdateRef.current;
     if (deltaTime > 16) { // ~60fps
       const pixelsPerMs = speed / 1000; // pixels per millisecond
+      const deltaSeconds = deltaTime / 1000;
       
+      // Update coin positions
       setCoins(prev => {
         const updated = prev.map(coin => ({
           ...coin,
           x: coin.x - pixelsPerMs * deltaTime
         })).filter(coin => coin.x > -COIN_SIZE);
         
+        // Check if any coin reached the trigger position and should become the new target
+        updated.forEach(coin => {
+          if (coin.x <= TRIGGER_POSITION && coin.id !== activeCoinId) {
+            // This coin just reached the trigger position
+            const surprise = coin.isHeads 
+              ? (q === 0 ? 7 : Math.log2(1/q))
+              : (q === 1 ? 7 : Math.log2(1/(1-q)));
+            
+            // Calculate transition duration: time for next coin to reach trigger
+            const nextCoinDistance = COIN_SPACING; // Distance between coins
+            const duration = nextCoinDistance / speed; // seconds
+            
+            // Start new transition
+            setStartY(seismometerY);
+            setTargetY(surprise);
+            setTransitionStart(timeRef.current);
+            setTransitionDuration(duration);
+            setActiveCoinId(coin.id);
+          }
+        });
+        
         return updated;
       });
       
-      timeRef.current += deltaTime / 1000; // Convert to seconds
-      setCurrentTime(timeRef.current);
+      // Update seismometer position with quadratic easing
+      if (transitionDuration > 0) {
+        const elapsed = timeRef.current - transitionStart;
+        const progress = Math.min(1.0, elapsed / transitionDuration);
+        const easedProgress = progress * progress * (3 - 2 * progress); // smoothstep
+        const newY = startY + (targetY - startY) * easedProgress;
+        setSeismometerY(newY);
+        
+        // Add point to trace (at fixed center position)
+        const centerX = GRAPH_WIDTH / 2;
+        const screenY = GRAPH_HEIGHT - Math.min(newY / 7, 1) * GRAPH_HEIGHT;
+        setTracePoints(prev => [...prev, { x: centerX, y: screenY }]);
+      }
+      
+      // Update paper offset (constant speed)
+      setPaperOffset(prev => prev + PAPER_SCROLL_SPEED * deltaSeconds);
+      
+      // Scroll trace points left and remove old ones
+      setTracePoints(prev => prev
+        .map(point => ({ ...point, x: point.x - PAPER_SCROLL_SPEED * deltaSeconds }))
+        .filter(point => point.x >= 0)
+      );
+      
+      timeRef.current += deltaSeconds;
       lastUpdateRef.current = timestamp;
     }
 
     if (isRunning) {
       animationRef.current = requestAnimationFrame(animate);
     }
-  }, [isRunning, speed]);
+  }, [isRunning, speed, seismometerY, targetY, startY, transitionStart, transitionDuration, activeCoinId, p, q]);
 
   // Check if we need to generate a new coin
   useEffect(() => {
@@ -160,7 +198,11 @@ export default function HeartRateWidget({
   const startAnimation = () => {
     setIsRunning(true);
     timeRef.current = 0;
-    setHeartRateData([]);
+    setSeismometerY(0);
+    setTargetY(0);
+    setTracePoints([]);
+    setPaperOffset(0);
+    setActiveCoinId(null);
   };
 
   const stopAnimation = () => {
@@ -170,7 +212,11 @@ export default function HeartRateWidget({
   const resetAnimation = () => {
     setIsRunning(false);
     setCoins([]);
-    setHeartRateData([]);
+    setSeismometerY(0);
+    setTargetY(0);
+    setTracePoints([]);
+    setPaperOffset(0);
+    setActiveCoinId(null);
     timeRef.current = 0;
     setNextCoinId(0);
     
@@ -189,7 +235,7 @@ export default function HeartRateWidget({
 
   return (
     <div className="heartrate-widget bg-white border border-gray-200 rounded-lg p-6 my-6">
-      <h3 className="text-lg font-semibold mb-4">Heart Rate Widget</h3>
+      <h3 className="text-lg font-semibold mb-4">Heart Rate Seismometer</h3>
 
       {/* Parameter Controls */}
       <div className="grid grid-cols-3 gap-4 mb-6">
@@ -274,6 +320,17 @@ export default function HeartRateWidget({
             margin: '0 auto'
           }}
         >
+          {/* Trigger position indicator */}
+          <div
+            className="absolute bg-red-300 opacity-50"
+            style={{
+              left: TRIGGER_POSITION,
+              top: 0,
+              width: 2,
+              height: CANVAS_HEIGHT,
+            }}
+          />
+          
           {coins.map(coin => (
             <div
               key={coin.id}
@@ -362,135 +419,38 @@ export default function HeartRateWidget({
               </>
             )}
             
-            {/* Heart rate line - seismometer style with smooth real-time spline */}
-            {heartRateData.length > 0 && (() => {
-              const centerX = GRAPH_WIDTH / 2;
-              const timeSpan = 10; // seconds visible on graph
-              const pixelsPerSecond = GRAPH_WIDTH / timeSpan;
-              
-              // Filter points that should be visible based on current time
-              const visiblePoints = heartRateData.filter(point => 
-                point.time >= currentTime - timeSpan/2 && point.time <= currentTime + timeSpan/2
-              );
-              
-              if (visiblePoints.length === 0) return null;
-              
-              // Create interpolated points for smooth real-time rendering
-              const renderPoints: Array<{x: number, y: number, time: number}> = [];
-              
-              // Add points at regular time intervals for smooth interpolation
-              const startTime = currentTime - timeSpan/2;
-              const endTime = currentTime + timeSpan/2;
-              const timeStep = 0.1; // seconds between interpolated points
-              
-              for (let t = startTime; t <= endTime; t += timeStep) {
-                // Find surrounding data points for interpolation
-                const beforePoint = visiblePoints.filter(p => p.time <= t).slice(-1)[0];
-                const afterPoint = visiblePoints.find(p => p.time > t);
-                
-                let interpolatedSurprise: number;
-                
-                if (!beforePoint && !afterPoint) {
-                  continue; // No data available
-                } else if (!beforePoint) {
-                  interpolatedSurprise = afterPoint!.surprise;
-                } else if (!afterPoint) {
-                  interpolatedSurprise = beforePoint.surprise;
-                } else {
-                  // Linear interpolation between points
-                  const timeDiff = afterPoint.time - beforePoint.time;
-                  const ratio = (t - beforePoint.time) / timeDiff;
-                  interpolatedSurprise = beforePoint.surprise + ratio * (afterPoint.surprise - beforePoint.surprise);
-                }
-                
-                // Convert to screen coordinates
-                const x = centerX + (t - currentTime) * pixelsPerSecond;
-                const y = GRAPH_HEIGHT - Math.min(interpolatedSurprise / 7, 1) * GRAPH_HEIGHT;
-                
-                // Only add points that are visible on screen
-                if (x >= 0 && x <= GRAPH_WIDTH) {
-                  renderPoints.push({ x, y, time: t });
-                }
-              }
-              
-              if (renderPoints.length < 2) return null;
-              
-              // Create smooth spline path using cubic bezier curves
-              let pathData = `M ${renderPoints[0].x} ${renderPoints[0].y}`;
-              
-              for (let i = 1; i < renderPoints.length; i++) {
-                const current = renderPoints[i];
-                const previous = renderPoints[i - 1];
-                
-                if (i === 1) {
-                  // First segment - start with smooth curve
-                  const next = renderPoints[i + 1] || current;
-                  const cp1x = previous.x + (current.x - previous.x) * 0.3;
-                  const cp1y = previous.y;
-                  const cp2x = current.x - (next.x - previous.x) * 0.3;
-                  const cp2y = current.y;
-                  pathData += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${current.x} ${current.y}`;
-                } else if (i === renderPoints.length - 1) {
-                  // Last segment - end smoothly
-                  const prev2 = renderPoints[i - 2] || previous;
-                  const cp1x = previous.x + (current.x - prev2.x) * 0.3;
-                  const cp1y = previous.y;
-                  const cp2x = current.x - (current.x - previous.x) * 0.3;
-                  const cp2y = current.y;
-                  pathData += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${current.x} ${current.y}`;
-                } else {
-                  // Middle segments - smooth interpolation
-                  const next = renderPoints[i + 1];
-                  const prev2 = renderPoints[i - 2] || previous;
-                  const cp1x = previous.x + (current.x - prev2.x) * 0.3;
-                  const cp1y = previous.y + (current.y - prev2.y) * 0.3;
-                  const cp2x = current.x - (next.x - previous.x) * 0.3;
-                  const cp2y = current.y - (next.y - previous.y) * 0.3;
-                  pathData += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${current.x} ${current.y}`;
-                }
-              }
-
-              return (
-                <path
-                  d={pathData}
-                  fill="none"
-                  stroke="#4CAF50"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              );
-            })()}
+            {/* Center vertical line */}
+            <line 
+              x1={GRAPH_WIDTH / 2} 
+              y1={0} 
+              x2={GRAPH_WIDTH / 2} 
+              y2={GRAPH_HEIGHT}
+              stroke="#ccc" 
+              strokeWidth="1" 
+              strokeDasharray="2,2"
+            />
             
-            {/* Current surprise markers - seismometer style */}
-            {heartRateData.filter(point => {
-              const centerX = GRAPH_WIDTH / 2;
-              const timeSpan = 10;
-              const pixelsPerSecond = GRAPH_WIDTH / timeSpan;
-              const x = centerX + (point.time - currentTime) * pixelsPerSecond;
-              return x >= 0 && x <= GRAPH_WIDTH;
-            }).map((point, index, array) => {
-              const centerX = GRAPH_WIDTH / 2;
-              const timeSpan = 10;
-              const pixelsPerSecond = GRAPH_WIDTH / timeSpan;
-              const x = centerX + (point.time - currentTime) * pixelsPerSecond;
-              const y = GRAPH_HEIGHT - Math.min(point.surprise / 7, 1) * GRAPH_HEIGHT;
-              
-              // Highlight points that are close to current time
-              const timeDiff = Math.abs(point.time - currentTime);
-              const opacity = timeDiff < 1 ? 1 : Math.max(0.3, 1 - timeDiff / 5);
-              
-              return (
-                <circle
-                  key={`${point.time}-${index}`}
-                  cx={x}
-                  cy={y}
-                  r="3"
-                  fill="#4CAF50"
-                  opacity={opacity}
-                />
-              );
-            })}
+            {/* Seismometer trace */}
+            {tracePoints.length > 1 && (
+              <path
+                d={`M ${tracePoints[0].x} ${tracePoints[0].y} ${tracePoints.slice(1).map(p => `L ${p.x} ${p.y}`).join(' ')}`}
+                fill="none"
+                stroke="#4CAF50"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            )}
+            
+            {/* Current seismometer point */}
+            <circle
+              cx={GRAPH_WIDTH / 2}
+              cy={GRAPH_HEIGHT - Math.min(seismometerY / 7, 1) * GRAPH_HEIGHT}
+              r="4"
+              fill="#4CAF50"
+              stroke="#fff"
+              strokeWidth="2"
+            />
           </svg>
         </div>
         
@@ -499,7 +459,7 @@ export default function HeartRateWidget({
           <div className="flex justify-center gap-6">
             <div className="flex items-center gap-2">
               <div className="w-4 h-0.5 bg-green-500"></div>
-              <span>Surprise: <KatexMath math="\log_2(1/q)" /> for heads, <KatexMath math="\log_2(1/(1-q))" /> for tails</span>
+              <span>Surprise: <KatexMath math="\log_2\left(\frac{1}{q}\right)" /> for heads, <KatexMath math="\log_2\left(\frac{1}{1-q}\right)" /> for tails</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-0.5 bg-red-500 border-dashed border-t-2"></div>
