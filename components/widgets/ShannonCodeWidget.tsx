@@ -119,7 +119,7 @@ export default function ShannonCodeWidget() {
   // Build complete binary tree
   const buildTree = useCallback(() => {
     const maxDepth = 11;
-    const baseWidth = 1600;
+    const baseWidth = 2400; // Increased base width for more spread
     const levelHeight = 50;
     const verticalPadding = 60; // Top and bottom padding
     const horizontalPadding = 100; // Left and right padding
@@ -129,8 +129,8 @@ export default function ShannonCodeWidget() {
     for (let depth = 0; depth <= maxDepth; depth++) {
       for (let pos = 0; pos < Math.pow(2, depth); pos++) {
         const id = `${depth}-${pos}`;
-        // More compact spacing for deep tree
-        const spread = Math.min(baseWidth * Math.pow(0.6, depth), baseWidth);
+        // More compact spacing for deep tree, but with higher initial spread
+        const spread = Math.min(baseWidth * Math.pow(0.7, depth), baseWidth); // Changed from 0.6 to 0.7 for wider spread
         const x = baseWidth / 2 + (pos - Math.pow(2, depth) / 2 + 0.5) * spread;
         const y = verticalPadding / 2 + depth * levelHeight;
         
@@ -339,7 +339,7 @@ export default function ShannonCodeWidget() {
   // Calculate canvas dimensions based on visible nodes
   const canvasDimensions = useMemo(() => {
     if (allVisibleNodes.length === 0) {
-      return { width: 1600, height: 600 };
+      return { width: 2400, height: 600 };
     }
     
     let minX = Infinity, maxX = -Infinity;
@@ -353,8 +353,8 @@ export default function ShannonCodeWidget() {
     });
     
     // Add some padding
-    const padding = 50;
-    const width = Math.max(1600, maxX - minX + padding * 2);
+    const padding = 100; // Increased padding for better visibility
+    const width = Math.max(2400, maxX - minX + padding * 2); // Increased minimum width
     const height = Math.max(600, maxY - minY + padding * 2);
     
     return { width: Math.ceil(width), height: Math.ceil(height) };
@@ -412,18 +412,32 @@ export default function ShannonCodeWidget() {
                   </g>
                 ))}
 
-                {/* Draw nodes */}
-                {allVisibleNodes.map(node => (
+                {/* Draw non-code nodes first (grey nodes) */}
+                {allVisibleNodes.filter(node => !node.isCodeNode).map(node => (
                   <g key={`node-${node.id}`}>
                     <circle
                       cx={node.x}
                       cy={node.y}
                       r="15"
-                      fill={node.isCodeNode ? "#3b82f6" : "#f3f4f6"}
-                      stroke={node.isCodeNode ? "#1d4ed8" : "#9ca3af"}
-                      strokeWidth={node.isCodeNode ? "3" : "1"}
+                      fill="#f3f4f6"
+                      stroke="#9ca3af"
+                      strokeWidth="1"
                     />
-                    {node.isCodeNode && node.letter && (
+                  </g>
+                ))}
+                
+                {/* Draw code nodes on top (blue nodes) */}
+                {allVisibleNodes.filter(node => node.isCodeNode).map(node => (
+                  <g key={`node-${node.id}`}>
+                    <circle
+                      cx={node.x}
+                      cy={node.y}
+                      r="15"
+                      fill="#3b82f6"
+                      stroke="#1d4ed8"
+                      strokeWidth="3"
+                    />
+                    {node.letter && (
                       <>
                         <text
                           x={node.x}
@@ -547,18 +561,32 @@ export default function ShannonCodeWidget() {
                 </g>
               ))}
 
-              {/* Draw nodes */}
-              {allVisibleNodes.map(node => (
+              {/* Draw non-code nodes first (grey nodes) */}
+              {allVisibleNodes.filter(node => !node.isCodeNode).map(node => (
                 <g key={`node-${node.id}`}>
                   <circle
                     cx={node.x}
                     cy={node.y}
                     r="15"
-                    fill={node.isCodeNode ? "#3b82f6" : "#f3f4f6"}
-                    stroke={node.isCodeNode ? "#1d4ed8" : "#9ca3af"}
-                    strokeWidth={node.isCodeNode ? "3" : "1"}
+                    fill="#f3f4f6"
+                    stroke="#9ca3af"
+                    strokeWidth="1"
                   />
-                  {node.isCodeNode && node.letter && (
+                </g>
+              ))}
+              
+              {/* Draw code nodes on top (blue nodes) */}
+              {allVisibleNodes.filter(node => node.isCodeNode).map(node => (
+                <g key={`node-${node.id}`}>
+                  <circle
+                    cx={node.x}
+                    cy={node.y}
+                    r="15"
+                    fill="#3b82f6"
+                    stroke="#1d4ed8"
+                    strokeWidth="3"
+                  />
+                  {node.letter && (
                     <>
                       <text
                         x={node.x}
@@ -593,8 +621,9 @@ export default function ShannonCodeWidget() {
       {codeAssignments.length > 0 && (
         <div className="mt-6">
           <h4 className="font-medium mb-4">Shannon Code Assignments</h4>
-          <div className="bg-gray-50 rounded-lg p-4 max-h-80 overflow-y-auto" ref={tableContainerRef}>
-            <div className="grid grid-cols-4 gap-4 text-sm font-semibold text-gray-700 mb-3 sticky top-0 bg-gray-50 p-2 rounded">
+          <div className="bg-gray-50 rounded-lg p-4">
+            {/* Fixed header outside scrollable area */}
+            <div className="grid grid-cols-4 gap-4 text-sm font-semibold text-gray-700 mb-3 p-2 bg-gray-100 rounded">
               <div>Letter</div>
               <div>Probability</div>
               <div className="bg-white px-2 py-1 rounded shadow-sm">
@@ -602,14 +631,17 @@ export default function ShannonCodeWidget() {
               </div>
               <div>Code</div>
             </div>
-            {codeAssignments.map((assignment, i) => (
-              <div key={assignment.letter} className={`grid grid-cols-4 gap-4 text-sm py-2 ${i % 2 === 0 ? 'bg-white' : 'bg-gray-100'} rounded mb-1`}>
-                <div className="font-mono font-bold text-blue-600">{assignment.letter}</div>
-                <div>{(assignment.probability * 100).toFixed(2)}%</div>
-                <div>1/2<sup>{assignment.codeLength}</sup> = {(assignment.roundedProb * 100).toFixed(1)}%</div>
-                <div className="font-mono text-green-600 font-bold">{assignment.code}</div>
-              </div>
-            ))}
+            {/* Scrollable content area */}
+            <div className="max-h-64 overflow-y-auto" ref={tableContainerRef}>
+              {codeAssignments.map((assignment, i) => (
+                <div key={assignment.letter} className={`grid grid-cols-4 gap-4 text-sm py-2 ${i % 2 === 0 ? 'bg-white' : 'bg-gray-100'} rounded mb-1`}>
+                  <div className="font-mono font-bold text-blue-600">{assignment.letter}</div>
+                  <div>{(assignment.probability * 100).toFixed(2)}%</div>
+                  <div>1/2<sup>{assignment.codeLength}</sup> = {(assignment.roundedProb * 100).toFixed(1)}%</div>
+                  <div className="font-mono text-green-600 font-bold">{assignment.code}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
