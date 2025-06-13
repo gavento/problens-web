@@ -61,6 +61,10 @@ export default function HeartRateWidget({
   // Calculate cross-entropy (average surprise)
   const crossEntropy = p * Math.log2(1/q) + (1-p) * Math.log2(1/(1-q));
   
+  // Special cases for extreme q values
+  const isQExtreme = q === 0 || q === 1;
+  const showInfiniteMessage = isQExtreme && !(p === 0 && q === 0);
+  
   // Initialize with some coins
   useEffect(() => {
     const initialCoins: Coin[] = [];
@@ -88,7 +92,12 @@ export default function HeartRateWidget({
     const surpriseTime = timeRef.current + timeToCenter;
     
     // Add surprise value to heart rate data with future timestamp
-    const surprise = isHeads ? Math.log2(1/q) : Math.log2(1/(1-q));
+    let surprise: number;
+    if (isHeads) {
+      surprise = q === 0 ? 7 : Math.log2(1/q); // Cap at 7 for visualization
+    } else {
+      surprise = q === 1 ? 7 : Math.log2(1/(1-q)); // Cap at 7 for visualization
+    }
     setHeartRateData(prev => {
       const newData = [...prev, { time: surpriseTime, surprise }];
       return newData.slice(-MAX_POINTS); // Keep only last MAX_POINTS
@@ -309,8 +318,8 @@ export default function HeartRateWidget({
             <rect width="100%" height="100%" fill="url(#grid)" />
             
             {/* Y-axis labels and lines */}
-            {[0, 1, 2, 3, 4, 5].map(val => {
-              const y = GRAPH_HEIGHT - (val / 5) * GRAPH_HEIGHT;
+            {[0, 1, 2, 3, 4, 5, 6, 7].map(val => {
+              const y = GRAPH_HEIGHT - (val / 7) * GRAPH_HEIGHT;
               return (
                 <g key={val}>
                   <line x1={0} y1={y} x2={GRAPH_WIDTH} y2={y} stroke="#e0e0e0" strokeWidth="1"/>
@@ -319,24 +328,39 @@ export default function HeartRateWidget({
               );
             })}
             
-            {/* Cross-entropy constant line */}
-            <line 
-              x1={0} 
-              y1={GRAPH_HEIGHT - (crossEntropy / 5) * GRAPH_HEIGHT} 
-              x2={GRAPH_WIDTH} 
-              y2={GRAPH_HEIGHT - (crossEntropy / 5) * GRAPH_HEIGHT}
-              stroke="#ff6b6b" 
-              strokeWidth="2" 
-              strokeDasharray="5,5"
-            />
-            <text 
-              x={GRAPH_WIDTH - 120} 
-              y={GRAPH_HEIGHT - (crossEntropy / 5) * GRAPH_HEIGHT - 5} 
-              fontSize="12" 
-              fill="#ff6b6b"
-            >
-              Cross-entropy: {crossEntropy.toFixed(2)}
-            </text>
+            {/* Cross-entropy constant line or infinite message */}
+            {showInfiniteMessage ? (
+              <text 
+                x={GRAPH_WIDTH / 2} 
+                y={30} 
+                fontSize="14" 
+                fill="#ff6b6b"
+                textAnchor="middle"
+                fontWeight="bold"
+              >
+                {q === 0 ? "Infinite surprise on heads ⇒ infinite cross-entropy" : "Infinite surprise on tails ⇒ infinite cross-entropy"}
+              </text>
+            ) : (
+              <>
+                <line 
+                  x1={0} 
+                  y1={GRAPH_HEIGHT - (crossEntropy / 7) * GRAPH_HEIGHT} 
+                  x2={GRAPH_WIDTH} 
+                  y2={GRAPH_HEIGHT - (crossEntropy / 7) * GRAPH_HEIGHT}
+                  stroke="#ff6b6b" 
+                  strokeWidth="2" 
+                  strokeDasharray="5,5"
+                />
+                <text 
+                  x={GRAPH_WIDTH - 120} 
+                  y={GRAPH_HEIGHT - (crossEntropy / 7) * GRAPH_HEIGHT - 5} 
+                  fontSize="12" 
+                  fill="#ff6b6b"
+                >
+                  Cross-entropy: {crossEntropy.toFixed(2)}
+                </text>
+              </>
+            )}
             
             {/* Heart rate line - seismometer style with smooth real-time spline */}
             {heartRateData.length > 0 && (() => {
@@ -381,7 +405,7 @@ export default function HeartRateWidget({
                 
                 // Convert to screen coordinates
                 const x = centerX + (t - currentTime) * pixelsPerSecond;
-                const y = GRAPH_HEIGHT - Math.min(interpolatedSurprise / 5, 1) * GRAPH_HEIGHT;
+                const y = GRAPH_HEIGHT - Math.min(interpolatedSurprise / 7, 1) * GRAPH_HEIGHT;
                 
                 // Only add points that are visible on screen
                 if (x >= 0 && x <= GRAPH_WIDTH) {
@@ -450,7 +474,7 @@ export default function HeartRateWidget({
               const timeSpan = 10;
               const pixelsPerSecond = GRAPH_WIDTH / timeSpan;
               const x = centerX + (point.time - currentTime) * pixelsPerSecond;
-              const y = GRAPH_HEIGHT - Math.min(point.surprise / 5, 1) * GRAPH_HEIGHT;
+              const y = GRAPH_HEIGHT - Math.min(point.surprise / 7, 1) * GRAPH_HEIGHT;
               
               // Highlight points that are close to current time
               const timeDiff = Math.abs(point.time - currentTime);
