@@ -105,12 +105,6 @@ export default function HeartRateWidget({
           x: coin.x - speed * deltaTime
         })).filter(coin => coin.x > -COIN_SIZE);
         
-        // Generate new coin if needed
-        const rightmostCoin = Math.max(...updated.map(c => c.x), -Infinity);
-        if (rightmostCoin < CANVAS_WIDTH - COIN_SPACING) {
-          // Will be handled by generateNewCoin effect
-        }
-        
         return updated;
       });
       
@@ -118,7 +112,9 @@ export default function HeartRateWidget({
       lastUpdateRef.current = timestamp;
     }
 
-    animationRef.current = requestAnimationFrame(animate);
+    if (isRunning) {
+      animationRef.current = requestAnimationFrame(animate);
+    }
   }, [isRunning]);
 
   // Check if we need to generate a new coin
@@ -134,7 +130,10 @@ export default function HeartRateWidget({
   useEffect(() => {
     if (isRunning) {
       lastUpdateRef.current = performance.now();
-      animationRef.current = requestAnimationFrame(animate);
+      const startAnimation = () => {
+        animationRef.current = requestAnimationFrame(animate);
+      };
+      startAnimation();
     } else {
       cancelAnimationFrame(animationRef.current);
     }
@@ -261,13 +260,13 @@ export default function HeartRateWidget({
             >
               {coin.isHeads ? (
                 <img 
-                  src="/images/cent_front_small.png" 
+                  src="/images/coin_heads_compressed.png" 
                   alt="Heads" 
                   className="w-full h-full"
                 />
               ) : (
                 <img 
-                  src="/images/cent_back_small.png" 
+                  src="/images/coin_tails_compressed.png" 
                   alt="Tails" 
                   className="w-full h-full"
                 />
@@ -322,19 +321,44 @@ export default function HeartRateWidget({
               Cross-entropy: {crossEntropy.toFixed(2)}
             </text>
             
-            {/* Heart rate line */}
-            {heartRateData.length > 1 && (
-              <polyline
-                points={heartRateData.map((point, index) => {
-                  const x = (index / (MAX_POINTS - 1)) * GRAPH_WIDTH;
-                  const y = GRAPH_HEIGHT - Math.min(point.surprise / 5, 1) * GRAPH_HEIGHT;
-                  return `${x},${y}`;
-                }).join(' ')}
-                fill="none"
-                stroke="#4CAF50"
-                strokeWidth="2"
-              />
-            )}
+            {/* Heart rate line - smooth curve */}
+            {heartRateData.length > 1 && (() => {
+              const points = heartRateData.map((point, index) => {
+                const x = (index / (MAX_POINTS - 1)) * GRAPH_WIDTH;
+                const y = GRAPH_HEIGHT - Math.min(point.surprise / 5, 1) * GRAPH_HEIGHT;
+                return { x, y };
+              });
+
+              // Create smooth curve using quadratic bezier curves
+              let pathData = `M ${points[0].x} ${points[0].y}`;
+              
+              for (let i = 1; i < points.length; i++) {
+                const current = points[i];
+                const previous = points[i - 1];
+                
+                if (i === points.length - 1) {
+                  // Last point - straight line
+                  pathData += ` L ${current.x} ${current.y}`;
+                } else {
+                  // Smooth curve to next point
+                  const next = points[i + 1];
+                  const controlX = current.x;
+                  const controlY = (previous.y + current.y) / 2;
+                  pathData += ` Q ${controlX} ${controlY} ${(current.x + next.x) / 2} ${(current.y + next.y) / 2}`;
+                }
+              }
+
+              return (
+                <path
+                  d={pathData}
+                  fill="none"
+                  stroke="#4CAF50"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              );
+            })()}
             
             {/* Current surprise markers */}
             {heartRateData.slice(-10).map((point, index) => {
