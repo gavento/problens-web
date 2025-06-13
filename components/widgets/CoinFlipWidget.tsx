@@ -124,6 +124,15 @@ export default function HeartRateWidget({
               ? (q === 0 ? 7 : Math.log2(1/q))
               : (q === 1 ? 7 : Math.log2(1/(1-q)));
             
+            // Add coin marker immediately at the center
+            const centerX = GRAPH_WIDTH / 2;
+            const screenY = GRAPH_HEIGHT - Math.min(surprise / 7, 1) * GRAPH_HEIGHT;
+            setCoinMarkers(prev => [...prev, { 
+              x: centerX, 
+              y: screenY, 
+              isHeads: coin.isHeads 
+            }]);
+            
             // Calculate transition duration: time for next coin to reach trigger
             const nextCoinDistance = COIN_SPACING; // Distance between coins
             const duration = nextCoinDistance / speed; // seconds
@@ -152,18 +161,6 @@ export default function HeartRateWidget({
         const centerX = GRAPH_WIDTH / 2;
         const screenY = GRAPH_HEIGHT - Math.min(newY / 7, 1) * GRAPH_HEIGHT;
         setTracePoints(prev => [...prev, { x: centerX, y: screenY }]);
-        
-        // Add coin marker when transition completes
-        if (progress >= 0.98) {
-          const activeCoin = coins.find(coin => coin.id === activeCoinId);
-          if (activeCoin && !coinMarkers.some(m => m.x === centerX && m.y === screenY)) {
-            setCoinMarkers(prev => [...prev, { 
-              x: centerX, 
-              y: screenY, 
-              isHeads: activeCoin.isHeads 
-            }]);
-          }
-        }
       }
       
       // Update paper offset (constant speed)
@@ -365,13 +362,13 @@ export default function HeartRateWidget({
             >
               {coin.isHeads ? (
                 <img 
-                  src="/cent_front.png" 
+                  src="/problens-web/cent_front_transparent.png" 
                   alt="Heads" 
                   className="w-full h-full"
                 />
               ) : (
                 <img 
-                  src="/cent_back.png" 
+                  src="/problens-web/cent_back_transparent.png" 
                   alt="Tails" 
                   className="w-full h-full"
                 />
