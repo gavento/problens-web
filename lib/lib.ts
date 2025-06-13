@@ -33,6 +33,7 @@ import XKCDCountdownWidget from "@/components/widgets/XKCDCountdownWidget";
 import CompressionWidget from "@/components/widgets/CompressionWidget";
 import ShannonCodeWidget from "@/components/widgets/ShannonCodeWidget";
 import KraftInequalityWidget from "@/components/widgets/KraftInequalityWidget";
+import CoinFlipWidget from "@/components/widgets/CoinFlipWidget";
 import { compile, evaluate } from "@mdx-js/mdx";
 import chalk from "chalk";
 import * as runtime from "react/jsx-runtime";
@@ -172,8 +173,9 @@ export async function getMdxContent(path: string) {
       BayesSequenceLogWidget: BayesSequenceLogWidget,
       XKCDCountdownWidget: XKCDCountdownWidget,
       CompressionWidget: CompressionWidget,
-      ShannonCodeWidget: ShannonCodeWidget,
+      // ShannonCodeWidget: ShannonCodeWidget,
       KraftInequalityWidget: KraftInequalityWidget,
+      CoinFlipWidget: CoinFlipWidget,
       Math: NumberedMath,
       EqRef: EquationRef,
       Block: Block,

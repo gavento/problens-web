@@ -35,13 +35,14 @@ If you plug the same distribution into KL twice, you get:
 because $\log 1 = 0$.
 Makes sense—you can't tell the truth apart from the truth. 🤷
 
-Even better, KL divergence is always nonnegative. I think we built up a pretty good intuition for this in the last chapter. Just imagine sampling from $p$ but Bayes' rule somehow convinces you more and more that you are sampling from some other distribution $q$. That would be really messed up! Check out the formal proof if you're curious.
+Even better, KL divergence is always nonnegative. I think we built up a pretty good intuition for this in the last chapter. Just imagine sampling from $p$ but Bayes' rule somehow convinces you more and more that you are sampling from ... some other distribution $q$? That would be really messed up! 
 
+This is not a proof though, just an argument that the world with possibly negative KL is not worth living in. Check out the formal proof if you're curious.
 
 <Expand headline="Proof of nonnegativity">
 We'll use natural logarithm to keep things short. We want to prove that <Math math = "D(p,q) =  \sum_{i = 1}^n p_i \cdot \ln \frac{p_i}{q_i}  \ge 0" /> for any $p,q$. 
 
-Let's estimate what's inside the sum: $\ln \frac{p_i}{q_i}$. Since we know the inequality is tight when $p_i = q_i$, we need an estimate that's tight around 1. The best linear approximation near 1 is $\ln (1+x) \le x$. Using this trick:
+Let's estimate what's inside the sum: $\ln \frac{p_i}{q_i}$. Since we know the inequality is tight when $p_i = q_i$, we need an estimate of logarithm that's tight around 1. The best linear approximation near 1 is $\ln (1+x) \le x$. We use it like this:
 
 <Math displayMode={true} math="\begin{aligned}
 -D(p,q)
@@ -353,6 +354,8 @@ The tl;dr is that there is another way to think about entropy. Remember this wid
 We talked about "average surprisal," but we could also ask: how many bits do you need to store coin flip results? On the left, it's 1 bit per flip. On the right, you'd be smart to just store where the rare heads show up—way less than 1 bit per flip on average. 
 
 Cross-entropy makes sense too: it's the bits you need when data comes from $p$ but you built your code for $q$. And relative entropy is how much worse your mismatched code is compared to the optimal one. 
+
+<CoinFlipWidget />
 
 We can now revisit the riddle about how much Wikipedia (and other texts) can be compressed. 
 
