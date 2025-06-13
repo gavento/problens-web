@@ -43,6 +43,7 @@ export default function ShannonCodeWidget() {
   const [isZoomed, setIsZoomed] = useState(false);
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const treeContainerRef = useRef<HTMLDivElement>(null);
+  const zoomedTreeContainerRef = useRef<HTMLDivElement>(null);
 
   // Normalize frequencies to sum to 100
   const normalizedFrequencies = useMemo(() => {
@@ -244,10 +245,25 @@ export default function ShannonCodeWidget() {
             // Hide subtree
             hideSubtree(targetNode);
             
-            // Center view on the current node
+            // Center view on the current node in both regular and zoomed views
             setTimeout(() => {
+              // Center in regular view
               if (treeContainerRef.current && targetNode.x && targetNode.y) {
                 const container = treeContainerRef.current;
+                const containerRect = container.getBoundingClientRect();
+                const scrollLeft = targetNode.x - containerRect.width / 2;
+                const scrollTop = targetNode.y - containerRect.height / 2;
+                
+                container.scrollTo({
+                  left: Math.max(0, scrollLeft),
+                  top: Math.max(0, scrollTop),
+                  behavior: 'smooth'
+                });
+              }
+              
+              // Also center in zoomed view if it's open
+              if (zoomedTreeContainerRef.current && targetNode.x && targetNode.y) {
+                const container = zoomedTreeContainerRef.current;
                 const containerRect = container.getBoundingClientRect();
                 const scrollLeft = targetNode.x - containerRect.width / 2;
                 const scrollTop = targetNode.y - containerRect.height / 2;
@@ -384,7 +400,7 @@ export default function ShannonCodeWidget() {
               </button>
             </div>
             
-            <div className="bg-gray-50 rounded-lg p-4 overflow-auto max-h-[70vh]">
+            <div className="bg-gray-50 rounded-lg p-4 overflow-auto max-h-[70vh]" ref={zoomedTreeContainerRef}>
               <svg width={canvasDimensions.width} height={canvasDimensions.height} className="mx-auto">
                 {/* Draw edges */}
                 {allVisibleNodes.map(node => (
@@ -519,21 +535,18 @@ export default function ShannonCodeWidget() {
       {/* Tree Visualization */}
       {tree && (
         <div className="mt-6 mb-6">
-          <h4 className="font-medium mb-4">Shannon Code Tree Construction</h4>
-          <div className="flex justify-between items-center mb-4">
-            <h4 className="font-medium">Shannon Code Tree Construction</h4>
+          <div className="relative">
             <button
               onClick={() => setIsZoomed(!isZoomed)}
-              className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+              className="absolute top-2 right-2 z-10 text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
             >
               {isZoomed ? '🗗 Exit Fullscreen' : '🔍 Zoom'}
             </button>
-          </div>
-          <div 
-            className={`bg-gray-50 rounded-lg p-4 overflow-auto max-h-96 ${isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'}`}
-            ref={treeContainerRef}
-            onClick={() => setIsZoomed(!isZoomed)}
-          >
+            <div 
+              className={`bg-gray-50 rounded-lg p-4 overflow-auto max-h-96 ${isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'}`}
+              ref={treeContainerRef}
+              onClick={() => setIsZoomed(!isZoomed)}
+            >
             <svg width={canvasDimensions.width} height={canvasDimensions.height} className="mx-auto">
               {/* Draw edges */}
               {allVisibleNodes.map(node => (

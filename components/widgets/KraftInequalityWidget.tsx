@@ -100,8 +100,8 @@ export default function KraftInequalityWidget() {
     
     findBounds(tree);
     
-    // Add padding around the tree
-    const padding = 30;
+    // Add padding around the tree - just about one node width
+    const padding = 12; // Just the radius of a node
     const width = Math.ceil(maxX - minX + padding * 2 + 24); // 24 for node diameter
     const height = Math.ceil(maxY - minY + padding * 2 + 24);
     
