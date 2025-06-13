@@ -185,7 +185,7 @@ const EntropyWidget: React.FC<Props> = ({
           {/* Bars */}
           {distribution.map((prob, i) => {
             const categoryX = margin.left + i * categoryWidth;
-            const barHeight = Math.max(8, prob * yScale); // Minimum 8px height for draggability
+            const barHeight = Math.max(20, prob * yScale); // Minimum 20px height for better draggability
             const barX = categoryX + barGap;
             const barY = margin.top + innerHeight - barHeight;
             
@@ -210,6 +210,19 @@ const EntropyWidget: React.FC<Props> = ({
                   className="cursor-ns-resize hover:opacity-80 transition-opacity"
                   onMouseDown={(e) => handleBarDrag(i, e)}
                 />
+                
+                {/* Invisible overlay for better draggability on small bars */}
+                {barHeight <= 30 && (
+                  <rect
+                    x={barX}
+                    y={margin.top + innerHeight - 30}
+                    width={barWidth}
+                    height={30}
+                    fill="transparent"
+                    className="cursor-ns-resize"
+                    onMouseDown={(e) => handleBarDrag(i, e)}
+                  />
+                )}
                 
                 {/* Probability label on top of bar */}
                 <text

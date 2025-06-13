@@ -129,7 +129,7 @@ What does this mean for the principle of maximum entropy? If this principle were
 
 If we write out the formula for KL between $p$ and a uniform distribution<Footnote>Let's assume we integrate over the interval $[0,1]$ so that it's well-defined.</Footnote>, we get <Math math = "D(p, q_{uniform}) = \int p(x) \log \frac{p(x)}{1} dx = \int p(x) \log p(x) dx" />. That is, in the continuous case, the maximum entropy principle tells us to maximize the expression $\int p(x) \log \frac{1}{p(x)} dx$, which is called **differential entropy**.
 
-So, after all this discussion, generalizing our technique to continuous distributions still boils down to replacing $\sum$ with $\int$. This makes it a bit hard to appreciate that actually, a lot of stuff's happening under the hood. In particular, the reason everything works out is that ultimately, our argument is about _relative_ entropy and the differential entropy only makes sense in the context of _relative entropy_ (KL divergence), not entropy itself which is infinite. 
+So, after all this discussion, generalizing our technique to continuous distributions still boils down to replacing $\sum$ with $\int$. This makes it a bit hard to appreciate that actually, a lot of stuff's happening under the hood. In particular, the reason why everything works out is that ultimately, our argument is about _minimizing relative entropy_ towards uniform distribution, and not _maximizing entropy_!  
 </Expand>
 
 ---
