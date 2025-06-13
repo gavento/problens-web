@@ -278,8 +278,7 @@ Try the log-score on our example! Also, you can compare it with other popular sc
 
 ## Coding theory
 
-KL divergence and entropy are deeply connected to coding theory. There are [tons of great explainers out there](resources), so I only left a quick taste of why this connection matters to the following Expand boxes.  
-
+KL divergence and entropy are deeply connected to coding theory. It would be distasteful not to say anything about the connection, especially as it's important to one of our riddles. But it's also not so relevant to the main story, so feel free to skip this whole section. 
 
 <Expand headline = "Code examples">
 Say you've got a long DNA string built from letters \{A,C,G,T\}. You want to store it using as little disk space as possible.  
@@ -311,7 +310,7 @@ Let's see
 1. Why we can construct codes with average $H(p)$ bits per letter
 2. Why we can't do better (if the letters are independent)
 
-### Construction of a good code
+### Construction of a good code <a id = "construction"></a>
 First, given a distribution of letter frequencies $p_1, \dots, p_k$, I will show you a construction that's called the [Shannon's code](https://en.wikipedia.org/wiki/Shannon_coding). I will assume that $p_1 \ge p_2 \ge \dots \ge p_k$. 
 
 The first step is that we "round" each probability down to be a power of two. For example, the frequency of the letter 'e' is 12.7% which is between $\frac{1}{2^3} = 12.5\%$ and $\frac{1}{2^2} = 25\%$. The number 3 is important - we will assign a binary code of length 3 to e. Which one? We will assign the codes "greedily" as shown in the following widget. The widget starts with the real English letter frequencies, but you can play with it!
@@ -349,29 +348,50 @@ That is, the average code-name length is at least $H(p)$. In yet another words, 
 
 The tl;dr is that there is another way to think about entropy. Remember how we defined it as the "average surprisal" of a distribution, say a coin flip? We could also ask: how many bits do we need to store coin flip results? 
 
-If we are flipping a fair coin and want to keep results, there is nothing smarter to do then just remember a file like 'HTTHTHTHTTHH' (just exchange H, T to 0, 1) which is 1 bit per flip. 
+If we are flipping a fair coin and want to keep the results, there is nothing smarter to do then remember a file like '0101100' where 0/1 corresponds to H/T. This is 1 bit per flip. 
 
-But if we are flipping a coind where heads have only $0.01$ probability, there are better ways to store the results! For example, using code names $TTTTT \rightarrow 0, H \rightarrow 10, T \rightarrow 11$, we spend around $0.2$ bits per flip! Entropy is the limit on how much space we need to store the results, "how much there is to store". 
+But if we are flipping a coin where heads have only $0.01$ probability, there are better ways to store the results! For example, we could always store how many Ts there have been between each two Hs. Coding theory formalizes that entropy stands for how much space we need to store the results if we used the best possible encoding. The entropy of the coin flips is "how much info there is to store". 
 
-With coding theory intuitions, cross-entropy becomes also very natural: it's the bits you need when data comes from $p$ but you built your code for a different distribution $q$. And relative entropy is how much worse your mismatched code is compared to the optimal one. 
-
+With coding theory intuitions, cross-entropy also becomes also very natural: it's how many bits you need when data comes from $p$ but you are using the code that's optimized for a different distribution $q$. And relative entropy is how much worse your mismatched code is compared to the optimal one. 
 
 We can now revisit the riddle about how much Wikipedia (and other texts) can be compressed. 
 
 <Expand headline = "🌐 How large is Wikipedia?"><a id = "hutter"></a>
 Back to [our Wikipedia riddle](00-introduction#wikipedia) and Hutter's compression challenge. 
+Remember, the riddle is about how much can we compress a file with English Wikipedia. 
 
-Our coding discussion gives us a benchmark: treat each letter as independent from English letter frequency distribution $p$, optimize a code for it, and you need about $H(p)$ bits per letter. You can find English letter frequencies [online](https://en.wikipedia.org/wiki/Letter_frequency); the entropy is $H(p) \approx 4$ bits. There are codes that get close (see below). Since Wikipedia stores each letter in 8 bits<Footnote>Wikipedia uses [UTF-8](https://en.wikipedia.org/wiki/UTF-8), the standard text encoding. English letters take 8 bits, fancier letters take 16, and emojis like 😀 or hieroglyphs like 𓀀 take 32. Classic coding theory—rare stuff gets longer codes. </Footnote>, we can shrink it to about 500MB. Pretty good, and we haven't even used tricks like "'th' is usually followed by 'e'". 
+There are more approaches to compress text files. Let's go through them and you can see in the next widget how they fare for various types of data. 
 
-![huffman code](02-crossentropy/huffenc.svg "image taken from https://liucs.net/cs101s19/data/69/d3381f-1f93-433a-a85c-851c43ba6832/huffenc.svg")
+- _Baseline_: The stadard way to store text files is UTF-8. Lying a bit, this format store each letter using 8 bits. <Footnote>Why is it lying? [UTF-8](https://en.wikipedia.org/wiki/UTF-8) itself is a beautiful example of good engineering inspired by coding theory. There are around 100 characters (English letters, digits) that are stored using 8 bits, fancier letters from reasonable alphabets are stored using 16 bits, and emojis like 😀 or hieroglyphs like 𓀀 take 32 bits. Classic coding theory—rare stuff gets longer codes. But English Wiki is mostly standard stuff, so 8 bits per letter it is. </Footnote>
+
+- _Optimal letter-independent code_: We discussed above, how coding theory tells us what's the best way of compressing files if we don't want to use tricks like "'th' is usually followed by 'e'". We can treat the letters as independent and encode the using $H(p)$ bits per letter on average, where $p$ are the English letter frequencies. [In this widget above](/02-crossentropy#construction), we used those frequencies as an example; the entropy is a bit north of 4 bits. So, we can shrink the file almost by __2x__ just by using that different letters have different frequencies. 
+
+- _Zipping_: Standard compression algorithms like those used in zip use codes, but also look for repeating patterns or take advantage of frequencies of letter pairs. They can compress English text up to a factor around __3x__.  
+
+- _The best algorithms_ in Hutter's competition have compress by a factor of about __8x__. That's about 1 bit per letter.  
+
+- _LLMs_: We know about algorithms that are arguably even better compressors - LLMs. Large Language Models are literally trained on being able to predict text - given a snippet of the text like "My name is A", LLM tries to predict the distribution $p$ of the next letter <Footnote>Well, token.</Footnote>. 
+
+If we can predict the next letter of a text, this means you can also compress the text. The compression algorithm is this: Given text $s$ = "My name is A", we run LLM to guess the distribution $p_s$ of the next letter. Then, we use the best code for $p_s$ to store the actual next letter, say 'l'. 
+
+If the actual next letter is 'l', then the surprisal of LLM upon seeing this letter is $\log 1/p('l')$. We can now save the letter 'l' to a file by using the best possible code encoding symbols with frequencies $p$; that is, we can store 'l' using $\log 1/p('l')$ bits of memory. The decoding algorithm is very similar, it runs the same LLM and always compute the next code $p_s$ used to decode the next letter. <Footnote>In practice, this gets more complicated whenever $\log 1/p('l')$ is not a whole number. We had the same issue in our coding theory discussion, let's not go into it. </Footnote>
+
+The fun part (that we will understand better later on) is that LLMs are being trained to optimize the so-called cross-entropy loss. Using our coding-theory intuitions, LLMs are literally being optimized to be as good as possible in compressing English text! 
+
+
+Before covering the rest, let me tell you about one of the coolest experiments I know of. Claude Shannon, who [invented information theory](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication) in the late 40s, did [the following](https://www.princeton.edu/~wbialek/rome/refs/shannon_51.pdf) a few years later. He'd show people partial sentences and ask them to guess the next letter. This way, he figured English is at most about 0.5 - 1 bit per letter of entropy. So humans are able to compress text by a factor of 8, storing 1GB in just over 100MB. Interestingly, that's also the current [Marcus Hutter challenge](http://prize.hutter1.net/) record. 
+
+
 
 Try compressing different types of text yourself with the widget below. Notice how the compression ratio depends heavily on the structure and predictability of the text:
+
+
+
 
 <CompressionWidget />
 
 But what's the limit if we don't treat letters independently? 
 
-Claude Shannon, who [invented information theory](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication) in the late 40s, did this cool [experiment](https://www.princeton.edu/~wbialek/rome/refs/shannon_51.pdf) a few years later. He'd show people partial sentences and ask them to guess the next letter. This way, he figured English is at most about 0.5 - 1 bit per letter of entropy. So humans are able to compress text by a factor of 8, storing 1GB in just over 100MB. Interestingly, that's also the current [Marcus Hutter challenge](http://prize.hutter1.net/) record. 
 
 But hold up! Large language models literally train to predict the next letter (well, token) in text. How good are they? GPT-2 matched humans at roughly 1 bit per letter, but today's models are better, probably at around 0.5 bits per letter. <Footnote>So why isn't the Hutter record 50MB by using state-of-the-art LLMs? Because you'd have to include the model itself in your compressed file. Or, you would have to train an LLM from scratch inside your compression algorithm, but that requires way more than the 1GB of data you're trying to compress, and way more time than Hutter allows the algorithms to run. In other words, while it was a spectacular vision to predict that text compression is going to be important for AI, the parameters of the challenge make it hard match for current AI paradigm. </Footnote> We actually use this compression ability (measured as [cross-entropy loss](05-machine_learning/neural-nets) or [perplexity](https://en.wikipedia.org/wiki/Perplexity)) as one of the main ways to compare models. 
 
