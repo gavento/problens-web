@@ -129,6 +129,8 @@ But what if your model is way off, like $q =$ \{H: 0.999, T: 0.001\}? You're not
 
 Analogously to KL divergence, cross-entropy is additive so if you keep flipping coins like in the picture below, the total cross-entropy for $n$ flips is going to be $n$ times larger than crossentropy for individual flip. 
 
+<CoinFlipWidget />
+
 ![cross-entropy](02-crossentropy/crossentropy.png)
 
 Bottom line: better models are less surprised by the data, so they have smaller cross-entropy. 
@@ -355,7 +357,6 @@ We talked about "average surprisal," but we could also ask: how many bits do you
 
 Cross-entropy makes sense too: it's the bits you need when data comes from $p$ but you built your code for $q$. And relative entropy is how much worse your mismatched code is compared to the optimal one. 
 
-<CoinFlipWidget />
 
 We can now revisit the riddle about how much Wikipedia (and other texts) can be compressed. 
 

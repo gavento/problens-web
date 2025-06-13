@@ -29,7 +29,7 @@ export default function CoinFlipWidget({
   const [nextCoinId, setNextCoinId] = useState(0);
   
   const canvasRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number>(0);
   const lastUpdateRef = useRef<number>(0);
   
   const COIN_SIZE = 60;
@@ -203,13 +203,13 @@ export default function CoinFlipWidget({
           >
             {coin.isHeads ? (
               <img 
-                src="/components/widgets/img/cent_front.png" 
+                src="/components/widgets/img/cent_front_small.png" 
                 alt="Heads" 
                 className="w-full h-full"
               />
             ) : (
               <img 
-                src="/components/widgets/img/cent_back.png" 
+                src="/components/widgets/img/cent_back_small.png" 
                 alt="Tails" 
                 className="w-full h-full"
               />

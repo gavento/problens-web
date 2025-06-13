@@ -173,7 +173,7 @@ export async function getMdxContent(path: string) {
       BayesSequenceLogWidget: BayesSequenceLogWidget,
       XKCDCountdownWidget: XKCDCountdownWidget,
       CompressionWidget: CompressionWidget,
-      // ShannonCodeWidget: ShannonCodeWidget,
+      ShannonCodeWidget: ShannonCodeWidget,
       KraftInequalityWidget: KraftInequalityWidget,
       CoinFlipWidget: CoinFlipWidget,
       Math: NumberedMath,
