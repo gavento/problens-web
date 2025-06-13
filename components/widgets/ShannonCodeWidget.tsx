@@ -19,10 +19,18 @@ interface CodeAssignment {
 }
 
 interface TreeNode {
-  letter?: string;
-  code?: string;
+  id: string;
+  depth: number;
+  position: number;
   x: number;
   y: number;
+  letter?: string;
+  code?: string;
+  isCodeNode: boolean;
+  isVisible: boolean;
+  parent?: TreeNode;
+  left?: TreeNode;
+  right?: TreeNode;
 }
 
 export default function ShannonCodeWidget() {
@@ -30,7 +38,7 @@ export default function ShannonCodeWidget() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [animationStep, setAnimationStep] = useState(0);
   const [codeAssignments, setCodeAssignments] = useState<CodeAssignment[]>([]);
-  const [treeNodes, setTreeNodes] = useState<TreeNode[]>([]);
+  const [tree, setTree] = useState<TreeNode | null>(null);
 
   // Normalize frequencies to sum to 100
   const normalizedFrequencies = useMemo(() => {
@@ -79,41 +87,137 @@ export default function ShannonCodeWidget() {
     return assignments;
   }, [normalizedFrequencies]);
 
+  // Build complete binary tree
+  const buildTree = useCallback(() => {
+    const maxDepth = 5;
+    const width = 700;
+    const height = 350;
+    const levelHeight = 60;
+    const nodeMap = new Map<string, TreeNode>();
+    
+    // Create all nodes
+    for (let depth = 0; depth <= maxDepth; depth++) {
+      for (let pos = 0; pos < Math.pow(2, depth); pos++) {
+        const id = `${depth}-${pos}`;
+        const spread = width * Math.pow(0.5, depth);
+        const x = width / 2 + (pos - Math.pow(2, depth) / 2 + 0.5) * spread;
+        const y = 30 + depth * levelHeight;
+        
+        const node: TreeNode = {
+          id,
+          depth,
+          position: pos,
+          x,
+          y,
+          isCodeNode: false,
+          isVisible: true
+        };
+        
+        nodeMap.set(id, node);
+      }
+    }
+    
+    // Set up parent-child relationships
+    for (let depth = 0; depth < maxDepth; depth++) {
+      for (let pos = 0; pos < Math.pow(2, depth); pos++) {
+        const nodeId = `${depth}-${pos}`;
+        const leftChildId = `${depth + 1}-${pos * 2}`;
+        const rightChildId = `${depth + 1}-${pos * 2 + 1}`;
+        
+        const node = nodeMap.get(nodeId)!;
+        const leftChild = nodeMap.get(leftChildId);
+        const rightChild = nodeMap.get(rightChildId);
+        
+        if (leftChild) {
+          node.left = leftChild;
+          leftChild.parent = node;
+        }
+        if (rightChild) {
+          node.right = rightChild;
+          rightChild.parent = node;
+        }
+      }
+    }
+    
+    return nodeMap.get('0-0')!;
+  }, []);
+
+  // Helper to hide subtree
+  const hideSubtree = useCallback((node: TreeNode) => {
+    if (node.left) {
+      node.left.isVisible = false;
+      hideSubtree(node.left);
+    }
+    if (node.right) {
+      node.right.isVisible = false;
+      hideSubtree(node.right);
+    }
+  }, []);
+
+  // Find node by code path
+  const findNodeByCode = useCallback((root: TreeNode, code: string): TreeNode | null => {
+    if (code === '') return root;
+    
+    let current = root;
+    for (const bit of code) {
+      if (bit === '0' && current.left) {
+        current = current.left;
+      } else if (bit === '1' && current.right) {
+        current = current.right;
+      } else {
+        return null;
+      }
+    }
+    return current;
+  }, []);
+
   // Animation logic
   const startAnimation = useCallback(() => {
     const assignments = generateCodeAssignments();
     setCodeAssignments([]);
-    setTreeNodes([]);
     setAnimationStep(0);
     setIsAnimating(true);
     
-    // Animate table rows
+    // Initialize tree
+    const initialTree = buildTree();
+    setTree(initialTree);
+    
+    // Animate code assignments
     let currentStep = 0;
     const interval = setInterval(() => {
       if (currentStep < assignments.length) {
-        setCodeAssignments(prev => [...prev, assignments[currentStep]]);
-        
-        // Add tree node
         const assignment = assignments[currentStep];
-        const treeWidth = 600;
-        const nodeSpacing = Math.min(60, treeWidth / assignments.length);
-        const x = 50 + currentStep * nodeSpacing;
-        const y = 80;
         
-        setTreeNodes(prev => [...prev, {
-          letter: assignment.letter,
-          code: assignment.code,
-          x,
-          y
-        }]);
+        // Add to table
+        setCodeAssignments(prev => [...prev, assignment]);
+        
+        // Update tree
+        setTree(prevTree => {
+          if (!prevTree) return null;
+          
+          // Find the node for this code
+          const targetNode = findNodeByCode(prevTree, assignment.code);
+          if (targetNode) {
+            // Mark as code node
+            targetNode.isCodeNode = true;
+            targetNode.letter = assignment.letter;
+            targetNode.code = assignment.code;
+            
+            // Hide subtree
+            hideSubtree(targetNode);
+          }
+          
+          // Return updated tree (React will re-render)
+          return { ...prevTree };
+        });
         
         currentStep++;
       } else {
         clearInterval(interval);
         setIsAnimating(false);
       }
-    }, 300);
-  }, [generateCodeAssignments]);
+    }, 800);
+  }, [generateCodeAssignments, buildTree, findNodeByCode, hideSubtree]);
 
   // Dragging logic
   const handleMouseDown = useCallback((letter: string, e: React.MouseEvent) => {
@@ -158,6 +262,22 @@ export default function ShannonCodeWidget() {
     
     return { entropy, averageCodeLength };
   }, [codeAssignments]);
+
+  // Collect all visible nodes for rendering
+  const allVisibleNodes = useMemo(() => {
+    if (!tree) return [];
+    
+    const nodes: TreeNode[] = [];
+    function collect(node: TreeNode) {
+      if (node.isVisible) {
+        nodes.push(node);
+      }
+      if (node.left && node.left.isVisible) collect(node.left);
+      if (node.right && node.right.isVisible) collect(node.right);
+    }
+    collect(tree);
+    return nodes;
+  }, [tree]);
 
   return (
     <div className="shannon-code-widget bg-white border border-gray-200 rounded-lg p-6 my-6">
@@ -208,41 +328,72 @@ export default function ShannonCodeWidget() {
       </div>
 
       {/* Tree Visualization */}
-      {treeNodes.length > 0 && (
+      {tree && (
         <div className="mt-6 mb-6">
-          <h4 className="font-medium mb-4">Shannon Code Tree (Left-to-Right Assignment)</h4>
-          <div className="bg-gray-50 rounded-lg p-4">
-            <svg width="600" height="120" className="mx-auto">
-              {treeNodes.map((node, i) => (
-                <g key={i}>
+          <h4 className="font-medium mb-4">Shannon Code Tree Construction</h4>
+          <div className="bg-gray-50 rounded-lg p-4 overflow-auto">
+            <svg width="700" height="350" className="mx-auto">
+              {/* Draw edges */}
+              {allVisibleNodes.map(node => (
+                <g key={`edges-${node.id}`}>
+                  {node.left && node.left.isVisible && (
+                    <line
+                      x1={node.x}
+                      y1={node.y}
+                      x2={node.left.x}
+                      y2={node.left.y}
+                      stroke="#666"
+                      strokeWidth="1"
+                    />
+                  )}
+                  {node.right && node.right.isVisible && (
+                    <line
+                      x1={node.x}
+                      y1={node.y}
+                      x2={node.right.x}
+                      y2={node.right.y}
+                      stroke="#666"
+                      strokeWidth="1"
+                    />
+                  )}
+                </g>
+              ))}
+
+              {/* Draw nodes */}
+              {allVisibleNodes.map(node => (
+                <g key={`node-${node.id}`}>
                   <circle
                     cx={node.x}
                     cy={node.y}
-                    r="20"
-                    fill="#3b82f6"
-                    stroke="#1d4ed8"
-                    strokeWidth="2"
+                    r="15"
+                    fill={node.isCodeNode ? "#3b82f6" : "#f3f4f6"}
+                    stroke={node.isCodeNode ? "#1d4ed8" : "#9ca3af"}
+                    strokeWidth={node.isCodeNode ? "3" : "1"}
                   />
-                  <text
-                    x={node.x}
-                    y={node.y - 2}
-                    textAnchor="middle"
-                    fill="white"
-                    fontSize="12"
-                    fontWeight="bold"
-                  >
-                    {node.letter}
-                  </text>
-                  <text
-                    x={node.x}
-                    y={node.y + 35}
-                    textAnchor="middle"
-                    fill="#374151"
-                    fontSize="10"
-                    className="font-mono"
-                  >
-                    {node.code}
-                  </text>
+                  {node.isCodeNode && node.letter && (
+                    <>
+                      <text
+                        x={node.x}
+                        y={node.y + 3}
+                        textAnchor="middle"
+                        fill="white"
+                        fontSize="12"
+                        fontWeight="bold"
+                      >
+                        {node.letter}
+                      </text>
+                      <text
+                        x={node.x}
+                        y={node.y + 30}
+                        textAnchor="middle"
+                        fill="#374151"
+                        fontSize="10"
+                        className="font-mono"
+                      >
+                        {node.code}
+                      </text>
+                    </>
+                  )}
                 </g>
               ))}
             </svg>
