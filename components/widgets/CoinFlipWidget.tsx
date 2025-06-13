@@ -51,21 +51,23 @@ export default function HeartRateWidget({
   const [activeCoinId, setActiveCoinId] = useState<number | null>(null); // Which coin we're targeting
   const [tracePoints, setTracePoints] = useState<Array<{x: number, y: number}>>([]);
   const [paperOffset, setPaperOffset] = useState(0); // How far the "paper" has scrolled
+  const [coinMarkers, setCoinMarkers] = useState<Array<{x: number, y: number, isHeads: boolean}>>([]);  // Coin images on curve
+  const [markerAdded, setMarkerAdded] = useState(false); // Flag to track if marker was added for current transition
   
   const canvasRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>(0);
   const lastUpdateRef = useRef<number>(0);
   const timeRef = useRef<number>(0);
   
-  const COIN_SIZE = 60;
-  const COIN_SPACING = 120; // Increased spacing since we only show 2 coins
-  const CANVAS_WIDTH = 200; // Much smaller - fits only 2 coins
-  const CANVAS_HEIGHT = 100;
+  const COIN_SIZE = 40; // Smaller coins
+  const COIN_SPACING = 70; // Closer spacing to fit more coins
+  const CANVAS_WIDTH = 250; // Wider to fit 3+ coins
+  const CANVAS_HEIGHT = 80; // Slightly smaller height
   
   const GRAPH_HEIGHT = 200;
   const GRAPH_WIDTH = 400;
-  const TRIGGER_POSITION = CANVAS_WIDTH / 3; // When seismometer should reach target
-  const PAPER_SCROLL_SPEED = 30; // Constant pixels per second for paper movement
+  const TRIGGER_POSITION = CANVAS_WIDTH / 2; // Center trigger position
+  const PAPER_SCROLL_SPEED = 50; // Constant pixels per second for paper movement (increased for more history)
   
   // Calculate cross-entropy (average surprise)
   const crossEntropy = p * Math.log2(1/q) + (1-p) * Math.log2(1/(1-q));
@@ -77,7 +79,7 @@ export default function HeartRateWidget({
   // Initialize with some coins
   useEffect(() => {
     const initialCoins: Coin[] = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 5; i++) { // More initial coins
       initialCoins.push({
         id: i,
         isHeads: Math.random() < p,
@@ -85,7 +87,7 @@ export default function HeartRateWidget({
       });
     }
     setCoins(initialCoins);
-    setNextCoinId(3);
+    setNextCoinId(5);
   }, [p]);
 
   const generateNewCoin = useCallback(() => {
@@ -133,6 +135,7 @@ export default function HeartRateWidget({
             setTransitionStart(timeRef.current);
             setTransitionDuration(duration);
             setActiveCoinId(coin.id);
+            setMarkerAdded(false); // Reset marker flag for new transition
           }
         });
         
@@ -151,6 +154,20 @@ export default function HeartRateWidget({
         const centerX = GRAPH_WIDTH / 2;
         const screenY = GRAPH_HEIGHT - Math.min(newY / 7, 1) * GRAPH_HEIGHT;
         setTracePoints(prev => [...prev, { x: centerX, y: screenY }]);
+        
+        // If transition is complete (or very close), add coin marker once
+        if (progress >= 0.95 && !markerAdded) {
+          // Find the active coin to determine if it's heads or tails
+          const activeCoin = coins.find(coin => coin.id === activeCoinId);
+          if (activeCoin) {
+            setCoinMarkers(prev => [...prev, { 
+              x: centerX, 
+              y: screenY, 
+              isHeads: activeCoin.isHeads 
+            }]);
+            setMarkerAdded(true); // Mark that we've added the marker
+          }
+        }
       }
       
       // Update paper offset (constant speed)
@@ -162,6 +179,12 @@ export default function HeartRateWidget({
         .filter(point => point.x >= 0)
       );
       
+      // Scroll coin markers left and remove old ones
+      setCoinMarkers(prev => prev
+        .map(marker => ({ ...marker, x: marker.x - PAPER_SCROLL_SPEED * deltaSeconds }))
+        .filter(marker => marker.x >= -20) // Keep a bit longer to see them exit
+      );
+      
       timeRef.current += deltaSeconds;
       lastUpdateRef.current = timestamp;
     }
@@ -169,7 +192,7 @@ export default function HeartRateWidget({
     if (isRunning) {
       animationRef.current = requestAnimationFrame(animate);
     }
-  }, [isRunning, speed, seismometerY, targetY, startY, transitionStart, transitionDuration, activeCoinId, p, q]);
+  }, [isRunning, speed, seismometerY, targetY, startY, transitionStart, transitionDuration, activeCoinId, markerAdded, coins, p, q]);
 
   // Check if we need to generate a new coin
   useEffect(() => {
@@ -203,6 +226,7 @@ export default function HeartRateWidget({
     setTracePoints([]);
     setPaperOffset(0);
     setActiveCoinId(null);
+    setCoinMarkers([]);
   };
 
   const stopAnimation = () => {
@@ -217,12 +241,13 @@ export default function HeartRateWidget({
     setTracePoints([]);
     setPaperOffset(0);
     setActiveCoinId(null);
+    setCoinMarkers([]);
     timeRef.current = 0;
     setNextCoinId(0);
     
     // Re-initialize
     const initialCoins: Coin[] = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 5; i++) {
       initialCoins.push({
         id: i,
         isHeads: Math.random() < p,
@@ -230,7 +255,7 @@ export default function HeartRateWidget({
       });
     }
     setCoins(initialCoins);
-    setNextCoinId(3);
+    setNextCoinId(5);
   };
 
   return (
@@ -451,6 +476,19 @@ export default function HeartRateWidget({
               stroke="#fff"
               strokeWidth="2"
             />
+            
+            {/* Coin markers on the curve */}
+            {coinMarkers.map((marker, index) => (
+              <image
+                key={`coin-${index}`}
+                x={marker.x - 8}
+                y={marker.y - 8}
+                width="16"
+                height="16"
+                href={marker.isHeads ? "/problens-web/cent_front.png" : "/problens-web/cent_back.png"}
+                opacity="0.8"
+              />
+            ))}
           </svg>
         </div>
         
