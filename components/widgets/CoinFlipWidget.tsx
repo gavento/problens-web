@@ -181,9 +181,6 @@ export default function HeartRateWidget({
   return (
     <div className="heartrate-widget bg-white border border-gray-200 rounded-lg p-6 my-6">
       <h3 className="text-lg font-semibold mb-4">Heart Rate Widget</h3>
-      <p className="text-gray-600 mb-6">
-        Watch coins flow and see the &quot;heartbeat&quot; of surprise values below.
-      </p>
 
       {/* Parameter Controls */}
       <div className="grid grid-cols-3 gap-4 mb-6">
