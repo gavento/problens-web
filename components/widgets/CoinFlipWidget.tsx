@@ -51,7 +51,7 @@ export default function CrossEntropyWidget({
   change_p = true,
   change_q = true,
   maxSurprise = 7,
-  bottomSpeedMultiplier = 1.5,
+  bottomSpeedMultiplier = 2,
 }: Props) {
   const [p, setP] = useState(initialP ?? default_p);
   const [q, setQ] = useState(initialQ ?? default_q);
@@ -78,7 +78,7 @@ export default function CrossEntropyWidget({
   
   // All sizes relative to canvas dimensions
   const TOP_COIN_SIZE = CANVAS_HEIGHT * 0.7;     // 70% of canvas height
-  const BOTTOM_COIN_SIZE = GRAPH_HEIGHT * 0.08;  // 8% of graph height
+  const BOTTOM_COIN_SIZE = GRAPH_HEIGHT * 0.12;  // 12% of graph height
   const COIN_SPACING = CANVAS_WIDTH * 0.5;       // 50% of canvas width spacing
   const TRIGGER_POSITION = CANVAS_WIDTH * 0.5;   // Center of canvas
   
