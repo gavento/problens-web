@@ -42,6 +42,7 @@ interface Props {
   default_q?: number;
   maxSurprise?: number;
   bottomSpeedMultiplier?: number;
+  entropy?: boolean;
 }
 
 export default function CrossEntropyWidget({
@@ -53,9 +54,13 @@ export default function CrossEntropyWidget({
   change_q = true,
   maxSurprise = 7,
   bottomSpeedMultiplier = 2,
+  entropy = false,
 }: Props) {
   const [p, setP] = useState(initialP ?? default_p);
   const [q, setQ] = useState(initialQ ?? default_q);
+  
+  // In entropy mode, q always equals p
+  const effectiveQ = entropy ? p : q;
   const [coins, setCoins] = useState<Coin[]>([]);
   const [bottomCoins, setBottomCoins] = useState<BottomCoin[]>([]);
   const [isRunning, setIsRunning] = useState(false);
@@ -85,7 +90,7 @@ export default function CrossEntropyWidget({
   const GRAPH_PADDING_BOTTOM = GRAPH_HEIGHT * 0.1; // 10% padding at bottom for 0-line visibility
   const USABLE_GRAPH_HEIGHT = GRAPH_HEIGHT - GRAPH_PADDING_BOTTOM;
   const COIN_VERTICAL_OFFSET = BOTTOM_COIN_SIZE * 0.8; // Magic offset to align coins with SVG lines
-  const TOP_COIN_VERTICAL_OFFSET = TOP_COIN_SIZE * 0.2; // Magic offset for top canvas centering
+  const TOP_COIN_VERTICAL_OFFSET = TOP_COIN_SIZE * 0.1; // Magic offset for top canvas centering
   
   // ====================================================================
   // SIMPLIFIED LOGIC
@@ -102,11 +107,11 @@ export default function CrossEntropyWidget({
   // ====================================================================
   
   // Calculate cross-entropy (average surprise) - the theoretical average
-  const crossEntropy = p * Math.log2(1/q) + (1-p) * Math.log2(1/(1-q));
+  const crossEntropy = p * Math.log2(1/effectiveQ) + (1-p) * Math.log2(1/(1-effectiveQ));
   
   // Handle extreme probability values that would cause infinite surprise
-  const isQExtreme = q === 0 || q === 1;
-  const showInfiniteMessage = isQExtreme && !(p === 0 && q === 0);
+  const isQExtreme = effectiveQ === 0 || effectiveQ === 1;
+  const showInfiniteMessage = isQExtreme && !(p === 0 && effectiveQ === 0);
   
   // ====================================================================
   // INITIALIZATION: SETUP INITIAL COINS
@@ -130,7 +135,7 @@ export default function CrossEntropyWidget({
     setNextCoinId(4);
     setBottomCoins([]);
     triggeredCoinsRef.current.clear();
-  }, [p, q]);
+  }, [p, effectiveQ]);
 
   // Generate new coins as needed
   const generateNewCoin = useCallback((rightmostX: number) => {
@@ -148,11 +153,11 @@ export default function CrossEntropyWidget({
   // Calculate surprise value for a coin
   const calculateSurprise = useCallback((isHeads: boolean) => {
     if (isHeads) {
-      return q === 0 ? maxSurprise : Math.log2(1/q);
+      return effectiveQ === 0 ? maxSurprise : Math.log2(1/effectiveQ);
     } else {
-      return q === 1 ? maxSurprise : Math.log2(1/(1-q));
+      return effectiveQ === 1 ? maxSurprise : Math.log2(1/(1-effectiveQ));
     }
-  }, [q, maxSurprise]);
+  }, [effectiveQ, maxSurprise]);
 
   const animate = useCallback((timestamp: number) => {
     if (!isRunning) return;
@@ -287,7 +292,7 @@ export default function CrossEntropyWidget({
 
   return (
     <div className="crossentropy-widget bg-white border border-gray-200 rounded-lg p-6 my-6">
-      <h3 className="text-lg font-semibold mb-4">Cross-Entropy Widget</h3>
+      <h3 className="text-lg font-semibold mb-4">{entropy ? "Entropy Widget" : "Cross-Entropy Widget"}</h3>
 
       {/* Parameter Controls */}
       <div className="grid grid-cols-3 gap-4 mb-6">
@@ -308,17 +313,17 @@ export default function CrossEntropyWidget({
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            q(heads): {q.toFixed(2)} <span className="text-gray-500">(model probability)</span>
+            q(heads): {effectiveQ.toFixed(2)} <span className="text-gray-500">(model probability)</span>
           </label>
           <input
             type="range"
             min="0"
             max="1"
             step="0.01"
-            value={q}
+            value={effectiveQ}
             onChange={(e) => setQ(parseFloat(e.target.value))}
-            disabled={!change_q}
-            className={`w-full ${!change_q ? 'opacity-50' : ''}`}
+            disabled={!change_q || entropy}
+            className={`w-full ${!change_q || entropy ? 'opacity-50' : ''}`}
           />
         </div>
         <div>
@@ -447,7 +452,7 @@ export default function CrossEntropyWidget({
                 textAnchor="middle"
                 fontWeight="bold"
               >
-                {q === 0 ? "Infinite surprise on heads ⇒ infinite cross-entropy" : "Infinite surprise on tails ⇒ infinite cross-entropy"}
+                {effectiveQ === 0 ? `Infinite surprise on heads ⇒ infinite ${entropy ? "entropy" : "cross-entropy"}` : `Infinite surprise on tails ⇒ infinite ${entropy ? "entropy" : "cross-entropy"}`}
               </text>
             ) : (
               <>
@@ -467,7 +472,7 @@ export default function CrossEntropyWidget({
                   fontSize="12" 
                   fill="#ff6b6b"
                 >
-                  Cross-entropy: {crossEntropy.toFixed(2)}
+                  {entropy ? "Entropy" : "Cross-entropy"}: {crossEntropy.toFixed(2)}
                 </text>
                 
                 {/* Heads surprisal line */}
@@ -568,7 +573,20 @@ export default function CrossEntropyWidget({
         
         {/* Explanation text */}
         <div className="mt-3 text-sm text-gray-600 text-center">
-          Heads/Tails lines show the corresponding surprise according to <KatexMath math="q" />. Cross-entropy is the average surprise.
+          {entropy 
+            ? (
+              <>
+                Heads/Tails lines show the corresponding surprise according to <KatexMath math="p" />. Entropy is the average surprise.<br/>
+                <KatexMath math="H(p) = p(\text{heads}) \log \frac{1}{p(\text{heads})} + p(\text{tails}) \log \frac{1}{p(\text{tails})}" />
+              </>
+            )
+            : (
+              <>
+                Heads/Tails lines show the corresponding surprise according to <KatexMath math="q" />. Cross-entropy is the average surprise.<br/>
+                <KatexMath math="H(p,q) = p(\text{heads}) \log \frac{1}{q(\text{heads})} + p(\text{tails}) \log \frac{1}{q(\text{tails})}" />
+              </>
+            )
+          }
         </div>
       </div>
     </div>

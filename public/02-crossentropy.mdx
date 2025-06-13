@@ -129,7 +129,11 @@ Check it out in the widget below. The widget shows you your surprise if you keep
 
 Cross-entropy is your expected (i.e., average) surprise. Analogously to KL divergence, cross-entropy is additive so if you keep flipping coins like in the picture below, the total cross-entropy for $n$ flips is going to be $n$ times the crossentropy for individual flip. 
 
-Bottom line: better models are less surprised by the data and have smaller cross-entropy. 
+Bottom line: better models are less surprised by the data and have smaller cross-entropy.
+
+When your model perfectly matches reality (i.e., $q = p$), cross-entropy becomes just plain entropy. Try this special case below:
+
+<CoinFlipWidget entropy={true} change_p={true} default_p={0.5} /> 
 
 ### Entropy: 
 
