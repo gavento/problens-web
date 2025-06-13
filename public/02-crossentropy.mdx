@@ -296,7 +296,7 @@ Sure, giving frequent letters shorter codes makes sense, but what's the best way
 For example, looking at <EqRef id = "code-example"/>, you can rewrite it like this: 
 <Math displayMode={true} id = "code-example2" math = "\left( \frac12 \cdot \log \frac{1}{1/2} + \frac14 \cdot \log \frac{1}{1/4} + \frac18 \cdot \log \frac{1}{1/8} + \frac18 \cdot \log\frac{1}{1/8} \right) \cdot N = 1.75N" />
 Every letter with frequency $p$ got code-name of length exactly $\log 1/p$! Notice that in general, the length of codes satisfying the $p \rightarrow \log 1/p$ rule is this: 
-<Math displayMode={true} math = "N \cdot \sum_{i = 1}^k p_i \cdot \log \frac{1}{p_i} = N \cdot H(p). ">
+<Math displayMode={true} math = "N \cdot \sum_{i = 1}^k p_i \cdot \log \frac{1}{p_i} = N \cdot H(p)." />
 That is, if you manage to construct a code with $p \rightarrow \log 1/p$, you spend $H(p)$ bits per letter on average. 
 
 One of the most beautiful and basic results of coding theory is that you can always construct a code that spends close to $H(p)$ bits per letter on average, and there's no better code (if we treat letters independently). Details in the expand box, we will not build on this later on. 
