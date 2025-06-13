@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 
 // English letter frequencies (approximate percentages)
 const DEFAULT_FREQUENCIES: Record<string, number> = {
@@ -39,6 +39,7 @@ export default function ShannonCodeWidget() {
   const [animationStep, setAnimationStep] = useState(0);
   const [codeAssignments, setCodeAssignments] = useState<CodeAssignment[]>([]);
   const [tree, setTree] = useState<TreeNode | null>(null);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
 
   // Normalize frequencies to sum to 100
   const normalizedFrequencies = useMemo(() => {
@@ -65,7 +66,7 @@ export default function ShannonCodeWidget() {
     for (const { letter, probability } of sorted) {
       if (probability <= 0) continue;
       
-      const codeLength = Math.max(1, Math.ceil(-Math.log2(probability)));
+      const codeLength = Math.max(1, Math.min(11, Math.ceil(-Math.log2(probability))));
       const roundedProb = Math.pow(2, -codeLength);
       
       assignments.push({
@@ -78,10 +79,35 @@ export default function ShannonCodeWidget() {
     }
 
     // Step 2: Greedily assign binary codes left-to-right
-    let currentPrefix = 0;
+    // Track which prefixes are used to ensure no conflicts
+    const usedPrefixes = new Set<string>();
+    
     for (const assignment of assignments) {
-      assignment.code = currentPrefix.toString(2).padStart(assignment.codeLength, '0');
-      currentPrefix += 1;
+      let found = false;
+      for (let prefix = 0; prefix < Math.pow(2, assignment.codeLength); prefix++) {
+        const code = prefix.toString(2).padStart(assignment.codeLength, '0');
+        
+        // Check if this code conflicts with any used prefix
+        let conflict = false;
+        for (const usedPrefix of usedPrefixes) {
+          if (code.startsWith(usedPrefix) || usedPrefix.startsWith(code)) {
+            conflict = true;
+            break;
+          }
+        }
+        
+        if (!conflict) {
+          assignment.code = code;
+          usedPrefixes.add(code);
+          found = true;
+          break;
+        }
+      }
+      
+      if (!found) {
+        console.warn(`Could not assign code to ${assignment.letter}`);
+        assignment.code = '1'.repeat(assignment.codeLength); // fallback
+      }
     }
 
     return assignments;
@@ -89,17 +115,18 @@ export default function ShannonCodeWidget() {
 
   // Build complete binary tree
   const buildTree = useCallback(() => {
-    const maxDepth = 5;
-    const width = 700;
-    const height = 350;
-    const levelHeight = 60;
+    const maxDepth = 11;
+    const width = 1200;
+    const height = 700;
+    const levelHeight = 50;
     const nodeMap = new Map<string, TreeNode>();
     
     // Create all nodes
     for (let depth = 0; depth <= maxDepth; depth++) {
       for (let pos = 0; pos < Math.pow(2, depth); pos++) {
         const id = `${depth}-${pos}`;
-        const spread = width * Math.pow(0.5, depth);
+        // More compact spacing for deep tree
+        const spread = Math.min(width * Math.pow(0.6, depth), width);
         const x = width / 2 + (pos - Math.pow(2, depth) / 2 + 0.5) * spread;
         const y = 30 + depth * levelHeight;
         
@@ -191,6 +218,13 @@ export default function ShannonCodeWidget() {
         // Add to table
         setCodeAssignments(prev => [...prev, assignment]);
         
+        // Auto-scroll table to show new row
+        setTimeout(() => {
+          if (tableContainerRef.current) {
+            tableContainerRef.current.scrollTop = tableContainerRef.current.scrollHeight;
+          }
+        }, 100);
+        
         // Update tree
         setTree(prevTree => {
           if (!prevTree) return null;
@@ -205,6 +239,8 @@ export default function ShannonCodeWidget() {
             
             // Hide subtree
             hideSubtree(targetNode);
+          } else {
+            console.warn(`Could not find node for code: ${assignment.code} (letter: ${assignment.letter})`);
           }
           
           // Return updated tree (React will re-render)
@@ -223,12 +259,13 @@ export default function ShannonCodeWidget() {
   const handleMouseDown = useCallback((letter: string, e: React.MouseEvent) => {
     if (isAnimating) return;
     
-    const container = e.currentTarget.closest('.frequency-bars-container') as HTMLElement;
-    const containerRect = container.getBoundingClientRect();
+    // Get the individual bar container (the one being dragged)
+    const barContainer = e.currentTarget.parentElement as HTMLElement;
+    const barRect = barContainer.getBoundingClientRect();
     
     const handleMouseMove = (moveEvent: MouseEvent) => {
-      const y = moveEvent.clientY - containerRect.top;
-      const maxHeight = 128; // Height of the bar container
+      const y = moveEvent.clientY - barRect.top;
+      const maxHeight = 128; // Height of the bar container (h-32 = 128px)
       const percentage = Math.max(0.1, Math.min(30, (1 - y / maxHeight) * 20));
       
       setFrequencies(prev => ({
@@ -332,7 +369,7 @@ export default function ShannonCodeWidget() {
         <div className="mt-6 mb-6">
           <h4 className="font-medium mb-4">Shannon Code Tree Construction</h4>
           <div className="bg-gray-50 rounded-lg p-4 overflow-auto">
-            <svg width="700" height="350" className="mx-auto">
+            <svg width="1200" height="700" className="mx-auto">
               {/* Draw edges */}
               {allVisibleNodes.map(node => (
                 <g key={`edges-${node.id}`}>
@@ -405,7 +442,7 @@ export default function ShannonCodeWidget() {
       {codeAssignments.length > 0 && (
         <div className="mt-6">
           <h4 className="font-medium mb-4">Shannon Code Assignments</h4>
-          <div className="bg-gray-50 rounded-lg p-4 max-h-80 overflow-y-auto">
+          <div className="bg-gray-50 rounded-lg p-4 max-h-80 overflow-y-auto" ref={tableContainerRef}>
             <div className="grid grid-cols-4 gap-4 text-sm font-semibold text-gray-700 mb-3 sticky top-0 bg-gray-50">
               <div>Letter</div>
               <div>Probability</div>
@@ -428,12 +465,12 @@ export default function ShannonCodeWidget() {
       {codeAssignments.length > 0 && (
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-blue-50 rounded-lg p-4">
-            <h5 className="font-semibold text-blue-800 mb-2">Entropy (Information Content)</h5>
+            <h5 className="font-semibold text-blue-800 mb-2">Entropy</h5>
             <div className="text-2xl font-bold text-blue-600">
               {entropy.toFixed(3)} bits
             </div>
             <div className="text-sm text-blue-700 mt-1">
-              H = -Σ p(x) log₂ p(x)
+              H = -∑ p(x) log₂ p(x)
             </div>
           </div>
           
@@ -443,7 +480,7 @@ export default function ShannonCodeWidget() {
               {averageCodeLength.toFixed(3)} bits
             </div>
             <div className="text-sm text-green-700 mt-1">
-              L = Σ p(x) × length(code(x))
+              L = ∑ p(x) × length(code(x))
             </div>
           </div>
         </div>

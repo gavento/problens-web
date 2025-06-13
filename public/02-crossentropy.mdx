@@ -277,8 +277,10 @@ Try the log-score on our example! Also, you can compare it with other popular sc
 
 ## Coding theory
 
-KL divergence and entropy are deeply connected to coding theory. There are [tons of great explainers out there](resources), so let's just get a quick taste of why this connection matters.  
+KL divergence and entropy are deeply connected to coding theory. There are [tons of great explainers out there](resources), so I only left a quick taste of why this connection matters to the following Expand boxes.  
 
+
+<Expand headline = "Code examples">
 Say you've got a long DNA string built from letters \{A,C,G,T\}. You want to store it using as little disk space as possible.  
 
 To understand this question, it's very helpful to make our life easier by ignoring correlations between letters. What I mean by that is that we will achieve the same compression factor for the string 'AAAACCCCGGGGTTTT' as for the string 'ACACTATTCGGCGAGT' - both strings contain the same letters and the first one has some additional structure, but we will not try to exploit it. Technically speaking, we assume that there's some distribution $p$ over the alphabet, and our string comes from sampling repeatedly and independently from $p$.  
@@ -299,9 +301,15 @@ Every letter with frequency $p$ got code-name of length exactly $\log 1/p$! Noti
 <Math displayMode={true} math = "N \cdot \sum_{i = 1}^k p_i \cdot \log \frac{1}{p_i} = N \cdot H(p)." />
 That is, if you manage to construct a code with $p \rightarrow \log 1/p$, you spend $H(p)$ bits per letter on average. 
 
-One of the most beautiful and important results of coding theory is that you can always construct a code that spends close to $H(p)$ bits per letter on average, and there's no better code (if we treat letters independently). Details in the expand box, we will not build on this later on. 
+One of the most beautiful and important results of coding theory is that you can always construct a code that spends close to $H(p)$ bits per letter on average, and there's no better code (if we treat letters independently). Details in the next expand box, we will not build on this later on. 
+</Expand>
 
-<Expand headline = "Code construction details">
+<Expand headline = "Code construction details" advanced = {true}>
+
+Let's see
+1. Why we can construct codes with average $H(p)$ bits per letter
+2. Why we can't do better (if the letters are independent)
+
 ### Construction of a good code
 First, given a distribution of letter frequencies $p_1, \dots, p_k$, I will show you a construction that's called the [Shannon's code](https://en.wikipedia.org/wiki/Shannon_coding). I will assume that $p_1 \ge p_2 \ge \dots \ge p_k$. 
 
@@ -337,14 +345,15 @@ $$\sum_{i = 1}^k p_i \ell_i \ge H(p). $$
 That is, the average code-name length is at least $H(p)$. In yet another words, no code can beat $H(p)$ bits on average as we wanted to observe. 
 </Expand>
 
-This gives us another way to think about entropy. Remember this picture? 
+The tl;dr is that there is another way to think about entropy. Remember this picture? 
 
 ![entropy](02-crossentropy/entropy.png)
 
-We talked about "average surprisal," but we could also ask: how many bits do you need to store coin flip results? On the left, 1 bit per flip. On the right, you'd be smart to just store where the rare heads show up—way less than 1 bit per flip on average. 
+We talked about "average surprisal," but we could also ask: how many bits do you need to store coin flip results? On the left, it's 1 bit per flip. On the right, you'd be smart to just store where the rare heads show up—way less than 1 bit per flip on average. 
 
 Cross-entropy makes sense too: it's the bits you need when data comes from $p$ but you built your code for $q$. And relative entropy is how much worse your mismatched code is compared to the optimal one. 
 
+We can now revisit the riddle about how much Wikipedia (and other texts) can be compressed. 
 
 <Expand headline = "🌐 How large is Wikipedia?"><a id = "hutter"></a>
 Back to [our Wikipedia riddle](00-introduction#wikipedia) and Hutter's compression challenge. 
