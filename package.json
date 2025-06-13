@@ -8,6 +8,8 @@
     "build": "next build",
     "start": "next build && serve out -n",
     "check": "tsc && next lint",
+    "check:tsc": "tsc",
+    "check:lint": "next lint",
     "e2e:dev": "cypress install && start-server-and-test dev http://localhost:3000 \"cypress run --e2e\"",
     "e2e:build": "cypress install && start-server-and-test start http://localhost:3000 \"cypress run --e2e\""
   },
