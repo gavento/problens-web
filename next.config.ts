@@ -16,8 +16,7 @@ const nextConfig: NextConfig = {
   
   // Enable experimental features for faster builds
   experimental: {
-    // Use SWC's minifier instead of Terser for faster builds
-    swcMinify: true,
+    // Future experimental features can be enabled here
   },
 };
 
