@@ -185,13 +185,16 @@ const EntropyWidget: React.FC<Props> = ({
           {/* Bars */}
           {distribution.map((prob, i) => {
             const categoryX = margin.left + i * categoryWidth;
-            const barHeight = prob * yScale;
+            const barHeight = Math.max(8, prob * yScale); // Minimum 8px height for draggability
             const barX = categoryX + barGap;
             const barY = margin.top + innerHeight - barHeight;
             
             // Color based on probability (darker = higher probability)
-            const intensity = Math.floor(prob * 200 + 55);
-            const color = `rgb(${Math.max(0, 255 - intensity)}, ${Math.max(0, 255 - intensity * 0.7)}, ${255 - intensity * 0.3})`;
+            // Use lighter color for zero probability bars
+            const intensity = prob === 0 ? 20 : Math.floor(prob * 200 + 55);
+            const color = prob === 0 
+              ? '#f3f4f6' // Light gray for zero probability
+              : `rgb(${Math.max(0, 255 - intensity)}, ${Math.max(0, 255 - intensity * 0.7)}, ${255 - intensity * 0.3})`;
             
             return (
               <g key={i}>

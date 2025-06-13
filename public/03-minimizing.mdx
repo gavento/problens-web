@@ -85,7 +85,9 @@ Let's try again. I eat many more lunches, but this time I keep recording the ave
 
 ![syntax-error](03-minimizing/syntax_error.png)
 
-We simply can't do this. In probability theory, we can condition on events like $X \le 30$, i.e., facts that are true for some values $X$ can attend but not others. But now we would like to condition on $E[X] = 15$ which is not an event, just a fact that's true for some _distributions_ over $X$. The good part is that we can use KL divergence to "condition on $E[X] = 15$. 
+We simply can't do this. In probability theory, we can condition on events like $X \le 30$, i.e., facts that are true for some values $X$ can attend but not others. But now we would like to condition on $E[X] = 15$ which is not an event, just a fact that's true for some _distributions_ over $X$. 
+
+The fun part is that we can use KL divergence to 'condition' on $E[X] = 15$. 
 
 Here's how. I propose that, among all distributions <Math math="p" /> with an average of 15 minutes, I should select the distribution <Math math = "p_{\textrm{new}} = \arg\min_{p: E_p[X]=15} D(p,q)"/> where <Math math="q" /> is my original uniform model. In general, if I have an existing model distribution $q$ and discover that the true distribution belongs to some set $P$ (e.g., the set of distributions with a mean of 15), I claim that I should update my model $q$ to a new model <Math math = "p_{\textrm{new}}"/> like this:
 
