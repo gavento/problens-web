@@ -339,13 +339,13 @@ I actually like to think about Kraft's inequality as equality. Why? Well, if you
 The reason why this is helpful is that I like to think about the numbers <Math math="q_i = 2^{-\ell_i}" /> as some kind of idealized probabilities. Widget above shows that we can pretty much assume that the numbers $q_i$ always sum up to 1. You can think about the numbers $q_i$ as the probability distribution _implied_ by your code-name lengths $\ell_i$. Intuitively, the code is optimized for the distribution $q$, not $p$. 
 
 This setup with $p$ and $q$ is little bit like our discussions of surprises. In fact, let's write down the fact that KL divergence between $p$ and $q$ is always nonnegative. Remember, KL is the difference between crossentropy and entropy, so this is equivalently saying that $H(p, q) \ge H(p)$. If we write the formulas down:
-$$\sum_{i = 1}^k p_i \log \frac{1}{q_i} \ge \sum_{i = 1}^k p_i \log \frac{1}{p_i} $$
+<Math displayMode = {true} math="\sum_{i = 1}^k p_i \log \frac{1}{q_i} \ge \sum_{i = 1}^k p_i \log \frac{1}{p_i}" />
 and plug in <Math math="q_i = 2^{-\ell_i}" />, we get
-$$\sum_{i = 1}^k p_i \ell_i \ge H(p). $$
+<Math displayMode = {true} math="\sum_{i = 1}^k p_i \ell_i \ge H(p)." />
 That is, the average code-name length is at least $H(p)$. In yet another words, no code can beat $H(p)$ bits on average as we wanted to observe. 
 </Expand>
 
-The tl;dr is that there is another way to think about entropy. Remember this picture? 
+The tl;dr is that there is another way to think about entropy. Remember this widget? 
 
 ![entropy](02-crossentropy/entropy.png)
 
