@@ -189,7 +189,7 @@ export default function HeartRateWidget({
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            p(heads): {p.toFixed(2)} <span className="text-gray-500">(true probability of heads)</span>
+            p(heads): {p.toFixed(2)} <span className="text-gray-500">(true probability)</span>
           </label>
           <input
             type="range"
@@ -204,7 +204,7 @@ export default function HeartRateWidget({
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            q(heads): {q.toFixed(2)} <span className="text-gray-500">(model probability of heads)</span>
+            q(heads): {q.toFixed(2)} <span className="text-gray-500">(model probability)</span>
           </label>
           <input
             type="range"
@@ -219,7 +219,7 @@ export default function HeartRateWidget({
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Speed: {speed} px/s <span className="text-gray-500">(coin movement speed)</span>
+            Coin movement speed
           </label>
           <input
             type="range"
