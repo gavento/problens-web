@@ -505,13 +505,13 @@ export default function HeartRateWidget({
             >
               {coin.isHeads ? (
                 <img 
-                  src="/problens-web/images/cent_front_transparent.png" 
+                  src="/problens-web/images/coin_heads_small.png" 
                   alt="Heads" 
                   className="w-full h-full"
                 />
               ) : (
                 <img 
-                  src="/problens-web/images/cent_back_transparent.png" 
+                  src="/problens-web/images/coin_tail_small.png" 
                   alt="Tails" 
                   className="w-full h-full"
                 />
@@ -621,7 +621,7 @@ export default function HeartRateWidget({
                 y={marker.y - 8}
                 width="16"
                 height="16"
-                href={marker.isHeads ? "/problens-web/images/cent_front_transparent.png" : "/problens-web/images/cent_back_transparent.png"}
+                href={marker.isHeads ? "/problens-web/images/coin_heads_small.png" : "/problens-web/images/coin_tail_small.png"}
                 opacity="0.8"
               />
             ))}
