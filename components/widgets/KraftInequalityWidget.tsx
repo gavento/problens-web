@@ -16,7 +16,8 @@ interface TreeNode {
 
 export default function KraftInequalityWidget() {
   const maxDepth = 4;
-  const [codeNodes, setCodeNodes] = useState<Set<string>>(new Set());
+  // Start with example codes: 0001 (depth 4, pos 1), 010 (depth 3, pos 2), 10 (depth 2, pos 2)
+  const [codeNodes, setCodeNodes] = useState<Set<string>>(new Set(['4-1', '3-2', '2-2']));
 
   // Build complete binary tree
   const tree = useMemo(() => {
@@ -64,12 +65,10 @@ export default function KraftInequalityWidget() {
 
   // Layout tree positions
   const layoutTree = useMemo(() => {
-    const width = 800;
-    const height = 350;
     const levelHeight = 50;
     
     // Horizontal distance from parent to child at each level
-    const x_diffs = [200, 80, 40, 20, 10]; // Distance in pixels for each level
+    const x_diffs = [180, 80, 40, 20, 10]; // Distance in pixels for each level (first reduced by 10%)
     
     function setPositions(node: TreeNode, x: number, y: number, depth: number = 0) {
       node.x = x;
@@ -82,7 +81,29 @@ export default function KraftInequalityWidget() {
       }
     }
     
-    setPositions(tree, width / 2, 30, 0);
+    // Start from a center position
+    setPositions(tree, 400, 20, 0);
+    
+    // Calculate actual bounds of the tree
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+    
+    function findBounds(node: TreeNode) {
+      minX = Math.min(minX, node.x);
+      maxX = Math.max(maxX, node.x);
+      minY = Math.min(minY, node.y);
+      maxY = Math.max(maxY, node.y);
+      
+      if (node.left) findBounds(node.left);
+      if (node.right) findBounds(node.right);
+    }
+    
+    findBounds(tree);
+    
+    // Add padding around the tree
+    const padding = 30;
+    const width = Math.ceil(maxX - minX + padding * 2 + 24); // 24 for node diameter
+    const height = Math.ceil(maxY - minY + padding * 2 + 24);
     
     return { width, height };
   }, [tree]);
@@ -362,7 +383,7 @@ export default function KraftInequalityWidget() {
       </div>
 
       {/* Controls */}
-      <div className="flex gap-4 mb-6">
+      <div className="flex gap-4 mb-6 justify-center">
         <button
           onClick={improveCode}
           disabled={codeNodes.size === 0}
@@ -385,17 +406,6 @@ export default function KraftInequalityWidget() {
           <div className="text-2xl font-bold text-blue-600 mb-2">
             Σ 2<sup>-ℓᵢ</sup> = {kraftSum.toFixed(4)}
           </div>
-          <div className="text-sm text-blue-700">
-            {kraftSum <= 1 ? (
-              <span className="text-green-600 font-semibold">
-                ✓ Satisfies Kraft&apos;s inequality (≤ 1)
-              </span>
-            ) : (
-              <span className="text-red-600 font-semibold">
-                ✗ Violates Kraft&apos;s inequality (&gt; 1)
-              </span>
-            )}
-          </div>
           {codeNodes.size > 0 && (
             <div className="text-xs text-blue-600 mt-2">
               Code lengths: {Array.from(codeNodes).sort().map(id => {
@@ -405,18 +415,6 @@ export default function KraftInequalityWidget() {
             </div>
           )}
         </div>
-      </div>
-
-      <div className="mt-6 text-sm text-gray-600">
-        <p className="mb-2">
-          <strong>Kraft&apos;s Inequality:</strong> For any prefix-free binary code with lengths ℓ₁, ℓ₂, ..., ℓₖ,
-          the sum Σ 2<sup>-ℓᵢ</sup> ≤ 1.
-        </p>
-        <p>
-          The &quot;Improve Code&quot; button implements a sophisticated algorithm: it finds free leaves, 
-          traces up to find improvement opportunities, and moves codes to shorter positions. This iteratively 
-          reduces code lengths toward Kraft equality (∑ 2<sup>-ℓᵢ</sup> = 1).
-        </p>
       </div>
     </div>
   );

@@ -119,7 +119,7 @@ export default function ShannonCodeWidget() {
   // Build complete binary tree
   const buildTree = useCallback(() => {
     const maxDepth = 11;
-    const baseWidth = 2400; // Increased base width for more spread
+    const baseWidth = 1600;
     const levelHeight = 50;
     const verticalPadding = 60; // Top and bottom padding
     const horizontalPadding = 100; // Left and right padding
@@ -129,9 +129,9 @@ export default function ShannonCodeWidget() {
     for (let depth = 0; depth <= maxDepth; depth++) {
       for (let pos = 0; pos < Math.pow(2, depth); pos++) {
         const id = `${depth}-${pos}`;
-        // More compact spacing for deep tree, but with higher initial spread
-        const spread = Math.min(baseWidth * Math.pow(0.7, depth), baseWidth); // Changed from 0.6 to 0.7 for wider spread
-        const x = baseWidth / 2 + (pos - Math.pow(2, depth) / 2 + 0.5) * spread;
+        // More compact spacing for deep tree
+        const spread = Math.min(baseWidth * Math.pow(0.6, depth), baseWidth);
+        const x = baseWidth / 2 + 500 + (pos - Math.pow(2, depth) / 2 + 0.5) * spread; // Added 500 unit offset to the right
         const y = verticalPadding / 2 + depth * levelHeight;
         
         const node: TreeNode = {
@@ -339,7 +339,7 @@ export default function ShannonCodeWidget() {
   // Calculate canvas dimensions based on visible nodes
   const canvasDimensions = useMemo(() => {
     if (allVisibleNodes.length === 0) {
-      return { width: 2400, height: 600 };
+      return { width: 1600, height: 600 };
     }
     
     let minX = Infinity, maxX = -Infinity;
@@ -353,8 +353,8 @@ export default function ShannonCodeWidget() {
     });
     
     // Add some padding
-    const padding = 100; // Increased padding for better visibility
-    const width = Math.max(2400, maxX - minX + padding * 2); // Increased minimum width
+    const padding = 50;
+    const width = Math.max(2100, maxX - minX + padding * 2); // Increased minimum width to account for 500 unit offset
     const height = Math.max(600, maxY - minY + padding * 2);
     
     return { width: Math.ceil(width), height: Math.ceil(height) };
