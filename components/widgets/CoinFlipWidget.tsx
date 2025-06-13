@@ -112,7 +112,7 @@ export default function CrossEntropyWidget({
   // INITIALIZATION: SETUP INITIAL COINS
   // ====================================================================
   
-  // Create initial coins when component mounts or when true probability (p) changes
+  // Create initial coins when component mounts or when probabilities (p or q) change
   useEffect(() => {
     const initialCoins: Coin[] = [];
     
@@ -130,7 +130,7 @@ export default function CrossEntropyWidget({
     setNextCoinId(4);
     setBottomCoins([]);
     triggeredCoinsRef.current.clear();
-  }, [p]);
+  }, [p, q]);
 
   // Generate new coins as needed
   const generateNewCoin = useCallback((rightmostX: number) => {
