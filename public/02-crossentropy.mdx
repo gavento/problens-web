@@ -123,16 +123,13 @@ These two pieces on the right are super important. Let's get a feel for what the
 ### Cross-entropy: 
 The term $H(p,q) = \sum_{i = 1}^n p_i \log 1 / q_i$ is called _cross-entropy_. Think of it as: how surprised are you on average when you see data from $p$ but you're modeling it as $q$? 
 
-Example time (check out the picture): You're flipping a fair coin, so $p =$ \{H: 0.5, T: 0.5\}. If your model matches reality, $q =$ \{H: 0.5, T: 0.5\}, then cross-entropy is 1. 
-
-But what if your model is way off, like $q =$ \{H: 0.999, T: 0.001\}? You're not surprised by heads at all, but every time you see tails, your surprisal shoots up to $\log 1/0.001 \approx 10$. So your average surprise—the cross-entropy—is about 5. That's way bigger! 
-
-Analogously to KL divergence, cross-entropy is additive so if you keep flipping coins like in the picture below, the total cross-entropy for $n$ flips is going to be $n$ times larger than crossentropy for individual flip. 
+Check it out in the widget below. The widget shows you your surprise if you keep flipping a fair coin (and, if you have money on the line, it also shows your heart rate). The default model $q =$ \{H: 0.99, T: 0.01\} matches reality very poorly, so you are greatly surprised whenever you see tails. The average (red line, cross-entropy) is high. Try playing with the value of $q$. 
 
 <CoinFlipWidget change_p={false} default_p={0.5} change_q={true} default_q={0.99} />
 
+Analogously to KL divergence, cross-entropy is additive so if you keep flipping coins like in the picture below, the total cross-entropy for $n$ flips is going to be $n$ times the crossentropy for individual flip. 
 
-Bottom line: better models are less surprised by the data, so they have smaller cross-entropy. 
+Bottom line: better models are less surprised by the data and have smaller cross-entropy. 
 
 ### Entropy: 
 
