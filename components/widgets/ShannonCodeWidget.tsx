@@ -119,9 +119,10 @@ export default function ShannonCodeWidget() {
   // Build complete binary tree
   const buildTree = useCallback(() => {
     const maxDepth = 11;
-    const width = 1600;
-    const height = 600;
+    const baseWidth = 1600;
     const levelHeight = 50;
+    const verticalPadding = 60; // Top and bottom padding
+    const horizontalPadding = 100; // Left and right padding
     const nodeMap = new Map<string, TreeNode>();
     
     // Create all nodes
@@ -129,9 +130,9 @@ export default function ShannonCodeWidget() {
       for (let pos = 0; pos < Math.pow(2, depth); pos++) {
         const id = `${depth}-${pos}`;
         // More compact spacing for deep tree
-        const spread = Math.min(width * Math.pow(0.6, depth), width);
-        const x = width / 2 + (pos - Math.pow(2, depth) / 2 + 0.5) * spread;
-        const y = 30 + depth * levelHeight;
+        const spread = Math.min(baseWidth * Math.pow(0.6, depth), baseWidth);
+        const x = baseWidth / 2 + (pos - Math.pow(2, depth) / 2 + 0.5) * spread;
+        const y = verticalPadding / 2 + depth * levelHeight;
         
         const node: TreeNode = {
           id,
@@ -335,6 +336,30 @@ export default function ShannonCodeWidget() {
     return nodes;
   }, [tree]);
 
+  // Calculate canvas dimensions based on visible nodes
+  const canvasDimensions = useMemo(() => {
+    if (allVisibleNodes.length === 0) {
+      return { width: 1600, height: 600 };
+    }
+    
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+    
+    allVisibleNodes.forEach(node => {
+      minX = Math.min(minX, node.x - 20); // Include node radius
+      maxX = Math.max(maxX, node.x + 20);
+      minY = Math.min(minY, node.y - 20);
+      maxY = Math.max(maxY, node.y + 40); // Extra space for code labels
+    });
+    
+    // Add some padding
+    const padding = 50;
+    const width = Math.max(1600, maxX - minX + padding * 2);
+    const height = Math.max(600, maxY - minY + padding * 2);
+    
+    return { width: Math.ceil(width), height: Math.ceil(height) };
+  }, [allVisibleNodes]);
+
   return (
     <>
       {/* Fullscreen zoom overlay */}
@@ -360,7 +385,7 @@ export default function ShannonCodeWidget() {
             </div>
             
             <div className="bg-gray-50 rounded-lg p-4 overflow-auto max-h-[70vh]">
-              <svg width="1600" height="600" className="mx-auto">
+              <svg width={canvasDimensions.width} height={canvasDimensions.height} className="mx-auto">
                 {/* Draw edges */}
                 {allVisibleNodes.map(node => (
                   <g key={`edges-${node.id}`}>
@@ -495,7 +520,7 @@ export default function ShannonCodeWidget() {
             ref={treeContainerRef}
             onClick={() => setIsZoomed(!isZoomed)}
           >
-            <svg width="1600" height="600" className="mx-auto">
+            <svg width={canvasDimensions.width} height={canvasDimensions.height} className="mx-auto">
               {/* Draw edges */}
               {allVisibleNodes.map(node => (
                 <g key={`edges-${node.id}`}>

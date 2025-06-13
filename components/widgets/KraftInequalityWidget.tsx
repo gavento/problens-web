@@ -292,8 +292,7 @@ export default function KraftInequalityWidget() {
     <div className="kraft-widget bg-white border border-gray-200 rounded-lg p-6 my-6">
       <h3 className="text-lg font-semibold mb-4">Kraft&apos;s Inequality Explorer</h3>
       <p className="text-gray-600 mb-6">
-        Click nodes to make them code words. Code nodes are shown in blue with thick borders.
-        Nodes below code words are disabled (greyed out). Use &quot;Improve Code&quot; to iteratively move codes toward Kraft equality.
+        Click nodes to make them code words. Use &quot;Improve Code&quot; to improve the code towards Kraft equality.
       </p>
 
       {/* Tree Visualization */}
