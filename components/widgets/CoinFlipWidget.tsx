@@ -156,17 +156,19 @@ export default function HeartRateWidget({
         setTracePoints(prev => [...prev, { x: centerX, y: screenY }]);
         
         // If transition is complete (or very close), add coin marker once
-        if (progress >= 0.95 && !markerAdded) {
-          // Find the active coin to determine if it's heads or tails
-          const activeCoin = coins.find(coin => coin.id === activeCoinId);
-          if (activeCoin) {
-            setCoinMarkers(prev => [...prev, { 
-              x: centerX, 
-              y: screenY, 
-              isHeads: activeCoin.isHeads 
-            }]);
-            setMarkerAdded(true); // Mark that we've added the marker
-          }
+        if (progress >= 0.95 && !markerAdded && activeCoinId !== null) {
+          setCoins(currentCoins => {
+            const activeCoin = currentCoins.find(coin => coin.id === activeCoinId);
+            if (activeCoin) {
+              setCoinMarkers(prev => [...prev, { 
+                x: centerX, 
+                y: screenY, 
+                isHeads: activeCoin.isHeads 
+              }]);
+              setMarkerAdded(true); // Mark that we've added the marker
+            }
+            return currentCoins; // Return unchanged coins
+          });
         }
       }
       
@@ -192,7 +194,7 @@ export default function HeartRateWidget({
     if (isRunning) {
       animationRef.current = requestAnimationFrame(animate);
     }
-  }, [isRunning, speed, seismometerY, targetY, startY, transitionStart, transitionDuration, activeCoinId, markerAdded, coins, p, q]);
+  }, [isRunning, speed, seismometerY, targetY, startY, transitionStart, transitionDuration, activeCoinId, markerAdded, p, q]);
 
   // Check if we need to generate a new coin
   useEffect(() => {
@@ -365,17 +367,20 @@ export default function HeartRateWidget({
                 top: (CANVAS_HEIGHT - COIN_SIZE) / 2,
                 width: COIN_SIZE,
                 height: COIN_SIZE,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
               {coin.isHeads ? (
                 <img 
-                  src="/problens-web/cent_front.png" 
+                  src="/problens-web/cent_front_transparent.png" 
                   alt="Heads" 
                   className="w-full h-full"
                 />
               ) : (
                 <img 
-                  src="/problens-web/cent_back.png" 
+                  src="/problens-web/cent_back_transparent.png" 
                   alt="Tails" 
                   className="w-full h-full"
                 />
@@ -485,7 +490,7 @@ export default function HeartRateWidget({
                 y={marker.y - 8}
                 width="16"
                 height="16"
-                href={marker.isHeads ? "/problens-web/cent_front.png" : "/problens-web/cent_back.png"}
+                href={marker.isHeads ? "/problens-web/cent_front_transparent.png" : "/problens-web/cent_back_transparent.png"}
                 opacity="0.8"
               />
             ))}
