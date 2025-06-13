@@ -32,6 +32,7 @@ import BayesSequenceLogWidget from "@/components/widgets/BayesSequenceLogWidget"
 import XKCDCountdownWidget from "@/components/widgets/XKCDCountdownWidget";
 import CompressionWidget from "@/components/widgets/CompressionWidget";
 import ShannonCodeWidget from "@/components/widgets/ShannonCodeWidget";
+import KraftInequalityWidget from "@/components/widgets/KraftInequalityWidget";
 import { compile, evaluate } from "@mdx-js/mdx";
 import chalk from "chalk";
 import * as runtime from "react/jsx-runtime";
@@ -172,6 +173,7 @@ export async function getMdxContent(path: string) {
       XKCDCountdownWidget: XKCDCountdownWidget,
       CompressionWidget: CompressionWidget,
       ShannonCodeWidget: ShannonCodeWidget,
+      KraftInequalityWidget: KraftInequalityWidget,
       Math: NumberedMath,
       EqRef: EquationRef,
       Block: Block,
