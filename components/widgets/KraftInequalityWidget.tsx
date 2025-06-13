@@ -68,21 +68,21 @@ export default function KraftInequalityWidget() {
     const height = 350;
     const levelHeight = 50;
     
-    // Configurable spread factors for each level
-    const spreadFactors = [0.4, 0.3, 0.25, 0.2, 0.15]; // Smaller spreads for each level
+    // Horizontal distance from parent to child at each level
+    const x_diffs = [200, 80, 40, 20, 10]; // Distance in pixels for each level
     
-    function setPositions(node: TreeNode, x: number, y: number, spread: number, depth: number = 0) {
+    function setPositions(node: TreeNode, x: number, y: number, depth: number = 0) {
       node.x = x;
       node.y = y;
       
       if (node.left && node.right) {
-        const spreadFactor = spreadFactors[depth] || 0.1; // Use configurable factors, fallback to 0.1
-        setPositions(node.left, x - spread/2, y + levelHeight, spread * spreadFactor, depth + 1);
-        setPositions(node.right, x + spread/2, y + levelHeight, spread * spreadFactor, depth + 1);
+        const xDiff = x_diffs[depth] || 5; // Use configured distance, fallback to 5 pixels
+        setPositions(node.left, x - xDiff, y + levelHeight, depth + 1);
+        setPositions(node.right, x + xDiff, y + levelHeight, depth + 1);
       }
     }
     
-    setPositions(tree, width / 2, 30, width * 0.65); // Smaller initial spread
+    setPositions(tree, width / 2, 30, 0);
     
     return { width, height };
   }, [tree]);

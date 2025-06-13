@@ -623,7 +623,7 @@ export default function ShannonCodeWidget() {
               {entropy.toFixed(3)} bits
             </div>
             <div className="text-sm text-blue-700 mt-1">
-              <KatexMath math="H = -\sum p(x) \log_2 p(x)" />
+              <KatexMath math="H = \sum p(x) \log_2 \frac{1}{p(x)}" />
             </div>
           </div>
           
