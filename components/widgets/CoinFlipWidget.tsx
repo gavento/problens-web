@@ -543,23 +543,6 @@ export default function CrossEntropyWidget({
           })}
         </div>
         
-        {/* Legend */}
-        <div className="mt-3 text-sm text-gray-600 text-center">
-          <div className="flex justify-center gap-4 flex-wrap">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-0.5 bg-green-500 border-dashed border-t-2"></div>
-              <span>Heads surprisal</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-0.5 bg-blue-500 border-dashed border-t-2"></div>
-              <span>Tails surprisal</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-0.5 bg-red-500 border-dashed border-t-2"></div>
-              <span>Cross-entropy</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
