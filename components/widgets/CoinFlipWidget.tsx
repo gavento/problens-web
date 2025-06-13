@@ -42,6 +42,7 @@ export default function HeartRateWidget({
   const [nextCoinId, setNextCoinId] = useState(0);
   const [heartRateData, setHeartRateData] = useState<HeartRatePoint[]>([]);
   const [speed, setSpeed] = useState(50); // pixels per second
+  const [currentTime, setCurrentTime] = useState(0); // For smooth interpolation
   
   const canvasRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>(0);
@@ -82,16 +83,20 @@ export default function HeartRateWidget({
       x: CANVAS_WIDTH + COIN_SPACING,
     };
     
-    // Add surprise value to heart rate data
+    // Calculate when this coin will reach the center for smooth timing
+    const timeToCenter = (CANVAS_WIDTH / 2 + COIN_SPACING) / speed; // seconds to reach center
+    const surpriseTime = timeRef.current + timeToCenter;
+    
+    // Add surprise value to heart rate data with future timestamp
     const surprise = isHeads ? Math.log2(1/q) : Math.log2(1/(1-q));
     setHeartRateData(prev => {
-      const newData = [...prev, { time: timeRef.current, surprise }];
+      const newData = [...prev, { time: surpriseTime, surprise }];
       return newData.slice(-MAX_POINTS); // Keep only last MAX_POINTS
     });
     
     setCoins(prev => [...prev, newCoin]);
     setNextCoinId(prev => prev + 1);
-  }, [p, q, nextCoinId]);
+  }, [p, q, nextCoinId, speed]);
 
   const animate = useCallback((timestamp: number) => {
     if (!isRunning) return;
@@ -110,6 +115,7 @@ export default function HeartRateWidget({
       });
       
       timeRef.current += deltaTime / 1000; // Convert to seconds
+      setCurrentTime(timeRef.current);
       lastUpdateRef.current = timestamp;
     }
 
@@ -335,39 +341,91 @@ export default function HeartRateWidget({
               Cross-entropy: {crossEntropy.toFixed(2)}
             </text>
             
-            {/* Heart rate line - seismometer style */}
-            {heartRateData.length > 1 && (() => {
-              // For seismometer style: newest point is always at center (x = GRAPH_WIDTH/2)
-              // Older points scroll to the left
+            {/* Heart rate line - seismometer style with smooth real-time spline */}
+            {heartRateData.length > 0 && (() => {
               const centerX = GRAPH_WIDTH / 2;
-              const pointSpacing = 8; // pixels between points
+              const timeSpan = 10; // seconds visible on graph
+              const pixelsPerSecond = GRAPH_WIDTH / timeSpan;
               
-              const points = heartRateData.map((point, index) => {
-                // Calculate x position: newest at center, older points to the left
-                const pointsFromEnd = heartRateData.length - 1 - index;
-                const x = centerX - (pointsFromEnd * pointSpacing);
-                const y = GRAPH_HEIGHT - Math.min(point.surprise / 5, 1) * GRAPH_HEIGHT;
-                return { x, y, visible: x >= 0 }; // Only show points that are still visible
-              }).filter(point => point.visible);
-
-              if (points.length < 2) return null;
-
-              // Create smooth curve using quadratic bezier curves
-              let pathData = `M ${points[0].x} ${points[0].y}`;
+              // Filter points that should be visible based on current time
+              const visiblePoints = heartRateData.filter(point => 
+                point.time >= currentTime - timeSpan/2 && point.time <= currentTime + timeSpan/2
+              );
               
-              for (let i = 1; i < points.length; i++) {
-                const current = points[i];
-                const previous = points[i - 1];
+              if (visiblePoints.length === 0) return null;
+              
+              // Create interpolated points for smooth real-time rendering
+              const renderPoints: Array<{x: number, y: number, time: number}> = [];
+              
+              // Add points at regular time intervals for smooth interpolation
+              const startTime = currentTime - timeSpan/2;
+              const endTime = currentTime + timeSpan/2;
+              const timeStep = 0.1; // seconds between interpolated points
+              
+              for (let t = startTime; t <= endTime; t += timeStep) {
+                // Find surrounding data points for interpolation
+                const beforePoint = visiblePoints.filter(p => p.time <= t).slice(-1)[0];
+                const afterPoint = visiblePoints.find(p => p.time > t);
                 
-                if (i === points.length - 1) {
-                  // Last point - straight line
-                  pathData += ` L ${current.x} ${current.y}`;
+                let interpolatedSurprise: number;
+                
+                if (!beforePoint && !afterPoint) {
+                  continue; // No data available
+                } else if (!beforePoint) {
+                  interpolatedSurprise = afterPoint!.surprise;
+                } else if (!afterPoint) {
+                  interpolatedSurprise = beforePoint.surprise;
                 } else {
-                  // Smooth curve to next point
-                  const next = points[i + 1];
-                  const controlX = (previous.x + current.x) / 2;
-                  const controlY = (previous.y + current.y) / 2;
-                  pathData += ` Q ${controlX} ${controlY} ${current.x} ${current.y}`;
+                  // Linear interpolation between points
+                  const timeDiff = afterPoint.time - beforePoint.time;
+                  const ratio = (t - beforePoint.time) / timeDiff;
+                  interpolatedSurprise = beforePoint.surprise + ratio * (afterPoint.surprise - beforePoint.surprise);
+                }
+                
+                // Convert to screen coordinates
+                const x = centerX + (t - currentTime) * pixelsPerSecond;
+                const y = GRAPH_HEIGHT - Math.min(interpolatedSurprise / 5, 1) * GRAPH_HEIGHT;
+                
+                // Only add points that are visible on screen
+                if (x >= 0 && x <= GRAPH_WIDTH) {
+                  renderPoints.push({ x, y, time: t });
+                }
+              }
+              
+              if (renderPoints.length < 2) return null;
+              
+              // Create smooth spline path using cubic bezier curves
+              let pathData = `M ${renderPoints[0].x} ${renderPoints[0].y}`;
+              
+              for (let i = 1; i < renderPoints.length; i++) {
+                const current = renderPoints[i];
+                const previous = renderPoints[i - 1];
+                
+                if (i === 1) {
+                  // First segment - start with smooth curve
+                  const next = renderPoints[i + 1] || current;
+                  const cp1x = previous.x + (current.x - previous.x) * 0.3;
+                  const cp1y = previous.y;
+                  const cp2x = current.x - (next.x - previous.x) * 0.3;
+                  const cp2y = current.y;
+                  pathData += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${current.x} ${current.y}`;
+                } else if (i === renderPoints.length - 1) {
+                  // Last segment - end smoothly
+                  const prev2 = renderPoints[i - 2] || previous;
+                  const cp1x = previous.x + (current.x - prev2.x) * 0.3;
+                  const cp1y = previous.y;
+                  const cp2x = current.x - (current.x - previous.x) * 0.3;
+                  const cp2y = current.y;
+                  pathData += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${current.x} ${current.y}`;
+                } else {
+                  // Middle segments - smooth interpolation
+                  const next = renderPoints[i + 1];
+                  const prev2 = renderPoints[i - 2] || previous;
+                  const cp1x = previous.x + (current.x - prev2.x) * 0.3;
+                  const cp1y = previous.y + (current.y - prev2.y) * 0.3;
+                  const cp2x = current.x - (next.x - previous.x) * 0.3;
+                  const cp2y = current.y - (next.y - previous.y) * 0.3;
+                  pathData += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${current.x} ${current.y}`;
                 }
               }
 
@@ -384,15 +442,22 @@ export default function HeartRateWidget({
             })()}
             
             {/* Current surprise markers - seismometer style */}
-            {heartRateData.slice(-5).map((point, index, array) => {
+            {heartRateData.filter(point => {
               const centerX = GRAPH_WIDTH / 2;
-              const pointSpacing = 8;
-              const pointsFromEnd = array.length - 1 - index;
-              const x = centerX - (pointsFromEnd * pointSpacing);
+              const timeSpan = 10;
+              const pixelsPerSecond = GRAPH_WIDTH / timeSpan;
+              const x = centerX + (point.time - currentTime) * pixelsPerSecond;
+              return x >= 0 && x <= GRAPH_WIDTH;
+            }).map((point, index, array) => {
+              const centerX = GRAPH_WIDTH / 2;
+              const timeSpan = 10;
+              const pixelsPerSecond = GRAPH_WIDTH / timeSpan;
+              const x = centerX + (point.time - currentTime) * pixelsPerSecond;
               const y = GRAPH_HEIGHT - Math.min(point.surprise / 5, 1) * GRAPH_HEIGHT;
               
-              // Only show markers that are visible
-              if (x < 0) return null;
+              // Highlight points that are close to current time
+              const timeDiff = Math.abs(point.time - currentTime);
+              const opacity = timeDiff < 1 ? 1 : Math.max(0.3, 1 - timeDiff / 5);
               
               return (
                 <circle
@@ -401,10 +466,10 @@ export default function HeartRateWidget({
                   cy={y}
                   r="3"
                   fill="#4CAF50"
-                  opacity={index === array.length - 1 ? 1 : 0.6} // Highlight the newest point
+                  opacity={opacity}
                 />
               );
-            }).filter(Boolean)}
+            })}
           </svg>
         </div>
         
