@@ -58,14 +58,14 @@ export default function HeartRateWidget({
   const lastUpdateRef = useRef<number>(0);
   const timeRef = useRef<number>(0);
   
-  const COIN_SIZE = 60;
-  const COIN_SPACING = 120; // Increased spacing since we only show 2 coins
+  const COIN_SIZE = 70;
+  const COIN_SPACING = 80; // Closer spacing - reduced from 120 to 80
   const CANVAS_WIDTH = 200; // Much smaller - fits only 2 coins
   const CANVAS_HEIGHT = 100;
   
   const GRAPH_HEIGHT = 200;
   const GRAPH_WIDTH = 400;
-  const TRIGGER_POSITION = CANVAS_WIDTH / 3; // When seismometer should reach target
+  const TRIGGER_POSITION = CANVAS_WIDTH / 2; // When seismometer should reach target - center position
   const PAPER_SCROLL_SPEED = 30; // Constant pixels per second for paper movement
   
   // Calculate cross-entropy (average surprise)
