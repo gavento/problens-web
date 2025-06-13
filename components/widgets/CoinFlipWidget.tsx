@@ -77,7 +77,7 @@ export default function CrossEntropyWidget({
   const GRAPH_HEIGHT = 200;                // Height of bottom graph area
   const GRAPH_WIDTH = 400;                 // Width of bottom graph area
   const COIN_SPACING = 100;                // Consistent spacing between coins
-  const TRIGGER_POSITION = CANVAS_WIDTH / 3;   // Where coins trigger bottom canvas
+  const TRIGGER_POSITION = CANVAS_WIDTH / 2;   // Where coins trigger bottom canvas (center)
   
   // ====================================================================
   // SIMPLIFIED LOGIC
@@ -172,7 +172,8 @@ export default function CrossEntropyWidget({
             // Only show if within max height
             if (surprise <= maxSurprise) {
               const centerX = GRAPH_WIDTH / 2;
-              const screenY = Math.max(12, Math.min(GRAPH_HEIGHT - 12, GRAPH_HEIGHT - (surprise / maxSurprise) * GRAPH_HEIGHT));
+              // Calculate Y position - same as SVG lines
+              const screenY = GRAPH_HEIGHT - (surprise / maxSurprise) * GRAPH_HEIGHT;
               
               const bottomCoin: BottomCoin = {
                 id: coin.id,
@@ -375,13 +376,13 @@ export default function CrossEntropyWidget({
                 <img 
                   src="/problens-web/images/coin_heads_small.png" 
                   alt="Heads" 
-                  className="w-full h-full"
+                  className="w-full h-full object-contain"
                 />
               ) : (
                 <img 
                   src="/problens-web/images/coin_tail_small.png" 
                   alt="Tails" 
-                  className="w-full h-full"
+                  className="w-full h-full object-contain"
                 />
               )}
             </div>
@@ -391,7 +392,7 @@ export default function CrossEntropyWidget({
 
       {/* Bottom Graph */}
       <div className="bg-gray-100 rounded-lg p-4">
-        <div className="bg-white rounded border-2 border-gray-300 relative" 
+        <div className="bg-white rounded border-2 border-gray-300 relative overflow-hidden" 
              style={{ width: GRAPH_WIDTH, height: GRAPH_HEIGHT, margin: '0 auto' }}>
           
           <svg width={GRAPH_WIDTH} height={GRAPH_HEIGHT} className="absolute inset-0">
@@ -463,9 +464,9 @@ export default function CrossEntropyWidget({
                           strokeDasharray="3,3"
                         />
                         <text 
-                          x={10} 
+                          x={GRAPH_WIDTH - 120} 
                           y={GRAPH_HEIGHT - (headsSurprise / maxSurprise) * GRAPH_HEIGHT - 5} 
-                          fontSize="11" 
+                          fontSize="12" 
                           fill="#4CAF50"
                         >
                           Heads: {headsSurprise.toFixed(2)}
@@ -492,9 +493,9 @@ export default function CrossEntropyWidget({
                           strokeDasharray="3,3"
                         />
                         <text 
-                          x={10} 
-                          y={GRAPH_HEIGHT - (tailsSurprise / maxSurprise) * GRAPH_HEIGHT + 15} 
-                          fontSize="11" 
+                          x={GRAPH_WIDTH - 120} 
+                          y={GRAPH_HEIGHT - (tailsSurprise / maxSurprise) * GRAPH_HEIGHT - 5} 
+                          fontSize="12" 
                           fill="#2196F3"
                         >
                           Tails: {tailsSurprise.toFixed(2)}
@@ -520,32 +521,31 @@ export default function CrossEntropyWidget({
           </svg>
           
           {/* Bottom canvas coins */}
-          {bottomCoins.map(coin => (
-            <div
-              key={`bottom-${coin.id}`}
-              className="absolute"
-              style={{
-                left: coin.x - 12,
-                top: coin.y - 12,
-                width: 24,
-                height: 24,
-              }}
-            >
-              <img 
-                src={coin.isHeads ? "/problens-web/images/coin_heads_small.png" : "/problens-web/images/coin_tail_small.png"}
-                alt={coin.isHeads ? "Heads" : "Tails"}
-                className="w-full h-full"
-              />
-            </div>
-          ))}
+          {bottomCoins.map(coin => {
+            return (
+              <div
+                key={`bottom-${coin.id}`}
+                className="absolute"
+                style={{
+                  left: coin.x - 12,
+                  top: coin.y - 12,
+                  width: 24,
+                  height: 24,
+                }}
+              >
+                <img 
+                  src={coin.isHeads ? "/problens-web/images/coin_heads_small.png" : "/problens-web/images/coin_tail_small.png"}
+                  alt={coin.isHeads ? "Heads" : "Tails"}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            );
+          })}
         </div>
         
         {/* Legend */}
         <div className="mt-3 text-sm text-gray-600 text-center">
           <div className="flex justify-center gap-4 flex-wrap">
-            <div className="flex items-center gap-2">
-              <span>Surprise: <KatexMath math="\log_2\left(\frac{1}{q}\right)" /> for heads, <KatexMath math="\log_2\left(\frac{1}{1-q}\right)" /> for tails</span>
-            </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-0.5 bg-green-500 border-dashed border-t-2"></div>
               <span>Heads surprisal</span>
