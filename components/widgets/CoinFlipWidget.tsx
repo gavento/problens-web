@@ -71,21 +71,14 @@ export default function HeartRateWidget({
   // CONSTANTS SECTION
   // ====================================================================
   
-  // ===== VISUAL CONSTANTS (SAFE TO CHANGE) =====
-  // These control appearance only and don't affect synchronization logic
+  // ===== WIDGET CONSTANTS =====
   const COIN_SIZE = 70;                    // Pixel size of coin images in top canvas
   const CANVAS_WIDTH = 200;                // Width of top coin animation canvas
   const CANVAS_HEIGHT = 100;               // Height of top coin animation canvas
   const GRAPH_HEIGHT = 200;                // Height of seismometer graph area
   const GRAPH_WIDTH = 400;                 // Width of seismometer graph area
-  const VISUAL_COIN_SPACING = 80;          // Visual pixel spacing between coins (can differ from logical)
-  const VISUAL_TRIGGER_POSITION = CANVAS_WIDTH / 2;    // Where red trigger line appears visually
-  
-  // ===== TIMING CONSTANTS (CRITICAL - AFFECTS SYNCHRONIZATION) =====
-  // These control the synchronization between coins and seismometer
-  // Changing these will affect when the seismometer reaches target values
-  const LOGICAL_COIN_SPACING = 120;        // Logical distance between coins for timing calculations
-  const LOGICAL_TRIGGER_POSITION = CANVAS_WIDTH / 3;   // Where seismometer sync actually happens
+  const COIN_SPACING = 100;                // Consistent spacing between coins (both visual and logical)
+  const TRIGGER_POSITION = CANVAS_WIDTH / 3;   // Where seismometer sync happens
   const PAPER_SCROLL_SPEED = 30;           // Constant speed for seismometer trace scrolling (px/sec)
   
   // ====================================================================
@@ -95,7 +88,7 @@ export default function HeartRateWidget({
   // The widget maintains perfect synchronization between coin movement and seismometer:
   //
   // 1. COINS MOVE LEFT: Coins start off-screen right and move left at user-controlled speed
-  // 2. TRIGGER DETECTION: When a coin reaches LOGICAL_TRIGGER_POSITION, synchronization occurs
+  // 2. TRIGGER DETECTION: When a coin reaches TRIGGER_POSITION, synchronization occurs
   // 3. SEISMOMETER TIMING: The seismometer should ALREADY BE at that coin's surprise value
   // 4. TRANSITION START: We immediately start transitioning to the NEXT coin's value
   // 5. PERFECT SYNC: By the time the next coin reaches trigger, seismometer is ready
@@ -103,9 +96,9 @@ export default function HeartRateWidget({
   // KEY INSIGHT: The seismometer is always one step ahead, transitioning TO the next
   // coin's value while the current coin crosses the trigger line.
   //
-  // VISUAL VS LOGICAL: 
-  // - VISUAL positions (coin spacing, trigger line) affect only appearance
-  // - LOGICAL positions affect timing calculations and must maintain sync
+  // COIN SPACING AND TIMING:
+  // - All coins are spaced COIN_SPACING pixels apart
+  // - Seismometer synchronizes when coins reach TRIGGER_POSITION
   // ====================================================================
   
   // ====================================================================
@@ -129,12 +122,12 @@ export default function HeartRateWidget({
     
     // Create initial coins with consistent spacing
     // Start them further off-screen to give seismometer time to prepare
-    const startX = CANVAS_WIDTH + VISUAL_COIN_SPACING;
+    const startX = CANVAS_WIDTH + COIN_SPACING;
     for (let i = 0; i < 4; i++) {  // Create 4 coins for smoother start
       initialCoins.push({
         id: i,
         isHeads: Math.random() < p,
-        x: startX + i * VISUAL_COIN_SPACING,
+        x: startX + i * COIN_SPACING,
       });
     }
     
@@ -155,7 +148,7 @@ export default function HeartRateWidget({
     const newCoin: Coin = {
       id: nextCoinId,                           // Unique identifier
       isHeads,                                  // Outcome based on true probability p
-      x: rightmostX + VISUAL_COIN_SPACING,     // Place relative to rightmost coin with visual spacing
+      x: rightmostX + COIN_SPACING,            // Place relative to rightmost coin with consistent spacing
     };
     
     setCoins(prev => [...prev, newCoin]);
@@ -198,11 +191,11 @@ export default function HeartRateWidget({
         // ============================================================
         // STEP 2: CRITICAL SYNCHRONIZATION LOGIC
         // ============================================================
-        // Check if any coin has reached the LOGICAL trigger position
+        // Check if any coin has reached the trigger position
         // This is where the magic happens - perfect synchronization!
         
         updated.forEach(coin => {
-          if (coin.x <= LOGICAL_TRIGGER_POSITION && coin.id !== activeTargetRef.current) {
+          if (coin.x <= TRIGGER_POSITION && coin.id !== activeTargetRef.current) {
             
             // 🎯 SYNCHRONIZATION MOMENT: This coin just hit the trigger!
             // At this exact moment, the seismometer should ALREADY BE
@@ -235,9 +228,8 @@ export default function HeartRateWidget({
                 ? (q === 0 ? 7 : Math.log2(1/q))
                 : (q === 1 ? 7 : Math.log2(1/(1-q)));
               
-              // Calculate dynamic distance (not assuming constant spacing)
-              const nextCoinDistance = nextCoin.x - coin.x;  // Actual distance between these coins
-              const duration = nextCoinDistance / speed;      // Time = Distance / Speed
+              // Calculate transition duration based on consistent coin spacing
+              const duration = COIN_SPACING / speed;          // Time = Distance / Speed
               
               // Start the transition to next coin's value
               startYRef.current = seismometerYRef.current;  // Where we are now
@@ -360,14 +352,14 @@ export default function HeartRateWidget({
     setCoinMarkers([]);
     
     // Find the first coin and start transitioning to its value
-    const firstCoin = coins.find(c => c.x > LOGICAL_TRIGGER_POSITION);
+    const firstCoin = coins.find(c => c.x > TRIGGER_POSITION);
     if (firstCoin) {
       const firstSurprise = firstCoin.isHeads 
         ? (q === 0 ? 7 : Math.log2(1/q))
         : (q === 1 ? 7 : Math.log2(1/(1-q)));
       
       // Calculate time until first coin hits trigger
-      const distanceToTrigger = firstCoin.x - LOGICAL_TRIGGER_POSITION;
+      const distanceToTrigger = firstCoin.x - TRIGGER_POSITION;
       const timeToTrigger = distanceToTrigger / speed;
       
       // Start transition to first coin's value
@@ -404,12 +396,12 @@ export default function HeartRateWidget({
     
     // Re-initialize with consistent spacing
     const initialCoins: Coin[] = [];
-    const startX = CANVAS_WIDTH + VISUAL_COIN_SPACING;
+    const startX = CANVAS_WIDTH + COIN_SPACING;
     for (let i = 0; i < 4; i++) {
       initialCoins.push({
         id: i,
         isHeads: Math.random() < p,
-        x: startX + i * VISUAL_COIN_SPACING,
+        x: startX + i * COIN_SPACING,
       });
     }
     setCoins(initialCoins);
@@ -507,7 +499,7 @@ export default function HeartRateWidget({
           <div
             className="absolute bg-red-300 opacity-50"
             style={{
-              left: VISUAL_TRIGGER_POSITION,
+              left: TRIGGER_POSITION,
               top: 0,
               width: 2,
               height: CANVAS_HEIGHT,
