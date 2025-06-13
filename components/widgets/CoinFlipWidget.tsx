@@ -370,7 +370,7 @@ export default function CrossEntropyWidget({
               className="absolute transition-none"
               style={{
                 left: coin.x,
-                top: (CANVAS_HEIGHT - TOP_COIN_SIZE) / 2,
+                top: CANVAS_HEIGHT / 2 - TOP_COIN_SIZE / 2,
                 width: TOP_COIN_SIZE,
                 height: TOP_COIN_SIZE,
               }}
@@ -523,35 +523,19 @@ export default function CrossEntropyWidget({
             />
           </svg>
           
-          {/* Debug markers at exact surprise line positions */}
-          {bottomCoins.map(coin => {
-            const surprise = calculateSurprise(coin.isHeads);
-            const exactLineY = GRAPH_HEIGHT - (surprise / maxSurprise) * GRAPH_HEIGHT;
-            return (
-              <div
-                key={`debug-${coin.id}`}
-                className="absolute bg-yellow-400"
-                style={{
-                  left: `${(coin.x / GRAPH_WIDTH) * 100}%`,
-                  top: exactLineY - 1,
-                  width: 4,
-                  height: 2,
-                  transform: 'translateX(-50%)',
-                  zIndex: 10,
-                }}
-              />
-            );
-          })}
-
           {/* Bottom canvas coins */}
           {bottomCoins.map(coin => {
+            // Calculate exact position to match SVG coordinate system
+            const surprise = calculateSurprise(coin.isHeads);
+            const exactLineY = GRAPH_HEIGHT - (surprise / maxSurprise) * GRAPH_HEIGHT;
+            
             return (
               <div
                 key={`bottom-${coin.id}`}
                 className="absolute"
                 style={{
                   left: `${(coin.x / GRAPH_WIDTH) * 100}%`,
-                  top: coin.y - (BOTTOM_COIN_SIZE / 2),
+                  top: exactLineY - (BOTTOM_COIN_SIZE / 2),
                   width: BOTTOM_COIN_SIZE,
                   height: BOTTOM_COIN_SIZE,
                   transform: 'translateX(-50%)',
