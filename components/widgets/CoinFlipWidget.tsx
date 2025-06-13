@@ -39,8 +39,6 @@ interface Props {
 export default function HeartRateWidget({
   initialP,
   initialQ,
-  isPEditable,
-  isQEditable,
   default_p = 0.5,
   default_q = 0.5,
   change_p = true,
