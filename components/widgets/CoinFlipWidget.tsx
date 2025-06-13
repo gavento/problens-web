@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import KatexMath from "@/components/content/KatexMath";
 
 interface Coin {
   id: number;
@@ -40,6 +41,7 @@ export default function HeartRateWidget({
   const [isRunning, setIsRunning] = useState(false);
   const [nextCoinId, setNextCoinId] = useState(0);
   const [heartRateData, setHeartRateData] = useState<HeartRatePoint[]>([]);
+  const [speed, setSpeed] = useState(50); // pixels per second
   
   const canvasRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>(0);
@@ -50,7 +52,6 @@ export default function HeartRateWidget({
   const COIN_SPACING = 120; // Increased spacing since we only show 2 coins
   const CANVAS_WIDTH = 200; // Much smaller - fits only 2 coins
   const CANVAS_HEIGHT = 100;
-  const SPEED = 50; // pixels per second
   
   const GRAPH_HEIGHT = 200;
   const GRAPH_WIDTH = 400;
@@ -97,12 +98,12 @@ export default function HeartRateWidget({
 
     const deltaTime = timestamp - lastUpdateRef.current;
     if (deltaTime > 16) { // ~60fps
-      const speed = SPEED / 1000; // pixels per millisecond
+      const pixelsPerMs = speed / 1000; // pixels per millisecond
       
       setCoins(prev => {
         const updated = prev.map(coin => ({
           ...coin,
-          x: coin.x - speed * deltaTime
+          x: coin.x - pixelsPerMs * deltaTime
         })).filter(coin => coin.x > -COIN_SIZE);
         
         return updated;
@@ -115,7 +116,7 @@ export default function HeartRateWidget({
     if (isRunning) {
       animationRef.current = requestAnimationFrame(animate);
     }
-  }, [isRunning]);
+  }, [isRunning, speed]);
 
   // Check if we need to generate a new coin
   useEffect(() => {
@@ -179,7 +180,7 @@ export default function HeartRateWidget({
       </p>
 
       {/* Parameter Controls */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      <div className="grid grid-cols-3 gap-4 mb-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             p(heads): {p.toFixed(2)} <span className="text-gray-500">(true probability of heads)</span>
@@ -208,6 +209,20 @@ export default function HeartRateWidget({
             onChange={(e) => setQ(parseFloat(e.target.value))}
             disabled={!change_q}
             className={`w-full ${!change_q ? 'opacity-50' : ''}`}
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Speed: {speed} px/s <span className="text-gray-500">(coin movement speed)</span>
+          </label>
+          <input
+            type="range"
+            min="10"
+            max="150"
+            step="5"
+            value={speed}
+            onChange={(e) => setSpeed(parseInt(e.target.value))}
+            className="w-full"
           />
         </div>
       </div>
@@ -278,7 +293,6 @@ export default function HeartRateWidget({
 
       {/* Heart Rate Graph */}
       <div className="bg-gray-100 rounded-lg p-4">
-        <h4 className="text-md font-semibold mb-3">Surprise Heart Rate (bits)</h4>
         <div className="bg-white rounded border-2 border-gray-300 relative" 
              style={{ width: GRAPH_WIDTH, height: GRAPH_HEIGHT, margin: '0 auto' }}>
           
@@ -321,13 +335,22 @@ export default function HeartRateWidget({
               Cross-entropy: {crossEntropy.toFixed(2)}
             </text>
             
-            {/* Heart rate line - smooth curve */}
+            {/* Heart rate line - seismometer style */}
             {heartRateData.length > 1 && (() => {
+              // For seismometer style: newest point is always at center (x = GRAPH_WIDTH/2)
+              // Older points scroll to the left
+              const centerX = GRAPH_WIDTH / 2;
+              const pointSpacing = 8; // pixels between points
+              
               const points = heartRateData.map((point, index) => {
-                const x = (index / (MAX_POINTS - 1)) * GRAPH_WIDTH;
+                // Calculate x position: newest at center, older points to the left
+                const pointsFromEnd = heartRateData.length - 1 - index;
+                const x = centerX - (pointsFromEnd * pointSpacing);
                 const y = GRAPH_HEIGHT - Math.min(point.surprise / 5, 1) * GRAPH_HEIGHT;
-                return { x, y };
-              });
+                return { x, y, visible: x >= 0 }; // Only show points that are still visible
+              }).filter(point => point.visible);
+
+              if (points.length < 2) return null;
 
               // Create smooth curve using quadratic bezier curves
               let pathData = `M ${points[0].x} ${points[0].y}`;
@@ -342,9 +365,9 @@ export default function HeartRateWidget({
                 } else {
                   // Smooth curve to next point
                   const next = points[i + 1];
-                  const controlX = current.x;
+                  const controlX = (previous.x + current.x) / 2;
                   const controlY = (previous.y + current.y) / 2;
-                  pathData += ` Q ${controlX} ${controlY} ${(current.x + next.x) / 2} ${(current.y + next.y) / 2}`;
+                  pathData += ` Q ${controlX} ${controlY} ${current.x} ${current.y}`;
                 }
               }
 
@@ -360,20 +383,28 @@ export default function HeartRateWidget({
               );
             })()}
             
-            {/* Current surprise markers */}
-            {heartRateData.slice(-10).map((point, index) => {
-              const x = ((heartRateData.length - 10 + index) / (MAX_POINTS - 1)) * GRAPH_WIDTH;
+            {/* Current surprise markers - seismometer style */}
+            {heartRateData.slice(-5).map((point, index, array) => {
+              const centerX = GRAPH_WIDTH / 2;
+              const pointSpacing = 8;
+              const pointsFromEnd = array.length - 1 - index;
+              const x = centerX - (pointsFromEnd * pointSpacing);
               const y = GRAPH_HEIGHT - Math.min(point.surprise / 5, 1) * GRAPH_HEIGHT;
+              
+              // Only show markers that are visible
+              if (x < 0) return null;
+              
               return (
                 <circle
-                  key={index}
+                  key={`${point.time}-${index}`}
                   cx={x}
                   cy={y}
                   r="3"
                   fill="#4CAF50"
+                  opacity={index === array.length - 1 ? 1 : 0.6} // Highlight the newest point
                 />
               );
-            })}
+            }).filter(Boolean)}
           </svg>
         </div>
         
@@ -382,7 +413,7 @@ export default function HeartRateWidget({
           <div className="flex justify-center gap-6">
             <div className="flex items-center gap-2">
               <div className="w-4 h-0.5 bg-green-500"></div>
-              <span>Surprise: log₂(1/q) for heads, log₂(1/(1-q)) for tails</span>
+              <span>Surprise: <KatexMath math="\log_2(1/q)" /> for heads, <KatexMath math="\log_2(1/(1-q))" /> for tails</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-0.5 bg-red-500 border-dashed border-t-2"></div>
