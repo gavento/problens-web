@@ -64,17 +64,19 @@ export default function KraftInequalityWidget() {
 
   // Layout tree positions
   const layoutTree = useMemo(() => {
-    const width = 600;
-    const height = 300;
+    const width = 800;
+    const height = 350;
     const levelHeight = 50;
     
-    function setPositions(node: TreeNode, x: number, y: number, spread: number) {
+    function setPositions(node: TreeNode, x: number, y: number, spread: number, depth: number = 0) {
       node.x = x;
       node.y = y;
       
       if (node.left && node.right) {
-        setPositions(node.left, x - spread/2, y + levelHeight, spread * 0.6);
-        setPositions(node.right, x + spread/2, y + levelHeight, spread * 0.6);
+        // Keep first two layers spread, make others much more compact
+        const spreadFactor = depth < 2 ? 0.6 : 0.35;
+        setPositions(node.left, x - spread/2, y + levelHeight, spread * spreadFactor, depth + 1);
+        setPositions(node.right, x + spread/2, y + levelHeight, spread * spreadFactor, depth + 1);
       }
     }
     
@@ -148,48 +150,116 @@ export default function KraftInequalityWidget() {
     });
   }, [nodeStates]);
 
+  // Find all free leaves (nodes at max depth with no code)
+  const findFreeLeaf = useCallback((codeNodes: Set<string>) => {
+    // Look for free leaf at maxDepth
+    for (let pos = 0; pos < Math.pow(2, maxDepth); pos++) {
+      const leafId = `${maxDepth}-${pos}`;
+      
+      // Check if this leaf is free (no code and no ancestor has code)
+      let isFree = true;
+      let currentDepth = maxDepth;
+      let currentPos = pos;
+      
+      while (currentDepth >= 0) {
+        const nodeId = `${currentDepth}-${currentPos}`;
+        if (codeNodes.has(nodeId)) {
+          isFree = false;
+          break;
+        }
+        currentDepth--;
+        currentPos = Math.floor(currentPos / 2);
+      }
+      
+      if (isFree) return leafId;
+    }
+    return null;
+  }, []);
+
+  // Check if a subtree has any codes
+  const hasCodeInSubtree = useCallback((rootId: string, codeNodes: Set<string>): boolean => {
+    const [depth, pos] = rootId.split('-').map(Number);
+    
+    // Check all nodes in this subtree
+    for (let d = depth; d <= maxDepth; d++) {
+      const startPos = pos * Math.pow(2, d - depth);
+      const endPos = (pos + 1) * Math.pow(2, d - depth);
+      
+      for (let p = startPos; p < endPos; p++) {
+        if (codeNodes.has(`${d}-${p}`)) return true;
+      }
+    }
+    return false;
+  }, []);
+
+  // Find leftmost code in subtree
+  const findLeftmostCode = useCallback((rootId: string, codeNodes: Set<string>): string | null => {
+    const [depth, pos] = rootId.split('-').map(Number);
+    
+    // Search level by level, left to right
+    for (let d = depth; d <= maxDepth; d++) {
+      const startPos = pos * Math.pow(2, d - depth);
+      const endPos = (pos + 1) * Math.pow(2, d - depth);
+      
+      for (let p = startPos; p < endPos; p++) {
+        const nodeId = `${d}-${p}`;
+        if (codeNodes.has(nodeId)) return nodeId;
+      }
+    }
+    return null;
+  }, []);
+
   const improveCode = useCallback(() => {
     setCodeNodes(prev => {
-      const newSet = new Set<string>();
+      const newSet = new Set(prev);
       
-      // Get code nodes sorted by position (left to right, top to bottom)
-      const codeNodesList = Array.from(prev).sort((a, b) => {
-        const [depthA, posA] = a.split('-').map(Number);
-        const [depthB, posB] = b.split('-').map(Number);
-        if (depthA !== depthB) return depthA - depthB;
-        return posA - posB;
-      });
+      // Find a free leaf
+      const freeLeaf = findFreeLeaf(newSet);
+      if (!freeLeaf) return prev; // No improvement possible
       
-      for (const nodeId of codeNodesList) {
-        const [depth, pos] = nodeId.split('-').map(Number);
+      const [leafDepth, leafPos] = freeLeaf.split('-').map(Number);
+      
+      // Go up from free leaf to find improvement opportunity
+      let currentDepth = leafDepth;
+      let currentPos = leafPos;
+      
+      while (currentDepth > 0) {
+        const parentDepth = currentDepth - 1;
+        const parentPos = Math.floor(currentPos / 2);
+        const parentId = `${parentDepth}-${parentPos}`;
         
-        // Try to move to parent if parent is not already a code and not disabled
-        if (depth > 0) {
-          const parentDepth = depth - 1;
-          const parentPos = Math.floor(pos / 2);
-          const parentId = `${parentDepth}-${parentPos}`;
+        // Find sibling
+        const siblingPos = parentPos * 2 + (currentPos % 2 === 0 ? 1 : 0);
+        const siblingId = `${currentDepth}-${siblingPos}`;
+        
+        // Check if sibling subtree has codes
+        if (hasCodeInSubtree(siblingId, newSet)) {
+          // Found improvement opportunity!
           
-          // Check if parent is available (not already a code node in our new set)
-          if (!newSet.has(parentId)) {
-            // Check if moving to parent would conflict with sibling
-            const siblingPos = parentPos * 2 + (pos % 2 === 0 ? 1 : 0);
-            const siblingId = `${depth}-${siblingPos}`;
-            
-            if (!prev.has(siblingId)) {
-              // Safe to move to parent
-              newSet.add(parentId);
-              continue;
+          if (newSet.has(siblingId)) {
+            // Case 1: Sibling itself is a code - move it up to parent
+            newSet.delete(siblingId);
+            newSet.add(parentId);
+            return newSet;
+          } else {
+            // Case 2: Sibling has codes deeper - move leftmost to our position
+            const leftmostCode = findLeftmostCode(siblingId, newSet);
+            if (leftmostCode) {
+              newSet.delete(leftmostCode);
+              newSet.add(`${currentDepth}-${currentPos}`);
+              return newSet;
             }
           }
         }
         
-        // Can't improve, keep the original
-        newSet.add(nodeId);
+        // Move up one level
+        currentDepth = parentDepth;
+        currentPos = parentPos;
       }
       
-      return newSet;
+      return prev; // No improvement found
     });
-  }, []);
+  }, [findFreeLeaf, hasCodeInSubtree, findLeftmostCode]);
 
   const resetCodes = useCallback(() => {
     setCodeNodes(new Set());
@@ -200,11 +270,11 @@ export default function KraftInequalityWidget() {
       <h3 className="text-lg font-semibold mb-4">Kraft&apos;s Inequality Explorer</h3>
       <p className="text-gray-600 mb-6">
         Click nodes to make them code words. Code nodes are shown in blue with thick borders.
-        Nodes below code words are disabled (greyed out). Use &quot;Improve Code&quot; to move codes up when possible.
+        Nodes below code words are disabled (greyed out). Use &quot;Improve Code&quot; to iteratively move codes toward Kraft equality.
       </p>
 
       {/* Tree Visualization */}
-      <div className="bg-gray-50 rounded-lg p-4 mb-6">
+      <div className="bg-gray-50 rounded-lg p-4 mb-6 overflow-auto">
         <svg width={layoutTree.width} height={layoutTree.height} className="mx-auto">
           {/* Draw edges */}
           {allNodes.map(node => (
@@ -321,8 +391,9 @@ export default function KraftInequalityWidget() {
           the sum Σ 2<sup>-ℓᵢ</sup> ≤ 1.
         </p>
         <p>
-          The &quot;Improve Code&quot; button moves code words up the tree when possible, 
-          reducing their lengths and improving the code efficiency while maintaining the Kraft bound.
+          The &quot;Improve Code&quot; button implements a sophisticated algorithm: it finds free leaves, 
+          traces up to find improvement opportunities, and moves codes to shorter positions. This iteratively 
+          reduces code lengths toward Kraft equality (∑ 2<sup>-ℓᵢ</sup> = 1).
         </p>
       </div>
     </div>

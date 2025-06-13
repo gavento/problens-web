@@ -334,7 +334,7 @@ Divide by $2^N$ and you get Kraft's inequality <EqRef id = "kraft"/>.
 
 <KraftInequalityWidget />
 
-I actually like to think about Kraft's inequality as equality. Why? Well, if your code is such that the left-hand side is really smaller than $1$, then you are stupid. You can improve the code like in the picture below and get <Math math="\sum_{i = 1}^k 2^{- \ell_i} = 1" />. 
+I actually like to think about Kraft's inequality as equality. Why? Well, if your code is such that the left-hand side is really smaller than $1$, then you are stupid. <Footnote>You can notice that Shannon's code above is stupid and leaves some space at the right. In fact, Shannon's code is useful mostly for didactical reasons and in practice you would construct the code by [Huffman's algorithm](https://en.wikipedia.org/wiki/Huffman_coding). </Footnote> You can improve the code like in the picture below and get <Math math="\sum_{i = 1}^k 2^{- \ell_i} = 1" />. 
 
 The reason why this is helpful is that I like to think about the numbers <Math math="q_i = 2^{-\ell_i}" /> as some kind of idealized probabilities. Widget above shows that we can pretty much assume that the numbers $q_i$ always sum up to 1. You can think about the numbers $q_i$ as the probability distribution _implied_ by your code-name lengths $\ell_i$. Intuitively, the code is optimized for the distribution $q$, not $p$. 
 
