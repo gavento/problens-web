@@ -33,7 +33,7 @@ import XKCDCountdownWidget from "@/components/widgets/XKCDCountdownWidget";
 import CompressionWidget from "@/components/widgets/CompressionWidget";
 import ShannonCodeWidget from "@/components/widgets/ShannonCodeWidget";
 import KraftInequalityWidget from "@/components/widgets/KraftInequalityWidget";
-import CoinFlipWidget from "@/components/widgets/CoinFlipWidget";
+import HeartRateWidget from "@/components/widgets/CoinFlipWidget";
 import { compile, evaluate } from "@mdx-js/mdx";
 import chalk from "chalk";
 import * as runtime from "react/jsx-runtime";
@@ -175,7 +175,8 @@ export async function getMdxContent(path: string) {
       CompressionWidget: CompressionWidget,
       ShannonCodeWidget: ShannonCodeWidget,
       KraftInequalityWidget: KraftInequalityWidget,
-      CoinFlipWidget: CoinFlipWidget,
+      CoinFlipWidget: HeartRateWidget,
+      HeartRateWidget: HeartRateWidget,
       Math: NumberedMath,
       EqRef: EquationRef,
       Block: Block,

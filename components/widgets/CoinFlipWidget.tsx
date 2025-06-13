@@ -1,12 +1,16 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import Image from "next/image";
 
 interface Coin {
   id: number;
   isHeads: boolean;
   x: number;
+}
+
+interface HeartRatePoint {
+  time: number;
+  surprise: number;
 }
 
 interface Props {
@@ -16,7 +20,7 @@ interface Props {
   isQEditable?: boolean;
 }
 
-export default function CoinFlipWidget({
+export default function HeartRateWidget({
   initialP = 0.5,
   initialQ = 0.5,
   isPEditable = true,
@@ -27,21 +31,30 @@ export default function CoinFlipWidget({
   const [coins, setCoins] = useState<Coin[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [nextCoinId, setNextCoinId] = useState(0);
+  const [heartRateData, setHeartRateData] = useState<HeartRatePoint[]>([]);
   
   const canvasRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>(0);
   const lastUpdateRef = useRef<number>(0);
+  const timeRef = useRef<number>(0);
   
   const COIN_SIZE = 60;
-  const COIN_SPACING = 80;
-  const CANVAS_WIDTH = 400;
+  const COIN_SPACING = 120; // Increased spacing since we only show 2 coins
+  const CANVAS_WIDTH = 200; // Much smaller - fits only 2 coins
   const CANVAS_HEIGHT = 100;
   const SPEED = 50; // pixels per second
+  
+  const GRAPH_HEIGHT = 200;
+  const GRAPH_WIDTH = 400;
+  const MAX_POINTS = 50; // Keep last 50 data points
+  
+  // Calculate cross-entropy (average surprise)
+  const crossEntropy = p * Math.log2(1/q) + (1-p) * Math.log2(1/(1-q));
   
   // Initialize with some coins
   useEffect(() => {
     const initialCoins: Coin[] = [];
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 3; i++) {
       initialCoins.push({
         id: i,
         isHeads: Math.random() < initialP,
@@ -49,173 +62,302 @@ export default function CoinFlipWidget({
       });
     }
     setCoins(initialCoins);
-    setNextCoinId(10);
-  }, []);
-  
-  const addNewCoin = useCallback(() => {
+    setNextCoinId(3);
+  }, [initialP]);
+
+  const generateNewCoin = useCallback(() => {
+    const isHeads = Math.random() < p;
     const newCoin: Coin = {
       id: nextCoinId,
-      isHeads: Math.random() < p,
-      x: coins.length > 0 ? Math.max(...coins.map(c => c.x)) + COIN_SPACING : CANVAS_WIDTH,
+      isHeads,
+      x: CANVAS_WIDTH + COIN_SPACING,
     };
-    setCoins(prev => [...prev, newCoin]);
-    setNextCoinId(prev => prev + 1);
-  }, [p, coins, nextCoinId]);
-  
-  const animate = useCallback((timestamp: number) => {
-    if (!lastUpdateRef.current) lastUpdateRef.current = timestamp;
-    const deltaTime = (timestamp - lastUpdateRef.current) / 1000;
-    lastUpdateRef.current = timestamp;
     
-    setCoins(prevCoins => {
-      // Move all coins to the left
-      const movedCoins = prevCoins.map(coin => ({
-        ...coin,
-        x: coin.x - SPEED * deltaTime,
-      }));
-      
-      // Remove coins that are too far left
-      const filteredCoins = movedCoins.filter(coin => coin.x > -COIN_SIZE * 2);
-      
-      // Add new coin if needed
-      if (filteredCoins.length === 0 || 
-          filteredCoins[filteredCoins.length - 1].x < CANVAS_WIDTH - COIN_SPACING) {
-        const newCoin: Coin = {
-          id: nextCoinId,
-          isHeads: Math.random() < p,
-          x: filteredCoins.length > 0 
-            ? filteredCoins[filteredCoins.length - 1].x + COIN_SPACING 
-            : CANVAS_WIDTH,
-        };
-        setNextCoinId(prev => prev + 1);
-        return [...filteredCoins, newCoin];
-      }
-      
-      return filteredCoins;
+    // Add surprise value to heart rate data
+    const surprise = isHeads ? Math.log2(1/q) : Math.log2(1/(1-q));
+    setHeartRateData(prev => {
+      const newData = [...prev, { time: timeRef.current, surprise }];
+      return newData.slice(-MAX_POINTS); // Keep only last MAX_POINTS
     });
     
-    if (isRunning) {
-      animationRef.current = requestAnimationFrame(animate);
+    setCoins(prev => [...prev, newCoin]);
+    setNextCoinId(prev => prev + 1);
+  }, [p, q, nextCoinId]);
+
+  const animate = useCallback((timestamp: number) => {
+    if (!isRunning) return;
+
+    const deltaTime = timestamp - lastUpdateRef.current;
+    if (deltaTime > 16) { // ~60fps
+      const speed = SPEED / 1000; // pixels per millisecond
+      
+      setCoins(prev => {
+        const updated = prev.map(coin => ({
+          ...coin,
+          x: coin.x - speed * deltaTime
+        })).filter(coin => coin.x > -COIN_SIZE);
+        
+        // Generate new coin if needed
+        const rightmostCoin = Math.max(...updated.map(c => c.x), -Infinity);
+        if (rightmostCoin < CANVAS_WIDTH - COIN_SPACING) {
+          // Will be handled by generateNewCoin effect
+        }
+        
+        return updated;
+      });
+      
+      timeRef.current += deltaTime / 1000; // Convert to seconds
+      lastUpdateRef.current = timestamp;
     }
-  }, [isRunning, p, SPEED, nextCoinId]);
-  
+
+    animationRef.current = requestAnimationFrame(animate);
+  }, [isRunning]);
+
+  // Check if we need to generate a new coin
+  useEffect(() => {
+    if (!isRunning) return;
+    
+    const rightmostCoin = Math.max(...coins.map(c => c.x), -Infinity);
+    if (rightmostCoin < CANVAS_WIDTH - COIN_SPACING/2) {
+      generateNewCoin();
+    }
+  }, [coins, isRunning, generateNewCoin]);
+
   useEffect(() => {
     if (isRunning) {
+      lastUpdateRef.current = performance.now();
       animationRef.current = requestAnimationFrame(animate);
     } else {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
+      cancelAnimationFrame(animationRef.current);
     }
-    
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
+
+    return () => cancelAnimationFrame(animationRef.current);
   }, [isRunning, animate]);
-  
-  const handlePChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(e.target.value);
-    if (!isNaN(value) && value >= 0 && value <= 1) {
-      setP(value);
-    }
+
+  const startAnimation = () => {
+    setIsRunning(true);
+    timeRef.current = 0;
+    setHeartRateData([]);
   };
-  
-  const handleQChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(e.target.value);
-    if (!isNaN(value) && value >= 0 && value <= 1) {
-      setQ(value);
-    }
+
+  const stopAnimation = () => {
+    setIsRunning(false);
   };
-  
+
+  const resetAnimation = () => {
+    setIsRunning(false);
+    setCoins([]);
+    setHeartRateData([]);
+    timeRef.current = 0;
+    setNextCoinId(0);
+    
+    // Re-initialize
+    const initialCoins: Coin[] = [];
+    for (let i = 0; i < 3; i++) {
+      initialCoins.push({
+        id: i,
+        isHeads: Math.random() < p,
+        x: CANVAS_WIDTH + i * COIN_SPACING,
+      });
+    }
+    setCoins(initialCoins);
+    setNextCoinId(3);
+  };
+
   return (
-    <div className="coin-flip-widget bg-white border border-gray-200 rounded-lg p-6 my-6">
-      <h3 className="text-lg font-semibold mb-4">Coin Flip Stream</h3>
-      
-      {/* Controls */}
-      <div className="flex gap-4 mb-4">
-        <div className="flex items-center gap-2">
-          <label className="text-sm font-medium">p(heads):</label>
+    <div className="heartrate-widget bg-white border border-gray-200 rounded-lg p-6 my-6">
+      <h3 className="text-lg font-semibold mb-4">Heart Rate Widget</h3>
+      <p className="text-gray-600 mb-6">
+        Watch coins flow and see the &quot;heartbeat&quot; of surprise values below.
+      </p>
+
+      {/* Parameter Controls */}
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            True probability p(heads): {p.toFixed(2)}
+          </label>
           <input
-            type="number"
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
             value={p}
-            onChange={handlePChange}
+            onChange={(e) => setP(parseFloat(e.target.value))}
             disabled={!isPEditable}
-            step="0.1"
-            min="0"
-            max="1"
-            className={`w-20 px-2 py-1 border rounded ${
-              isPEditable 
-                ? 'border-gray-300 bg-white' 
-                : 'border-gray-200 bg-gray-100 cursor-not-allowed'
-            }`}
+            className={`w-full ${!isPEditable ? 'opacity-50' : ''}`}
           />
         </div>
-        
-        <div className="flex items-center gap-2">
-          <label className="text-sm font-medium">q(heads):</label>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Model probability q(heads): {q.toFixed(2)}
+          </label>
           <input
-            type="number"
-            value={q}
-            onChange={handleQChange}
-            disabled={!isQEditable}
-            step="0.1"
+            type="range"
             min="0"
             max="1"
-            className={`w-20 px-2 py-1 border rounded ${
-              isQEditable 
-                ? 'border-gray-300 bg-white' 
-                : 'border-gray-200 bg-gray-100 cursor-not-allowed'
-            }`}
+            step="0.01"
+            value={q}
+            onChange={(e) => setQ(parseFloat(e.target.value))}
+            disabled={!isQEditable}
+            className={`w-full ${!isQEditable ? 'opacity-50' : ''}`}
           />
         </div>
-        
+      </div>
+
+      {/* Animation Controls */}
+      <div className="flex gap-3 mb-6">
         <button
-          onClick={() => setIsRunning(!isRunning)}
-          className={`px-4 py-1 rounded font-medium transition-colors ${
-            isRunning 
-              ? 'bg-red-500 hover:bg-red-600 text-white' 
-              : 'bg-green-500 hover:bg-green-600 text-white'
-          }`}
+          onClick={startAnimation}
+          disabled={isRunning}
+          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
         >
-          {isRunning ? 'Stop' : 'Start'}
+          Start
+        </button>
+        <button
+          onClick={stopAnimation}
+          disabled={!isRunning}
+          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50"
+        >
+          Stop
+        </button>
+        <button
+          onClick={resetAnimation}
+          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+        >
+          Reset
         </button>
       </div>
-      
-      {/* Canvas */}
-      <div 
-        ref={canvasRef}
-        className="relative bg-gray-50 border border-gray-300 rounded overflow-hidden"
-        style={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT }}
-      >
-        {coins.map(coin => (
-          <div
-            key={coin.id}
-            className="absolute transition-none"
-            style={{
-              left: `${coin.x}px`,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              width: COIN_SIZE,
-              height: COIN_SIZE,
-            }}
-          >
-            {coin.isHeads ? (
-              <img 
-                src="/components/widgets/img/cent_front_small.png" 
-                alt="Heads" 
-                className="w-full h-full"
-              />
-            ) : (
-              <img 
-                src="/components/widgets/img/cent_back_small.png" 
-                alt="Tails" 
-                className="w-full h-full"
+
+      {/* Coin Animation Canvas */}
+      <div className="bg-gray-100 rounded-lg p-4 mb-6">
+        <div
+          ref={canvasRef}
+          className="relative overflow-hidden bg-white rounded border-2 border-gray-300"
+          style={{
+            width: CANVAS_WIDTH,
+            height: CANVAS_HEIGHT,
+            margin: '0 auto'
+          }}
+        >
+          {coins.map(coin => (
+            <div
+              key={coin.id}
+              className="absolute transition-none"
+              style={{
+                left: coin.x,
+                top: (CANVAS_HEIGHT - COIN_SIZE) / 2,
+                width: COIN_SIZE,
+                height: COIN_SIZE,
+              }}
+            >
+              {coin.isHeads ? (
+                <img 
+                  src="/images/cent_front_small.png" 
+                  alt="Heads" 
+                  className="w-full h-full"
+                />
+              ) : (
+                <img 
+                  src="/images/cent_back_small.png" 
+                  alt="Tails" 
+                  className="w-full h-full"
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Heart Rate Graph */}
+      <div className="bg-gray-100 rounded-lg p-4">
+        <h4 className="text-md font-semibold mb-3">Surprise Heart Rate (bits)</h4>
+        <div className="bg-white rounded border-2 border-gray-300 relative" 
+             style={{ width: GRAPH_WIDTH, height: GRAPH_HEIGHT, margin: '0 auto' }}>
+          
+          <svg width={GRAPH_WIDTH} height={GRAPH_HEIGHT} className="absolute inset-0">
+            {/* Grid lines */}
+            <defs>
+              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#f0f0f0" strokeWidth="1"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+            
+            {/* Y-axis labels and lines */}
+            {[0, 1, 2, 3, 4, 5].map(val => {
+              const y = GRAPH_HEIGHT - (val / 5) * GRAPH_HEIGHT;
+              return (
+                <g key={val}>
+                  <line x1={0} y1={y} x2={GRAPH_WIDTH} y2={y} stroke="#e0e0e0" strokeWidth="1"/>
+                  <text x={5} y={y - 5} fontSize="12" fill="#666">{val}</text>
+                </g>
+              );
+            })}
+            
+            {/* Cross-entropy constant line */}
+            <line 
+              x1={0} 
+              y1={GRAPH_HEIGHT - (crossEntropy / 5) * GRAPH_HEIGHT} 
+              x2={GRAPH_WIDTH} 
+              y2={GRAPH_HEIGHT - (crossEntropy / 5) * GRAPH_HEIGHT}
+              stroke="#ff6b6b" 
+              strokeWidth="2" 
+              strokeDasharray="5,5"
+            />
+            <text 
+              x={GRAPH_WIDTH - 120} 
+              y={GRAPH_HEIGHT - (crossEntropy / 5) * GRAPH_HEIGHT - 5} 
+              fontSize="12" 
+              fill="#ff6b6b"
+            >
+              Cross-entropy: {crossEntropy.toFixed(2)}
+            </text>
+            
+            {/* Heart rate line */}
+            {heartRateData.length > 1 && (
+              <polyline
+                points={heartRateData.map((point, index) => {
+                  const x = (index / (MAX_POINTS - 1)) * GRAPH_WIDTH;
+                  const y = GRAPH_HEIGHT - Math.min(point.surprise / 5, 1) * GRAPH_HEIGHT;
+                  return `${x},${y}`;
+                }).join(' ')}
+                fill="none"
+                stroke="#4CAF50"
+                strokeWidth="2"
               />
             )}
+            
+            {/* Current surprise markers */}
+            {heartRateData.slice(-10).map((point, index) => {
+              const x = ((heartRateData.length - 10 + index) / (MAX_POINTS - 1)) * GRAPH_WIDTH;
+              const y = GRAPH_HEIGHT - Math.min(point.surprise / 5, 1) * GRAPH_HEIGHT;
+              return (
+                <circle
+                  key={index}
+                  cx={x}
+                  cy={y}
+                  r="3"
+                  fill="#4CAF50"
+                />
+              );
+            })}
+          </svg>
+        </div>
+        
+        {/* Legend */}
+        <div className="mt-3 text-sm text-gray-600 text-center">
+          <div className="flex justify-center gap-6">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-0.5 bg-green-500"></div>
+              <span>Surprise: log₂(1/q) for heads, log₂(1/(1-q)) for tails</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-0.5 bg-red-500 border-dashed border-t-2"></div>
+              <span>Cross-entropy (average surprise)</span>
+            </div>
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );

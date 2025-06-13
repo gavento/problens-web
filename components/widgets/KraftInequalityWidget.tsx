@@ -82,7 +82,7 @@ export default function KraftInequalityWidget() {
     }
     
     // Start from a center position
-    setPositions(tree, 400, 20, 0);
+    setPositions(tree, 0, 20, 0);
     
     // Calculate actual bounds of the tree
     let minX = Infinity, maxX = -Infinity;
@@ -100,10 +100,32 @@ export default function KraftInequalityWidget() {
     
     findBounds(tree);
     
-    // Add padding around the tree - just about one node width
-    const padding = 12; // Just the radius of a node
-    const width = Math.ceil(maxX - minX + padding * 2 + 24); // 24 for node diameter
-    const height = Math.ceil(maxY - minY + padding * 2 + 24);
+    // Center the tree by adjusting all positions
+    const centerOffsetX = -(minX + maxX) / 2;
+    function centerTree(node: TreeNode) {
+      node.x += centerOffsetX;
+      if (node.left) centerTree(node.left);
+      if (node.right) centerTree(node.right);
+    }
+    centerTree(tree);
+    
+    // Recalculate bounds after centering
+    minX = Infinity; maxX = -Infinity;
+    findBounds(tree);
+    
+    // Add padding around the tree
+    const padding = 24; // Padding for node radius plus margin
+    const width = Math.ceil(maxX - minX + padding * 2);
+    const height = Math.ceil(maxY - minY + padding * 2);
+    
+    // Final adjustment to position content in canvas
+    function finalOffset(node: TreeNode) {
+      node.x += padding - minX;
+      node.y += padding - minY;
+      if (node.left) finalOffset(node.left);
+      if (node.right) finalOffset(node.right);
+    }
+    finalOffset(tree);
     
     return { width, height };
   }, [tree]);
