@@ -51,23 +51,22 @@ export default function HeartRateWidget({
   const [activeCoinId, setActiveCoinId] = useState<number | null>(null); // Which coin we're targeting
   const [tracePoints, setTracePoints] = useState<Array<{x: number, y: number}>>([]);
   const [paperOffset, setPaperOffset] = useState(0); // How far the "paper" has scrolled
-  const [coinMarkers, setCoinMarkers] = useState<Array<{x: number, y: number, isHeads: boolean}>>([]);  // Coin images on curve
-  const [markerAdded, setMarkerAdded] = useState(false); // Flag to track if marker was added for current transition
+  const [coinMarkers, setCoinMarkers] = useState<Array<{x: number, y: number, isHeads: boolean}>>([]);
   
   const canvasRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>(0);
   const lastUpdateRef = useRef<number>(0);
   const timeRef = useRef<number>(0);
   
-  const COIN_SIZE = 40; // Smaller coins
-  const COIN_SPACING = 70; // Closer spacing to fit more coins
-  const CANVAS_WIDTH = 250; // Wider to fit 3+ coins
-  const CANVAS_HEIGHT = 80; // Slightly smaller height
+  const COIN_SIZE = 60;
+  const COIN_SPACING = 120; // Increased spacing since we only show 2 coins
+  const CANVAS_WIDTH = 200; // Much smaller - fits only 2 coins
+  const CANVAS_HEIGHT = 100;
   
   const GRAPH_HEIGHT = 200;
   const GRAPH_WIDTH = 400;
-  const TRIGGER_POSITION = CANVAS_WIDTH / 2; // Center trigger position
-  const PAPER_SCROLL_SPEED = 50; // Constant pixels per second for paper movement (increased for more history)
+  const TRIGGER_POSITION = CANVAS_WIDTH / 3; // When seismometer should reach target
+  const PAPER_SCROLL_SPEED = 30; // Constant pixels per second for paper movement
   
   // Calculate cross-entropy (average surprise)
   const crossEntropy = p * Math.log2(1/q) + (1-p) * Math.log2(1/(1-q));
@@ -79,7 +78,7 @@ export default function HeartRateWidget({
   // Initialize with some coins
   useEffect(() => {
     const initialCoins: Coin[] = [];
-    for (let i = 0; i < 5; i++) { // More initial coins
+    for (let i = 0; i < 3; i++) {
       initialCoins.push({
         id: i,
         isHeads: Math.random() < p,
@@ -87,7 +86,7 @@ export default function HeartRateWidget({
       });
     }
     setCoins(initialCoins);
-    setNextCoinId(5);
+    setNextCoinId(3);
   }, [p]);
 
   const generateNewCoin = useCallback(() => {
@@ -135,7 +134,6 @@ export default function HeartRateWidget({
             setTransitionStart(timeRef.current);
             setTransitionDuration(duration);
             setActiveCoinId(coin.id);
-            setMarkerAdded(false); // Reset marker flag for new transition
           }
         });
         
@@ -155,20 +153,16 @@ export default function HeartRateWidget({
         const screenY = GRAPH_HEIGHT - Math.min(newY / 7, 1) * GRAPH_HEIGHT;
         setTracePoints(prev => [...prev, { x: centerX, y: screenY }]);
         
-        // If transition is complete (or very close), add coin marker once
-        if (progress >= 0.95 && !markerAdded && activeCoinId !== null) {
-          setCoins(currentCoins => {
-            const activeCoin = currentCoins.find(coin => coin.id === activeCoinId);
-            if (activeCoin) {
-              setCoinMarkers(prev => [...prev, { 
-                x: centerX, 
-                y: screenY, 
-                isHeads: activeCoin.isHeads 
-              }]);
-              setMarkerAdded(true); // Mark that we've added the marker
-            }
-            return currentCoins; // Return unchanged coins
-          });
+        // Add coin marker when transition completes
+        if (progress >= 0.98) {
+          const activeCoin = coins.find(coin => coin.id === activeCoinId);
+          if (activeCoin && !coinMarkers.some(m => m.x === centerX && m.y === screenY)) {
+            setCoinMarkers(prev => [...prev, { 
+              x: centerX, 
+              y: screenY, 
+              isHeads: activeCoin.isHeads 
+            }]);
+          }
         }
       }
       
@@ -184,7 +178,7 @@ export default function HeartRateWidget({
       // Scroll coin markers left and remove old ones
       setCoinMarkers(prev => prev
         .map(marker => ({ ...marker, x: marker.x - PAPER_SCROLL_SPEED * deltaSeconds }))
-        .filter(marker => marker.x >= -20) // Keep a bit longer to see them exit
+        .filter(marker => marker.x >= -20)
       );
       
       timeRef.current += deltaSeconds;
@@ -194,7 +188,7 @@ export default function HeartRateWidget({
     if (isRunning) {
       animationRef.current = requestAnimationFrame(animate);
     }
-  }, [isRunning, speed, seismometerY, targetY, startY, transitionStart, transitionDuration, activeCoinId, markerAdded, p, q]);
+  }, [isRunning, speed, seismometerY, targetY, startY, transitionStart, transitionDuration, activeCoinId, p, q]);
 
   // Check if we need to generate a new coin
   useEffect(() => {
@@ -249,7 +243,7 @@ export default function HeartRateWidget({
     
     // Re-initialize
     const initialCoins: Coin[] = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 3; i++) {
       initialCoins.push({
         id: i,
         isHeads: Math.random() < p,
@@ -257,7 +251,7 @@ export default function HeartRateWidget({
       });
     }
     setCoins(initialCoins);
-    setNextCoinId(5);
+    setNextCoinId(3);
   };
 
   return (
@@ -367,20 +361,17 @@ export default function HeartRateWidget({
                 top: (CANVAS_HEIGHT - COIN_SIZE) / 2,
                 width: COIN_SIZE,
                 height: COIN_SIZE,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
               }}
             >
               {coin.isHeads ? (
                 <img 
-                  src="/problens-web/cent_front_transparent.png" 
+                  src="/cent_front.png" 
                   alt="Heads" 
                   className="w-full h-full"
                 />
               ) : (
                 <img 
-                  src="/problens-web/cent_back_transparent.png" 
+                  src="/cent_back.png" 
                   alt="Tails" 
                   className="w-full h-full"
                 />
