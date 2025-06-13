@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import KatexMath from "@/components/content/KatexMath";
 
 // ====================================================================
-// HEART RATE SEISMOMETER WIDGET - FIXED & STABILIZED VERSION
+// CROSS-ENTROPY WIDGET - FIXED & STABILIZED VERSION
 // ====================================================================
 //
 // Main fixes applied:
@@ -36,7 +36,7 @@ interface Props {
   default_q?: number;
 }
 
-export default function HeartRateWidget({
+export default function CrossEntropyWidget({
   initialP,
   initialQ,
   default_p = 0.5,
@@ -409,8 +409,8 @@ export default function HeartRateWidget({
   };
 
   return (
-    <div className="heartrate-widget bg-white border border-gray-200 rounded-lg p-6 my-6">
-      <h3 className="text-lg font-semibold mb-4">Heart Rate Seismometer</h3>
+    <div className="crossentropy-widget bg-white border border-gray-200 rounded-lg p-6 my-6">
+      <h3 className="text-lg font-semibold mb-4">Cross-Entropy Widget</h3>
 
       {/* Parameter Controls */}
       <div className="grid grid-cols-3 gap-4 mb-6">
