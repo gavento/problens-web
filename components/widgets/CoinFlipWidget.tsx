@@ -84,6 +84,7 @@ export default function CrossEntropyWidget({
   const TRIGGER_POSITION = CANVAS_WIDTH * 0.5;   // Center of canvas
   const GRAPH_PADDING_BOTTOM = GRAPH_HEIGHT * 0.1; // 10% padding at bottom for 0-line visibility
   const USABLE_GRAPH_HEIGHT = GRAPH_HEIGHT - GRAPH_PADDING_BOTTOM;
+  const COIN_VERTICAL_OFFSET = BOTTOM_COIN_SIZE * 0.6; // Magic offset to align coins with SVG lines
   
   // ====================================================================
   // SIMPLIFIED LOGIC
@@ -542,16 +543,13 @@ export default function CrossEntropyWidget({
           
           {/* Bottom canvas coins */}
           {bottomCoins.map(coin => {
-            // Use stored surprise value (doesn't change when q changes)
-            const exactLineY = GRAPH_HEIGHT - GRAPH_PADDING_BOTTOM - (coin.surprise / maxSurprise) * USABLE_GRAPH_HEIGHT;
-            
             return (
               <div
                 key={`bottom-${coin.id}`}
                 className="absolute"
                 style={{
                   left: `${(coin.x / GRAPH_WIDTH) * 100}%`,
-                  top: exactLineY - (BOTTOM_COIN_SIZE / 2),
+                  top: coin.y - (BOTTOM_COIN_SIZE / 2) - COIN_VERTICAL_OFFSET,
                   width: BOTTOM_COIN_SIZE,
                   height: BOTTOM_COIN_SIZE,
                   transform: 'translateX(-50%)',
