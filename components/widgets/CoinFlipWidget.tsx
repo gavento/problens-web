@@ -523,6 +523,26 @@ export default function CrossEntropyWidget({
             />
           </svg>
           
+          {/* Debug markers at exact surprise line positions */}
+          {bottomCoins.map(coin => {
+            const surprise = calculateSurprise(coin.isHeads);
+            const exactLineY = GRAPH_HEIGHT - (surprise / maxSurprise) * GRAPH_HEIGHT;
+            return (
+              <div
+                key={`debug-${coin.id}`}
+                className="absolute bg-yellow-400"
+                style={{
+                  left: `${(coin.x / GRAPH_WIDTH) * 100}%`,
+                  top: exactLineY - 1,
+                  width: 4,
+                  height: 2,
+                  transform: 'translateX(-50%)',
+                  zIndex: 10,
+                }}
+              />
+            );
+          })}
+
           {/* Bottom canvas coins */}
           {bottomCoins.map(coin => {
             return (
