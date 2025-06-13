@@ -18,16 +18,24 @@ interface Props {
   initialQ?: number;
   isPEditable?: boolean;
   isQEditable?: boolean;
+  default_p?: number;
+  default_q?: number;
+  change_p?: boolean;
+  change_q?: boolean;
 }
 
 export default function HeartRateWidget({
-  initialP = 0.5,
-  initialQ = 0.5,
-  isPEditable = true,
-  isQEditable = true,
+  initialP,
+  initialQ,
+  isPEditable,
+  isQEditable,
+  default_p = 0.5,
+  default_q = 0.5,
+  change_p = true,
+  change_q = true,
 }: Props) {
-  const [p, setP] = useState(initialP);
-  const [q, setQ] = useState(initialQ);
+  const [p, setP] = useState(initialP ?? default_p);
+  const [q, setQ] = useState(initialQ ?? default_q);
   const [coins, setCoins] = useState<Coin[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [nextCoinId, setNextCoinId] = useState(0);
@@ -57,13 +65,13 @@ export default function HeartRateWidget({
     for (let i = 0; i < 3; i++) {
       initialCoins.push({
         id: i,
-        isHeads: Math.random() < initialP,
+        isHeads: Math.random() < p,
         x: CANVAS_WIDTH + i * COIN_SPACING,
       });
     }
     setCoins(initialCoins);
     setNextCoinId(3);
-  }, [initialP]);
+  }, [p]);
 
   const generateNewCoin = useCallback(() => {
     const isHeads = Math.random() < p;
@@ -175,7 +183,7 @@ export default function HeartRateWidget({
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            True probability p(heads): {p.toFixed(2)}
+            p(heads): {p.toFixed(2)} <span className="text-gray-500">(true probability of heads)</span>
           </label>
           <input
             type="range"
@@ -184,13 +192,13 @@ export default function HeartRateWidget({
             step="0.01"
             value={p}
             onChange={(e) => setP(parseFloat(e.target.value))}
-            disabled={!isPEditable}
-            className={`w-full ${!isPEditable ? 'opacity-50' : ''}`}
+            disabled={!change_p}
+            className={`w-full ${!change_p ? 'opacity-50' : ''}`}
           />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Model probability q(heads): {q.toFixed(2)}
+            q(heads): {q.toFixed(2)} <span className="text-gray-500">(model probability of heads)</span>
           </label>
           <input
             type="range"
@@ -199,8 +207,8 @@ export default function HeartRateWidget({
             step="0.01"
             value={q}
             onChange={(e) => setQ(parseFloat(e.target.value))}
-            disabled={!isQEditable}
-            className={`w-full ${!isQEditable ? 'opacity-50' : ''}`}
+            disabled={!change_q}
+            className={`w-full ${!change_q ? 'opacity-50' : ''}`}
           />
         </div>
       </div>
