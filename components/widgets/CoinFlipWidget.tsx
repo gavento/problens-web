@@ -30,6 +30,7 @@ interface BottomCoin {
   isHeads: boolean;
   x: number;
   y: number;
+  surprise: number; // Store the surprise value when created
 }
 
 interface Props {
@@ -73,7 +74,7 @@ export default function CrossEntropyWidget({
   // ===== WIDGET CONSTANTS =====
   const CANVAS_WIDTH = 200;                // Width of top coin animation canvas
   const CANVAS_HEIGHT = 100;               // Height of top coin animation canvas
-  const GRAPH_HEIGHT = 300;                // Height of bottom graph area
+  const GRAPH_HEIGHT = 340;                // Height of bottom graph area (extra space for 0-line coins)
   const GRAPH_WIDTH = 600;                 // Width of bottom graph area
   
   // All sizes relative to canvas dimensions
@@ -81,6 +82,8 @@ export default function CrossEntropyWidget({
   const BOTTOM_COIN_SIZE = GRAPH_HEIGHT * 0.12;  // 12% of graph height
   const COIN_SPACING = CANVAS_WIDTH * 0.5;       // 50% of canvas width spacing
   const TRIGGER_POSITION = CANVAS_WIDTH * 0.5;   // Center of canvas
+  const GRAPH_PADDING_BOTTOM = GRAPH_HEIGHT * 0.1; // 10% padding at bottom for 0-line visibility
+  const USABLE_GRAPH_HEIGHT = GRAPH_HEIGHT - GRAPH_PADDING_BOTTOM;
   
   // ====================================================================
   // SIMPLIFIED LOGIC
@@ -175,14 +178,15 @@ export default function CrossEntropyWidget({
             // Only show if within max height
             if (surprise <= maxSurprise) {
               const centerX = GRAPH_WIDTH / 2;
-              // Calculate Y position - same as SVG lines
-              const screenY = GRAPH_HEIGHT - (surprise / maxSurprise) * GRAPH_HEIGHT;
+              // Calculate Y position with bottom padding
+              const screenY = GRAPH_HEIGHT - GRAPH_PADDING_BOTTOM - (surprise / maxSurprise) * USABLE_GRAPH_HEIGHT;
               
               const bottomCoin: BottomCoin = {
                 id: coin.id,
                 isHeads: coin.isHeads,
                 x: centerX,
-                y: screenY
+                y: screenY,
+                surprise: surprise // Store the surprise value at creation time
               };
               
               setBottomCoins(prev => [...prev, bottomCoin]);
@@ -234,6 +238,19 @@ export default function CrossEntropyWidget({
 
     return () => cancelAnimationFrame(animationRef.current);
   }, [isRunning, animate]);
+
+  // Handle visibility change (alt-tab) to prevent state corruption
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden && isRunning) {
+        // Page became hidden - reset timestamp to prevent time jumps
+        lastUpdateRef.current = performance.now();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [isRunning]);
 
   const startAnimation = () => {
     setBottomCoins([]);
@@ -409,7 +426,7 @@ export default function CrossEntropyWidget({
             
             {/* Y-axis labels and lines */}
             {Array.from({length: Math.ceil(maxSurprise) + 1}, (_, i) => i).map(val => {
-              const y = GRAPH_HEIGHT - (val / maxSurprise) * GRAPH_HEIGHT;
+              const y = GRAPH_HEIGHT - GRAPH_PADDING_BOTTOM - (val / maxSurprise) * USABLE_GRAPH_HEIGHT;
               return (
                 <g key={val}>
                   <line x1={0} y1={y} x2={GRAPH_WIDTH} y2={y} stroke="#e0e0e0" strokeWidth="1"/>
@@ -435,16 +452,16 @@ export default function CrossEntropyWidget({
                 {/* Cross-entropy line */}
                 <line 
                   x1={0} 
-                  y1={GRAPH_HEIGHT - (crossEntropy / maxSurprise) * GRAPH_HEIGHT} 
+                  y1={GRAPH_HEIGHT - GRAPH_PADDING_BOTTOM - (crossEntropy / maxSurprise) * USABLE_GRAPH_HEIGHT} 
                   x2={GRAPH_WIDTH} 
-                  y2={GRAPH_HEIGHT - (crossEntropy / maxSurprise) * GRAPH_HEIGHT}
+                  y2={GRAPH_HEIGHT - GRAPH_PADDING_BOTTOM - (crossEntropy / maxSurprise) * USABLE_GRAPH_HEIGHT}
                   stroke="#ff6b6b" 
                   strokeWidth="2" 
                   strokeDasharray="5,5"
                 />
                 <text 
                   x={GRAPH_WIDTH - 120} 
-                  y={GRAPH_HEIGHT - (crossEntropy / maxSurprise) * GRAPH_HEIGHT - 5} 
+                  y={GRAPH_HEIGHT - GRAPH_PADDING_BOTTOM - (crossEntropy / maxSurprise) * USABLE_GRAPH_HEIGHT - 5} 
                   fontSize="12" 
                   fill="#ff6b6b"
                 >
@@ -459,16 +476,16 @@ export default function CrossEntropyWidget({
                       <>
                         <line 
                           x1={0} 
-                          y1={GRAPH_HEIGHT - (headsSurprise / maxSurprise) * GRAPH_HEIGHT} 
+                          y1={GRAPH_HEIGHT - GRAPH_PADDING_BOTTOM - (headsSurprise / maxSurprise) * USABLE_GRAPH_HEIGHT} 
                           x2={GRAPH_WIDTH} 
-                          y2={GRAPH_HEIGHT - (headsSurprise / maxSurprise) * GRAPH_HEIGHT}
+                          y2={GRAPH_HEIGHT - GRAPH_PADDING_BOTTOM - (headsSurprise / maxSurprise) * USABLE_GRAPH_HEIGHT}
                           stroke="#4CAF50" 
                           strokeWidth="1" 
                           strokeDasharray="3,3"
                         />
                         <text 
                           x={GRAPH_WIDTH - 120} 
-                          y={GRAPH_HEIGHT - (headsSurprise / maxSurprise) * GRAPH_HEIGHT - 5} 
+                          y={GRAPH_HEIGHT - GRAPH_PADDING_BOTTOM - (headsSurprise / maxSurprise) * USABLE_GRAPH_HEIGHT - 5} 
                           fontSize="12" 
                           fill="#4CAF50"
                         >
@@ -488,16 +505,16 @@ export default function CrossEntropyWidget({
                       <>
                         <line 
                           x1={0} 
-                          y1={GRAPH_HEIGHT - (tailsSurprise / maxSurprise) * GRAPH_HEIGHT} 
+                          y1={GRAPH_HEIGHT - GRAPH_PADDING_BOTTOM - (tailsSurprise / maxSurprise) * USABLE_GRAPH_HEIGHT} 
                           x2={GRAPH_WIDTH} 
-                          y2={GRAPH_HEIGHT - (tailsSurprise / maxSurprise) * GRAPH_HEIGHT}
+                          y2={GRAPH_HEIGHT - GRAPH_PADDING_BOTTOM - (tailsSurprise / maxSurprise) * USABLE_GRAPH_HEIGHT}
                           stroke="#2196F3" 
                           strokeWidth="1" 
                           strokeDasharray="3,3"
                         />
                         <text 
                           x={GRAPH_WIDTH - 120} 
-                          y={GRAPH_HEIGHT - (tailsSurprise / maxSurprise) * GRAPH_HEIGHT - 5} 
+                          y={GRAPH_HEIGHT - GRAPH_PADDING_BOTTOM - (tailsSurprise / maxSurprise) * USABLE_GRAPH_HEIGHT - 5} 
                           fontSize="12" 
                           fill="#2196F3"
                         >
@@ -516,7 +533,7 @@ export default function CrossEntropyWidget({
               x1={GRAPH_WIDTH / 2} 
               y1={0} 
               x2={GRAPH_WIDTH / 2} 
-              y2={GRAPH_HEIGHT}
+              y2={GRAPH_HEIGHT - GRAPH_PADDING_BOTTOM}
               stroke="#ccc" 
               strokeWidth="1" 
               strokeDasharray="2,2"
@@ -525,9 +542,8 @@ export default function CrossEntropyWidget({
           
           {/* Bottom canvas coins */}
           {bottomCoins.map(coin => {
-            // Calculate exact position to match SVG coordinate system
-            const surprise = calculateSurprise(coin.isHeads);
-            const exactLineY = GRAPH_HEIGHT - (surprise / maxSurprise) * GRAPH_HEIGHT;
+            // Use stored surprise value (doesn't change when q changes)
+            const exactLineY = GRAPH_HEIGHT - GRAPH_PADDING_BOTTOM - (coin.surprise / maxSurprise) * USABLE_GRAPH_HEIGHT;
             
             return (
               <div
