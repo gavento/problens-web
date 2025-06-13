@@ -129,7 +129,7 @@ But what if your model is way off, like $q =$ \{H: 0.999, T: 0.001\}? You're not
 
 Analogously to KL divergence, cross-entropy is additive so if you keep flipping coins like in the picture below, the total cross-entropy for $n$ flips is going to be $n$ times larger than crossentropy for individual flip. 
 
-<CoinFlipWidget />
+<CoinFlipWidget change_p={false} default_p={0.5} change_q={true} default_q={0.99} />
 
 ![cross-entropy](02-crossentropy/crossentropy.png)
 
