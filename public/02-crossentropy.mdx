@@ -133,21 +133,19 @@ Bottom line: better models are less surprised by the data and have smaller cross
 
 When your model perfectly matches reality (i.e., $q = p$), cross-entropy becomes just plain entropy. Try this special case below:
 
-<CoinFlipWidget entropy={true} change_p={true} default_p={0.5} /> 
-
 ### Entropy: 
 
 The term $H(p) = H(p, p) = \sum_{i = 1}^n p_i \log 1 / p_i$ is a special case of cross-entropy called just plain _entropy_. It's the best possible cross-entropy you can get for distribution $p$—when you model it perfectly as itself.  
 
-Intuitively, entropy tells you how much surprise or uncertainty is baked into $p$. Like, even if you know you're flipping a fair coin, you still don't know which way it'll land. There's inherent uncertainty. The fair coin's entropy is <Math math = "H(\{\textrm{H: }1/2, \textrm{T: }1/2\}) = 1" />. 
+Intuitively, entropy tells you how much surprise or uncertainty is baked into $p$. Like, even if you know you're flipping a fair coin and hence $p = q$, you still don't know which way the coin will land. There's inherent uncertainty in that. This is what entropy measures. The fair coin's entropy is <Math math = "H(\{\textrm{H: }1/2, \textrm{T: }1/2\}) = \frac12\cdot \log2 +  \frac12\cdot \log2 = 1" /> bit. 
 
-Entropy can get way smaller—like <Math math = "H(\{\textrm{H: }0.001, \textrm{T: }0.999\}) = 0.01" />. Makes sense! Sure, seeing heads is super surprising ($\log 1/0.001 \approx 10$), but it's so rare that the _average_ surprise stays tiny. Most flips are boringly predictable. Entropy hits zero when one outcome has 100% probability. 
+Entropy can get way smaller than 1 bit if say heads are very unlikely, as you can see in the next widget. Makes sense! Sure, seeing heads is super surprising ($\log 1/0.05 \approx 4.32$), but it's so rare that the _average_ surprise stays tiny - just $0.29$ bits per flip on average. That's because most flips are boringly predictable tails. Entropy hits zero when one outcome has 100% probability. 
 
-![entropy](02-crossentropy/entropy.png)
+<CoinFlipWidget entropy={true} change_p={true} default_p={0.05} /> 
 
 But entropy can also get way bigger than 1 bit. Rolling a die has entropy $\log_2(6) \approx 2.6$ bits. In general, a uniform distribution over $k$ options has entropy $\log_2 k$—and that's the max for any distribution with $k$ options. Makes sense—you're most uncertain when everything's equally likely.  
 
-Try playing with this widget to get a feel!
+Try some examples: 
 <EntropyWidget numCategories={6} title="Entropy of die-rolling" />
 
 <Expand headline = "Example: correct horse battery staple">
