@@ -565,6 +565,10 @@ export default function CrossEntropyWidget({
           })}
         </div>
         
+        {/* Explanation text */}
+        <div className="mt-3 text-sm text-gray-600 text-center">
+          Heads/Tails lines show the corresponding surprise according to <KatexMath math="q" />. Cross-entropy is the average surprise.
+        </div>
       </div>
     </div>
   );
