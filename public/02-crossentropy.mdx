@@ -301,7 +301,7 @@ Every letter with frequency $p$ got code-name of length exactly $\log 1/p$! Noti
 <Math displayMode={true} math = "N \cdot \sum_{i = 1}^k p_i \cdot \log \frac{1}{p_i} = N \cdot H(p)." />
 That is, if you manage to construct a code with $p \rightarrow \log 1/p$, you spend $H(p)$ bits per letter on average. 
 
-One of the most beautiful and important results of coding theory is that you can always construct a code that spends close to $H(p)$ bits per letter on average, and there's no better code (if we treat letters independently). Details in the next expand box, we will not build on this later on. 
+One of the most beautiful and important results of coding theory is that you can always construct a code that spends close to $H(p)$ bits per letter on average, and there's no better code (if we treat letters independently). Details in the next expand box. 
 </Expand>
 
 <Expand headline = "Code construction details" advanced = {true}>
@@ -376,27 +376,17 @@ If we can predict the next letter of a text, this means you can also compress th
 
 If the actual next letter is 'l', then the surprisal of LLM upon seeing this letter is $\log 1/p('l')$. We can now save the letter 'l' to a file by using the best possible code encoding symbols with frequencies $p$; that is, we can store 'l' using $\log 1/p('l')$ bits of memory. The decoding algorithm is very similar, it runs the same LLM and always compute the next code $p_s$ used to decode the next letter. <Footnote>In practice, this gets more complicated whenever $\log 1/p('l')$ is not a whole number. We had the same issue in our coding theory discussion, let's not go into it. </Footnote>
 
-The fun part (that we will understand better later on) is that LLMs are being trained to optimize the so-called cross-entropy loss. Using our coding-theory intuitions, LLMs are literally being optimized to be as good as possible in compressing English text! 
+The fun part (that we will understand better later on) is that LLMs are being trained to optimize the so-called cross-entropy loss - in a nutshell this means that if the next letter is 'l', we want the surprisal $\log 1/p('l')$ of the network to be as small as possible. Using our coding-theory intuitions - the surprisal is also the code length in the best code - we can view the training of LLMs as the training to compress English text as much as possible. 
 
+[todo fill numbers]
+It is thus maybe not so surprising that they are incredibly good at it! In the following experiments, GPT2 achieved similar compression to the winners of Hutter challenge and Llamma 3 was a good bit better. Wait a minute, how come then that the world record is 120MB and not ~50MB? The problem is that Hutter only wants you to compress 1GB of text, not the whole Internet. If you use GPT2 to compress a piece of text, then the size of the compressed file should also include the size of GPT2 itself. If Hutter's challenge was about compressing 1000GB-sized file, using LLMs would be a no-brainer, but, alas, Hutter created his challenge before the current AI paradigm based on working with _lots_ of data. 
 
-Before covering the rest, let me tell you about one of the coolest experiments I know of. Claude Shannon, who [invented information theory](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication) in the late 40s, did [the following](https://www.princeton.edu/~wbialek/rome/refs/shannon_51.pdf) a few years later. He'd show people partial sentences and ask them to guess the next letter. This way, he figured English is at most about 0.5 - 1 bit per letter of entropy. So humans are able to compress text by a factor of 8, storing 1GB in just over 100MB. Interestingly, that's also the current [Marcus Hutter challenge](http://prize.hutter1.net/) record. 
+Before playing with the widget, let me tell you about one of the coolest experiments I know of. Claude Shannon, who [invented information theory](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication) in the late 40s, did [the following](https://www.princeton.edu/~wbialek/rome/refs/shannon_51.pdf) a few years later. He'd show people partial sentences and ask them to guess the next letter. This way, he figured that people can compress English to about 0.5 - 1 bits per letter, similarly to the GPT-2 performance. As far as I can say, this is the first experiment about next-token prediction; Claude Shannon was so based he did it 60+ years before it became cool! 
 
-
-
-Try compressing different types of text yourself with the widget below. Notice how the compression ratio depends heavily on the structure and predictability of the text:
-
-
-
+See compression factors of different types of text and different algorithms with the widget below. Notice how the compression ratio depends heavily on the structure and predictability of the text. <Footnote>Let me know what text I should add to the widget! </Footnote>
 
 <CompressionWidget />
 
-But what's the limit if we don't treat letters independently? 
-
-
-But hold up! Large language models literally train to predict the next letter (well, token) in text. How good are they? GPT-2 matched humans at roughly 1 bit per letter, but today's models are better, probably at around 0.5 bits per letter. <Footnote>So why isn't the Hutter record 50MB by using state-of-the-art LLMs? Because you'd have to include the model itself in your compressed file. Or, you would have to train an LLM from scratch inside your compression algorithm, but that requires way more than the 1GB of data you're trying to compress, and way more time than Hutter allows the algorithms to run. In other words, while it was a spectacular vision to predict that text compression is going to be important for AI, the parameters of the challenge make it hard match for current AI paradigm. </Footnote> We actually use this compression ability (measured as [cross-entropy loss](05-machine_learning/neural-nets) or [perplexity](https://en.wikipedia.org/wiki/Perplexity)) as one of the main ways to compare models. 
-
-The image below is from a famous paper that trained 
-![scaling laws](02-crossentropy/scaling_laws.png "image from https://arxiv.org/pdf/2001.08361")
 </Expand>
 
 ## Next Steps <a id="next-steps"></a>
