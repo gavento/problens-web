@@ -35,7 +35,7 @@ If you plug the same distribution into KL twice, you get:
 because $\log 1 = 0$.
 Makes sense—you can't tell the truth apart from the truth. 🤷
 
-Even better, KL divergence is always nonnegative. I think we built up a pretty good intuition for this in the last chapter. Just imagine sampling from $p$ but Bayes' rule somehow convinces you more and more that you are sampling from ... some other distribution $q$? That would be really messed up! 
+Even better, KL divergence is always nonnegative - this fact is sometimes called [Gibbs inequality](https://en.wikipedia.org/wiki/Gibbs%27_inequality). I think we built up a pretty good intuition for this in the last chapter. Just imagine sampling from $p$ but Bayes' rule somehow convinces you more and more that you are sampling from ... some other distribution $q$? That would be really messed up! 
 
 This is not a proof though, just an argument that the world with possibly negative KL is not worth living in. Check out the formal proof if you're curious.
 
@@ -123,9 +123,9 @@ These two pieces on the right are super important. Let's get a feel for what the
 ### Cross-entropy: 
 The term $H(p,q) = \sum_{i = 1}^n p_i \log 1 / q_i$ is called _cross-entropy_. Think of it as: how surprised are you on average when you see data from $p$ but you're modeling it as $q$? 
 
-Check it out in the widget below. The widget shows you your surprise if you keep flipping a fair coin (and, if you have money on the line, it also shows your heart rate). The default model $q =$ \{H: 0.99, T: 0.01\} matches reality very poorly, so you are greatly surprised whenever you see tails. The average (red line, cross-entropy) is high. Try playing with the value of $q$. 
+Check it out in the widget below. The widget shows you your surprise if you keep flipping a fair coin (and, if you have money on the line, it also shows your heart rate). The default model $q =$ \{H: 0.99, T: 0.01\} matches reality very poorly, so you are greatly surprised whenever you see tails. The average (red line, cross-entropy) is high. In the following widget, keep $p(heds) = 1/2$ and play with the value of $q$. 
 
-<CoinFlipWidget change_p={false} default_p={0.5} change_q={true} default_q={0.99} />
+<CoinFlipWidget change_p={true} default_p={0.5} change_q={true} default_q={0.99} />
 
 Cross-entropy is your expected (i.e., average) surprise. Analogously to KL divergence, cross-entropy is additive so if you keep flipping coins like in the picture below, the total cross-entropy for $n$ flips is going to be $n$ times the crossentropy for individual flip. 
 

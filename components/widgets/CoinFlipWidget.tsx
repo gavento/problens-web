@@ -84,7 +84,8 @@ export default function CrossEntropyWidget({
   const TRIGGER_POSITION = CANVAS_WIDTH * 0.5;   // Center of canvas
   const GRAPH_PADDING_BOTTOM = GRAPH_HEIGHT * 0.1; // 10% padding at bottom for 0-line visibility
   const USABLE_GRAPH_HEIGHT = GRAPH_HEIGHT - GRAPH_PADDING_BOTTOM;
-  const COIN_VERTICAL_OFFSET = BOTTOM_COIN_SIZE * 0.6; // Magic offset to align coins with SVG lines
+  const COIN_VERTICAL_OFFSET = BOTTOM_COIN_SIZE * 0.8; // Magic offset to align coins with SVG lines
+  const TOP_COIN_VERTICAL_OFFSET = TOP_COIN_SIZE * 0.8; // Magic offset for top canvas centering
   
   // ====================================================================
   // SIMPLIFIED LOGIC
@@ -388,7 +389,7 @@ export default function CrossEntropyWidget({
               className="absolute transition-none"
               style={{
                 left: coin.x,
-                top: CANVAS_HEIGHT / 2 - TOP_COIN_SIZE / 2,
+                top: CANVAS_HEIGHT / 2 - TOP_COIN_SIZE / 2 - TOP_COIN_VERTICAL_OFFSET,
                 width: TOP_COIN_SIZE,
                 height: TOP_COIN_SIZE,
               }}
