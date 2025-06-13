@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "build:turbo": "next build --experimental-turbo",
     "start": "next build && serve out -n",
     "check": "tsc && next lint",
     "check:tsc": "tsc",
@@ -44,7 +45,6 @@
     "cypress": "^14.2.1",
     "eslint": "^9.24.0",
     "eslint-config-next": "15.2.4",
-    "eslint-plugin-mdx": "^3.4.1",
     "postcss": "^8.5.3",
     "serve": "^14.2.4",
     "start-server-and-test": "^2.0.11",
