@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import KatexMath from "@/components/content/KatexMath";
 
 // English letter frequencies (approximate percentages)
 const DEFAULT_FREQUENCIES: Record<string, number> = {
@@ -39,7 +40,9 @@ export default function ShannonCodeWidget() {
   const [animationStep, setAnimationStep] = useState(0);
   const [codeAssignments, setCodeAssignments] = useState<CodeAssignment[]>([]);
   const [tree, setTree] = useState<TreeNode | null>(null);
+  const [isZoomed, setIsZoomed] = useState(false);
   const tableContainerRef = useRef<HTMLDivElement>(null);
+  const treeContainerRef = useRef<HTMLDivElement>(null);
 
   // Normalize frequencies to sum to 100
   const normalizedFrequencies = useMemo(() => {
@@ -116,8 +119,8 @@ export default function ShannonCodeWidget() {
   // Build complete binary tree
   const buildTree = useCallback(() => {
     const maxDepth = 11;
-    const width = 1200;
-    const height = 700;
+    const width = 1600;
+    const height = 600;
     const levelHeight = 50;
     const nodeMap = new Map<string, TreeNode>();
     
@@ -239,6 +242,22 @@ export default function ShannonCodeWidget() {
             
             // Hide subtree
             hideSubtree(targetNode);
+            
+            // Center view on the current node
+            setTimeout(() => {
+              if (treeContainerRef.current && targetNode.x && targetNode.y) {
+                const container = treeContainerRef.current;
+                const containerRect = container.getBoundingClientRect();
+                const scrollLeft = targetNode.x - containerRect.width / 2;
+                const scrollTop = targetNode.y - containerRect.height / 2;
+                
+                container.scrollTo({
+                  left: Math.max(0, scrollLeft),
+                  top: Math.max(0, scrollTop),
+                  behavior: 'smooth'
+                });
+              }
+            }, 200);
           } else {
             console.warn(`Could not find node for code: ${assignment.code} (letter: ${assignment.letter})`);
           }
@@ -317,6 +336,100 @@ export default function ShannonCodeWidget() {
   }, [tree]);
 
   return (
+    <>
+      {/* Fullscreen zoom overlay */}
+      {isZoomed && tree && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
+          onClick={() => setIsZoomed(false)}
+        >
+          <div 
+            className="bg-white rounded-lg p-6 w-full max-w-7xl max-h-[90vh] overflow-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h4 className="text-2xl font-semibold text-gray-800">
+                Shannon Code Tree Construction (Full View)
+              </h4>
+              <button
+                onClick={() => setIsZoomed(false)}
+                className="text-3xl hover:bg-gray-100 rounded-full w-10 h-10 flex items-center justify-center"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="bg-gray-50 rounded-lg p-4 overflow-auto max-h-[70vh]">
+              <svg width="1600" height="600" className="mx-auto">
+                {/* Draw edges */}
+                {allVisibleNodes.map(node => (
+                  <g key={`edges-${node.id}`}>
+                    {node.left && node.left.isVisible && (
+                      <line
+                        x1={node.x}
+                        y1={node.y}
+                        x2={node.left.x}
+                        y2={node.left.y}
+                        stroke="#666"
+                        strokeWidth="1"
+                      />
+                    )}
+                    {node.right && node.right.isVisible && (
+                      <line
+                        x1={node.x}
+                        y1={node.y}
+                        x2={node.right.x}
+                        y2={node.right.y}
+                        stroke="#666"
+                        strokeWidth="1"
+                      />
+                    )}
+                  </g>
+                ))}
+
+                {/* Draw nodes */}
+                {allVisibleNodes.map(node => (
+                  <g key={`node-${node.id}`}>
+                    <circle
+                      cx={node.x}
+                      cy={node.y}
+                      r="15"
+                      fill={node.isCodeNode ? "#3b82f6" : "#f3f4f6"}
+                      stroke={node.isCodeNode ? "#1d4ed8" : "#9ca3af"}
+                      strokeWidth={node.isCodeNode ? "3" : "1"}
+                    />
+                    {node.isCodeNode && node.letter && (
+                      <>
+                        <text
+                          x={node.x}
+                          y={node.y + 3}
+                          textAnchor="middle"
+                          fill="white"
+                          fontSize="14"
+                          fontWeight="bold"
+                        >
+                          {node.letter}
+                        </text>
+                        <text
+                          x={node.x}
+                          y={node.y + 35}
+                          textAnchor="middle"
+                          fill="#374151"
+                          fontSize="12"
+                          className="font-mono"
+                        >
+                          {node.code}
+                        </text>
+                      </>
+                    )}
+                  </g>
+                ))}
+              </svg>
+            </div>
+          </div>
+        </div>
+      )}
+
     <div className="shannon-code-widget bg-white border border-gray-200 rounded-lg p-6 my-6">
       <h3 className="text-lg font-semibold mb-4">Shannon Code Constructor</h3>
       <p className="text-gray-600 mb-6">
@@ -368,8 +481,21 @@ export default function ShannonCodeWidget() {
       {tree && (
         <div className="mt-6 mb-6">
           <h4 className="font-medium mb-4">Shannon Code Tree Construction</h4>
-          <div className="bg-gray-50 rounded-lg p-4 overflow-auto">
-            <svg width="1200" height="700" className="mx-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h4 className="font-medium">Shannon Code Tree Construction</h4>
+            <button
+              onClick={() => setIsZoomed(!isZoomed)}
+              className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+            >
+              {isZoomed ? '🗗 Exit Fullscreen' : '🔍 Zoom'}
+            </button>
+          </div>
+          <div 
+            className={`bg-gray-50 rounded-lg p-4 overflow-auto max-h-96 ${isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'}`}
+            ref={treeContainerRef}
+            onClick={() => setIsZoomed(!isZoomed)}
+          >
+            <svg width="1600" height="600" className="mx-auto">
               {/* Draw edges */}
               {allVisibleNodes.map(node => (
                 <g key={`edges-${node.id}`}>
@@ -443,10 +569,12 @@ export default function ShannonCodeWidget() {
         <div className="mt-6">
           <h4 className="font-medium mb-4">Shannon Code Assignments</h4>
           <div className="bg-gray-50 rounded-lg p-4 max-h-80 overflow-y-auto" ref={tableContainerRef}>
-            <div className="grid grid-cols-4 gap-4 text-sm font-semibold text-gray-700 mb-3 sticky top-0 bg-gray-50">
+            <div className="grid grid-cols-4 gap-4 text-sm font-semibold text-gray-700 mb-3 sticky top-0 bg-gray-50 p-2 rounded">
               <div>Letter</div>
               <div>Probability</div>
-              <div>Rounded to 2⁻ⁿ</div>
+              <div className="bg-white px-2 py-1 rounded shadow-sm">
+                <KatexMath math="\text{Rounded to } 2^{-n}" />
+              </div>
               <div>Code</div>
             </div>
             {codeAssignments.map((assignment, i) => (
@@ -470,7 +598,7 @@ export default function ShannonCodeWidget() {
               {entropy.toFixed(3)} bits
             </div>
             <div className="text-sm text-blue-700 mt-1">
-              H = -∑ p(x) log₂ p(x)
+              <KatexMath math="H = -\sum p(x) \log_2 p(x)" />
             </div>
           </div>
           
@@ -480,11 +608,12 @@ export default function ShannonCodeWidget() {
               {averageCodeLength.toFixed(3)} bits
             </div>
             <div className="text-sm text-green-700 mt-1">
-              L = ∑ p(x) × length(code(x))
+              <KatexMath math="L = \sum p(x) \times \text{length}(\text{code}(x))" />
             </div>
           </div>
         </div>
       )}
     </div>
+    </>
   );
 }

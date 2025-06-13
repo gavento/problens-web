@@ -68,19 +68,21 @@ export default function KraftInequalityWidget() {
     const height = 350;
     const levelHeight = 50;
     
+    // Configurable spread factors for each level
+    const spreadFactors = [0.45, 0.35, 0.25, 0.2, 0.15]; // Smaller spreads for each level
+    
     function setPositions(node: TreeNode, x: number, y: number, spread: number, depth: number = 0) {
       node.x = x;
       node.y = y;
       
       if (node.left && node.right) {
-        // Keep first two layers spread, make others much more compact
-        const spreadFactor = depth < 2 ? 0.6 : 0.35;
+        const spreadFactor = spreadFactors[depth] || 0.1; // Use configurable factors, fallback to 0.1
         setPositions(node.left, x - spread/2, y + levelHeight, spread * spreadFactor, depth + 1);
         setPositions(node.right, x + spread/2, y + levelHeight, spread * spreadFactor, depth + 1);
       }
     }
     
-    setPositions(tree, width / 2, 30, width * 0.8);
+    setPositions(tree, width / 2, 30, width * 0.65); // Smaller initial spread
     
     return { width, height };
   }, [tree]);
@@ -144,11 +146,32 @@ export default function KraftInequalityWidget() {
       if (newSet.has(nodeId)) {
         newSet.delete(nodeId);
       } else {
+        // When adding a new code node, remove any existing code nodes that are descendants
+        const [depth, pos] = nodeId.split('-').map(Number);
+        
+        // Remove all descendants of this node
+        const nodesToRemove = new Set<string>();
+        for (let d = depth + 1; d <= maxDepth; d++) {
+          const startPos = pos * Math.pow(2, d - depth);
+          const endPos = (pos + 1) * Math.pow(2, d - depth);
+          
+          for (let p = startPos; p < endPos; p++) {
+            const descendantId = `${d}-${p}`;
+            if (newSet.has(descendantId)) {
+              nodesToRemove.add(descendantId);
+            }
+          }
+        }
+        
+        // Remove all identified descendants
+        nodesToRemove.forEach(id => newSet.delete(id));
+        
+        // Add the new code node
         newSet.add(nodeId);
       }
       return newSet;
     });
-  }, [nodeStates]);
+  }, [nodeStates, maxDepth]);
 
   // Find all free leaves (nodes at max depth with no code)
   const findFreeLeaf = useCallback((codeNodes: Set<string>) => {
