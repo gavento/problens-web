@@ -24,30 +24,23 @@ export default function CompressionWidget() {
   const [selectedSample, setSelectedSample] = useState<TextSample | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [useFixedScale, setUseFixedScale] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
       try {
         // Load text list configuration  
-        console.log('Loading text list...');
         const basePath = process.env.NODE_ENV === 'production' ? '/problens-web' : '';
         const listUrl = `${basePath}/compression_experiments/texts/list.json`;
-        console.log('Fetching from URL:', listUrl);
         const listResponse = await fetch(listUrl);
-        console.log('List response status:', listResponse.status);
         if (!listResponse.ok) throw new Error(`Failed to load text list: ${listResponse.status}`);
         const textConfigs = await listResponse.json();
-        console.log('Loaded text configs:', textConfigs);
 
         // Load compression results
-        console.log('Loading compression results...');
         const resultsUrl = `${basePath}/compression_experiments/compression_results.json`;
-        console.log('Fetching from URL:', resultsUrl);
         const resultsResponse = await fetch(resultsUrl);
-        console.log('Results response status:', resultsResponse.status);
         if (!resultsResponse.ok) throw new Error(`Failed to load compression results: ${resultsResponse.status}`);
         const compressionResults = await resultsResponse.json();
-        console.log('Loaded compression results:', compressionResults);
 
         // Load each text file and combine with results
         const samples: TextSample[] = [];
@@ -55,7 +48,6 @@ export default function CompressionWidget() {
         for (const config of textConfigs) {
           try {
             const textUrl = `${basePath}/compression_experiments/texts/${config.filename}`;
-            console.log('Fetching text file:', textUrl);
             const textResponse = await fetch(textUrl);
             if (!textResponse.ok) continue;
             
@@ -113,15 +105,14 @@ export default function CompressionWidget() {
 
             samples.push(sample);
           } catch (err) {
-            console.warn(`Failed to load text file: ${config.filename}`);
+            // Silently continue if text file fails to load
           }
         }
 
-        console.log('Successfully loaded', samples.length, 'samples');
         setTextSamples(samples);
         setLoading(false);
       } catch (err) {
-        console.error('Failed to load compression data, using fallback:', err);
+        console.warn('Failed to load compression data, using fallback:', err);
         // Use fallback data when files are not available
         const fallbackSamples: TextSample[] = [
           {
@@ -225,7 +216,8 @@ export default function CompressionWidget() {
     return `${bits} bits`;
   };
 
-  const getBarWidth = (bits: number, minBits: number, maxBits: number): number => {
+  // Adaptive scale (original)
+  const getAdaptiveBarWidth = (bits: number, minBits: number, maxBits: number): number => {
     // Scale so that the best compression (minBits) gets 25% width and worst gets 100%
     const logBits = Math.log10(bits);
     const logMin = Math.log10(minBits);
@@ -234,6 +226,38 @@ export default function CompressionWidget() {
     // Map to 25-100% range
     const normalized = (logBits - logMin) / (logMax - logMin);
     return 25 + (normalized * 75);
+  };
+
+  // Fixed scale - global maximum across all samples
+  const getGlobalMaxRatio = (): number => {
+    let maxRatio = 1;
+    textSamples.forEach(sample => {
+      sample.results.forEach(result => {
+        const ratio = parseFloat(result.ratio.replace('x', ''));
+        if (ratio > maxRatio) maxRatio = ratio;
+      });
+    });
+    return maxRatio;
+  };
+
+  const getFixedBarWidth = (ratio: number, globalMaxRatio: number): number => {
+    // Best compression (highest ratio) gets 10% of max width (90%)
+    // Worst compression (1x) gets minimum width (10%)
+    // Scale inversely: higher ratio = shorter bar
+    const maxWidth = 90;
+    const minWidth = 10;
+    
+    // Inverse scaling: 1x ratio gets maxWidth, globalMaxRatio gets minWidth
+    const width = maxWidth - ((ratio - 1) / (globalMaxRatio - 1)) * (maxWidth - minWidth);
+    return Math.max(minWidth, Math.min(maxWidth, width));
+  };
+
+  const getBarWidth = (bits: number, minBits: number, maxBits: number, ratio?: number, globalMaxRatio?: number): number => {
+    if (useFixedScale && ratio !== undefined && globalMaxRatio !== undefined) {
+      return getFixedBarWidth(ratio, globalMaxRatio);
+    } else {
+      return getAdaptiveBarWidth(bits, minBits, maxBits);
+    }
   };
 
   const getBarColor = (percent: number): string => {
@@ -245,7 +269,8 @@ export default function CompressionWidget() {
     return "#ef4444"; // red
   };
 
-  const getCompressionRatioMarkers = (minBits: number, maxBits: number) => {
+  // Adaptive scale markers (original)
+  const getAdaptiveMarkers = (minBits: number, maxBits: number) => {
     const markers = [];
     
     // Calculate the range of compression ratios
@@ -270,7 +295,7 @@ export default function CompressionWidget() {
     for (const ratio of candidateRatios) {
       const targetBits = maxBits / ratio;
       if (targetBits >= minBits * 0.9 && targetBits <= maxBits) {
-        const position = getBarWidth(targetBits, minBits, maxBits);
+        const position = getAdaptiveBarWidth(targetBits, minBits, maxBits);
         
         // Format the ratio nicely
         let label;
@@ -294,6 +319,34 @@ export default function CompressionWidget() {
     }
     
     return markers;
+  };
+
+  // Fixed scale markers - powers of 2
+  const getFixedMarkers = (globalMaxRatio: number) => {
+    const markers = [];
+    
+    // Generate powers of 2 up to the global maximum
+    let power = 1;
+    while (power <= globalMaxRatio) {
+      if (power >= 2 || power === 1) { // Include 1x and powers of 2
+        const position = getFixedBarWidth(power, globalMaxRatio);
+        markers.push({ 
+          ratio: power === 1 ? "1x" : `${power}x`, 
+          position 
+        });
+      }
+      power *= 2;
+    }
+    
+    return markers;
+  };
+
+  const getCompressionRatioMarkers = (minBits: number, maxBits: number, globalMaxRatio?: number) => {
+    if (useFixedScale && globalMaxRatio !== undefined) {
+      return getFixedMarkers(globalMaxRatio);
+    } else {
+      return getAdaptiveMarkers(minBits, maxBits);
+    }
   };
 
   if (loading) {
@@ -326,11 +379,28 @@ export default function CompressionWidget() {
 
   return (
     <div className="compression-widget bg-white border border-gray-200 rounded-lg p-6 my-6">
-      <h3 className="text-lg font-semibold mb-4">Text Compression Explorer</h3>
-      <p className="text-gray-600 mb-6">
-        Explore how different compression algorithms perform on various types of text. 
-        Click a sample to see compression results.
-      </p>
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <h3 className="text-lg font-semibold mb-2">Text Compression Explorer</h3>
+          <p className="text-gray-600">
+            Explore how different compression algorithms perform on various types of text. 
+            Click a sample to see compression results.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 ml-4">
+          <span className="text-sm text-gray-600">Scale:</span>
+          <button
+            onClick={() => setUseFixedScale(!useFixedScale)}
+            className={`px-3 py-1 text-sm border rounded transition-colors ${
+              useFixedScale 
+                ? 'bg-blue-500 text-white border-blue-500' 
+                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+            }`}
+          >
+            {useFixedScale ? 'Fixed' : 'Adaptive'}
+          </button>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
         {textSamples.map((sample, index) => (
@@ -373,7 +443,8 @@ export default function CompressionWidget() {
             {(() => {
               const maxBits = Math.max(...selectedSample.results.map(r => r.bits));
               const minBits = Math.min(...selectedSample.results.map(r => r.bits));
-              const markers = getCompressionRatioMarkers(minBits, maxBits);
+              const globalMaxRatio = useFixedScale ? getGlobalMaxRatio() : undefined;
+              const markers = getCompressionRatioMarkers(minBits, maxBits, globalMaxRatio);
 
               return (
                 <>
@@ -382,7 +453,9 @@ export default function CompressionWidget() {
                     <div 
                       className="h-2 rounded-full relative"
                       style={{
-                        background: 'linear-gradient(to right, #22c55e 0%, #22c55e 25%, #84cc16 50%, #eab308 75%, #f97316 90%, #ef4444 100%)'
+                        background: useFixedScale 
+                          ? 'linear-gradient(to right, #ef4444 0%, #f97316 20%, #eab308 40%, #84cc16 60%, #22c55e 80%, #22c55e 100%)'
+                          : 'linear-gradient(to right, #22c55e 0%, #22c55e 25%, #84cc16 50%, #eab308 75%, #f97316 90%, #ef4444 100%)'
                       }}
                     >
                       {/* Compression ratio markers */}
@@ -399,15 +472,25 @@ export default function CompressionWidget() {
                       ))}
                     </div>
                     <div className="flex justify-between text-xs text-gray-500 mt-1">
-                      <span>Better compression →</span>
-                      <span>← Worse compression</span>
+                      {useFixedScale ? (
+                        <>
+                          <span>← Worse compression</span>
+                          <span>Better compression →</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Better compression →</span>
+                          <span>← Worse compression</span>
+                        </>
+                      )}
                     </div>
                   </div>
 
                   {/* Compression bars */}
                   <div className="space-y-3">
                     {selectedSample.results.map((result, index) => {
-                      const width = getBarWidth(result.bits, minBits, maxBits);
+                      const ratio = parseFloat(result.ratio.replace('x', ''));
+                      const width = getBarWidth(result.bits, minBits, maxBits, ratio, globalMaxRatio);
                       const color = getBarColor(width);
                       
                       return (
