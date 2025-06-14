@@ -100,7 +100,7 @@ export default function CompressionWidget() {
                   "Letter-wise optimal": "Letter frequencies in code are similar to English texts, so we can get about 4 bits per character",
                   "ZIP (zlib)": "Code is easier to compress by zip than regular English text as it contains many very frequent words like print, if and so on.",
                   "LLM (GPT-2)": "As with ZIP, GPT-2 achieves a bit better performance than on regular English text.",
-                  "LLM (Llama 4)": "Unlike GPT-2, Llama can code. The code snippet is a well-known algorithm and Llama clearly knows it. The second part of the algorithm is more ad-hoc and contains some printing of results where there's more wiggle room about what may come next."
+                  "LLM (Llama 4)": "Unlike GPT-2, Llama can code. The code snippet is a well-known algorithm and Llama clearly knows it. The second part of the example code is more ad-hoc as it contains some printing of results where there's more wiggle room about what may come next."
                 },
                 "repeated_phrase": {
                   "Baseline": "",
@@ -581,7 +581,7 @@ export default function CompressionWidget() {
                           </HoverCard.Trigger>
                           <HoverCard.Portal>
                             <HoverCard.Content 
-                              className="z-50 bg-white border border-gray-200 rounded-md shadow-lg p-4 max-w-lg"
+                              className="z-50 bg-white border border-gray-200 rounded-md shadow-lg p-4 max-w-xl"
                               sideOffset={5}
                             >
                               <div className="text-sm">
@@ -607,8 +607,8 @@ export default function CompressionWidget() {
                                         data={chartData.data}
                                         modelName={chartData.modelName}
                                         experimentName={chartData.experimentName}
-                                        width={250}
-                                        height={140}
+                                        width={400}
+                                        height={160}
                                       />
                                     </div>
                                   ) : null;
