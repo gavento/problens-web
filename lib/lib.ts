@@ -31,6 +31,8 @@ import BayesSequenceWidget from "@/components/widgets/BayesSequenceWidget";
 import BayesSequenceLogWidget from "@/components/widgets/BayesSequenceLogWidget";
 import XKCDCountdownWidget from "@/components/widgets/XKCDCountdownWidget";
 import CompressionWidget from "@/components/widgets/CompressionWidget";
+import LLMCompressionProgressionWidget from "@/components/widgets/LLMCompressionProgressionWidget";
+import MiniCompressionChart from "@/components/widgets/MiniCompressionChart";
 import ShannonCodeWidget from "@/components/widgets/ShannonCodeWidget";
 import KraftInequalityWidget from "@/components/widgets/KraftInequalityWidget";
 import HeartRateWidget from "@/components/widgets/CoinFlipWidget";
@@ -173,6 +175,8 @@ export async function getMdxContent(path: string) {
       BayesSequenceLogWidget: BayesSequenceLogWidget,
       XKCDCountdownWidget: XKCDCountdownWidget,
       CompressionWidget: CompressionWidget,
+      LLMCompressionProgressionWidget: LLMCompressionProgressionWidget,
+      MiniCompressionChart: MiniCompressionChart,
       ShannonCodeWidget: ShannonCodeWidget,
       KraftInequalityWidget: KraftInequalityWidget,
       CoinFlipWidget: HeartRateWidget,

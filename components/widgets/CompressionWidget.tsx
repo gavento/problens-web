@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import * as HoverCard from "@radix-ui/react-hover-card";
+import MiniCompressionChart from "./MiniCompressionChart";
 
 interface CompressionResult {
   algorithm: string;
@@ -25,6 +26,7 @@ export default function CompressionWidget() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [useFixedScale, setUseFixedScale] = useState(false);
+  const [llmProgressionData, setLlmProgressionData] = useState<any>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -66,14 +68,14 @@ export default function CompressionWidget() {
               filename: config.filename,
               results: [
                 {
-                  algorithm: "Naive",
+                  algorithm: "Naive (8 bits per letter)",
                   bits: result.naive_bits || naiveBits,
                   ratio: "1.00x",
                   generalDescription: "Store each character as 8 bits in memory",
                   specificDescription: `${textLength} characters stored without any compression`
                 },
                 {
-                  algorithm: "Letter-wise (optimal)",
+                  algorithm: "Letter-wise optimal",
                   bits: result.letterwise_bits || naiveBits,
                   ratio: result.letterwise_ratio ? `${result.letterwise_ratio}x` : "1.00x",
                   generalDescription: "Use optimal codes based on individual character frequencies",
@@ -110,6 +112,18 @@ export default function CompressionWidget() {
         }
 
         setTextSamples(samples);
+        
+        // Load LLM progression data for tooltips
+        try {
+          const llmResponse = await fetch(`${basePath}/compression_experiments/llm_compression_summary.json`);
+          if (llmResponse.ok) {
+            const llmData = await llmResponse.json();
+            setLlmProgressionData(llmData);
+          }
+        } catch (llmErr) {
+          console.warn('Failed to load LLM progression data:', llmErr);
+        }
+        
         setLoading(false);
       } catch (err) {
         console.warn('Failed to load compression data, using fallback:', err);
@@ -122,14 +136,14 @@ export default function CompressionWidget() {
             filename: "english_sample.txt",
             results: [
               {
-                algorithm: "Naive",
+                algorithm: "Naive (8 bits per letter)",
                 bits: 2776, // 347 chars * 8 bits
                 ratio: "1.00x",
                 generalDescription: "Store each character as 8 bits in memory",
                 specificDescription: "347 characters stored without any compression"
               },
               {
-                algorithm: "Letter-wise (optimal)",
+                algorithm: "Letter-wise optimal",
                 bits: 2776, // Same as naive for fallback
                 ratio: "1.00x",
                 generalDescription: "Use optimal codes based on individual character frequencies",
@@ -165,14 +179,14 @@ export default function CompressionWidget() {
             filename: "random_sample.txt",
             results: [
               {
-                algorithm: "Naive",
+                algorithm: "Naive (8 bits per letter)",
                 bits: 1920, // 240 chars * 8 bits
                 ratio: "1.00x",
                 generalDescription: "Store each character as 8 bits in memory",
                 specificDescription: "240 characters stored without any compression"
               },
               {
-                algorithm: "Letter-wise (optimal)",
+                algorithm: "Letter-wise optimal",
                 bits: 1920, // Same as naive for fallback
                 ratio: "1.00x",
                 generalDescription: "Use optimal codes based on individual character frequencies",
@@ -329,7 +343,9 @@ export default function CompressionWidget() {
     let power = 1;
     while (power <= globalMaxRatio) {
       if (power >= 2 || power === 1) { // Include 1x and powers of 2
-        const position = getFixedBarWidth(power, globalMaxRatio);
+        // For markers, we want linear positioning based on compression ratio
+        // Higher ratio should be further right (better compression)
+        const position = 10 + ((power - 1) / (globalMaxRatio - 1)) * 80; // 10% to 90% range
         markers.push({ 
           ratio: power === 1 ? "1x" : `${power}x`, 
           position 
@@ -347,6 +363,31 @@ export default function CompressionWidget() {
     } else {
       return getAdaptiveMarkers(minBits, maxBits);
     }
+  };
+
+  const getLLMChartData = (algorithm: string, filename: string) => {
+    if (!llmProgressionData || !filename) return null;
+    
+    // Map algorithm names to model keys
+    const algorithmToModel: { [key: string]: string } = {
+      "LLM (GPT-2)": "gpt-2",
+      "LLM (Llama 4)": "llama-4"
+    };
+    
+    const modelKey = algorithmToModel[algorithm];
+    if (!modelKey || !llmProgressionData[modelKey]) return null;
+    
+    // Find experiment by filename (remove extension)
+    const fileKey = filename.replace(/\.[^/.]+$/, "");
+    const experiment = llmProgressionData[modelKey][fileKey];
+    
+    if (!experiment || !experiment.dataPoints) return null;
+    
+    return {
+      data: experiment.dataPoints,
+      modelName: experiment.modelName,
+      experimentName: experiment.name
+    };
   };
 
   if (loading) {
@@ -415,9 +456,6 @@ export default function CompressionWidget() {
           >
             <div className="font-medium">{sample.name}</div>
             <div className="text-sm text-gray-600 mt-1">{sample.description}</div>
-            <div className="text-xs text-gray-500 mt-1">
-              {sample.text.length} characters
-            </div>
           </button>
         ))}
       </div>
@@ -433,7 +471,7 @@ export default function CompressionWidget() {
               {selectedSample.text}
             </div>
             <div className="text-xs text-gray-500 mt-2">
-              Total length: {selectedSample.text.length} characters • File: {selectedSample.filename}
+              Total length: {selectedSample.text.length} characters
             </div>
           </div>
 
@@ -517,7 +555,7 @@ export default function CompressionWidget() {
                           </HoverCard.Trigger>
                           <HoverCard.Portal>
                             <HoverCard.Content 
-                              className="z-50 bg-white border border-gray-200 rounded-md shadow-lg p-4 max-w-sm"
+                              className="z-50 bg-white border border-gray-200 rounded-md shadow-lg p-4 max-w-md"
                               sideOffset={5}
                             >
                               <div className="text-sm">
@@ -525,9 +563,28 @@ export default function CompressionWidget() {
                                 <div className="mb-2 text-gray-700">
                                   <strong>How it works:</strong> {result.generalDescription}
                                 </div>
-                                <div className="text-gray-700">
+                                <div className="text-gray-700 mb-3">
                                   <strong>For this text:</strong> {result.specificDescription}
                                 </div>
+                                
+                                {/* Add mini compression chart for LLM algorithms */}
+                                {result.algorithm.startsWith('LLM') && (() => {
+                                  const chartData = getLLMChartData(result.algorithm, selectedSample?.filename || '');
+                                  return chartData ? (
+                                    <div className="mt-3 pt-3 border-t border-gray-200">
+                                      <div className="text-xs font-medium text-gray-700 mb-2">
+                                        Compression progression through text:
+                                      </div>
+                                      <MiniCompressionChart 
+                                        data={chartData.data}
+                                        modelName={chartData.modelName}
+                                        experimentName={chartData.experimentName}
+                                        width={250}
+                                        height={140}
+                                      />
+                                    </div>
+                                  ) : null;
+                                })()}
                               </div>
                             </HoverCard.Content>
                           </HoverCard.Portal>
