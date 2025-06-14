@@ -104,11 +104,12 @@ export default function CompressionWidget() {
                 },
                 "repeated_phrase": {
                   "Baseline": "",
-                  "Letter-wise optimal": "Repetitive text has low character entropy",
-                  "ZIP (zlib)": "Extreme compression due to massive repetition",
-                  "LLM (GPT-2)": "Perfect predictability once pattern is established",
-                  "LLM (Llama 4)": "Near-perfect compression of highly repetitive patterns"
+                  "Letter-wise optimal": "Although the text is repetitive, the entropy of letter frequencies is very similar to that of English. ",
+                  "ZIP (zlib)": "ZIP is smart enough to compress repeating patterns so it's great for files like this one. ",
+                  "LLM (GPT-2)": "GPT-2 is basically not surprised at all after the first sentence. Except for a weird bit in the middle that I don't understand. ",
+                  "LLM (Llama 4)": "Llama just reads the first sentence and then chills. With some caveats, it can compress the whole file to <100 bits. "
                 }
+
               };
               
               return descriptions[baseKey]?.[algorithm] || `Compression analysis for ${textLength} characters`;
