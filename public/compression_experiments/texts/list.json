@@ -1,23 +1,23 @@
 [
   {
     "filename": "kl_intro_10kb.txt",
-    "name": "KL Introduction (~10KB)",
-    "description": "Academic text about information theory and KL divergence"
+    "name": "Text from this page",
+    "description": "Academic English text outside of LLM's training data"
   },
   {
     "filename": "pi_digits_10kb.txt", 
-    "name": "Pi Digits (~10KB)",
-    "description": "First 10,000 digits of π (mathematically random)"
+    "name": "Pi Digits",
+    "description": "a sequence of numbers that are both kind-of random and very famous"
   },
   {
     "filename": "declaration_full.txt",
     "name": "Declaration of Independence", 
-    "description": "Natural English prose with historical vocabulary"
+    "description": "Super-famous English text"
   },
   {
     "filename": "human_mitochondrial_dna.txt",
     "name": "Human Mitochondrial DNA",
-    "description": "Complete human mitochondrial genome (16,569 bases)"
+    "description": "Part of human genome"
   },
   {
     "filename": "huffman_code_10kb.txt",
@@ -26,7 +26,7 @@
   },
   {
     "filename": "repeated_phrase.txt",
-    "name": "Repeated Pattern",
+    "name": "Repeated sentence",
     "description": "Highly structured repetitive text"
   }
 ]
