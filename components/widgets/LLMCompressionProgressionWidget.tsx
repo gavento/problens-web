@@ -170,9 +170,9 @@ export default function LLMCompressionProgressionWidget() {
             
             const maxBits = Math.max(...experiment.dataPoints.map(p => p.bitsPerChar));
             const minBits = Math.min(...experiment.dataPoints.map(p => p.bitsPerChar));
-            const chartWidth = 1000; // viewBox width
+            const chartWidth = 1200; // viewBox width - increased for wider chart
             const chartHeight = 200;
-            const margin = { top: 20, right: 50, bottom: 40, left: 60 };
+            const margin = { top: 20, right: 30, bottom: 40, left: 50 };
             const innerWidth = chartWidth - margin.left - margin.right;
             const innerHeight = chartHeight - margin.top - margin.bottom;
             
@@ -184,7 +184,7 @@ export default function LLMCompressionProgressionWidget() {
             }
             
             return (
-              <div key={modelName} className="border border-gray-200 rounded-lg p-4">
+              <div key={modelName} className="border border-gray-200 rounded-lg p-4 pb-2">
                 <div className="mb-3">
                   <h4 className="font-semibold text-gray-900">{modelName}</h4>
                   <p className="text-sm text-gray-600">
@@ -193,8 +193,8 @@ export default function LLMCompressionProgressionWidget() {
                   </p>
                 </div>
                 
-                <div className="w-full">
-                  <svg width="100%" height={chartHeight} viewBox={`0 0 1000 ${chartHeight}`} className="block">
+                <div className="w-full -mx-2">
+                  <svg width="100%" height={chartHeight} viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="block">
                     {/* Chart background */}
                     <rect 
                       x={margin.left} 
