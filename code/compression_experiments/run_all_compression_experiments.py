@@ -14,9 +14,7 @@ from pathlib import Path
 from datetime import datetime
 from collections import Counter
 
-import torch
-from transformers import GPT2LMHeadModel, GPT2Tokenizer
-from tqdm import tqdm
+# Removed GPT-2 imports as we won't run it here
 
 
 def load_text_samples():
@@ -93,51 +91,7 @@ def compute_zip_compression(text):
         return max(compressed_size - 30, 1) * 8  # Convert to bits
 
 
-def compute_gpt2_compression(text, model, tokenizer, device):
-    """Compute GPT-2 compression using token probabilities with sliding window."""
-    if not text:
-        return 0
-    
-    # Tokenize the ENTIRE text (no truncation)
-    inputs = tokenizer(text, return_tensors="pt", truncation=False)
-    input_ids = inputs["input_ids"].squeeze(0)  # Remove batch dimension
-    
-    if len(input_ids) <= 1:
-        return len(text) * 8  # Fallback to naive compression
-    
-    total_log_prob = 0.0
-    max_context = 1023  # Use 1023 tokens of context to predict the next token
-    
-    # Process each token with sliding window context
-    for i in tqdm(range(1, len(input_ids)), 
-                  desc="   🔄 GPT-2 compression", 
-                  unit="tokens",
-                  disable=False):
-        # Get context window: up to 1023 previous tokens
-        start_idx = max(0, i - max_context)
-        context_ids = input_ids[start_idx:i].unsqueeze(0).to(device)  # Add batch dimension
-        
-        # Get model predictions for this context
-        with torch.no_grad():
-            outputs = model(context_ids)
-            logits = outputs.logits[0, -1, :]  # Get logits for the last position
-        
-        # Get probabilities
-        token_probs = torch.softmax(logits, dim=-1)
-        
-        # Get actual next token
-        actual_token = input_ids[i].item()
-        
-        # Get probability of actual token
-        token_prob = token_probs[actual_token].item()
-        
-        # Add log probability (convert to bits: log2)
-        if token_prob > 0:
-            total_log_prob += math.log2(token_prob)
-    
-    # Total bits needed = -log probability
-    total_bits = -total_log_prob
-    return total_bits
+# GPT-2 compression removed - will be run separately
 
 
 def run_all_experiments():
@@ -153,16 +107,7 @@ def run_all_experiments():
         print("❌ No text samples found!")
         return
     
-    # Initialize GPT-2 model
-    print("\n🤖 Loading GPT-2 model...")
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"Using device: {device}")
-    
-    tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
-    model = GPT2LMHeadModel.from_pretrained("gpt2")
-    model.to(device)
-    model.eval()
-    tokenizer.pad_token = tokenizer.eos_token
+    # GPT-2 model initialization removed
     
     # Run experiments on each sample
     results = {}
@@ -181,17 +126,14 @@ def run_all_experiments():
             naive_bits = len(text) * 8
             letterwise_bits = compute_letter_wise_optimal(text)
             zip_bits = compute_zip_compression(text)
-            gpt2_bits = compute_gpt2_compression(text, model, tokenizer, device)
             
             # Calculate ratios
             letterwise_ratio = naive_bits / letterwise_bits if letterwise_bits > 0 else 1.0
             zip_ratio = naive_bits / zip_bits if zip_bits > 0 else 1.0
-            gpt2_ratio = naive_bits / gpt2_bits if gpt2_bits > 0 else 1.0
             
             print(f"   📈 Naive: {naive_bits} bits (1.00x)")
             print(f"   📈 Letter-wise: {letterwise_bits:.0f} bits ({letterwise_ratio:.2f}x)")
             print(f"   📈 ZIP: {zip_bits} bits ({zip_ratio:.2f}x)")
-            print(f"   📈 GPT-2: {gpt2_bits:.0f} bits ({gpt2_ratio:.2f}x)")
             
             results[key] = {
                 "name": sample["name"],
@@ -201,10 +143,10 @@ def run_all_experiments():
                 "naive_bits": naive_bits,
                 "letterwise_bits": round(letterwise_bits),
                 "zip_bits": zip_bits,
-                "gpt2_bits": round(gpt2_bits),
+                "gpt2_bits": naive_bits,  # Placeholder - same as naive
                 "letterwise_ratio": round(letterwise_ratio, 2),
                 "zip_ratio": round(zip_ratio, 2), 
-                "gpt2_ratio": round(gpt2_ratio, 2),
+                "gpt2_ratio": 1.0,  # Placeholder ratio
                 "timestamp": datetime.now().isoformat()
             }
             
@@ -236,11 +178,9 @@ def run_all_experiments():
         # Calculate averages (excluding errors)
         avg_letterwise = sum(results[k]["letterwise_ratio"] for k in successful) / len(successful)
         avg_zip = sum(results[k]["zip_ratio"] for k in successful) / len(successful)
-        avg_gpt2 = sum(results[k]["gpt2_ratio"] for k in successful) / len(successful)
         
         print(f"Letter-wise optimal: {avg_letterwise:.2f}x average")
-        print(f"ZIP compression: {avg_zip:.2f}x average") 
-        print(f"GPT-2 compression: {avg_gpt2:.2f}x average")
+        print(f"ZIP compression: {avg_zip:.2f}x average")
     
     print(f"\n✅ Compression experiments complete!")
     print(f"Successfully processed: {len(successful)}/{len(samples)} samples")

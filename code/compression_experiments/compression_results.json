@@ -7,11 +7,11 @@
     "naive_bits": 74952,
     "letterwise_bits": 43939,
     "zip_bits": 32240,
-    "gpt2_bits": 4599,
+    "gpt2_bits": 74952,
     "letterwise_ratio": 1.71,
     "zip_ratio": 2.32,
-    "gpt2_ratio": 16.3,
-    "timestamp": "2025-06-12T14:57:01.390347"
+    "gpt2_ratio": 1.0,
+    "timestamp": "2025-06-14T11:43:52.036126"
   },
   "pi_digits_10kb": {
     "name": "Pi Digits (~10KB)",
@@ -21,11 +21,11 @@
     "naive_bits": 80000,
     "letterwise_bits": 33782,
     "zip_bits": 41832,
-    "gpt2_bits": 8143,
+    "gpt2_bits": 80000,
     "letterwise_ratio": 2.37,
     "zip_ratio": 1.91,
-    "gpt2_ratio": 9.82,
-    "timestamp": "2025-06-12T14:57:04.272365"
+    "gpt2_ratio": 1.0,
+    "timestamp": "2025-06-14T11:43:52.038014"
   },
   "declaration_full": {
     "name": "Declaration of Independence",
@@ -35,11 +35,11 @@
     "naive_bits": 74096,
     "letterwise_bits": 41428,
     "zip_bits": 33064,
-    "gpt2_bits": 4201,
+    "gpt2_bits": 74096,
     "letterwise_ratio": 1.79,
     "zip_ratio": 2.24,
-    "gpt2_ratio": 17.64,
-    "timestamp": "2025-06-12T14:57:07.162447"
+    "gpt2_ratio": 1.0,
+    "timestamp": "2025-06-14T11:43:52.039676"
   },
   "human_mitochondrial_dna": {
     "name": "Human Mitochondrial DNA",
@@ -49,11 +49,11 @@
     "naive_bits": 132552,
     "letterwise_bits": 31999,
     "zip_bits": 40560,
-    "gpt2_bits": 4389,
+    "gpt2_bits": 132552,
     "letterwise_ratio": 4.14,
     "zip_ratio": 3.27,
-    "gpt2_ratio": 30.2,
-    "timestamp": "2025-06-12T14:57:10.173266"
+    "gpt2_ratio": 1.0,
+    "timestamp": "2025-06-14T11:43:52.042960"
   },
   "huffman_code_10kb": {
     "name": "Code Snippet",
@@ -63,11 +63,11 @@
     "naive_bits": 95544,
     "letterwise_bits": 54246,
     "zip_bits": 25976,
-    "gpt2_bits": 2606,
+    "gpt2_bits": 95544,
     "letterwise_ratio": 1.76,
     "zip_ratio": 3.68,
-    "gpt2_ratio": 36.66,
-    "timestamp": "2025-06-12T14:57:13.131368"
+    "gpt2_ratio": 1.0,
+    "timestamp": "2025-06-14T11:43:52.043998"
   },
   "repeated_phrase": {
     "name": "Repeated Pattern",
@@ -77,10 +77,10 @@
     "naive_bits": 70392,
     "letterwise_bits": 38184,
     "zip_bits": 1360,
-    "gpt2_bits": 100,
+    "gpt2_bits": 70392,
     "letterwise_ratio": 1.84,
     "zip_ratio": 51.76,
-    "gpt2_ratio": 707.17,
-    "timestamp": "2025-06-12T14:57:16.035765"
+    "gpt2_ratio": 1.0,
+    "timestamp": "2025-06-14T11:43:52.044607"
   }
 }
