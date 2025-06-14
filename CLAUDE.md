@@ -73,3 +73,4 @@ This ensures the deployment pipeline remains healthy and the static site builds 
 ## Memories
 - Remember how `<Math>` tag works: Used for complex math expressions with curly braces in MDX, helps avoid parsing errors by wrapping equations that would break standard MDX parsing
 - Image paths in widgets: Must use `/problens-web/` prefix for static deployment (e.g., `src="/problens-web/image.png"`). Never use just `/image.png`. Check FinanceSlider widget for reference pattern when debugging image loading issues.
+- Prefer relative positioning and relative lengths over absolute ones. I want the page to look reasonably well on mobile phones.

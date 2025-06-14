@@ -1,7 +1,7 @@
 # All those riddles <a id="introduction"></a>
 
 This web contains an introduction to various topics at the intersection of probability, information theory, and machine learning. Our guide through this world is a formula called _Kullback-Leibler (KL) divergence_. 
- 
+
 Check out [this page](about) for logistics. Here, we've got several riddles some of which will hopefully [nerd-snipe](https://xkcd.com/356/) you!
 
 
@@ -165,7 +165,9 @@ Marcus Hutter, an AI researcher, started <a href="http://prize.hutter1.net/">thi
 <MultipleChoiceQuestion
   options={["around 1MB", "around 10MB", "around 100MB"]}
   correctIndices={[2]}
-  explanation={<>It's around 100MB. But wait—why does an <em>AI</em> researcher care about compression? We'll see the connection with <a href="02-crossentropy/coding">entropy</a>, <a href = "02-crossentropy/hutter">next token prediction</a>, and <a href="#">Kolmogorov complexity</a>.</>}
+  explanation={<>It's around 100MB. But wait—why does an <em>AI</em> researcher care about compression? We'll see the connection with <a href="02-crossentropy/coding">entropy</a>, <a href = "02-crossentropy/hutter">next token prediction</a>, and <a href="#">Kolmogorov complexity</a>. In the meantime, you can try to guess how well can various other texts be compressed by various algorithms. 
+  <CompressionWidget />
+</>}
 /> 
 </Expand>
 
