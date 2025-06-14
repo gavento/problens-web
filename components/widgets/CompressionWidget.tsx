@@ -603,13 +603,14 @@ export default function CompressionWidget() {
                                       <div className="text-xs font-medium text-gray-700 mb-2">
                                         Compression progression through text:
                                       </div>
-                                      <MiniCompressionChart 
-                                        data={chartData.data}
-                                        modelName={chartData.modelName}
-                                        experimentName={chartData.experimentName}
-                                        width={400}
-                                        height={160}
-                                      />
+                                      <div className="w-full">
+                                        <MiniCompressionChart 
+                                          data={chartData.data}
+                                          modelName={chartData.modelName}
+                                          experimentName={chartData.experimentName}
+                                          height={160}
+                                        />
+                                      </div>
                                     </div>
                                   ) : null;
                                 })()}

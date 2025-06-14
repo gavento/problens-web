@@ -19,15 +19,17 @@ export default function MiniCompressionChart({
   data, 
   modelName, 
   experimentName, 
-  width = 200, 
+  width, 
   height = 120 
 }: MiniCompressionChartProps) {
   const [hoverPos, setHoverPos] = useState<{ x: number; y: number } | null>(null);
 
   if (data.length === 0) return null;
 
+  // Use viewBox for responsive sizing
+  const viewBoxWidth = 400;
   const margin = { top: 10, right: 15, bottom: 25, left: 35 };
-  const innerWidth = width - margin.left - margin.right;
+  const innerWidth = viewBoxWidth - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
   const maxBits = Math.max(...data.map(d => d.bitsPerChar));
@@ -83,8 +85,10 @@ export default function MiniCompressionChart({
         {modelName} - {experimentName}
       </div>
       <svg 
-        width={width} 
+        width="100%" 
         height={height} 
+        viewBox={`0 0 ${viewBoxWidth} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         className="bg-gray-50 border border-gray-200 rounded"
         onMouseMove={handleMouseMove}
         onMouseLeave={() => setHoverPos(null)}
@@ -190,7 +194,7 @@ export default function MiniCompressionChart({
         
         {/* Axis labels */}
         <text
-          x={width / 2}
+          x={viewBoxWidth / 2}
           y={height - 2}
           textAnchor="middle"
           fontSize="8"
