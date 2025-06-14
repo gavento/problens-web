@@ -126,98 +126,8 @@ export default function CompressionWidget() {
         
         setLoading(false);
       } catch (err) {
-        console.warn('Failed to load compression data, using fallback:', err);
-        // Use fallback data when files are not available
-        const fallbackSamples: TextSample[] = [
-          {
-            name: "English Text Sample",
-            description: "Natural English prose",
-            text: "In information theory, we study how to efficiently encode and transmit information. Cross-entropy measures the average number of bits needed to encode events from one distribution using a code optimized for another distribution. This fundamental concept helps us understand the limits of data compression and the efficiency of communication systems.",
-            filename: "english_sample.txt",
-            results: [
-              {
-                algorithm: "Naive (8 bits per letter)",
-                bits: 2776, // 347 chars * 8 bits
-                ratio: "1.00x",
-                generalDescription: "Store each character as 8 bits in memory",
-                specificDescription: "347 characters stored without any compression"
-              },
-              {
-                algorithm: "Letter-wise optimal",
-                bits: 2776, // Same as naive for fallback
-                ratio: "1.00x",
-                generalDescription: "Use optimal codes based on individual character frequencies",
-                specificDescription: "Theoretical limit based on character entropy (ignores dependencies)"
-              },
-              {
-                algorithm: "ZIP (zlib)",
-                bits: 2776, // Same as naive for fallback
-                ratio: "1.00x",
-                generalDescription: "Dictionary-based compression finding repeated substrings",
-                specificDescription: "Standard ZIP compression using DEFLATE algorithm"
-              },
-              {
-                algorithm: "LLM (GPT-2)",
-                bits: 2776, // Same as naive for now (no GPT-2 data)
-                ratio: "1.00x",
-                generalDescription: "Use language model probabilities for next token prediction",
-                specificDescription: "Compression based on predictability from GPT-2 model"
-              },
-              {
-                algorithm: "LLM (Llama 4)",
-                bits: 2776, // Same as naive for fallback
-                ratio: "1.00x",
-                generalDescription: "Advanced language model compression using Llama 4",
-                specificDescription: "State-of-the-art LLM compression performance"
-              }
-            ]
-          },
-          {
-            name: "Random Characters",
-            description: "Pseudo-random character sequence",
-            text: "xqz7mw8n3vj2kp9rl4bg6ht5yu1ic0oazsdf9ghj8kl7mnbqwert6yuio3pasdfg2hjkl9zxcv8bnm5qwer4tyui7opas1dfgh6jklz3xcvb2nm9qwer5tyui8opas4dfgh7jklz6xcvb3nm1qwer9tyui2opas5dfgh8jklz7xcvb4nm3qwer6tyui9opas1dfgh2jklz8xcvb5nm4qwer7tyui3opas6dfgh9jklz1xcvb",
-            filename: "random_sample.txt",
-            results: [
-              {
-                algorithm: "Naive (8 bits per letter)",
-                bits: 1920, // 240 chars * 8 bits
-                ratio: "1.00x",
-                generalDescription: "Store each character as 8 bits in memory",
-                specificDescription: "240 characters stored without any compression"
-              },
-              {
-                algorithm: "Letter-wise optimal",
-                bits: 1920, // Same as naive for fallback
-                ratio: "1.00x",
-                generalDescription: "Use optimal codes based on individual character frequencies",
-                specificDescription: "Random text has high entropy, little compression possible"
-              },
-              {
-                algorithm: "ZIP (zlib)",
-                bits: 1920, // Same as naive for fallback
-                ratio: "1.00x",
-                generalDescription: "Dictionary-based compression finding repeated substrings",
-                specificDescription: "No patterns found in random text"
-              },
-              {
-                algorithm: "LLM (GPT-2)",
-                bits: 1920, // Same as naive for random text
-                ratio: "1.00x",
-                generalDescription: "Use language model probabilities for next token prediction",
-                specificDescription: "Random text is unpredictable, no compression achieved"
-              },
-              {
-                algorithm: "LLM (Llama 4)",
-                bits: 1920, // Same as naive for fallback
-                ratio: "1.00x",
-                generalDescription: "Advanced language model compression using Llama 4",
-                specificDescription: "Random text is unpredictable, no compression achieved"
-              }
-            ]
-          }
-        ];
-        
-        setTextSamples(fallbackSamples);
+        console.error('Failed to load compression data:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load compression data');
         setLoading(false);
       }
     };
@@ -434,12 +344,29 @@ export default function CompressionWidget() {
 
   if (error) {
     return (
-      <div className="compression-widget bg-white border border-red-200 rounded-lg p-6 my-6">
-        <h3 className="text-lg font-semibold mb-4 text-red-600">Error Loading Compression Data</h3>
-        <p className="text-red-500">{error}</p>
-        <p className="text-sm text-gray-600 mt-2">
-          Make sure the compression experiments have been run and the results are available.
-        </p>
+      <div className="compression-widget bg-white border border-gray-200 rounded-lg p-6 my-6">
+        <div className="text-center py-8">
+          <div className="text-2xl mb-2">😔</div>
+          <h3 className="text-lg font-medium text-gray-700 mb-2">Sorry!</h3>
+          <p className="text-gray-500">
+            The compression data couldn&apos;t be loaded right now.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show sorry message if no text samples are available
+  if (!loading && !error && textSamples.length === 0) {
+    return (
+      <div className="compression-widget bg-white border border-gray-200 rounded-lg p-6 my-6">
+        <div className="text-center py-8">
+          <div className="text-2xl mb-2">😔</div>
+          <h3 className="text-lg font-medium text-gray-700 mb-2">Sorry!</h3>
+          <p className="text-gray-500">
+            No compression experiments are available to display.
+          </p>
+        </div>
       </div>
     );
   }
