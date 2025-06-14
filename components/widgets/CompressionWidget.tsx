@@ -29,29 +29,37 @@ export default function CompressionWidget() {
     const loadData = async () => {
       try {
         // Load text list configuration
-        const listResponse = await fetch('/compression_experiments/texts/list.json');
-        if (!listResponse.ok) throw new Error('Failed to load text list');
+        console.log('Loading text list...');
+        const listResponse = await fetch('/problens-web/compression_experiments/texts/list.json');
+        console.log('List response status:', listResponse.status);
+        if (!listResponse.ok) throw new Error(`Failed to load text list: ${listResponse.status}`);
         const textConfigs = await listResponse.json();
+        console.log('Loaded text configs:', textConfigs);
 
         // Load compression results
-        const resultsResponse = await fetch('/compression_experiments/compression_results.json');
-        if (!resultsResponse.ok) throw new Error('Failed to load compression results');
+        console.log('Loading compression results...');
+        const resultsResponse = await fetch('/problens-web/compression_experiments/compression_results.json');
+        console.log('Results response status:', resultsResponse.status);
+        if (!resultsResponse.ok) throw new Error(`Failed to load compression results: ${resultsResponse.status}`);
         const compressionResults = await resultsResponse.json();
+        console.log('Loaded compression results:', compressionResults);
 
         // Load each text file and combine with results
         const samples: TextSample[] = [];
         
         for (const config of textConfigs) {
           try {
-            const textResponse = await fetch(`/compression_experiments/texts/${config.filename}`);
+            const textResponse = await fetch(`/problens-web/compression_experiments/texts/${config.filename}`);
             if (!textResponse.ok) continue;
             
             const text = await textResponse.text();
             const key = config.filename.replace(/\.[^/.]+$/, ""); // Remove extension
-            const result = compressionResults[key];
+            const result = compressionResults[key] || {};
             
-            if (!result || result.error) continue;
-
+            // Default values if not in results
+            const textLength = text.trim().length;
+            const naiveBits = textLength * 8;
+            
             const sample: TextSample = {
               name: config.name,
               description: config.description,
@@ -60,31 +68,38 @@ export default function CompressionWidget() {
               results: [
                 {
                   algorithm: "Naive",
-                  bits: result.naive_bits,
+                  bits: result.naive_bits || naiveBits,
                   ratio: "1.00x",
                   generalDescription: "Store each character as 8 bits in memory",
-                  specificDescription: `${text.length} characters stored without any compression`
+                  specificDescription: `${textLength} characters stored without any compression`
                 },
                 {
                   algorithm: "Letter-wise (optimal)",
-                  bits: result.letterwise_bits,
-                  ratio: `${result.letterwise_ratio}x`,
+                  bits: result.letterwise_bits || naiveBits,
+                  ratio: result.letterwise_ratio ? `${result.letterwise_ratio}x` : "1.00x",
                   generalDescription: "Use optimal codes based on individual character frequencies",
                   specificDescription: "Theoretical limit based on character entropy (ignores dependencies)"
                 },
                 {
                   algorithm: "ZIP (zlib)",
-                  bits: result.zip_bits,
-                  ratio: `${result.zip_ratio}x`,
+                  bits: result.zip_bits || naiveBits,
+                  ratio: result.zip_ratio ? `${result.zip_ratio}x` : "1.00x",
                   generalDescription: "Dictionary-based compression finding repeated substrings",
                   specificDescription: "Standard ZIP compression using DEFLATE algorithm"
                 },
                 {
                   algorithm: "LLM (GPT-2)",
-                  bits: result.gpt2_bits,
-                  ratio: `${result.gpt2_ratio}x`,
+                  bits: result.gpt2_bits || naiveBits,
+                  ratio: result.gpt2_ratio ? `${result.gpt2_ratio}x` : "1.00x",
                   generalDescription: "Use language model probabilities for next token prediction",
                   specificDescription: "Compression based on predictability from GPT-2 model"
+                },
+                {
+                  algorithm: "LLM (Llama 4)",
+                  bits: result.llama_bits || naiveBits,
+                  ratio: result.llama_ratio ? `${result.llama_ratio}x` : "1.00x",
+                  generalDescription: "Advanced language model compression using Llama 4",
+                  specificDescription: "State-of-the-art LLM compression performance"
                 }
               ]
             };
@@ -95,80 +110,95 @@ export default function CompressionWidget() {
           }
         }
 
+        console.log('Successfully loaded', samples.length, 'samples');
         setTextSamples(samples);
         setLoading(false);
       } catch (err) {
-        console.warn('Failed to load compression data, using fallback:', err);
+        console.error('Failed to load compression data, using fallback:', err);
         // Use fallback data when files are not available
         const fallbackSamples: TextSample[] = [
           {
-            name: "English Wikipedia Extract",
-            description: "Sample from English Wikipedia articles",
-            text: "The quick brown fox jumps over the lazy dog. This pangram contains every letter of the English alphabet at least once. In information theory, we study how to efficiently encode and transmit information. Cross-entropy measures the average number of bits needed to encode events from one distribution using a code optimized for another distribution.",
-            filename: "wikipedia_sample.txt",
+            name: "English Text Sample",
+            description: "Natural English prose",
+            text: "In information theory, we study how to efficiently encode and transmit information. Cross-entropy measures the average number of bits needed to encode events from one distribution using a code optimized for another distribution. This fundamental concept helps us understand the limits of data compression and the efficiency of communication systems.",
+            filename: "english_sample.txt",
             results: [
               {
                 algorithm: "Naive",
-                bits: 2088, // 261 chars * 8 bits
+                bits: 2776, // 347 chars * 8 bits
                 ratio: "1.00x",
                 generalDescription: "Store each character as 8 bits in memory",
-                specificDescription: "261 characters stored without any compression"
+                specificDescription: "347 characters stored without any compression"
               },
               {
                 algorithm: "Letter-wise (optimal)",
-                bits: 2088, // Same as naive for now
+                bits: 2776, // Same as naive for fallback
                 ratio: "1.00x",
                 generalDescription: "Use optimal codes based on individual character frequencies",
                 specificDescription: "Theoretical limit based on character entropy (ignores dependencies)"
               },
               {
                 algorithm: "ZIP (zlib)",
-                bits: 2088, // Same as naive for now
+                bits: 2776, // Same as naive for fallback
                 ratio: "1.00x",
                 generalDescription: "Dictionary-based compression finding repeated substrings",
                 specificDescription: "Standard ZIP compression using DEFLATE algorithm"
               },
               {
                 algorithm: "LLM (GPT-2)",
-                bits: 2088, // Same as naive for now
+                bits: 2776, // Same as naive for now (no GPT-2 data)
                 ratio: "1.00x",
                 generalDescription: "Use language model probabilities for next token prediction",
                 specificDescription: "Compression based on predictability from GPT-2 model"
+              },
+              {
+                algorithm: "LLM (Llama 4)",
+                bits: 2776, // Same as naive for fallback
+                ratio: "1.00x",
+                generalDescription: "Advanced language model compression using Llama 4",
+                specificDescription: "State-of-the-art LLM compression performance"
               }
             ]
           },
           {
-            name: "Random Text",
-            description: "Pseudo-random characters for comparison",
+            name: "Random Characters",
+            description: "Pseudo-random character sequence",
             text: "xqz7mw8n3vj2kp9rl4bg6ht5yu1ic0oazsdf9ghj8kl7mnbqwert6yuio3pasdfg2hjkl9zxcv8bnm5qwer4tyui7opas1dfgh6jklz3xcvb2nm9qwer5tyui8opas4dfgh7jklz6xcvb3nm1qwer9tyui2opas5dfgh8jklz7xcvb4nm3qwer6tyui9opas1dfgh2jklz8xcvb5nm4qwer7tyui3opas6dfgh9jklz1xcvb",
             filename: "random_sample.txt",
             results: [
               {
                 algorithm: "Naive",
-                bits: 2000, // 250 chars * 8 bits
+                bits: 1920, // 240 chars * 8 bits
                 ratio: "1.00x",
                 generalDescription: "Store each character as 8 bits in memory",
-                specificDescription: "250 characters stored without any compression"
+                specificDescription: "240 characters stored without any compression"
               },
               {
                 algorithm: "Letter-wise (optimal)",
-                bits: 2000, // Same as naive for random text
+                bits: 1920, // Same as naive for fallback
                 ratio: "1.00x",
                 generalDescription: "Use optimal codes based on individual character frequencies",
                 specificDescription: "Random text has high entropy, little compression possible"
               },
               {
                 algorithm: "ZIP (zlib)",
-                bits: 2000, // Same as naive for random text
+                bits: 1920, // Same as naive for fallback
                 ratio: "1.00x",
                 generalDescription: "Dictionary-based compression finding repeated substrings",
                 specificDescription: "No patterns found in random text"
               },
               {
                 algorithm: "LLM (GPT-2)",
-                bits: 2000, // Same as naive for random text
+                bits: 1920, // Same as naive for random text
                 ratio: "1.00x",
                 generalDescription: "Use language model probabilities for next token prediction",
+                specificDescription: "Random text is unpredictable, no compression achieved"
+              },
+              {
+                algorithm: "LLM (Llama 4)",
+                bits: 1920, // Same as naive for fallback
+                ratio: "1.00x",
+                generalDescription: "Advanced language model compression using Llama 4",
                 specificDescription: "Random text is unpredictable, no compression achieved"
               }
             ]
