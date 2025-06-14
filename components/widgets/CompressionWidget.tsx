@@ -28,9 +28,12 @@ export default function CompressionWidget() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Load text list configuration
+        // Load text list configuration  
         console.log('Loading text list...');
-        const listResponse = await fetch('/problens-web/compression_experiments/texts/list.json');
+        const basePath = process.env.NODE_ENV === 'production' ? '/problens-web' : '';
+        const listUrl = `${basePath}/compression_experiments/texts/list.json`;
+        console.log('Fetching from URL:', listUrl);
+        const listResponse = await fetch(listUrl);
         console.log('List response status:', listResponse.status);
         if (!listResponse.ok) throw new Error(`Failed to load text list: ${listResponse.status}`);
         const textConfigs = await listResponse.json();
@@ -38,7 +41,9 @@ export default function CompressionWidget() {
 
         // Load compression results
         console.log('Loading compression results...');
-        const resultsResponse = await fetch('/problens-web/compression_experiments/compression_results.json');
+        const resultsUrl = `${basePath}/compression_experiments/compression_results.json`;
+        console.log('Fetching from URL:', resultsUrl);
+        const resultsResponse = await fetch(resultsUrl);
         console.log('Results response status:', resultsResponse.status);
         if (!resultsResponse.ok) throw new Error(`Failed to load compression results: ${resultsResponse.status}`);
         const compressionResults = await resultsResponse.json();
@@ -49,7 +54,9 @@ export default function CompressionWidget() {
         
         for (const config of textConfigs) {
           try {
-            const textResponse = await fetch(`/problens-web/compression_experiments/texts/${config.filename}`);
+            const textUrl = `${basePath}/compression_experiments/texts/${config.filename}`;
+            console.log('Fetching text file:', textUrl);
+            const textResponse = await fetch(textUrl);
             if (!textResponse.ok) continue;
             
             const text = await textResponse.text();
