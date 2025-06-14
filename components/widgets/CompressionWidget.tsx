@@ -581,7 +581,7 @@ export default function CompressionWidget() {
                           </HoverCard.Trigger>
                           <HoverCard.Portal>
                             <HoverCard.Content 
-                              className="z-50 bg-white border border-gray-200 rounded-md shadow-lg p-4 max-w-md"
+                              className="z-50 bg-white border border-gray-200 rounded-md shadow-lg p-4 max-w-lg"
                               sideOffset={5}
                             >
                               <div className="text-sm">

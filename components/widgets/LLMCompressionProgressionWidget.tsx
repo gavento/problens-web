@@ -170,7 +170,7 @@ export default function LLMCompressionProgressionWidget() {
             
             const maxBits = Math.max(...experiment.dataPoints.map(p => p.bitsPerChar));
             const minBits = Math.min(...experiment.dataPoints.map(p => p.bitsPerChar));
-            const chartWidth = 800;
+            const chartWidth = 1000; // viewBox width
             const chartHeight = 200;
             const margin = { top: 20, right: 50, bottom: 40, left: 60 };
             const innerWidth = chartWidth - margin.left - margin.right;
@@ -193,8 +193,8 @@ export default function LLMCompressionProgressionWidget() {
                   </p>
                 </div>
                 
-                <div className="overflow-x-auto">
-                  <svg width={chartWidth} height={chartHeight} className="block">
+                <div className="w-full">
+                  <svg width="100%" height={chartHeight} viewBox={`0 0 1000 ${chartHeight}`} className="block">
                     {/* Chart background */}
                     <rect 
                       x={margin.left} 
