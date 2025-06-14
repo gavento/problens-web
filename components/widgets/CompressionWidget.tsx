@@ -255,14 +255,36 @@ export default function CompressionWidget() {
   };
 
   const getFixedBarWidth = (ratio: number, globalMaxRatio: number): number => {
-    // Best compression (highest ratio) gets 10% of max width (90%)
-    // Worst compression (1x) gets minimum width (10%)
-    // Scale inversely: higher ratio = shorter bar
-    const maxWidth = 90;
-    const minWidth = 10;
+    // For fixed scale, bars should correspond to their marker positions
+    // Better compression (higher ratio) should have shorter bars (positioned further right on axis)
+    const maxWidth = 90; // 1x gets longest bar
+    const minWidth = 10; // Best compression gets shortest bar
     
-    // Inverse scaling: 1x ratio gets maxWidth, globalMaxRatio gets minWidth
-    const width = maxWidth - ((ratio - 1) / (globalMaxRatio - 1)) * (maxWidth - minWidth);
+    // Find which "power slot" this ratio falls into for consistent positioning
+    const powers = [];
+    let power = 1;
+    while (power <= globalMaxRatio) {
+      powers.push(power);
+      power *= 2;
+    }
+    
+    // Find the position of this ratio in the power sequence
+    let powerIndex = 0;
+    for (let i = 0; i < powers.length - 1; i++) {
+      if (ratio >= powers[i] && ratio < powers[i + 1]) {
+        // Interpolate between power positions
+        const t = (ratio - powers[i]) / (powers[i + 1] - powers[i]);
+        powerIndex = i + t;
+        break;
+      }
+    }
+    if (ratio >= powers[powers.length - 1]) {
+      powerIndex = powers.length - 1;
+    }
+    
+    // Convert power index to bar width (inverse relationship)
+    const normalizedPosition = powerIndex / (powers.length - 1); // 0 to 1
+    const width = maxWidth - normalizedPosition * (maxWidth - minWidth);
     return Math.max(minWidth, Math.min(maxWidth, width));
   };
 
@@ -336,23 +358,27 @@ export default function CompressionWidget() {
   };
 
   // Fixed scale markers - powers of 2
-  const getFixedMarkers = (globalMaxRatio: number) => {
-    const markers = [];
+  const getFixedMarkers = (globalMaxRatio: number): { ratio: string; position: number }[] => {
+    const markers: { ratio: string; position: number }[] = [];
     
-    // Generate powers of 2 up to the global maximum
+    // Generate equidistant powers of 2 positions
+    // We want 1x, 2x, 4x, 8x, etc. to be equally spaced on the axis
+    const powers = [];
     let power = 1;
     while (power <= globalMaxRatio) {
-      if (power >= 2 || power === 1) { // Include 1x and powers of 2
-        // For markers, we want linear positioning based on compression ratio
-        // Higher ratio should be further right (better compression)
-        const position = 10 + ((power - 1) / (globalMaxRatio - 1)) * 80; // 10% to 90% range
-        markers.push({ 
-          ratio: power === 1 ? "1x" : `${power}x`, 
-          position 
-        });
-      }
+      powers.push(power);
       power *= 2;
     }
+    
+    // Position markers with equal spacing
+    powers.forEach((power, index) => {
+      // Equal spacing across the 10%-90% range
+      const position = 90 - (index / (powers.length - 1)) * 80; // Start from 90% (worst) to 10% (best)
+      markers.push({ 
+        ratio: power === 1 ? "1x" : `${power}x`, 
+        position 
+      });
+    });
     
     return markers;
   };
