@@ -451,7 +451,7 @@ export default function CompressionWidget() {
           <h3 className="text-lg font-semibold mb-2">Text Compression Explorer</h3>
           <p className="text-gray-600">
             Explore how different compression algorithms perform on various types of text. 
-            Click a sample to see compression results.
+            Try to guess in advance!
           </p>
         </div>
         <div className="flex items-center gap-2 ml-4">
