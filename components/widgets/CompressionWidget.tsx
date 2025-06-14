@@ -24,7 +24,7 @@ export default function CompressionWidget() {
   const [selectedSample, setSelectedSample] = useState<TextSample | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [useFixedScale, setUseFixedScale] = useState(true);
+  const [useFixedScale, setUseFixedScale] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -397,7 +397,7 @@ export default function CompressionWidget() {
                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
             }`}
           >
-            {useFixedScale ? 'Fixed' : 'Adaptive'}
+            {useFixedScale ? 'Fixed Scale' : 'Adaptive Scale'}
           </button>
         </div>
       </div>
