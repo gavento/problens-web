@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import styles from "./Expand.module.css";
+import { useDangerMode } from "../providers/DangerModeProvider";
 
 interface ExpandProps {
   children: React.ReactNode;
@@ -15,7 +16,15 @@ interface ExpandProps {
 }
 
 export default function Expand({ children, headline, img, color = "#f5f5f5", startOpen = false, advanced = false, id }: ExpandProps) {
+  const { isDangerMode } = useDangerMode();
   const [isOpen, setIsOpen] = useState(startOpen);
+
+  // Auto-open advanced sections when danger mode is on
+  useEffect(() => {
+    if (advanced && isDangerMode) {
+      setIsOpen(true);
+    }
+  }, [advanced, isDangerMode]);
 
   return (
     <div className={styles.expand} style={{ backgroundColor: color }} id={id}>

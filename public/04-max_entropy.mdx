@@ -387,7 +387,8 @@ See the posterior probability for $X = 2382$ in the widget below.
 
 <XKCDCountdownWidget />
 
-<Expand headline = "More plots for log-uniform prior">
+{/*
+<Expand advance = {true} headline = "More plots for log-uniform prior">
 The plot below shows the whole posterior distribution if we start with the log-uniform prior (on the left) and condition on the last digits of $x$ being "00002382". We grouped $x$-values into bins between $10^1, 10^{1.5}, 10^2, \dots$
 
 ![xkcd posterior](04-max_entropy/xkcd.png)
@@ -396,8 +397,9 @@ As in the widget, almost all the probability is now concentrated on a single out
 
 But also notice is that the posterior distribution still looks uniform for numbers $>10^9$. This also makes sense—for large numbers, their last few digits are like a coin flip, so learning them doesn't significantly change things, and thus the posterior remains uniform there.
 </Expand>
+*/}
 
-The point is that the max-entropy principle gives us a language to talk about different priors and what they stand for. We can use it to conclude that we are not necessarily fine. 
+The point is that the max-entropy principle gives us a language to talk about different priors and what they stand for. If a very natural log-uniform prior says we are not fine with probability $> 0.999$, maybe it's time to move the picture away. 
 </Expand>
 
 <Expand headline="📈 S&P shape"> <a id="application-understanding-financial-data"></a>

@@ -6,6 +6,7 @@ import { JetBrains_Mono, Merriweather } from "next/font/google";
 import { StrictMode } from "react";
 import "./globals.css";
 import { AuthProvider } from "../lib/auth";
+import { DangerModeProvider } from "@/components/providers/DangerModeProvider";
 
 // Define Merriweather font configuration
 const merriweather = Merriweather({
@@ -38,7 +39,9 @@ export default function RootLayout({
       <StrictMode>
         <body className="antialiased">
           <AuthProvider>
-            <Page>{children}</Page>
+            <DangerModeProvider>
+              <Page>{children}</Page>
+            </DangerModeProvider>
           </AuthProvider>
         </body>
         {GTM_ID && <GoogleAnalytics gaId={GTM_ID} />}

@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { CHAPTERS, TITLE } from "@/lib/config";
+import { MAIN_CHAPTERS, BONUS_CHAPTERS, TITLE } from "@/lib/config";
 import { TableOfContents } from "./TableOfContents";
 import styles from "./Sidebar.module.css";
+import DangerButton from "./DangerButton";
+import { useDangerMode } from "./providers/DangerModeProvider";
 
 interface SidebarProps {
   className?: string;
@@ -17,6 +19,7 @@ export default function Sidebar({ className = "", onLinkClick, style }: SidebarP
   const pathname = usePathname();
   const [prevActive, setPrevActive] = useState<string | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const { isDangerMode } = useDangerMode();
 
   useEffect(() => {
     if (prevActive !== pathname) {
@@ -29,6 +32,11 @@ export default function Sidebar({ className = "", onLinkClick, style }: SidebarP
     }
   }, [pathname, prevActive]);
 
+  // Combine chapters based on danger mode
+  const visibleChapters = isDangerMode 
+    ? [...MAIN_CHAPTERS, ["", ""], ...BONUS_CHAPTERS]
+    : MAIN_CHAPTERS;
+
   return (
     <nav className={`${styles.sidebar} ${className}`} style={style}>
       <div className="mb-6">
@@ -36,8 +44,14 @@ export default function Sidebar({ className = "", onLinkClick, style }: SidebarP
           {TITLE}
         </Link>
       </div>
+      
+      {/* Danger Button */}
+      <div className="mb-4">
+        <DangerButton />
+      </div>
+      
       <ul className={styles.list}>
-        {CHAPTERS.map(([title, path], index) => {
+        {visibleChapters.map(([title, path], index) => {
           // Render gaps as spacers
           if (title === "" && path === "") {
             return <li key={`gap-${index}`} className={styles.gap}></li>;

@@ -4,7 +4,7 @@ export const TITLE = "KL divergence: the best bits";
 export const DESCRIPTION = "KL divergence: the best bits";
 export const TITLE_SHORT = "KL divergence";
 export const TITLE_ABBR = "KL divergence";
-export const CHAPTERS = [
+export const MAIN_CHAPTERS = [
   ["Riddles", "00-introduction"],
   ["", ""], // Gap
   ["KL divergence & Bayes", "01-kl_intro"],
@@ -15,10 +15,20 @@ export const CHAPTERS = [
   ["", ""], // Gap
   ["Resources", "resources"],
   ["About", "about"],
-  ["", ""], // Gap
-  ["Multiplicative weights", "06-algorithms"],
-  ["Fisher information", "07-fisher_info"],
+];
+
+export const BONUS_CHAPTERS = [
+  ["Coding theory", "09-coding_theory"],
   ["Kolmogorov complexity", "08-kolmogorov"],
+  ["Fisher information", "07-fisher_info"],
+  ["Multiplicative weights", "06-algorithms"],
+];
+
+// Combined chapters for compatibility
+export const CHAPTERS = [
+  ...MAIN_CHAPTERS,
+  ["", ""], // Gap
+  ...BONUS_CHAPTERS,
 ];
 export const rootSlug = "index";
 export const contentDirectory = join(process.cwd(), "public");
