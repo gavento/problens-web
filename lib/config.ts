@@ -12,6 +12,7 @@ export const MAIN_CHAPTERS = [
   ["Minimizing KL", "03-minimizing"],
   ["Max entropy distributions", "04-max_entropy"],
   ["Machine learning", "05-machine_learning"],
+  ["", ""], // Gap
   ["Resources", "resources"],
   ["About", "about"],
 ];
