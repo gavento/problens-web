@@ -19,8 +19,8 @@ export default function Expand({ children, headline, img, color = "#f5f5f5", sta
   const { isDangerMode } = useDangerMode();
   const [isOpen, setIsOpen] = useState(startOpen);
 
-  // Hide advanced sections when danger mode is on
-  if (advanced && isDangerMode) {
+  // Hide advanced sections when danger mode is off
+  if (advanced && !isDangerMode) {
     return null;
   }
 
