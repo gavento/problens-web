@@ -35,6 +35,7 @@ import LLMCompressionProgressionWidget from "@/components/widgets/LLMCompression
 import MiniCompressionChart from "@/components/widgets/MiniCompressionChart";
 import ShannonCodeWidget from "@/components/widgets/ShannonCodeWidget";
 import KraftInequalityWidget from "@/components/widgets/KraftInequalityWidget";
+import VolatilityDistributionWidget from "@/components/widgets/VolatilityDistributionWidget";
 import HeartRateWidget from "@/components/widgets/CoinFlipWidget";
 import { compile, evaluate } from "@mdx-js/mdx";
 import chalk from "chalk";
@@ -179,6 +180,7 @@ export async function getMdxContent(path: string) {
       MiniCompressionChart: MiniCompressionChart,
       ShannonCodeWidget: ShannonCodeWidget,
       KraftInequalityWidget: KraftInequalityWidget,
+      VolatilityDistributionWidget: VolatilityDistributionWidget,
       CoinFlipWidget: HeartRateWidget,
       HeartRateWidget: HeartRateWidget,
       Math: NumberedMath,

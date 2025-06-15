@@ -433,9 +433,9 @@ Our Laplace story suggests that the data should look more like Gaussian at the b
 
 ## Is Laplace a good model?
 
-Not really. We now understand that by fitting Laplace, we are claiming that daily variance fluctuates according to exponential distribution. Let's see how daily variance of S&P looks like: 
+Not really. We now understand that by fitting Laplace, we are claiming that daily variance fluctuates according to exponential distribution. Let's see how daily variance of S&P looks like:
 
-![volatility](04-max_entropy/volatility.png)
+<VolatilityDistributionWidget />
 
 Exponential is not a great fit. As far as I know, practitioners use distributions such as log-normal, gamma, or inverse-gamma to fit this kind of data (or they train a network to fit it). These distributions are more complicated and correspond to more complicated stories about how the data behaves. Most importantly, they are basically power-law fits that are less surprised by stock crashes / world wars / etc. 
 
