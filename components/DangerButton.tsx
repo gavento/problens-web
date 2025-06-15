@@ -40,9 +40,7 @@ export default function DangerButton() {
               <div>
                 <strong>Enable Danger Mode</strong>
                 <br />
-                Reveals bonus chapters and advanced sections.
-                <br />
-                For those who want to go deeper!
+                Reveals bonus riddles, chapters, and expand blocks. Use at your own risk!
               </div>
             )}
             <Tooltip.Arrow className="fill-gray-900" />
