@@ -20,29 +20,64 @@ const XKCDCountdownWidget: React.FC = () => {
   const totalSpace = Math.pow(10, totalDigits);
   const evidenceSpace = Math.pow(10, totalDigits - evidenceDigits.length);
   
-  // Calculate posterior probability based on selected prior
-  const posteriorProbability = useMemo(() => {
+  // Calculate posterior probability and bin probabilities
+  const { posteriorProbability, binProbabilities } = useMemo(() => {
     const baseNumber = parseInt(evidenceDigits);
     
-    // For uniform prior (λ = 0): P(X = 2382 | evidence) = 1 / evidenceSpace
-    if (lambda === 0) {
-      return 1 / evidenceSpace;
+    // Create log-scale bins from 10^0 to 10^14
+    const bins = [];
+    for (let i = 0; i < 14; i++) {
+      bins.push({
+        min: Math.pow(10, i),
+        max: Math.pow(10, i + 0.5),
+        probability: 0
+      });
+      bins.push({
+        min: Math.pow(10, i + 0.5),
+        max: Math.pow(10, i + 1),
+        probability: 0
+      });
     }
     
-    // For general power-law prior: P(X) ∝ X^(-λ)
     let normalizingSum = 0;
+    let targetPosterior = 0;
     
-    // Sum over all 6-digit prefixes + evidenceDigits  
+    // Calculate probabilities for all valid numbers
     for (let prefix = 0; prefix < evidenceSpace; prefix++) {
       const fullNumber = prefix * Math.pow(10, evidenceDigits.length) + baseNumber;
       if (fullNumber > 0) {
-        normalizingSum += Math.pow(fullNumber, -lambda);
+        const weight = lambda === 0 ? 1 : Math.pow(fullNumber, -lambda);
+        normalizingSum += weight;
+        
+        if (fullNumber === targetNumber) {
+          targetPosterior = weight;
+        }
+        
+        // Add to appropriate bin
+        const binIndex = bins.findIndex(bin => fullNumber >= bin.min && fullNumber < bin.max);
+        if (binIndex >= 0) {
+          bins[binIndex].probability += weight;
+        }
       }
     }
     
-    if (normalizingSum === 0) return 1 / evidenceSpace; // Fallback to uniform
+    // Normalize
+    if (normalizingSum === 0) {
+      return {
+        posteriorProbability: 1 / evidenceSpace,
+        binProbabilities: bins.map(() => 0)
+      };
+    }
     
-    return Math.pow(targetNumber, -lambda) / normalizingSum;
+    const normalizedBins = bins.map(bin => ({
+      ...bin,
+      probability: bin.probability / normalizingSum
+    }));
+    
+    return {
+      posteriorProbability: targetPosterior / normalizingSum,
+      binProbabilities: normalizedBins
+    };
   }, [lambda, targetNumber, evidenceSpace, evidenceDigits]);
 
   const handlePriorChange = (newPrior: PriorType) => {
@@ -159,13 +194,13 @@ const XKCDCountdownWidget: React.FC = () => {
             <span className="text-sm text-gray-500 w-8">2.0</span>
           </div>
           
-          <div className="text-sm text-gray-600">
-            <p className={`p-2 rounded ${lambda === 0 ? 'bg-yellow-100 border border-yellow-300' : ''}`}>
-              <strong>λ = 0:</strong> Uniform prior (all scales equally likely)
-            </p>
-            <p className={`p-2 rounded mt-1 ${lambda === 1 ? 'bg-yellow-100 border border-yellow-300' : ''}`}>
-              <strong>λ = 1:</strong> Log-uniform prior (like Benford&apos;s law)
-            </p>
+          <div className="text-sm text-gray-600 flex flex-wrap gap-2">
+            <span className={`px-2 py-1 rounded ${lambda === 0 ? 'bg-yellow-100 border border-yellow-300' : ''}`}>
+              <strong>λ = 0:</strong> Uniform prior
+            </span>
+            <span className={`px-2 py-1 rounded ${lambda === 1 ? 'bg-yellow-100 border border-yellow-300' : ''}`}>
+              <strong>λ = 1:</strong> Log-uniform prior
+            </span>
           </div>
         </div>
       </div>
@@ -178,6 +213,115 @@ const XKCDCountdownWidget: React.FC = () => {
             <span className="font-bold">{formatProbability(posteriorProbability)}</span>
           </div>
         </div>
+      </div>
+
+      {/* Posterior Distribution Chart */}
+      <div className="bg-white rounded-lg p-4">
+        <h4 className="text-lg font-semibold text-gray-800 mb-3">Posterior Distribution by Scale</h4>
+        <div className="w-full">
+          <svg width="100%" height="300" viewBox="0 0 640 300" className="border border-gray-200 rounded">
+            <defs>
+              <linearGradient id="barGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.8" />
+                <stop offset="100%" stopColor="#1e40af" stopOpacity="0.8" />
+              </linearGradient>
+            </defs>
+            
+            {/* Chart area */}
+            <g transform="translate(60, 20)">
+              {/* Y-axis */}
+              <line x1="0" y1="0" x2="0" y2="240" stroke="#6b7280" strokeWidth="1" />
+              
+              {/* X-axis */}
+              <line x1="0" y1="240" x2="560" y2="240" stroke="#6b7280" strokeWidth="1" />
+              
+              {/* X-axis labels */}
+              {Array.from({ length: 15 }, (_, i) => (
+                <g key={i}>
+                  <line 
+                    x1={i * 40} 
+                    y1="240" 
+                    x2={i * 40} 
+                    y2="245" 
+                    stroke="#6b7280" 
+                    strokeWidth="1" 
+                  />
+                  <text 
+                    x={i * 40} 
+                    y="260" 
+                    textAnchor="middle" 
+                    fontSize="10" 
+                    fill="#6b7280"
+                  >
+                    10^{i}
+                  </text>
+                </g>
+              ))}
+              
+              {/* Y-axis labels */}
+              {[0, 0.2, 0.4, 0.6, 0.8, 1.0].map((val, i) => (
+                <g key={i}>
+                  <line 
+                    x1="-5" 
+                    y1={240 - val * 240} 
+                    x2="0" 
+                    y2={240 - val * 240} 
+                    stroke="#6b7280" 
+                    strokeWidth="1" 
+                  />
+                  <text 
+                    x="-10" 
+                    y={245 - val * 240} 
+                    textAnchor="end" 
+                    fontSize="10" 
+                    fill="#6b7280"
+                  >
+                    {val.toFixed(1)}
+                  </text>
+                </g>
+              ))}
+              
+              {/* Bars */}
+              {binProbabilities.map((bin, i) => {
+                const maxProb = Math.max(...binProbabilities.map(b => b.probability));
+                const barHeight = maxProb > 0 ? (bin.probability / maxProb) * 220 : 0;
+                const xPos = i * 20;
+                
+                return (
+                  <rect
+                    key={i}
+                    x={xPos}
+                    y={240 - barHeight}
+                    width="18"
+                    height={barHeight}
+                    fill="url(#barGradient)"
+                    stroke="#1e40af"
+                    strokeWidth="0.5"
+                    className="hover:opacity-80"
+                  >
+                    <title>
+                      {`Range: ${bin.min.toExponential(1)} - ${bin.max.toExponential(1)}\\nProbability: ${(bin.probability * 100).toFixed(3)}%`}
+                    </title>
+                  </rect>
+                );
+              })}
+            </g>
+            
+            {/* Chart title */}
+            <text x="50%" y="15" textAnchor="middle" fontSize="12" fill="#374151" fontWeight="bold">
+              Probability Mass by Order of Magnitude
+            </text>
+            
+            {/* Y-axis label */}
+            <text x="20" y="50%" textAnchor="middle" fontSize="12" fill="#6b7280" transform="rotate(-90, 20, 150)">
+              Probability
+            </text>
+          </svg>
+        </div>
+        <p className="text-sm text-gray-600 mt-2">
+          Each bar shows the total probability mass for numbers in that scale range. 
+          Hover over bars to see exact values.
+        </p>
       </div>
     </div>
   );

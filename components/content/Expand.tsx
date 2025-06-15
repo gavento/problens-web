@@ -19,12 +19,10 @@ export default function Expand({ children, headline, img, color = "#f5f5f5", sta
   const { isDangerMode } = useDangerMode();
   const [isOpen, setIsOpen] = useState(startOpen);
 
-  // Auto-open advanced sections when danger mode is on
-  useEffect(() => {
-    if (advanced && isDangerMode) {
-      setIsOpen(true);
-    }
-  }, [advanced, isDangerMode]);
+  // Hide advanced sections when danger mode is on
+  if (advanced && isDangerMode) {
+    return null;
+  }
 
   return (
     <div className={styles.expand} style={{ backgroundColor: color }} id={id}>
