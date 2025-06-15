@@ -32,11 +32,6 @@ export default function Sidebar({ className = "", onLinkClick, style }: SidebarP
     }
   }, [pathname, prevActive]);
 
-  // Combine chapters based on danger mode
-  const visibleChapters = isDangerMode 
-    ? [...MAIN_CHAPTERS, ["", ""], ...BONUS_CHAPTERS]
-    : MAIN_CHAPTERS;
-
   return (
     <nav className={`${styles.sidebar} ${className}`} style={style}>
       <div className="mb-6">
@@ -45,46 +40,82 @@ export default function Sidebar({ className = "", onLinkClick, style }: SidebarP
         </Link>
       </div>
       
-      {/* Danger Button */}
-      <div className="mb-4">
-        <DangerButton />
-      </div>
-      
-      <ul className={styles.list}>
-        {visibleChapters.map(([title, path], index) => {
-          // Render gaps as spacers
-          if (title === "" && path === "") {
-            return <li key={`gap-${index}`} className={styles.gap}></li>;
-          }
+      <div className={styles.scrollableContent}>
+        <ul className={styles.list}>
+          {MAIN_CHAPTERS.map(([title, path], index) => {
+            // Render gaps as spacers
+            if (title === "" && path === "") {
+              return <li key={`gap-${index}`} className={styles.gap}></li>;
+            }
 
-          const href = `/${path}`;
-          const isActive = pathname === href || (path === "" && pathname === "/");
-          const wasActive = prevActive === href || (path === "" && prevActive === "/");
+            const href = `/${path}`;
+            const isActive = pathname === href || (path === "" && pathname === "/");
+            const wasActive = prevActive === href || (path === "" && prevActive === "/");
 
-          return (
-            <li key={path} className={styles.item}>
-              <Link href={href} onClick={onLinkClick} className={`${styles.link} ${isActive ? styles.active : ""}`}>
-                {title}
-              </Link>
-              <div
-                className={`${styles.subsections} ${
-                  (isActive || (wasActive && isTransitioning)) && styles.subsectionsVisible
-                }`}
-              >
+            return (
+              <li key={path} className={styles.item}>
+                <Link href={href} onClick={onLinkClick} className={`${styles.link} ${isActive ? styles.active : ""}`}>
+                  {title}
+                </Link>
                 <div
-                  className={`${styles.subsectionWrapper} ${
-                    isActive ? styles.subsectionWrapperVisible : styles.subsectionWrapperHidden
+                  className={`${styles.subsections} ${
+                    (isActive || (wasActive && isTransitioning)) && styles.subsectionsVisible
                   }`}
                 >
-                  {(isActive || (wasActive && isTransitioning)) && (
-                    <TableOfContents className={styles.tableOfContents} onSubsectionClick={onLinkClick} />
-                  )}
+                  <div
+                    className={`${styles.subsectionWrapper} ${
+                      isActive ? styles.subsectionWrapperVisible : styles.subsectionWrapperHidden
+                    }`}
+                  >
+                    {(isActive || (wasActive && isTransitioning)) && (
+                      <TableOfContents className={styles.tableOfContents} onSubsectionClick={onLinkClick} />
+                    )}
+                  </div>
                 </div>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+              </li>
+            );
+          })}
+        </ul>
+        
+        {/* Danger Button - positioned before bonus chapters */}
+        <div className="my-4">
+          <DangerButton />
+        </div>
+        
+        {/* Bonus chapters - only shown when danger mode is active */}
+        {isDangerMode && (
+          <ul className={styles.list}>
+            {BONUS_CHAPTERS.map(([title, path], index) => {
+              const href = `/${path}`;
+              const isActive = pathname === href || (path === "" && pathname === "/");
+              const wasActive = prevActive === href || (path === "" && prevActive === "/");
+
+              return (
+                <li key={path} className={styles.item}>
+                  <Link href={href} onClick={onLinkClick} className={`${styles.link} ${isActive ? styles.active : ""}`}>
+                    {title}
+                  </Link>
+                  <div
+                    className={`${styles.subsections} ${
+                      (isActive || (wasActive && isTransitioning)) && styles.subsectionsVisible
+                    }`}
+                  >
+                    <div
+                      className={`${styles.subsectionWrapper} ${
+                        isActive ? styles.subsectionWrapperVisible : styles.subsectionWrapperHidden
+                      }`}
+                    >
+                      {(isActive || (wasActive && isTransitioning)) && (
+                        <TableOfContents className={styles.tableOfContents} onSubsectionClick={onLinkClick} />
+                      )}
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
     </nav>
   );
 }

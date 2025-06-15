@@ -3,6 +3,35 @@
   font-size: var(--sidebar-font-size);
   line-height: var(--sidebar-line-height);
   padding-right: 2rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.scrollableContent {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 2rem;
+  /* Custom scrollbar styling for better appearance */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.scrollableContent::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollableContent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollableContent::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.scrollableContent::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 .list {
