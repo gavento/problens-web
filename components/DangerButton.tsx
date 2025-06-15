@@ -8,7 +8,7 @@ export default function DangerButton() {
   const { isDangerMode, toggleDangerMode } = useDangerMode();
 
   return (
-    <Tooltip.Provider>
+    <Tooltip.Provider delayDuration={0}>
       <Tooltip.Root>
         <Tooltip.Trigger asChild>
           <button
