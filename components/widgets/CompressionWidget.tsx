@@ -445,20 +445,20 @@ export default function CompressionWidget() {
   }
 
   return (
-    <div className="compression-widget bg-white border border-gray-200 rounded-lg p-6 my-6">
-      <div className="flex justify-between items-start mb-4">
+    <div className="compression-widget bg-white border border-gray-200 rounded-lg p-4 sm:p-6 my-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-4">
         <div>
-          <h3 className="text-lg font-semibold mb-2">Text Compression Explorer</h3>
-          <p className="text-gray-600">
+          <h3 className="text-lg sm:text-xl font-semibold mb-2">Text Compression Explorer</h3>
+          <p className="text-gray-600 text-sm sm:text-base">
             Explore how different compression algorithms perform on various types of text. 
             Try to guess in advance!
           </p>
         </div>
-        <div className="flex items-center gap-2 ml-4">
+        <div className="flex items-center gap-2">
           <span className="text-sm text-gray-600">Scale:</span>
           <button
             onClick={() => setUseFixedScale(!useFixedScale)}
-            className={`px-3 py-1 text-sm border rounded transition-colors ${
+            className={`px-3 py-2 text-sm border rounded transition-colors min-h-[44px] ${
               useFixedScale 
                 ? 'bg-blue-500 text-white border-blue-500' 
                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
@@ -469,19 +469,19 @@ export default function CompressionWidget() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
         {textSamples.map((sample, index) => (
           <button
             key={index}
             onClick={() => setSelectedSample(sample)}
-            className={`p-4 text-left border rounded-lg transition-all ${
+            className={`p-4 text-left border rounded-lg transition-all min-h-[60px] ${
               selectedSample?.name === sample.name
                 ? "border-blue-500 bg-blue-50"
                 : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
             }`}
           >
-            <div className="font-medium">{sample.name}</div>
-            <div className="text-sm text-gray-600 mt-1">{sample.description}</div>
+            <div className="font-medium text-sm sm:text-base">{sample.name}</div>
+            <div className="text-xs sm:text-sm text-gray-600 mt-1">{sample.description}</div>
           </button>
         ))}
       </div>
@@ -491,8 +491,8 @@ export default function CompressionWidget() {
           <div className="bg-gray-50 p-4 rounded-lg mb-4">
             <h4 className="font-medium mb-2">Sample Text: {selectedSample.name}</h4>
             <div 
-              className="text-sm font-mono bg-white p-3 rounded border overflow-y-auto break-all" 
-              style={{ height: '8rem', lineHeight: '1.2rem', wordWrap: 'break-word', whiteSpace: 'pre-wrap' }}
+              className="text-xs sm:text-sm font-mono bg-white p-3 rounded border overflow-y-auto break-all" 
+              style={{ height: '6rem', lineHeight: '1.2rem', wordWrap: 'break-word', whiteSpace: 'pre-wrap' }}
             >
               {selectedSample.text}
             </div>

@@ -182,19 +182,19 @@ const DistributionConstraintBuilder: React.FC<Props> = ({
           </button>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {lambdas.map((lambda) => (
-            <div key={lambda.id} className="flex items-center space-x-3 p-3 bg-white rounded-lg border">
+            <div key={lambda.id} className="flex items-center space-x-3 p-4 bg-white rounded-lg border">
               <div className="w-16">
                 <KatexMath math={lambda.mathDisplay} />
               </div>
-              <span className="text-gray-600">=</span>
+              <span className="text-gray-600 text-lg">=</span>
               <input
                 type="number"
                 step="0.5"
                 value={lambda.value}
                 onChange={(e) => updateLambda(lambda.id, parseFloat(e.target.value) || 0)}
-                className="w-20 px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-20 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
               />
               <div className="text-sm text-gray-500 w-40">
                 <KatexMath math={

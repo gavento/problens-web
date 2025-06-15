@@ -209,9 +209,9 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
   }
 
   return (
-    <div className="p-6 bg-gray-50 rounded-lg space-y-4">
+    <div className="p-4 sm:p-6 bg-gray-50 rounded-lg space-y-4 max-w-4xl mx-auto">
       {/* Controls */}
-      <div className="space-y-4">
+      <div className="bg-white rounded-lg p-4 space-y-4">
         {/* Top row: Asset selector and Distribution toggles */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Asset selector */}
@@ -221,7 +221,7 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
               <select
                 value={selectedAsset}
                 onChange={(e) => setSelectedAsset(e.target.value as 'BTC' | 'SAP')}
-                className="w-full p-2 border border-gray-300 rounded-md"
+                className="w-full p-3 border border-gray-300 rounded-md min-h-[44px]"
               >
                 <option value="BTC">Bitcoin (BTC)</option>
                 <option value="SAP">S&P 500 (SAP)</option>
@@ -233,21 +233,21 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">Show distributions</label>
             <div className="flex gap-4">
-              <label className="flex items-center text-sm">
+              <label className="flex items-center text-sm min-h-[44px]">
                 <input
                   type="checkbox"
                   checked={showGaussian}
                   onChange={(e) => setShowGaussian(e.target.checked)}
-                  className="mr-2"
+                  className="mr-2 min-w-[20px] min-h-[20px]"
                 />
                 <span className="text-red-600">Gaussian</span>
               </label>
-              <label className="flex items-center text-sm">
+              <label className="flex items-center text-sm min-h-[44px]">
                 <input
                   type="checkbox"
                   checked={showLaplace}
                   onChange={(e) => setShowLaplace(e.target.checked)}
-                  className="mr-2"
+                  className="mr-2 min-w-[20px] min-h-[20px]"
                 />
                 <span className="text-green-600">Laplace</span>
               </label>
@@ -268,7 +268,7 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
               max={maxDays}
               value={selectedDays}
               onChange={(e) => setSelectedDays(parseInt(e.target.value))}
-              className="w-full"
+              className="w-full h-4 min-h-[44px]"
             />
           </div>
 
@@ -284,7 +284,7 @@ export default function FinancialDistributionWidget({ showBTC = true, showSAP = 
               step="0.5"
               value={xAxisRange}
               onChange={(e) => setXAxisRange(parseFloat(e.target.value))}
-              className="w-full"
+              className="w-full h-4 min-h-[44px]"
             />
           </div>
         </div>

@@ -51,8 +51,8 @@ const SoftmaxWidget: React.FC<Props> = ({
   const yScale = innerHeight / maxScale;
 
   return (
-    <div className="p-4 bg-gray-50 rounded-lg space-y-4 max-w-2xl mx-auto">
-      {title && <h3 className="text-lg font-semibold text-center text-gray-800">{title}</h3>}
+    <div className="p-4 sm:p-6 bg-gray-50 rounded-lg space-y-4 max-w-3xl mx-auto">
+      {title && <h3 className="text-lg sm:text-xl font-semibold text-center text-gray-800">{title}</h3>}
 
       {/* Values display */}
       <div className="text-center text-sm text-gray-600">
@@ -60,8 +60,8 @@ const SoftmaxWidget: React.FC<Props> = ({
       </div>
 
       {/* SVG Chart */}
-      <div className="flex justify-center overflow-x-auto">
-        <svg width={chartWidth} height={chartHeight} className="border rounded bg-white min-w-0 max-w-full">
+      <div className="bg-white p-4 rounded-lg border">
+        <svg width="100%" height={chartHeight} viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="border border-gray-200 rounded">
           {/* Chart area background */}
           <rect
             x={margin.left}
@@ -160,9 +160,9 @@ const SoftmaxWidget: React.FC<Props> = ({
       </div>
 
       {/* Lambda slider */}
-      <div className="space-y-2">
-        <div className="text-center text-sm text-gray-700">
-          <strong>Lambda</strong> (λ)
+      <div className="bg-white rounded-lg p-4 space-y-3">
+        <div className="text-center text-sm font-medium text-gray-700">
+          <strong>Lambda</strong> (λ) = {lambda.toFixed(1)}
         </div>
         <div className="relative">
           <input
@@ -172,12 +172,13 @@ const SoftmaxWidget: React.FC<Props> = ({
             step={0.1}
             value={lambda}
             onChange={(e) => setLambda(Number(e.target.value))}
-            className="w-full h-3 bg-gradient-to-r from-red-200 via-yellow-200 to-green-200 rounded-lg appearance-none cursor-pointer"
+            className="w-full h-4 bg-gradient-to-r from-red-200 via-yellow-200 to-green-200 rounded-lg appearance-none cursor-pointer"
             style={{
               background: `linear-gradient(to right, 
                 #fecaca 0%, 
                 #fef3c7 50%, 
                 #d1fae5 100%)`,
+              minHeight: '44px'
             }}
           />
           <div className="flex justify-between text-xs text-gray-500 mt-1">
@@ -190,19 +191,22 @@ const SoftmaxWidget: React.FC<Props> = ({
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 text-sm">
-        <div className="bg-white p-2 rounded text-center">
-          <div className="font-semibold text-gray-700">Lambda (λ)</div>
-          <div className="text-lg text-purple-600">{lambda.toFixed(2)}</div>
-        </div>
-        <div className="bg-white p-2 rounded text-center">
-          <div className="font-semibold text-gray-700">Max Probability</div>
-          <div className="text-lg text-blue-600">{Math.max(...probabilities).toFixed(3)}</div>
-        </div>
-        <div className="bg-white p-2 rounded text-center">
-          <div className="font-semibold text-gray-700">Entropy</div>
-          <div className="text-lg text-green-600">
-            {(-probabilities.reduce((sum, p) => sum + (p > 0 ? p * Math.log2(p) : 0), 0)).toFixed(3)}
+      <div className="bg-white rounded-lg p-4">
+        <h4 className="text-base font-semibold text-gray-800 mb-3">Statistics</h4>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+          <div className="bg-gray-50 p-3 rounded text-center">
+            <div className="font-semibold text-gray-700">Lambda (λ)</div>
+            <div className="text-lg text-purple-600">{lambda.toFixed(2)}</div>
+          </div>
+          <div className="bg-gray-50 p-3 rounded text-center">
+            <div className="font-semibold text-gray-700">Max Probability</div>
+            <div className="text-lg text-blue-600">{Math.max(...probabilities).toFixed(3)}</div>
+          </div>
+          <div className="bg-gray-50 p-3 rounded text-center">
+            <div className="font-semibold text-gray-700">Entropy</div>
+            <div className="text-lg text-green-600">
+              {(-probabilities.reduce((sum, p) => sum + (p > 0 ? p * Math.log2(p) : 0), 0)).toFixed(3)}
+            </div>
           </div>
         </div>
       </div>

@@ -33,65 +33,73 @@ const BayesCalculatorWidget: React.FC<Props> = ({
   }, [priorFair, priorBiased, likelihoodFair, likelihoodBiased]);
 
   return (
-    <div className="p-6 bg-gray-50 rounded-lg space-y-4 max-w-2xl mx-auto">
+    <div className="p-4 sm:p-6 bg-gray-50 rounded-lg space-y-4 max-w-3xl mx-auto">
       {title && (
         <h3 className="text-lg font-semibold text-center text-gray-800">
           {title}
         </h3>
       )}
 
-      <div className="bg-white rounded-lg p-4 sm:p-6 space-y-4">
+      <div className="bg-white rounded-lg p-4 sm:p-6 space-y-6">
         {/* Prior odds input */}
-        <div className="flex items-center">
-          <span className="text-sm font-medium text-gray-700 w-32 text-right">Prior odds:</span>
-          <div className="flex-1 flex items-center justify-center space-x-2 ml-4">
-            <span className="text-xs text-gray-500 w-12 text-right">(fair)</span>
-            <input
-              type="number"
-              value={priorFair}
-              onChange={(e) => setPriorFair(parseFloat(e.target.value) || 0)}
-              className="w-20 px-2 py-2 border border-gray-300 rounded text-center"
-              step="0.1"
-              min="0"
-            />
-            <span className="text-gray-500 text-lg">:</span>
-            <input
-              type="number"
-              value={priorBiased}
-              onChange={(e) => setPriorBiased(parseFloat(e.target.value) || 0)}
-              className="w-20 px-2 py-2 border border-gray-300 rounded text-center"
-              step="0.1"
-              min="0"
-            />
-            <span className="text-xs text-gray-500 w-12">(biased)</span>
+        <div className="space-y-3">
+          <label className="text-sm font-medium text-gray-700">Prior odds:</label>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-500 min-w-[50px] text-center">Fair</span>
+              <input
+                type="number"
+                value={priorFair}
+                onChange={(e) => setPriorFair(parseFloat(e.target.value) || 0)}
+                className="w-16 sm:w-20 px-3 py-2 border border-gray-300 rounded-md text-center min-h-[44px]"
+                step="0.1"
+                min="0"
+              />
+            </div>
+            <span className="text-gray-500 text-lg font-bold">:</span>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                value={priorBiased}
+                onChange={(e) => setPriorBiased(parseFloat(e.target.value) || 0)}
+                className="w-16 sm:w-20 px-3 py-2 border border-gray-300 rounded-md text-center min-h-[44px]"
+                step="0.1"
+                min="0"
+              />
+              <span className="text-sm text-gray-500 min-w-[50px] text-center">Biased</span>
+            </div>
           </div>
         </div>
 
         {/* Likelihood input */}
-        <div className="flex items-center">
-          <span className="text-sm font-medium text-gray-700 w-32 text-right">Likelihood of heads:</span>
-          <div className="flex-1 flex items-center justify-center space-x-2 ml-4">
-            <span className="text-xs text-gray-500 w-12 text-right">(fair)</span>
-            <input
-              type="number"
-              value={likelihoodFair}
-              onChange={(e) => setLikelihoodFair(parseFloat(e.target.value) || 0)}
-              className="w-20 px-2 py-2 border border-gray-300 rounded text-center"
-              step="0.01"
-              min="0"
-              max="1"
-            />
-            <span className="text-gray-500 text-lg">:</span>
-            <input
-              type="number"
-              value={likelihoodBiased}
-              onChange={(e) => setLikelihoodBiased(parseFloat(e.target.value) || 0)}
-              className="w-20 px-2 py-2 border border-gray-300 rounded text-center"
-              step="0.01"
-              min="0"
-              max="1"
-            />
-            <span className="text-xs text-gray-500 w-12">(biased)</span>
+        <div className="space-y-3">
+          <label className="text-sm font-medium text-gray-700">Likelihood of heads:</label>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-500 min-w-[50px] text-center">Fair</span>
+              <input
+                type="number"
+                value={likelihoodFair}
+                onChange={(e) => setLikelihoodFair(parseFloat(e.target.value) || 0)}
+                className="w-16 sm:w-20 px-3 py-2 border border-gray-300 rounded-md text-center min-h-[44px]"
+                step="0.01"
+                min="0"
+                max="1"
+              />
+            </div>
+            <span className="text-gray-500 text-lg font-bold">:</span>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                value={likelihoodBiased}
+                onChange={(e) => setLikelihoodBiased(parseFloat(e.target.value) || 0)}
+                className="w-16 sm:w-20 px-3 py-2 border border-gray-300 rounded-md text-center min-h-[44px]"
+                step="0.01"
+                min="0"
+                max="1"
+              />
+              <span className="text-sm text-gray-500 min-w-[50px] text-center">Biased</span>
+            </div>
           </div>
         </div>
 

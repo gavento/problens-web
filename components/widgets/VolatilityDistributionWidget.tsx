@@ -94,8 +94,9 @@ const VolatilityDistributionWidget: React.FC = () => {
     );
   }
 
-  const chartWidth = 600;
-  const chartHeight = 300;
+  // Responsive chart dimensions
+  const chartWidth = 800;
+  const chartHeight = 400;
   const margin = { top: 20, right: 20, bottom: 50, left: 60 };
   const plotWidth = chartWidth - margin.left - margin.right;
   const plotHeight = chartHeight - margin.top - margin.bottom;
@@ -126,13 +127,13 @@ const VolatilityDistributionWidget: React.FC = () => {
       </h3>
       
       {/* Controls */}
-      <div className="flex flex-wrap gap-4 items-center justify-between">
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center sm:justify-between">
         {/* Scale Toggle */}
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-gray-700">Y-axis:</span>
           <button
             onClick={() => setIsLogScale(!isLogScale)}
-            className={`px-3 py-1 text-sm rounded border transition-colors ${
+            className={`px-4 py-2 text-sm rounded-md border transition-colors min-h-[44px] ${
               isLogScale
                 ? 'bg-blue-500 text-white border-blue-500'
                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
@@ -143,21 +144,21 @@ const VolatilityDistributionWidget: React.FC = () => {
         </div>
 
         {/* Fit Toggles */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
           <span className="text-sm font-medium text-gray-700">Show fits:</span>
-          <div className="flex gap-1">
+          <div className="flex gap-2">
             {Object.entries(showFits).map(([fitType, isVisible]) => (
               <button
                 key={fitType}
                 onClick={() => toggleFit(fitType as keyof typeof showFits)}
-                className={`px-2 py-1 text-xs rounded border transition-colors ${
+                className={`px-3 py-2 text-sm rounded-md border transition-colors min-h-[44px] ${
                   isVisible
                     ? 'bg-blue-500 text-white border-blue-500'
                     : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
                 }`}
               >
-                {fitType === 'exponential' ? 'Exp' : 
-                 fitType === 'logNormal' ? 'LogN' : 'InvΓ'}
+                {fitType === 'exponential' ? 'Exponential' : 
+                 fitType === 'logNormal' ? 'Log-Normal' : 'Inverse-Γ'}
               </button>
             ))}
           </div>
@@ -352,14 +353,15 @@ const VolatilityDistributionWidget: React.FC = () => {
       </div>
       
       {/* Statistics */}
-      <div className="bg-white p-3 rounded-lg border text-sm">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-          <div><strong>Count:</strong> {data.stats.count.toLocaleString()}</div>
-          <div><strong>Mean:</strong> {data.stats.mean.toFixed(6)}</div>
-          <div><strong>Median:</strong> {data.stats.median.toFixed(6)}</div>
-          <div><strong>Std:</strong> {data.stats.std.toFixed(6)}</div>
-          <div><strong>Min:</strong> {data.stats.min.toFixed(6)}</div>
-          <div><strong>Max:</strong> {data.stats.max.toFixed(6)}</div>
+      <div className="bg-white p-4 rounded-lg border text-sm">
+        <h4 className="text-base font-semibold text-gray-800 mb-3">Distribution Statistics</h4>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="p-2 bg-gray-50 rounded"><strong>Count:</strong> {data.stats.count.toLocaleString()}</div>
+          <div className="p-2 bg-gray-50 rounded"><strong>Mean:</strong> {data.stats.mean.toFixed(6)}</div>
+          <div className="p-2 bg-gray-50 rounded"><strong>Median:</strong> {data.stats.median.toFixed(6)}</div>
+          <div className="p-2 bg-gray-50 rounded"><strong>Std Dev:</strong> {data.stats.std.toFixed(6)}</div>
+          <div className="p-2 bg-gray-50 rounded"><strong>Min:</strong> {data.stats.min.toFixed(6)}</div>
+          <div className="p-2 bg-gray-50 rounded"><strong>Max:</strong> {data.stats.max.toFixed(6)}</div>
         </div>
       </div>
     </div>

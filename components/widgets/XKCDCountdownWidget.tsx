@@ -134,10 +134,10 @@ const XKCDCountdownWidget: React.FC = () => {
       {/* Prior Selection */}
       <div className="bg-white rounded-lg p-4">
         <h4 className="text-lg font-semibold text-gray-800 mb-3">Select Prior Distribution</h4>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <button
             onClick={() => handlePriorChange('uniform')}
-            className={`p-3 rounded-lg border text-left transition-colors ${
+            className={`p-4 rounded-lg border text-left transition-colors min-h-[60px] ${
               priorType === 'uniform'
                 ? 'bg-blue-100 border-blue-300'
                 : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
@@ -149,7 +149,7 @@ const XKCDCountdownWidget: React.FC = () => {
           
           <button
             onClick={() => handlePriorChange('log-uniform')}
-            className={`p-3 rounded-lg border text-left transition-colors ${
+            className={`p-4 rounded-lg border text-left transition-colors min-h-[60px] ${
               priorType === 'log-uniform'
                 ? 'bg-blue-100 border-blue-300'
                 : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
@@ -161,7 +161,7 @@ const XKCDCountdownWidget: React.FC = () => {
           
           <button
             onClick={() => handlePriorChange('power-law')}
-            className={`p-3 rounded-lg border text-left transition-colors ${
+            className={`p-4 rounded-lg border text-left transition-colors min-h-[60px] ${
               priorType === 'power-law'
                 ? 'bg-blue-100 border-blue-300'
                 : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
@@ -186,7 +186,7 @@ const XKCDCountdownWidget: React.FC = () => {
               step="0.1"
               value={lambda}
               onChange={(e) => handleLambdaChange(parseFloat(e.target.value))}
-              className="flex-1 h-2"
+              className="flex-1 h-4"
               style={{
                 background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${(lambda / 2) * 100}%, #e5e7eb ${(lambda / 2) * 100}%, #e5e7eb 100%)`
               }}
