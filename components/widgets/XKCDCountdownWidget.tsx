@@ -65,7 +65,10 @@ const XKCDCountdownWidget: React.FC = () => {
     if (normalizingSum === 0) {
       return {
         posteriorProbability: 1 / evidenceSpace,
-        binProbabilities: bins.map(() => 0)
+        binProbabilities: bins.map(bin => ({
+          ...bin,
+          probability: 0
+        }))
       };
     }
     
