@@ -47,10 +47,6 @@
   margin: 0;
 }
 
-.item:last-child {
-  padding-top: 1rem;
-}
-
 .link {
   display: block;
   color: var(--neutral-600);
