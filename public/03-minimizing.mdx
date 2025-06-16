@@ -126,16 +126,19 @@ We now need to understand the distribution of $\hat{q}$, i.e., we want to unders
 Now, with a bit of hand-waving, we can observe that the probability distribution of <Math math="\hat{q}" /> will be concentrated around the value of $q$ as $N$ approaches infinity, even though there's a nonzero probability that $\hat{q} \in P$. If that happens, we similarly find that the posterior distribution is concentrated around the value <Math math="\tilde{p} = \argmin_{p \in P} D(p,q)"/>. We conclude that in the limit of $N$ going to infinity, working with mixture distributions and conditioning on it being from $P$ is equivalent to simply replacing $q$ with <Math math="\argmin_{p \in P} D(p,q)"/>.
 </Expand>
 
+<Footnote>It is a good exercise to carefully see that "conditioning" is really a special case of minimizing KL. The fact that you have to prove is this: If you have a joint distribution $p$ over two random variables $X,Y$ and learn that $Y = y$, there are two things you could do. 1) Define distribution $p_1$ by conditioning $p$ on $Y = y$. 2) Define distribution $p_2$ as <Math math = "\argmin_{p'} D(p', p)$." />. You should prove that $p_1 = p_2$. </Footnote>
 
-One more technical point. In the next Expand box, we confirm that we can view classical updating as a special case of the min relative entropy principle. This justifies the intuition that minimum relative principle is "conditioning on steroids". 
-
+{/*
 <Expand headline = "Min relative entropy implies Bayes' updating" advanced={true}>
+One more technical point. We should confirm that we can view classical updating as a special case of the min relative entropy principle. This justifies the intuition that minimum relative principle is "conditioning on steroids". 
+
+
 Consider the general problem of updating after seeing evidence: We have a joint distribution <Math math = "p_{old}" /> over two random variables $X$ (which we're interested in) and $Y$ (representing possible evidence we might observe).
 Then, we observe some evidence $Y=y$. We want to compute the new distribution <Math math = "p_{new}" /> that incorporates this observation. The rules of conditional probability say that <Math math = "p_{new}" /> should be $0$ for $Y \not= y$ and, for $Y = y$, it should be the conditional distribution of $p$ given $Y = y$.
 
 The observation we can now make is that <Math math="p_{new} = \argmin_{p \in P} D(p, p_{old})" />, where $P$ is the set of distributions where $P(Y = y') = 0$ for $y' \ne y$<Footnote>The proof of this observation requires some rewriting, but in essence, it hinges on the fact that the distribution closest in KL to $p$ conditioned on $Y = y$ is... the same distribution. Really, nothing complicated is happening here; we are just saying that the new distribution should resemble the old one, merely rescaled so that probabilities sum to one.</Footnote>.
 </Expand>
-
+*/}
 
 ### The maximum entropy principle <a id="maximum-entropy-principle"></a>
 

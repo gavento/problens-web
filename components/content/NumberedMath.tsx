@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import katex from "katex";
 import "katex/dist/katex.min.css";
 import { useEquationContext } from "./EquationContext";
@@ -23,10 +23,21 @@ const NumberedMath: React.FC<NumberedMathProps> = ({
   id,
 }) => {
   const containerRef = useRef<HTMLSpanElement>(null);
-  const { getEquationNumber } = useEquationContext();
+  const { getEquationNumber, registerEquation } = useEquationContext();
+  const [equationNumber, setEquationNumber] = useState<number | null>(null);
 
-  // Get equation number if ID is provided
-  const equationNumber = id ? getEquationNumber(id) : null;
+  // Register equation number on mount to avoid hydration issues
+  useEffect(() => {
+    if (id) {
+      const existingNumber = getEquationNumber(id);
+      if (existingNumber !== null) {
+        setEquationNumber(existingNumber);
+      } else {
+        const newNumber = registerEquation(id);
+        setEquationNumber(newNumber);
+      }
+    }
+  }, [id, getEquationNumber, registerEquation]);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -48,10 +59,10 @@ const NumberedMath: React.FC<NumberedMathProps> = ({
         }
       }
     }
-  }, [math, displayMode, throwOnError, macros]);
+  }, [math, displayMode, throwOnError, macros, equationNumber]);
 
   // For numbered equations in display mode, use a flex layout
-  if (id && displayMode && equationNumber) {
+  if (id && displayMode && equationNumber !== null) {
     return (
       <div style={{ 
         display: 'flex', 

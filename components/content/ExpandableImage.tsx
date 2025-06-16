@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { getAssetPath } from "@/lib/utils";
 
 interface ExpandableImageProps {
   src: string;
@@ -16,6 +17,7 @@ const ExpandableImage: React.FC<ExpandableImageProps> = ({
   className = "" 
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const imageSrc = getAssetPath(src);
 
   const handleClick = () => {
     setIsExpanded(!isExpanded);
@@ -31,7 +33,7 @@ const ExpandableImage: React.FC<ExpandableImageProps> = ({
         >
           <div className="relative max-w-full max-h-full">
             <img
-              src={src}
+              src={imageSrc}
               alt={alt}
               className="max-w-full max-h-full object-contain cursor-pointer"
               onClick={handleClick}
@@ -50,7 +52,7 @@ const ExpandableImage: React.FC<ExpandableImageProps> = ({
 
   return (
     <img
-      src={src}
+      src={imageSrc}
       alt={alt}
       style={{ cursor: 'pointer', ...style }}
       className={className}

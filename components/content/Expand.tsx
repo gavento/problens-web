@@ -24,9 +24,12 @@ export default function Expand({ children, headline, img, color = "#f5f5f5", sta
     return null;
   }
 
+  // Use subtle red background for advanced sections header
+  const headerColor = advanced ? "#fff5f5" : color;
+
   return (
-    <div className={styles.expand} style={{ backgroundColor: color }} id={id}>
-      <div className={styles.header} onClick={() => setIsOpen(!isOpen)}>
+    <div className={styles.expand} id={id}>
+      <div className={styles.header} style={{ backgroundColor: headerColor }} onClick={() => setIsOpen(!isOpen)}>
         {advanced && (
           <div className={styles.advancedIcon} title="This is an advanced section">
             ⚠️
@@ -50,7 +53,7 @@ export default function Expand({ children, headline, img, color = "#f5f5f5", sta
           </svg>
         </div>
       </div>
-      {isOpen && <div className={styles.content}>{children}</div>}
+      {isOpen && <div className={styles.content} style={{ backgroundColor: color }}>{children}</div>}
     </div>
   );
 }

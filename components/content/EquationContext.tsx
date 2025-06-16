@@ -3,7 +3,8 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useRef } from "react";
 
 interface EquationContextType {
-  getEquationNumber: (id: string) => number;
+  getEquationNumber: (id: string) => number | null;
+  registerEquation: (id: string) => number;
   getAllEquations: () => Record<string, number>;
 }
 
@@ -22,18 +23,24 @@ export function EquationProvider({ children }: EquationProviderProps) {
       return equations[id];
     }
     
-    // Assign new number to this equation
-    const number = nextNumberRef.current;
-    nextNumberRef.current += 1;
-    
-    setEquations(prev => ({ ...prev, [id]: number }));
-    return number;
+    // Return null for unregistered equations to avoid hydration issues
+    return null;
+  }, [equations]);
+
+  const registerEquation = useCallback((id: string) => {
+    if (!equations[id]) {
+      const number = nextNumberRef.current;
+      nextNumberRef.current += 1;
+      setEquations(prev => ({ ...prev, [id]: number }));
+      return number;
+    }
+    return equations[id];
   }, [equations]);
 
   const getAllEquations = useCallback(() => equations, [equations]);
 
   return (
-    <EquationContext.Provider value={{ getEquationNumber, getAllEquations }}>
+    <EquationContext.Provider value={{ getEquationNumber, registerEquation, getAllEquations }}>
       {children}
     </EquationContext.Provider>
   );

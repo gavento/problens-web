@@ -1,0 +1,18 @@
+
+> generic-academic-website@0.1.0 dev /home/vasek/problens-web
+> next dev --turbopack
+
+ ⚠ Port 3000 is in use, trying 3001 instead.
+   ▲ Next.js 15.2.4 (Turbopack)
+   - Local:        http://localhost:3001
+   - Network:      http://10.13.3.0:3001
+   - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 821ms
+ ○ Compiling /[...path] ...
+ ✓ Compiled /[...path] in 7.4s
+ GET /02-crossentropy/ 200 in 10360ms
+ GET /02-crossentropy/ 200 in 1142ms
+ GET /02-crossentropy/ 200 in 1193ms
+ GET /01-kl_intro/ 200 in 654ms

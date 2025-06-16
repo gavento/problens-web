@@ -75,3 +75,10 @@ This ensures the deployment pipeline remains healthy and the static site builds 
 - Image paths in widgets: Must use `/problens-web/` prefix for static deployment (e.g., `src="/problens-web/image.png"`). Never use just `/image.png`. Check FinanceSlider widget for reference pattern when debugging image loading issues.
 - Prefer relative positioning and relative lengths over absolute ones. I want the page to look reasonably well on mobile phones.
 - Widgets should look good on and work on mobile phones
+- I want you to run a server in the background so that I can check the updates once they happen.
+- Always runs the server in the background using the following detailed steps:
+  1. Navigate to the project root directory
+  2. Run `pnpm dev` in the background using `pnpm dev &` or start the process with `nohup pnpm dev &`
+  3. Verify the server is running by checking the process or visiting http://localhost:3000
+  4. If you need to stop the server later, use `pkill -f "pnpm dev"` or find the specific process ID and kill it
+- Use as much relative positioning and relative lengths as possible

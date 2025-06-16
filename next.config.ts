@@ -1,10 +1,12 @@
 import type { NextConfig } from "next";
 
+const isProd = process.env.NODE_ENV === "production";
+
 const nextConfig: NextConfig = {
   output: "export",
-  // GitHub Pages subdirectory deployment
-  basePath: "/problens-web",
-  assetPrefix: "/problens-web",
+  // GitHub Pages subdirectory deployment - only in production
+  basePath: isProd ? "/problens-web" : "",
+  assetPrefix: isProd ? "/problens-web" : "",
   images: {
     unoptimized: true, // Required for static export
   },

@@ -186,81 +186,127 @@ const BayesSequenceWidget: React.FC<Props> = ({
             className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
           />
           <span className="text-sm text-gray-600 w-8">{currentStep}</span>
+          <button
+            onClick={() => setCurrentStep(Math.min(currentStep + 1, sequence.length))}
+            disabled={currentStep >= sequence.length}
+            className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          >
+            Next Step
+          </button>
         </div>
 
         {/* Prior and flip rows */}
-        <div className="bg-white rounded-lg p-4 space-y-2">
+        <div className="bg-white rounded-lg p-4 relative">
           {/* Prior row */}
-          <div className={`flex items-center py-2 px-3 rounded border ${
+          <div className={`relative flex items-center py-3 px-4 rounded border ${
             logSpace ? 'bg-purple-50 border-purple-200' : 'bg-blue-50 border-blue-200'
           }`}>
-            <span className="text-sm font-medium text-gray-700 w-20">Prior odds</span>
-            <div className="flex-1 flex items-center justify-center space-x-2">
-              <span className="font-mono text-sm font-bold">{priorFair}</span>
-              <span className="text-gray-500">:</span>
-              <span className="font-mono text-sm font-bold">{priorBiased}</span>
+            <div className="w-24 text-sm font-medium text-gray-700">Prior odds</div>
+            <div className="flex-1 flex items-center">
+              <div className="flex-1 text-right">
+                <span className="font-mono text-sm font-bold">{priorFair}</span>
+              </div>
+              <div className="w-8 flex justify-center">
+                <span className="text-gray-500 font-bold">:</span>
+              </div>
+              <div className="flex-1 text-left">
+                <span className="font-mono text-sm font-bold">{priorBiased}</span>
+              </div>
             </div>
           </div>
           
           {/* Flip rows */}
           {steps.slice(1, currentStep + 1).map((step, index) => (
-            <div
-              key={index}
-              className="flex items-center py-2 px-3 rounded bg-gray-50"
-            >
-              <span className="font-mono font-bold text-lg w-20 text-center">
-                {step.flip}
-              </span>
-              <div className="flex-1 flex items-center justify-center space-x-2">
-                <span className="font-mono text-sm">{step.likelihoodFair?.toFixed(2)}</span>
-                <span className="text-gray-500">:</span>
-                <span className="font-mono text-sm">{step.likelihoodBiased?.toFixed(2)}</span>
+            <div key={index} className="relative">
+              <div className="flex items-center py-3 px-4 rounded bg-gray-50 mt-2">
+                <div className="w-24 flex justify-center">
+                  <span className="font-mono font-bold text-lg">
+                    {step.flip}
+                  </span>
+                </div>
+                <div className="flex-1 flex items-center">
+                  <div className="flex-1 text-right">
+                    <span className="font-mono text-sm">{step.likelihoodFair?.toFixed(2)}</span>
+                  </div>
+                  <div className="w-8 flex justify-center relative">
+                    <span className="text-gray-500 font-bold">:</span>
+                    {/* Overlapping operator positioned perfectly between boxes */}
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -mt-7 z-10">
+                      <div className="bg-white border-2 border-gray-300 rounded-full w-8 h-8 flex items-center justify-center shadow-sm">
+                        <span className="text-blue-600 text-lg font-bold">
+                          {logSpace ? "+" : "×"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex-1 text-left">
+                    <span className="font-mono text-sm">{step.likelihoodBiased?.toFixed(2)}</span>
+                  </div>
+                </div>
               </div>
             </div>
           ))}
 
           {/* Posterior section */}
-          <div className="mt-4 pt-3 border-t border-gray-300 space-y-2">
+          <div className="mt-6 pt-4 border-t border-gray-300">
             {logSpace && (
-              <div className="flex items-center py-2 px-3 rounded bg-green-50">
-                <span className="text-sm font-medium text-gray-700 w-28">Log odds</span>
-                <div className="flex-1 flex items-center justify-center space-x-2">
-                  <span className="font-mono text-sm font-bold text-purple-600">
-                    {steps[currentStep]?.logOddsFair?.toFixed(2)}
-                  </span>
-                  <span className="text-gray-500">:</span>
-                  <span className="font-mono text-sm font-bold text-purple-600">
-                    {steps[currentStep]?.logOddsBiased?.toFixed(2)}
-                  </span>
+              <div className="flex items-center py-3 px-4 rounded bg-green-50 mb-2">
+                <div className="w-24 text-sm font-medium text-gray-700">Log odds</div>
+                <div className="flex-1 flex items-center">
+                  <div className="flex-1 text-right">
+                    <span className="font-mono text-sm font-bold text-purple-600">
+                      {steps[currentStep]?.logOddsFair?.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="w-8 flex justify-center">
+                    <span className="text-gray-500 font-bold">:</span>
+                  </div>
+                  <div className="flex-1 text-left">
+                    <span className="font-mono text-sm font-bold text-purple-600">
+                      {steps[currentStep]?.logOddsBiased?.toFixed(2)}
+                    </span>
+                  </div>
                 </div>
               </div>
             )}
             
             {/* Posterior odds */}
-            <div className="flex items-center py-2 px-3 rounded bg-green-50">
-              <span className="text-sm font-medium text-gray-700 w-28">Posterior odds</span>
-              <div className="flex-1 flex items-center justify-center space-x-2">
-                <span className={`font-mono text-sm font-bold ${logSpace ? 'text-blue-600' : 'text-blue-600'}`}>
-                  {steps[currentStep]?.oddsFair.toFixed(3)}
-                </span>
-                <span className="text-gray-500">:</span>
-                <span className={`font-mono text-sm font-bold ${logSpace ? 'text-blue-600' : 'text-blue-600'}`}>
-                  {steps[currentStep]?.oddsBiased.toFixed(3)}
-                </span>
+            <div className="flex items-center py-3 px-4 rounded bg-green-50 mb-2">
+              <div className="w-24 text-sm font-medium text-gray-700">Posterior odds</div>
+              <div className="flex-1 flex items-center">
+                <div className="flex-1 text-right">
+                  <span className="font-mono text-sm font-bold text-blue-600">
+                    {steps[currentStep]?.oddsFair.toFixed(3)}
+                  </span>
+                </div>
+                <div className="w-8 flex justify-center">
+                  <span className="text-gray-500 font-bold">:</span>
+                </div>
+                <div className="flex-1 text-left">
+                  <span className="font-mono text-sm font-bold text-blue-600">
+                    {steps[currentStep]?.oddsBiased.toFixed(3)}
+                  </span>
+                </div>
               </div>
             </div>
             
             {/* Probabilities */}
-            <div className="flex items-center py-2 px-3 rounded bg-green-50">
-              <span className="text-sm font-medium text-gray-700 w-28">Probability</span>
-              <div className="flex-1 flex items-center justify-center space-x-2">
-                <span className="font-mono text-sm font-bold text-blue-600">
-                  {steps[currentStep]?.probFair.toFixed(1)}%
-                </span>
-                <span className="text-gray-500">:</span>
-                <span className="font-mono text-sm font-bold text-blue-600">
-                  {steps[currentStep]?.probBiased.toFixed(1)}%
-                </span>
+            <div className="flex items-center py-3 px-4 rounded bg-green-50">
+              <div className="w-24 text-sm font-medium text-gray-700">Probability</div>
+              <div className="flex-1 flex items-center">
+                <div className="flex-1 text-right">
+                  <span className="font-mono text-sm font-bold text-blue-600">
+                    {steps[currentStep]?.probFair.toFixed(1)}%
+                  </span>
+                </div>
+                <div className="w-8 flex justify-center">
+                  <span className="text-gray-500 font-bold">:</span>
+                </div>
+                <div className="flex-1 text-left">
+                  <span className="font-mono text-sm font-bold text-blue-600">
+                    {steps[currentStep]?.probBiased.toFixed(1)}%
+                  </span>
+                </div>
               </div>
             </div>
           </div>
