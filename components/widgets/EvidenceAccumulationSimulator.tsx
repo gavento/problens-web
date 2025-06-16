@@ -10,10 +10,11 @@ const EvidenceAccumulationSimulator = () => {
   // Removed prior odds state
   const [numFlips, setNumFlips] = useState(200); // Number of coin flips to simulate
   const [currentFlip, setCurrentFlip] = useState(0);
-  const [simulationData, setSimulationData] = useState<{ flip: number; evidence: number; klAccumulated: number }[]>([]);
+  const [simulationData, setSimulationData] = useState<{ flip: number; evidence?: number; klAccumulated: number }[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [speed, setSpeed] = useState(50); // Simulation speed (ms delay)
   const [showKLLine, setShowKLLine] = useState(true);
+  const [isZoomed, setIsZoomed] = useState(false);
 
   // Calculate KL divergence between true and model distributions
   const calculateKL = (): number => {
@@ -36,13 +37,16 @@ const EvidenceAccumulationSimulator = () => {
   // Reset the simulation
   const resetSimulation = (): void => {
     setCurrentFlip(0);
-    setSimulationData([
-      {
-        flip: 0,
-        evidence: 0, // Start with neutral evidence (0 bits)
-        klAccumulated: 0,
-      },
-    ]);
+    // Initialize with KL line for full range and evidence only at start
+    const initialData = [];
+    for (let i = 0; i <= numFlips; i++) {
+      initialData.push({
+        flip: i,
+        evidence: i === 0 ? 0 : undefined, // Only show evidence at flip 0 initially
+        klAccumulated: i * klDivergence, // Show expected KL line for full range
+      });
+    }
+    setSimulationData(initialData);
     setIsRunning(false);
   };
 
@@ -69,18 +73,20 @@ const EvidenceAccumulationSimulator = () => {
 
       // Update the data with the new evidence
       setSimulationData((prevData) => {
-        const lastEvidence = prevData[prevData.length - 1].evidence;
-        const newEvidence = lastEvidence + evidenceFromFlip;
-        const lastKL = prevData[prevData.length - 1].klAccumulated;
-
-        return [
-          ...prevData,
-          {
-            flip: currentFlip + 1,
+        const newData = [...prevData];
+        const currentEvidence = newData.find(d => d.flip === currentFlip && d.evidence !== undefined)?.evidence || 0;
+        const newEvidence = currentEvidence + evidenceFromFlip;
+        
+        // Update the evidence value for the next flip
+        const nextFlipIndex = newData.findIndex(d => d.flip === currentFlip + 1);
+        if (nextFlipIndex !== -1) {
+          newData[nextFlipIndex] = {
+            ...newData[nextFlipIndex],
             evidence: newEvidence,
-            klAccumulated: lastKL + klDivergence,
-          },
-        ];
+          };
+        }
+        
+        return newData;
       });
 
       setCurrentFlip((prev) => prev + 1);
@@ -92,7 +98,7 @@ const EvidenceAccumulationSimulator = () => {
   // Initialize data on first render or when parameters change
   useEffect(() => {
     resetSimulation();
-  }, [trueHeadsProb, modelHeadsProb]);
+  }, [trueHeadsProb, modelHeadsProb, numFlips, klDivergence]);
 
   const formatProbability = (value: number) => {
     return `${(value * 100).toFixed(0)}%`;
@@ -112,36 +118,38 @@ const EvidenceAccumulationSimulator = () => {
         <div className="">
           {/*<div className="font-semibold mb-2">Model Parameters</div>*/}
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                True Heads Probability: {formatProbability(trueHeadsProb)}
-              </label>
-              <input
-                type="range"
-                min="0.01"
-                max="0.99"
-                step="0.01"
-                value={trueHeadsProb}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTrueHeadsProb(parseFloat(e.target.value))}
-                className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer"
-                disabled={isRunning}
-              />
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  True Heads Probability: {formatProbability(trueHeadsProb)}
+                </label>
+                <input
+                  type="range"
+                  min="0.01"
+                  max="0.99"
+                  step="0.01"
+                  value={trueHeadsProb}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTrueHeadsProb(parseFloat(e.target.value))}
+                  className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer"
+                  disabled={isRunning}
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Model Heads Probability: {formatProbability(modelHeadsProb)}
-              </label>
-              <input
-                type="range"
-                min="0.01"
-                max="0.99"
-                step="0.01"
-                value={modelHeadsProb}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setModelHeadsProb(parseFloat(e.target.value))}
-                className="w-full h-2 bg-green-200 rounded-lg appearance-none cursor-pointer"
-                disabled={isRunning}
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Model Heads Probability: {formatProbability(modelHeadsProb)}
+                </label>
+                <input
+                  type="range"
+                  min="0.01"
+                  max="0.99"
+                  step="0.01"
+                  value={modelHeadsProb}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setModelHeadsProb(parseFloat(e.target.value))}
+                  className="w-full h-2 bg-green-200 rounded-lg appearance-none cursor-pointer"
+                  disabled={isRunning}
+                />
+              </div>
             </div>
           </div>
 
@@ -182,33 +190,35 @@ const EvidenceAccumulationSimulator = () => {
         <div>
           {/*<div className="font-semibold mb-2">Simulation Controls</div>*/}
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Number of Flips: {numFlips}</label>
-              <input
-                type="range"
-                min="10"
-                max="500"
-                step="10"
-                value={numFlips}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNumFlips(parseInt(e.target.value))}
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                disabled={isRunning}
-              />
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Number of Flips: {numFlips}</label>
+                <input
+                  type="range"
+                  min="10"
+                  max="500"
+                  step="10"
+                  value={numFlips}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNumFlips(parseInt(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  disabled={isRunning}
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Simulation Speed (faster ←→ slower)
-              </label>
-              <input
-                type="range"
-                min="10"
-                max="500"
-                step="10"
-                value={speed}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSpeed(parseInt(e.target.value))}
-                className="w-full h-2 bg-purple-200 rounded-lg appearance-none cursor-pointer"
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Simulation Speed (faster ←→ slower)
+                </label>
+                <input
+                  type="range"
+                  min="10"
+                  max="500"
+                  step="10"
+                  value={speed}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSpeed(parseInt(e.target.value))}
+                  className="w-full h-2 bg-purple-200 rounded-lg appearance-none cursor-pointer"
+                />
+              </div>
             </div>
 
             <div className="flex justify-start items-center">
@@ -247,28 +257,17 @@ const EvidenceAccumulationSimulator = () => {
       </div>
 
       <div className="bg-gray-50 p-4 rounded-lg mb-6">
-        <div className="flex justify-between mb-4">
-          <div>
-            <p className="">
-              Current Flip: {currentFlip} / {numFlips}
-            </p>
-            <p>
-              Current Evidence:{" "}
-              {simulationData.length > 0 ? simulationData[simulationData.length - 1].evidence.toFixed(2) : 0}{" "}
-              <InlineMath math="\text{bits}" />
-            </p>
-          </div>
-          <div>
-            <p className="">
-              Expected KL Divergence: {klDivergence.toFixed(4)} <InlineMath math="\text{bits/flip}" />
-            </p>
-            <p>
-              Expected after {numFlips} flips: {(klDivergence * numFlips).toFixed(2)} <InlineMath math="\text{bits}" />
-            </p>
-          </div>
-        </div>
 
-        <div className="h-64">
+        <div className={`${isZoomed ? 'h-96' : 'h-80'} transition-all duration-300`}>
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-medium text-gray-700">Evidence Accumulation</span>
+            <button
+              onClick={() => setIsZoomed(!isZoomed)}
+              className="px-3 py-1 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors"
+            >
+              {isZoomed ? '🔍- Zoom Out' : '🔍+ Zoom In'}
+            </button>
+          </div>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={simulationData} margin={{ top: 5, right: 30, left: 20, bottom: 35 }}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -276,9 +275,10 @@ const EvidenceAccumulationSimulator = () => {
                 dataKey="flip"
                 label={{ value: "Number of Coin Flips", position: "insideBottom", offset: -10 }}
                 domain={[0, numFlips]}
+                type="number"
               />
               <YAxis label={{ value: "Evidence (bits)", angle: -90 }} />
-              <Tooltip formatter={(value: number) => `${value.toFixed(2)} bits`} />
+              <Tooltip formatter={(value: number) => `${value?.toFixed(2) || 'N/A'} bits`} />
               <Legend />
               <Line
                 type="monotone"
@@ -287,6 +287,7 @@ const EvidenceAccumulationSimulator = () => {
                 stroke="#2563eb"
                 activeDot={{ r: 8 }}
                 isAnimationActive={false}
+                connectNulls={false}
               />
               {showKLLine && (
                 <Line
