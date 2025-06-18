@@ -35,20 +35,25 @@ Let's build some intuition for this. Remember from [the previous chapter](03-min
 
 So, in what way are max-entropy distributions "close" to being uniform? Let's use the exponential distribution $p(x) \propto e^{-x}$ as an example. Say I independently sample two numbers from it, $x_1$ and $x_2$. Here's a little riddle: Is it more probable that I sample $x_1 = 10, x_2 = 20$ or that I sample $x_1' = 15, x_2' = 15$?
 
-The answer is that both options have the same probability. That's because $p(x_1)\cdot p(x_2) = e^{-x_1 - x_2}$. In our riddle, $x_1 + x_2 = x_1' + x_2'$, so both possibilities have a density proportional to $e^{-30}$. In other words, on the density graph below, points on the black line with the same sum $x_1 + x_2 = 0.7$ have identical density. Stated differently, the conditional distribution *on that line* is uniform.
+The answer is that both options have the same probability density. That's because $p(x_1)\cdot p(x_2) = e^{-x_1 - x_2}$. In our riddle, $x_1 + x_2 = x_1' + x_2'$, so both possibilities have a density proportional to $e^{-30}$. 
 
-![Exponential distribution](04-max_entropy/exponential.png)
+You can test it in the following widget. 
 
-This isn't exclusive to the exponential distribution; it holds for all max-entropy distributions that fit the form given by our formula <EqRef id="max-entropy-form" />. In general, consider a distribution of the shape <Math math = "p(x) \propto e^{\lambda_1 f_1(x) + \dots + \lambda_m f_m(x)}" />. Now, imagine independently sampling a few points $x_1, \dots, x_k$ from that distribution. If you then tell me the values of the averages $a_1 = \frac{1}{k} \sum_{i = 1}^k f_1(x_i), \dots, a_m = \frac{1}{k} \sum_{i = 1}^k f_m(x_i)$, and I condition on this information, the conditional distribution over $x_1, \dots, x_k$ is actually **uniform**! This is because the occurrence probability of any such tuple under our distribution $p$ is the same, equal to <Math math = "p(x_1, \dots, x_k) \propto e^{k(\lambda_1 a_1 + \dots + \lambda_m a_m)}" />. 
+<MaxEntropyVisualization />
 
-You can imagine this as a generalization of the picture above. There's a super complicated space of all possible outcomes I can get by sampling $N$ times from my distribution. The max-entropy property says that if I draw a "contour" through outcomes that share the same empirical averages of the functions $f_1, \dots, f_m$, the conditional distribution is uniform on this contour. 
+This isn't exclusive to the exponential distribution; it holds for all max-entropy distributions that fit the form given by our formula <EqRef id="max-entropy-form" />. If you dare, the widget above also visualizes that if you sample $x_1, x_2, x_3$ from a Gaussian and fix the values of $x_1 + x_2 + x_3$ and $x_1^2 + x_2^2 + x_3^2$, the curve this defines (a circle) has constant density. 
+
+In general, consider a distribution of the shape <Math math = "p(x) \propto e^{\lambda_1 f_1(x) + \dots + \lambda_m f_m(x)}" />. Now, imagine independently sampling a few points $x_1, \dots, x_k$ from that distribution. If you then tell me the values of the averages $a_1 = \frac{1}{k} \sum_{i = 1}^k f_1(x_i), \dots, a_m = \frac{1}{k} \sum_{i = 1}^k f_m(x_i)$, and I condition on this information, the conditional distribution over $x_1, \dots, x_k$ is actually **uniform**! This is because the occurrence probability of any such tuple under our distribution $p$ is the same, equal to <Math math = "p(x_1, \dots, x_k) \propto e^{k(\lambda_1 a_1 + \dots + \lambda_m a_m)}" />. 
+
+You can imagine this as a generalization of the widget above. There's a super complicated space of all possible outcomes I can get by sampling $N$ times from my distribution. The max-entropy property says that if I draw a "contour" through outcomes that share the same empirical averages of the functions $f_1, \dots, f_m$, the conditional distribution is uniform on this contour. 
 
 So, what's the takeaway? When you sample from max-entropy distributions, the experience is actually quite similar to sampling from a uniform distribution! <Footnote>If we think of the number $n$ of samples as being very large, it gets even better. Due to the law of large numbers, we then know that with high probability, the empirical averages $\frac{1}{n} \sum_{i = 1}^n f_j(x_i)$ are going to be close to $E[f_j(X)]$. So, sampling many samples from max-entropy distributions is like sampling from the uniform distribution over all the instances that satisfy constraints $\frac{1}{n} \sum_{i = 1}^n f_j(x_i) \approx E[f_j(X)]$ that we imposed at the distribution. </Footnote>
 
-There's also an elegant derivation of the shape of max-entropy distributions using Lagrange multipliers. Feel free to skip this if you're not familiar with how they work.
 
-<Expand headline = "Derivation by Lagrange Multipliers" advanced = {true}>
-We'll only consider discrete distributions, say those with support $\{1, \dots, K\}$. This is an optimization problem for $K$ variables $p_1, \dots, p_K$:
+<Expand headline = "Proper derivation by Lagrange Multipliers" advanced = {true}>
+There's an elegant derivation of the shape of max-entropy distributions using Lagrange multipliers. Feel free to skip this if you're not familiar with how they work. We'll only consider discrete distributions, say those with support $\{1, \dots, K\}$. 
+
+We are solving the following optimization problem for $K$ variables $p_1, \dots, p_K$:
 
 <Math displayMode={true} math = "\begin{aligned}
 \text{VARIABLES:} &\quad p_1, \dots, p_K \\
