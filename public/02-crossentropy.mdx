@@ -129,40 +129,35 @@ But we can also read the table column-by-column. The detective could add up the 
 
 These two pieces on the right - $H(p,q)$ is called cross-entropy and $H(p)$ is entropy - are super important. Let's get a feel for what they mean. 
 
-### Cross-entropy: 
+### Cross-entropy: <a id = "cross"></a>
 Think of cross-entropy as _how surprised are you on average when you see data from $p$ and you're modeling it as $q$._ 
 
-Check it out in the widget below. The widget shows you your surprise if you keep flipping a fair coin (and, if you have money on the line, it also shows your heart rate). The default model $q =$ \{H: 0.99, T: 0.01\} matches reality very poorly, so you are greatly surprised whenever you see tails. The average (red line, cross-entropy) is high. In the following widget, keep $p(heds) = 1/2$ and play with the value of $q$. 
+Check it out in the widget below. The widget shows what happens when our Bayesian detective from the previous chapter keeps flipping her coin, but now it shows both entropy and cross-entropy, instead of only showing the KL divergence, which is the difference between the two. 
 
-<EvidenceAccumulationSimulator only_kl_mode={false} />
+Analogously to KL divergence, cross-entropy is additive, so it grows linearly with the number of flips we make and we can thus represent it as a (dashed) line below. The red dashed line is telling us the expected surprise of the model $q$ as we keep flipping. The orange line is the expected surprise of $p$ - the best possible model that matches reality. KL divergence being nonnegative is equivalent to the red line _always_ being above the orange one. 
 
-{/*<CoinFlipWidget change_p={true} default_p={0.5} change_q={true} default_q={0.99} />*/}
+If you let the widget run, you will also see the actual surprise measured by our detective. This curve is also typically called cross-entropy - it is the cross-entropy between the _empirical distribution_ $\hat{p}$ (the actual outcomes of the flips) and the model $q$ (blue curve) or $p$ (green curve). The empirical crossentropies are tracking the dashed lines due to the [law of large numbers](https://en.wikipedia.org/wiki/Law_of_large_numbers). 
 
-Cross-entropy is your expected (i.e., average) surprise. Analogously to KL divergence, cross-entropy is additive so if you keep flipping coins like in the picture below, the total cross-entropy for $n$ flips is going to be $n$ times the crossentropy for individual flip. 
 
-Bottom line: better models are less surprised by the data and have smaller cross-entropy.
-
-When your model perfectly matches reality (i.e., $q = p$), cross-entropy becomes just plain entropy. Try this special case below:
+Bottom line: _better models are less surprised by the data and have smaller cross-entropy. KL divergence is how far our model is from the best one. _
 
 ### Entropy: 
 
 The term $H(p) = H(p, p) = \sum_{i = 1}^n p_i \log 1 / p_i$ is a special case of cross-entropy called just plain _entropy_. It's the best possible cross-entropy you can get for distribution $p$—when you model it perfectly as itself.  
 
-Intuitively, entropy tells you how much surprise or uncertainty is baked into $p$. Like, even if you know you're flipping a fair coin and hence $p = q$, you still don't know which way the coin will land. There's inherent uncertainty in that. This is what entropy measures. The fair coin's entropy is <Math math = "H(\{\textrm{H: }1/2, \textrm{T: }1/2\}) = \frac12\cdot \log2 +  \frac12\cdot \log2 = 1" /> bit. 
+Intuitively, entropy tells you how much surprise or uncertainty is baked into $p$. Like, even if you know you're flipping a fair coin and hence $p = q$, you still don't know which way the coin will land. There's inherent uncertainty in that. This is what entropy measures: The fair coin's entropy is <Math math = "H(\{\textrm{H: }1/2, \textrm{T: }1/2\}) = \frac12\cdot \log2 +  \frac12\cdot \log2 = 1" /> bit. 
 
-Entropy can get way smaller than 1 bit if say heads are very unlikely, as you can see in the next widget. Makes sense! Sure, seeing heads is super surprising ($\log 1/0.05 \approx 4.32$), but it's so rare that the _average_ surprise stays tiny - just $0.29$ bits per flip on average. That's because most flips are boringly predictable tails. Entropy hits zero when one outcome has 100% probability. 
-
-{/*<CoinFlipWidget entropy={true} change_p={true} default_p={0.05} /> */}
+Entropy can get way smaller than 1 bit if say heads are very unlikely, as you can explore in the widget above and below. Makes sense! Sure, if $p(\textrm{heads} = 0.05)$, then seeing them is super surprising ($\log 1/0.05 \approx 4.32$), but it's so rare that the _average_ surprise stays tiny - you can check in the widget below that it's just $0.29$ bits per flip on average. That's because most flips are boringly predictable tails. Entropy hits zero when one outcome has 100% probability. 
 
 But entropy can also get way bigger than 1 bit. Rolling a die has entropy $\log_2(6) \approx 2.6$ bits. In general, a uniform distribution over $k$ options has entropy $\log_2 k$—and that's the max for any distribution with $k$ options. Makes sense—you're most uncertain when everything's equally likely.  
 
-Try some examples: 
 <EntropyWidget numCategories={6} title="Entropy of die-rolling" />
 
 <Expand headline = "Example: correct horse battery staple">
 Here's an example. Let's say there are about <Math math="2^{11}" /> English words that can be described as 'common'. If you generate uniformly four such common words and make your password the concatenation of them, the total entropy of your password is thus going to be $44$ bits. That's because entropy is a special case of cross-entropy and is thus additive. 
 
-The following comic wisely teaches us that this is a pretty secure password! Even if an adversary knows how you generated it, cracking it means they have to check about <Math math="2^{44}" /> possibilities. 
+Having a uniform distribution with 44 bits of entropy is just a different way of saying that we have a uniform distribution with $2^{44}$ possible outcomes. 
+The following comic wisely teaches us that this many possibilities make it a pretty secure password! Even if an adversary knows how we generated it, cracking it means they have to check about <Math math="2^{44}" /> passwords. 
 
 <a href="https://xkcd.com/936/" target="_blank" rel="noopener noreferrer">
   <img src="02-crossentropy/password.png" alt="password" style={{cursor: 'pointer'}} />
@@ -195,8 +190,8 @@ The mutual information is then 1 bit. That's because learning the value of one d
 
 
 ### Relative entropy: 
-Finally, $D(p,q)$ is just the gap between cross-entropy and entropy. It tells you how far your average surprise (cross-entropy) is from the best possible (entropy). 
-That's why some folks call KL divergence the _relative entropy_ between $p$ and $q$. <Footnote>Way better name than KL divergence if you ask me. But KL divergence is what everyone uses, so we're stuck with it. </Footnote>
+KL divergence can be interpreted as the gap between cross-entropy and entropy. It tells us how far your average surprise (cross-entropy) is from the best possible (entropy). 
+That's why in some communities, people call KL divergence the _relative entropy_ between $p$ and $q$. <Footnote>Way better name than 'KL divergence' if you ask me. But 'KL divergence' is what most people use, so I guess we're stuck with it. </Footnote>
 
 ### So what's the big deal?
 
@@ -210,30 +205,24 @@ Time to solve our [prediction riddle](00-introduction#predictions). We asked exp
 
 ### Idealized KL score
 
-To grade predictions, let $p = (p_1, \dots, p_n)$ be the true probabilities and $q$ be what the expert predicted. Seems like a good idea to score them with:
+To grade predictions, let $p = (p_1, \dots, p_n)$ be the true probabilities of the events we ask our experts about, and $q$ be what the expert predicted. It for sure seems like a good idea to give the expert the following score:
 
 <Math displayMode={true} math="S_{KL}(q) = D(p,q)" />
 
-If all $n$ events are independent, this becomes:
+That is, we know that KL divergence is measuring how well a model $q$ matches the reality $p$, so we just use this a score for the expert - the lower score the better. 
+
+If all $n$ events are independent,<Footnote>They of course never are, but here we will always assume they are. </Footnote> this formula becomes:
 
 <Math displayMode={true} math="S_{KL}(q) = \sum_{i = 1}^n  \left(
     p_i\log\frac{p_i}{q_i} + (1-p_i)\log\frac{1-p_i}{1-q_i}
     \right)" />
 
-{/*
-For example, if we ask an expert about two independent events that happen with probabilities $30\%$ and 90\%, and she estimates the probabilities as $50\%$ and $80\%$, her score would be
 
-$$
-S_{KL}(q) = 0.3 \cdot \log 0.3/0.5 + 0.7 \cdot \log 0.7/0.5 \\
-+ 0.9 \cdot \log 0.9 / 0.8 + 0.1 \cdot 0.1 / 0.2
-\approx ??.
-$$*/}
-
-But wait—there's a huge problem. Can you spot it?
+But wait—there's a huge problem with this score. Can you spot it?
 
 ### Cross-entropy score
 
-The problem: we have no clue what the "true" probabilities are! <Footnote> We could go down a philosophical rabbit hole about whether "true" probability even exists. But let's not. </Footnote>
+The problem: we have no clue what the "true" probabilities are! <Footnote> We could go down a philosophical rabbit hole about whether "true" probability even is even a meaningful concept. But let's not. </Footnote>
 
 All we know is what actually happened. This gives us an empirical distribution $\hat{p}$ where each $\hat{p}_i$ is either 0 or 1—it's all concentrated on the one outcome we saw.
 
@@ -246,7 +235,7 @@ S_{CE}(q) =
     \right)
 "/>
 
-This is why it's called the _cross-entropy score_, though forecasting nerds usually call it the [Log-score](https://forecasting.wiki/wiki/Log_score).
+This is why this formula is often called the _cross-entropy score_, though forecasting community calls it the [Log-score](https://forecasting.wiki/wiki/Log_score). 
 
 ### Connection to the idealized score
 Let's dig into how cross-entropy score relates to our idealized KL score. Technically, cross-entropy score is a random variable—it depends on which outcomes actually happen. Each $\hat{p}_i$ is 1 with probability $p_i$, otherwise 0.
@@ -260,13 +249,13 @@ E_p[S_{CE}(q)] =
     \right)
 "/>
 
-In other words, <Math  math="E_p[S_{CE}(q)] = H(p,q)"/>. Nice! Give experts lots of questions, and by the law of large numbers, their score will approach the cross-entropy $H(p,q)$ between the true distribution and their guess.
+In other words, <Math  math="E_p[S_{CE}(q)] = H(p,q)"/>. Nice! Give experts lots of questions, and by the law of large numbers, their score will approach the cross-entropy $H(p,q)$ between the true distribution and their guess. This is analogous to how [in the cross-entropy widget above](/02-crossentropy#cross), the blue line is different each time you run the experiment (it is random variable), but it tracks the dashed red line (the law of large numbers). 
 
 Now remember:
-
 <Math id="entropy-relation" displayMode={true} math="D(p,q) = H(p,q) - H(p)" />
+We can't compute $D(p,q)$ directly, but here's the key insight: for two experts with predictions $q_1, q_2$, we have $D(p,q_1) < D(p, q_2)$ if and only if $H(p, q_1) < H(p, q_2)$. They only differ by $H(p)$, which doesn't depend on the experts' predictions. So:
 
-We can't compute $D(p,q)$ directly, but here's the key insight: for two experts with predictions $q_1, q_2$, we have $D(p,q_1) < D(p, q_2)$ if and only if $H(p, q_1) < H(p, q_2)$. They only differ by $H(p)$, which doesn't depend on the experts' predictions. So _comparing experts by cross-entropy is just as good as comparing by KL divergence in the long run!_
+_Comparing experts by cross-entropy is just as good as comparing by KL divergence in the long run!_
 
 <Expand headline="Example: Coin flipping">
 Let's make this concrete. We flip a fair coin $N$ times ($p_1 = \dots = p_N = 1/2$). Expert 1 nails it ($q_1 = \dots = q_N = 1/2$), while Expert 2 is a bit off ($q'_1 = \dots = q'_N = 0.6$).
@@ -278,7 +267,7 @@ We can't see these scores, but we can compute cross-entropy. For large $N$, the 
 Key point: this only works _in the long run_. With just 8 predictions, any scoring is pretty noisy. 
 </Expand>
 
-Try the log-score on our example! Also, you can compare it with other popular score called brier score, which is just the so-called mean squared error or $\ell_2$ metric (i.e., if you predicted 0.8 probability and the event happens, your score is $(1-0.8)^2 = 0.04$). 
+Try the log-score on our example! Also, you can compare it with other popular score called brier score, which is just the so-called mean squared error or $\ell_2$ metric (i.e., if you predicted 0.8 probability and the event happens, your score is $(1-0.8)^2 = 0.04$). Brier score does not really care whether your failed prediction had probability of $0.9$ or $0.9999$. 
 
 <ExpertRatingWidget
     title="Comparing Scoring Methods"
