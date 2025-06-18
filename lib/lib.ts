@@ -11,7 +11,6 @@ import { Cite, References } from "@/components/content/Citations";
 import { Footnote } from "@/components/content/Footnotes";
 import { Footnotes } from "@/components/content/Footnotes";
 import EvidenceAccumulationSimulator from "@/components/widgets/EvidenceAccumulationSimulator";
-import CrossEntropySimulator from "@/components/widgets/CrossEntropySimulator";
 import MaxEntropyVisualization from "@/components/widgets/MaxEntropyVisualization";
 import FinanceImageSliderWidget from "@/components/widgets/FinanceSlider";
 import FinanceSliderSP from "@/components/widgets/FinanceSliderSP";
@@ -158,7 +157,6 @@ export async function getMdxContent(path: string) {
       Footnotes: Footnotes,
       Footnote: Footnote,
       EvidenceAccumulationSimulator: EvidenceAccumulationSimulator,
-      CrossEntropySimulator: CrossEntropySimulator,
       MaxEntropyVisualization: MaxEntropyVisualization,
       FinanceImageSliderWidget: FinanceImageSliderWidget,
       FinanceSliderSP: FinanceSliderSP,
