@@ -22,6 +22,8 @@
     "@radix-ui/react-hover-card": "^1.1.6",
     "@radix-ui/react-tooltip": "^1.2.7",
     "@radix-ui/themes": "^3.2.1",
+    "@react-three/drei": "^10.3.0",
+    "@react-three/fiber": "^9.1.2",
     "@tailwindcss/typography": "^0.5.16",
     "@types/mdx": "^2.0.13",
     "chalk": "^5.4.1",
@@ -37,6 +39,7 @@
     "rehype-katex": "^7.0.1",
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
+    "three": "^0.177.0",
     "unified": "^11.0.5"
   },
   "devDependencies": {
@@ -44,6 +47,7 @@
     "@types/node": "^22.14.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.1",
+    "@types/three": "^0.177.0",
     "cypress": "^14.2.1",
     "eslint": "^9.24.0",
     "eslint-config-next": "15.2.4",
