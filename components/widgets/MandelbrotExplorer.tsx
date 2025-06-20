@@ -136,6 +136,29 @@ const MandelbrotExplorer = () => {
     e.stopPropagation();
   };
 
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    // Calculate world coordinates of the clicked point
+    const worldX = (mouseX - canvas.width / 2) / viewport.scale + viewport.centerX;
+    const worldY = (mouseY - canvas.height / 2) / viewport.scale + viewport.centerY;
+    
+    // Zoom in by 2x at the clicked point
+    const zoomFactor = 2;
+    const newScale = viewport.scale * zoomFactor;
+    
+    setViewport({
+      centerX: worldX,
+      centerY: worldY,
+      scale: newScale
+    });
+  };
+
   // Handle touch events for mobile
   const getTouchDistance = (touches: React.TouchList) => {
     const dx = touches[0].clientX - touches[1].clientX;
@@ -340,6 +363,7 @@ const MandelbrotExplorer = () => {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
           onWheel={handleWheel}
+          onDoubleClick={handleDoubleClick}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -370,7 +394,7 @@ const MandelbrotExplorer = () => {
         />
         
         <div className="text-sm text-gray-600">
-          Drag to pan, scroll/pinch to zoom
+          Drag to pan, scroll/pinch to zoom, double-click to zoom in
         </div>
       </div>
 
