@@ -215,20 +215,10 @@ const XKCDCountdownWidget: React.FC = () => {
               Show {showPosterior ? 'prior' : 'posterior'}
             </button>
             <button
-              onClick={() => setLogScale(false)}
-              className={`px-3 py-1 text-sm rounded ${
-                !logScale ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
+              onClick={() => setLogScale(!logScale)}
+              className="px-3 py-1 text-sm rounded bg-blue-500 text-white hover:bg-blue-600"
             >
-              Normal
-            </button>
-            <button
-              onClick={() => setLogScale(true)}
-              className={`px-3 py-1 text-sm rounded ${
-                logScale ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              Log
+              {logScale ? 'Log' : 'Normal'} scale
             </button>
           </div>
         </div>
