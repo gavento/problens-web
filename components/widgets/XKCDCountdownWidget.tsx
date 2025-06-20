@@ -7,7 +7,6 @@ const XKCDCountdownWidget: React.FC = () => {
   const [lambda, setLambda] = useState(1.0);
   const [logScale, setLogScale] = useState(true);
   const [showPosterior, setShowPosterior] = useState(true);
-  const [zoomLevel, setZoomLevel] = useState(1);
 
   const targetNumber = 2382;
   const evidenceDigits = "00002382";
@@ -216,12 +215,6 @@ const XKCDCountdownWidget: React.FC = () => {
               Show {showPosterior ? 'prior' : 'posterior'}
             </button>
             <button
-              onClick={() => setZoomLevel(zoomLevel === 1 ? 2 : 1)}
-              className="px-3 py-1 text-sm rounded bg-purple-500 text-white hover:bg-purple-600"
-            >
-              Zoom {zoomLevel === 1 ? 'in' : 'out'}
-            </button>
-            <button
               onClick={() => setLogScale(false)}
               className={`px-3 py-1 text-sm rounded ${
                 !logScale ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -240,7 +233,7 @@ const XKCDCountdownWidget: React.FC = () => {
           </div>
         </div>
         <div className="w-full">
-          <svg width="100%" height="300" viewBox={`0 0 ${640 / zoomLevel} 300`} className="border border-gray-200 rounded">
+          <svg width="100%" height="300" viewBox="0 0 640 300" className="border border-gray-200 rounded">
             <defs>
               <linearGradient id="barGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.8" />
@@ -254,10 +247,10 @@ const XKCDCountdownWidget: React.FC = () => {
               <line x1="0" y1="0" x2="0" y2="240" stroke="#6b7280" strokeWidth="1" />
               
               {/* X-axis */}
-              <line x1="0" y1="240" x2={560 / zoomLevel} y2="240" stroke="#6b7280" strokeWidth="1" />
+              <line x1="0" y1="240" x2="560" y2="240" stroke="#6b7280" strokeWidth="1" />
               
               {/* X-axis labels */}
-              {Array.from({ length: Math.ceil(15 / zoomLevel) }, (_, i) => (
+              {Array.from({ length: 15 }, (_, i) => (
                 <g key={i}>
                   <line 
                     x1={i * 40} 
@@ -304,7 +297,7 @@ const XKCDCountdownWidget: React.FC = () => {
               ))}
               
               {/* Bars */}
-              {currentData.slice(0, Math.ceil(currentData.length / zoomLevel)).map((bin, i) => {
+              {currentData.map((bin, i) => {
                 const actualHeight = logScale ? 
                   (bin.probability > 0 ? Math.log10(bin.probability / currentMaxProb) + 4 : 0) * 220 / 4 :
                   (bin.probability / currentMaxProb) * 220;
@@ -333,7 +326,7 @@ const XKCDCountdownWidget: React.FC = () => {
                       className="hover:stroke-red-500 hover:stroke-2"
                     >
                       <title>
-                        {`Range: ${bin.min.toExponential(1)} - ${bin.max.toExponential(1)}\\nProbability: ${(bin.probability * 100).toFixed(4)}%`}
+                        {`Range: ${bin.min.toExponential(1)} - ${bin.max.toExponential(1)}\nProbability: ${(bin.probability * 100).toFixed(6)}%\n${showPosterior ? 'Posterior' : 'Prior'} probability mass in this range\nλ = ${lambda} (${lambda === 0 ? 'uniform' : lambda === 1 ? 'log-uniform' : 'power law'})`}
                       </title>
                     </rect>
                   </g>
