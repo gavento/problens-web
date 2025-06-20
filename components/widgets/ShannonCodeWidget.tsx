@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import KatexMath from "@/components/content/KatexMath";
+import ZoomButton from "./ZoomButton";
 
 // English letter frequencies (approximate percentages)
 const DEFAULT_FREQUENCIES: Record<string, number> = {
@@ -43,6 +44,7 @@ export default function ShannonCodeWidget() {
   const [isZoomed, setIsZoomed] = useState(false);
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const treeContainerRef = useRef<HTMLDivElement>(null);
+  const zoomedTreeContainerRef = useRef<HTMLDivElement>(null);
 
   // Normalize frequencies to sum to 100
   const normalizedFrequencies = useMemo(() => {
@@ -246,16 +248,23 @@ export default function ShannonCodeWidget() {
             
             // Center view on the current node
             setTimeout(() => {
-              if (treeContainerRef.current && targetNode.x && targetNode.y) {
-                const container = treeContainerRef.current;
-                const containerRect = container.getBoundingClientRect();
-                const scrollLeft = targetNode.x - containerRect.width / 2;
-                const scrollTop = targetNode.y - containerRect.height / 2;
-                
-                container.scrollTo({
-                  left: Math.max(0, scrollLeft),
-                  top: Math.max(0, scrollTop),
-                  behavior: 'smooth'
+              if (targetNode.x && targetNode.y) {
+                // Center in both normal and zoomed views
+                [treeContainerRef.current, zoomedTreeContainerRef.current].forEach(container => {
+                  if (container) {
+                    const containerRect = container.getBoundingClientRect();
+                    // Only scroll if the container is visible (has dimensions)
+                    if (containerRect.width > 0 && containerRect.height > 0) {
+                      const scrollLeft = targetNode.x - containerRect.width / 2;
+                      const scrollTop = targetNode.y - containerRect.height / 2;
+                      
+                      container.scrollTo({
+                        left: Math.max(0, scrollLeft),
+                        top: Math.max(0, scrollTop),
+                        behavior: 'smooth'
+                      });
+                    }
+                  }
                 });
               }
             }, 200);
@@ -384,7 +393,7 @@ export default function ShannonCodeWidget() {
               </button>
             </div>
             
-            <div className="bg-gray-50 rounded-lg p-4 overflow-auto max-h-[70vh]">
+            <div className="bg-gray-50 rounded-lg p-4 overflow-auto max-h-[70vh]" ref={zoomedTreeContainerRef}>
               <svg width={canvasDimensions.width} height={canvasDimensions.height} className="mx-auto">
                 {/* Draw edges */}
                 {allVisibleNodes.map(node => (
@@ -471,11 +480,6 @@ export default function ShannonCodeWidget() {
 
     <div className="shannon-code-widget bg-white border border-gray-200 rounded-lg p-6 my-6">
       <h3 className="text-lg font-semibold mb-4">Shannon Code Constructor</h3>
-      <p className="text-gray-600 mb-6">
-        Drag the bars to adjust letter probabilities. Click &quot;Compute Shannon&apos;s Code&quot; to see 
-        the animated construction of the code and tree.
-      </p>
-
       {/* Letter frequency bars */}
       <div className="relative select-none frequency-bars-container">
         <div className="grid grid-cols-9 gap-2 mb-8">
@@ -501,6 +505,10 @@ export default function ShannonCodeWidget() {
         </div>
       </div>
 
+      <p className="text-gray-600 mb-6 text-center">
+        Drag the bars to adjust letter probabilities.
+      </p>
+
       {/* Compute Button */}
       <div className="text-center mb-6">
         <button
@@ -519,15 +527,13 @@ export default function ShannonCodeWidget() {
       {/* Tree Visualization */}
       {tree && (
         <div className="mt-6 mb-6">
-          <h4 className="font-medium mb-4">Shannon Code Tree Construction</h4>
-          <div className="flex justify-between items-center mb-4">
-            <h4 className="font-medium">Shannon Code Tree Construction</h4>
-            <button
+          <div className="text-center mb-4">
+            <ZoomButton 
+              type="zoom-toggle"
+              isZoomed={isZoomed}
               onClick={() => setIsZoomed(!isZoomed)}
-              className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
-            >
-              {isZoomed ? '🗗 Exit Fullscreen' : '🔍 Zoom'}
-            </button>
+              className="!float-none inline-block"
+            />
           </div>
           <div 
             className={`bg-gray-50 rounded-lg p-4 overflow-auto max-h-96 ${isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'}`}
@@ -626,7 +632,7 @@ export default function ShannonCodeWidget() {
             <div className="grid grid-cols-4 gap-4 text-sm font-semibold text-gray-700 mb-3 p-2 bg-gray-100 rounded">
               <div>Letter</div>
               <div>Probability</div>
-              <div className="bg-white px-2 py-1 rounded shadow-sm">
+              <div>
                 <KatexMath math="\text{Rounded to } 2^{-n}" />
               </div>
               <div>Code</div>
@@ -665,7 +671,7 @@ export default function ShannonCodeWidget() {
               {averageCodeLength.toFixed(3)} bits
             </div>
             <div className="text-sm text-green-700 mt-1">
-              <KatexMath math="L = \sum p(x) \times \text{length}(\text{code}(x))" />
+              <KatexMath math="L = \sum p(x) \cdot \text{length}(\text{code}(x))" />
             </div>
           </div>
         </div>

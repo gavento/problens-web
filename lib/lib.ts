@@ -48,6 +48,8 @@ import { EquationProvider } from "@/components/content/EquationContext";
 import Block from "@/components/content/Block";
 import Expand from "@/components/content/Expand";
 import ExpandableImage from "@/components/content/ExpandableImage";
+import MandelbrotExplorer from "@/components/widgets/MandelbrotExplorer";
+import BuildYourOwnCodeWidget from "@/components/widgets/BuildYourOwnCodeWidget";
 import KeyTakeaway from "@/components/content/KeyTakeaway";
 import RiddleSolution from "@/components/content/RiddleSolution";
 
@@ -185,6 +187,8 @@ export async function getMdxContent(path: string) {
       VolatilityDistributionWidget: VolatilityDistributionWidget,
       CoinFlipWidget: HeartRateWidget,
       HeartRateWidget: HeartRateWidget,
+      MandelbrotExplorer: MandelbrotExplorer,
+      BuildYourOwnCodeWidget: BuildYourOwnCodeWidget,
       Math: NumberedMath,
       EqRef: EquationRef,
       Block: Block,

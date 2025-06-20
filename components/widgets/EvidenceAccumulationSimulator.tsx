@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { InlineMath, BlockMath } from "react-katex";
+import { CHART_CONFIG, BUTTON_STYLES, INPUT_STYLES } from "./SimulatorConfig";
+import ZoomButton from "./ZoomButton";
 
 interface EvidenceAccumulationSimulatorProps {
   only_kl_mode?: boolean;
@@ -21,11 +23,11 @@ const EvidenceAccumulationSimulator: React.FC<EvidenceAccumulationSimulatorProps
   // Parameters for the simulation
   const [trueHeadsProb, setTrueHeadsProb] = useState(0.25);
   const [modelHeadsProb, setModelHeadsProb] = useState(0.5);
-  const [numFlips, setNumFlips] = useState(200);
+  const [numFlips, setNumFlips] = useState(CHART_CONFIG.controls.defaultNumFlips);
   const [currentFlip, setCurrentFlip] = useState(0);
   const [simulationData, setSimulationData] = useState<SimulationDataPoint[]>([]);
   const [isRunning, setIsRunning] = useState(false);
-  const [speed, setSpeed] = useState(50);
+  const [speed, setSpeed] = useState(CHART_CONFIG.controls.defaultSpeed);
   const [isZoomed, setIsZoomed] = useState(false);
   const [mode, setMode] = useState<'kl' | 'crossentropy'>('kl');
 
@@ -53,6 +55,11 @@ const EvidenceAccumulationSimulator: React.FC<EvidenceAccumulationSimulatorProps
   };
 
   const klDivergence: number = calculateKL();
+  
+  // Calculate Y-axis domain based on expected evidence range
+  const yAxisDomain = useMemo(() => {
+    return [-2, 'dataMax'];
+  }, []);
 
   // Memoize entropy calculation
   const entropy = useMemo(() => {
@@ -71,6 +78,22 @@ const EvidenceAccumulationSimulator: React.FC<EvidenceAccumulationSimulatorProps
     return crossentropyHeads + crossentropyTails;
   }, [trueHeadsProb, modelHeadsProb]);
 
+  // Create theoretical line data
+  const theoreticalData = useMemo(() => {
+    const data = [];
+    for (let i = 0; i <= numFlips; i += Math.max(1, Math.floor(numFlips / 50))) {
+      data.push({
+        flip: i,
+        evidence: 0,
+        klExpected: i * klDivergence,
+        logP: 0,
+        logQ: 0,
+        entropyP: i * entropy,
+        crossentropyPQ: i * crossentropy,
+      });
+    }
+    return data;
+  }, [numFlips, klDivergence, entropy, crossentropy]);
 
   // Reset the simulation
   const resetSimulation = (): void => {
@@ -136,16 +159,31 @@ const EvidenceAccumulationSimulator: React.FC<EvidenceAccumulationSimulatorProps
     }, speed);
 
     return () => clearTimeout(timer);
-  }, [isRunning, currentFlip, trueHeadsProb, modelHeadsProb, speed, numFlips, klDivergence, entropy, crossentropy]);
+  }, [isRunning, currentFlip, trueHeadsProb, modelHeadsProb, speed, numFlips, klDivergence, entropy, crossentropy, mode]);
 
   // Initialize data on first render or when parameters change
   useEffect(() => {
+    const wasRunning = isRunning;
     resetSimulation();
-  }, [trueHeadsProb, modelHeadsProb]);
+    // Auto-restart if it was running before parameter change
+    if (wasRunning) {
+      setIsRunning(true);
+    }
+  }, [trueHeadsProb, modelHeadsProb, mode, numFlips, klDivergence, entropy, crossentropy]);
 
   const formatProbability = (value: number) => {
     return `${(value * 100).toFixed(0)}%`;
   };
+
+  // Combine simulation data with theoretical lines
+  const chartData = useMemo(() => {
+    // If simulation hasn't started, show only theoretical lines
+    if (currentFlip === 0 && !isRunning) {
+      return theoreticalData;
+    }
+    // Otherwise, show only the actual simulation data (which already includes theoretical values)
+    return simulationData;
+  }, [simulationData, theoreticalData, currentFlip, isRunning]);
 
   return (
     <div className="mb-6 p-4 bg-gray-50 rounded-lg">
@@ -202,7 +240,7 @@ const EvidenceAccumulationSimulator: React.FC<EvidenceAccumulationSimulatorProps
                   step="0.01"
                   value={trueHeadsProb}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTrueHeadsProb(parseFloat(e.target.value))}
-                  className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer"
+                  className={`${INPUT_STYLES.base} ${INPUT_STYLES.rangeColors.trueP}`}
                   disabled={isRunning}
                 />
               </div>
@@ -218,7 +256,7 @@ const EvidenceAccumulationSimulator: React.FC<EvidenceAccumulationSimulatorProps
                   step="0.01"
                   value={modelHeadsProb}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setModelHeadsProb(parseFloat(e.target.value))}
-                  className="w-full h-2 bg-green-200 rounded-lg appearance-none cursor-pointer"
+                  className={`${INPUT_STYLES.base} ${INPUT_STYLES.rangeColors.modelQ}`}
                   disabled={isRunning}
                 />
               </div>
@@ -272,7 +310,7 @@ const EvidenceAccumulationSimulator: React.FC<EvidenceAccumulationSimulatorProps
                   step="10"
                   value={numFlips}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNumFlips(parseInt(e.target.value))}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  className={`${INPUT_STYLES.base} ${INPUT_STYLES.rangeColors.flips}`}
                   disabled={isRunning}
                 />
               </div>
@@ -288,7 +326,7 @@ const EvidenceAccumulationSimulator: React.FC<EvidenceAccumulationSimulatorProps
                   step="10"
                   value={speed}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSpeed(parseInt(e.target.value))}
-                  className="w-full h-2 bg-purple-200 rounded-lg appearance-none cursor-pointer"
+                  className={`${INPUT_STYLES.base} ${INPUT_STYLES.rangeColors.speed}`}
                 />
               </div>
             </div>
@@ -296,16 +334,16 @@ const EvidenceAccumulationSimulator: React.FC<EvidenceAccumulationSimulatorProps
             <div className="flex justify-start items-center">
               <button
                 onClick={toggleSimulation}
-                className={`px-4 py-2 rounded-md font-medium ${
-                  isRunning ? "bg-yellow-500 hover:bg-yellow-600" : "bg-blue-500 hover:bg-blue-600"
-                } text-white`}
+                className={`${BUTTON_STYLES.base} ${
+                  isRunning ? BUTTON_STYLES.primary.running : BUTTON_STYLES.primary.stopped
+                }`}
               >
                 {isRunning ? "Pause" : currentFlip >= numFlips ? "Reset & Start" : "Start"}
               </button>
 
               <button
                 onClick={resetSimulation}
-                className="px-4 py-2 rounded-md font-medium bg-gray-500 hover:bg-gray-600 text-white ml-4"
+                className={`${BUTTON_STYLES.base} ${BUTTON_STYLES.secondary} ml-4`}
                 disabled={!currentFlip}
               >
                 Reset
@@ -353,51 +391,46 @@ const EvidenceAccumulationSimulator: React.FC<EvidenceAccumulationSimulatorProps
                   </>
                 )}
               </div>
-              <button
+              <ZoomButton 
+                type="zoom-toggle"
+                isZoomed={isZoomed}
                 onClick={() => setIsZoomed(!isZoomed)}
-                className="px-3 py-1 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors z-50"
-              >
-                {isZoomed ? '🔍- Zoom Out' : '🔍+ Zoom In'}
-              </button>
+                className="z-50"
+              />
             </div>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart 
-                data={simulationData} 
-                margin={{ top: 5, right: 30, left: 20, bottom: 35 }}
+                data={chartData} 
+                margin={{ ...CHART_CONFIG.margins, left: 70 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   dataKey="flip"
                   label={{ value: "Number of Coin Flips", position: "insideBottom", offset: -10 }}
-                  domain={[0, numFlips]}
+                  domain={[0, isRunning || currentFlip > 0 ? 'dataMax' : numFlips]}
+                  type="number"
                 />
                 <YAxis 
-                  label={{ value: mode === 'kl' ? "Evidence (bits)" : "Surprisal (bits)", angle: -90 }} 
+                  label={{ value: mode === 'kl' ? "Evidence (bits)" : "Surprisal (bits)", angle: -90, position: "insideLeft", style: { textAnchor: 'middle' } }} 
                   tickFormatter={(value) => Math.round(value).toString()}
+                  domain={yAxisDomain}
                 />
-                <Tooltip formatter={(value: number) => `${value.toFixed(2)} bits`} />
+                <Tooltip 
+                  formatter={(value: number) => `${value.toFixed(2)} bits`}
+                  filter={(entry, index) => !['y'].includes(entry.dataKey) && index < 4}
+                />
                 <Legend />
                 
-                {/* Main blue line - changes based on mode */}
-                {mode === 'kl' ? (
+                {/* Main blue line - only in KL mode */}
+                {mode === 'kl' && (isRunning || currentFlip > 0) && (
                   <Line
                     type="monotone"
                     dataKey="evidence"
                     name="Accumulated Evidence"
-                    stroke="#2563eb"
+                    stroke={CHART_CONFIG.colors.evidence}
                     strokeWidth={2}
                     activeDot={{ r: 6 }}
-                    isAnimationActive={false}
-                  />
-                ) : (
-                  <Line
-                    type="monotone"
-                    dataKey="logQ"
-                    name="Model Surprisal"
-                    stroke="#2563eb"
-                    strokeWidth={2}
-                    activeDot={{ r: 6 }}
-                    isAnimationActive={false}
+                    isAnimationActive={CHART_CONFIG.animation.isAnimationActive}
                   />
                 )}
                 
@@ -406,37 +439,61 @@ const EvidenceAccumulationSimulator: React.FC<EvidenceAccumulationSimulatorProps
                   <Line
                     type="monotone"
                     dataKey="klExpected"
-                    name="Expected (KL Rate)"
-                    stroke="#dc2626"
+                    name="Expected rate (KL divergence)"
+                    stroke={CHART_CONFIG.colors.klExpected}
                     strokeWidth={2}
                     strokeDasharray="5 5"
                     dot={false}
-                    isAnimationActive={false}
+                    isAnimationActive={CHART_CONFIG.animation.isAnimationActive}
                   />
                 )}
                 
                 {/* Lines for crossentropy mode */}
                 {mode === 'crossentropy' && (
                   <>
+                    {/* Actual accumulated surprisal lines */}
+                    {(isRunning || currentFlip > 0) && (
+                      <Line
+                        type="monotone"
+                        dataKey="logQ"
+                        name="Accumulated Surprisal (Model Q)"
+                        stroke={CHART_CONFIG.colors.modelQ}
+                        strokeWidth={2}
+                        activeDot={{ r: 6 }}
+                        isAnimationActive={CHART_CONFIG.animation.isAnimationActive}
+                      />
+                    )}
+                    {(isRunning || currentFlip > 0) && (
+                      <Line
+                        type="monotone"
+                        dataKey="logP"
+                        name="Accumulated Surprisal (True P)"
+                        stroke={CHART_CONFIG.colors.trueP}
+                        strokeWidth={2}
+                        activeDot={{ r: 6 }}
+                        isAnimationActive={CHART_CONFIG.animation.isAnimationActive}
+                      />
+                    )}
+                    {/* Theoretical rates (dashed lines) */}
                     <Line
                       type="monotone"
                       dataKey="crossentropyPQ"
-                      name="Cross-entropy"
-                      stroke="#dc2626"
+                      name="Cross-entropy Rate"
+                      stroke={CHART_CONFIG.colors.klExpected}
                       strokeWidth={2}
                       strokeDasharray="5 5"
                       dot={false}
-                      isAnimationActive={false}
+                      isAnimationActive={CHART_CONFIG.animation.isAnimationActive}
                     />
                     <Line
                       type="monotone"
                       dataKey="entropyP"
-                      name="Entropy (Optimal)"
-                      stroke="#16a34a"
+                      name="Entropy Rate"
+                      stroke={CHART_CONFIG.colors.entropy}
                       strokeWidth={2}
                       strokeDasharray="3 3"
                       dot={false}
-                      isAnimationActive={false}
+                      isAnimationActive={CHART_CONFIG.animation.isAnimationActive}
                     />
                   </>
                 )}

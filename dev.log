@@ -2,17 +2,319 @@
 > generic-academic-website@0.1.0 dev /home/vasek/problens-web
 > next dev --turbopack
 
- ⚠ Port 3000 is in use, trying 3001 instead.
    ▲ Next.js 15.2.4 (Turbopack)
-   - Local:        http://localhost:3001
-   - Network:      http://10.13.3.0:3001
+   - Local:        http://localhost:3000
+   - Network:      http://10.7.24.147:3000
    - Environments: .env
 
  ✓ Starting...
- ✓ Ready in 821ms
+ ✓ Ready in 1285ms
+ ○ Compiling / ...
+ ✓ Compiled / in 8.3s
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET / 200 in 10000ms
  ○ Compiling /[...path] ...
- ✓ Compiled /[...path] in 7.4s
- GET /02-crossentropy/ 200 in 10360ms
- GET /02-crossentropy/ 200 in 1142ms
- GET /02-crossentropy/ 200 in 1193ms
- GET /01-kl_intro/ 200 in 654ms
+ ✓ Compiled /[...path] in 3s
+ GET /04-max_entropy/ 200 in 7935ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 634ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 696ms
+ GET /01-kl_intro/ 200 in 627ms
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET /00-introduction/ 200 in 321ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 36ms
+ ✓ Compiled in 531ms
+ ✓ Compiled /[...path] in 42ms
+ GET /06-algorithms/ 200 in 925ms
+ GET /09-coding_theory/ 200 in 310ms
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET /00-introduction/ 200 in 433ms
+ GET /08-kolmogorov/ 200 in 131ms
+ GET /08-kolmogorov/ 200 in 1257ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 51ms
+ ✓ Compiled in 113ms
+ ✓ Compiled in 121ms
+ GET /08-kolmogorov/ 200 in 1259ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 72ms
+ ✓ Compiled in 241ms
+ ✓ Compiled /[...path] in 22ms
+ GET /08-kolmogorov/ 200 in 606ms
+ GET /08-kolmogorov/ 200 in 135ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 42ms
+ ✓ Compiled in 127ms
+ ✓ Compiled in 198ms
+ ✓ Compiled in 116ms
+ ✓ Compiled in 142ms
+ ✓ Compiled /[...path] in 14ms
+ GET /08-kolmogorov/ 200 in 612ms
+ GET /08-kolmogorov/ 200 in 126ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 53ms
+ ✓ Compiled in 120ms
+ ✓ Compiled in 350ms
+ ✓ Compiled in 145ms
+ ✓ Compiled in 163ms
+ ✓ Compiled in 383ms
+ ✓ Compiled in 125ms
+ ✓ Compiled in 101ms
+ ✓ Compiled in 158ms
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET /00-introduction/ 200 in 844ms
+ ✓ Compiled / in 9ms
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET / 200 in 759ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 33ms
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET / 200 in 908ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 75ms
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET / 200 in 397ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 30ms
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET / 200 in 304ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 43ms
+ GET /09-coding_theory/ 200 in 376ms
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET / 200 in 233ms
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET / 200 in 331ms
+ GET /04-max_entropy/ 200 in 1382ms
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET / 200 in 363ms
+ GET /01-kl_intro/ 200 in 647ms
+ ⨯ [Error: Page "/[...path]/page" is missing param "/01-kl_intro/00-introduction/independence2.png" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/01-kl_intro/00-introduction/independence2.png'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 1644ms
+ GET /01-kl_intro/00-introduction/independence2.png 500 in 2017ms
+ GET /04-max_entropy/ 200 in 3056ms
+ GET /09-coding_theory/ 200 in 774ms
+ ⚠ Fast Refresh had to perform a full reload when ./components/providers/DangerModeProvider.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled in 213ms
+ GET /09-coding_theory/ 200 in 2240ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 157ms
+ ⚠ Fast Refresh had to perform a full reload when ./components/providers/DangerModeProvider.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled in 184ms
+ GET /09-coding_theory/ 200 in 1961ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 152ms
+ ⚠ Fast Refresh had to perform a full reload when ./components/providers/DangerModeProvider.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled in 160ms
+ GET /09-coding_theory/ 200 in 2126ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 51ms
+ ✓ Compiled in 227ms
+ ✓ Compiled in 259ms
+ ✓ Compiled in 193ms
+ ✓ Compiled in 297ms
+ ✓ Compiled /[...path] in 296ms
+ ⚠ Fast Refresh had to perform a full reload when [turbopack]/browser/dev/hmr-client/hmr-client.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /09-coding_theory/ 200 in 176ms
+ ✓ Compiled in 1306ms
+ GET /09-coding_theory/ 200 in 2510ms
+ GET /09-coding_theory/ 200 in 731ms
+ GET /09-coding_theory/ 200 in 1188ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 35ms
+ ✓ Compiled in 172ms
+ ⚠ Fast Refresh had to perform a full reload when [turbopack]/browser/dev/hmr-client/hmr-client.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled in 762ms
+ GET /09-coding_theory/ 200 in 2373ms
+ ✓ Compiled in 181ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 74ms
+ ⚠ Fast Refresh had to perform a full reload when [turbopack]/browser/dev/hmr-client/hmr-client.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled in 853ms
+ GET /09-coding_theory/ 200 in 2517ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 146ms
+ ✓ Compiled in 218ms
+ ✓ Compiled in 631ms
+ GET /09-coding_theory/ 200 in 1935ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 88ms
+ GET /09-coding_theory/ 200 in 768ms
+ GET /09-coding_theory/ 200 in 901ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 47ms
+ ✓ Compiled in 258ms
+ ✓ Compiled in 221ms
+ ✓ Compiled in 232ms
+ ✓ Compiled in 367ms
+ GET /09-coding_theory/ 200 in 1832ms
+ ✓ Compiled in 216ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 303ms
+ ⨯ ReferenceError: resetCode is not defined
+    at BuildYourOwnCodeWidget (components/widgets/BuildYourOwnCodeWidget.tsx:314:17)
+  312 |       <ZoomButton 
+  313 |         type="reset" 
+> 314 |         onClick={resetCode}
+      |                 ^
+  315 |       />
+  316 |       
+  317 |       <div className="mb-6"> {
+  digest: '575451590'
+}
+ GET /09-coding_theory/ 500 in 2039ms
+ GET /favicon.ico 200 in 56ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 211ms
+ ⨯ ReferenceError: resetCode is not defined
+    at BuildYourOwnCodeWidget (components/widgets/BuildYourOwnCodeWidget.tsx:324:17)
+  322 |       <ZoomButton 
+  323 |         type="reset" 
+> 324 |         onClick={resetCode}
+      |                 ^
+  325 |       />
+  326 |       
+  327 |       <div className="mb-6"> {
+  digest: '575451590'
+}
+ GET /09-coding_theory/ 500 in 1978ms
+ GET /favicon.ico 200 in 125ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 199ms
+ GET /09-coding_theory/ 200 in 1714ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 49ms
+ ✓ Compiled in 360ms
+ ✓ Compiled in 232ms
+ ✓ Compiled in 210ms
+ ✓ Compiled in 279ms
+ ✓ Compiled in 359ms
+ GET /09-coding_theory/ 200 in 1828ms
+ ✓ Compiled in 327ms
+ ✓ Compiled in 196ms
+ ✓ Compiled in 214ms
+ GET /09-coding_theory/ 200 in 1859ms
+ ✓ Compiled in 240ms
+ ✓ Compiled in 231ms
+ GET /09-coding_theory/ 200 in 2206ms
+ GET /09-coding_theory/ 200 in 941ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 120ms
+ GET /09-coding_theory/ 200 in 746ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 91ms
+ GET /09-coding_theory/ 200 in 737ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 53ms
+ GET /09-coding_theory/ 200 in 735ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 67ms
+ ✓ Compiled in 674ms
+ ✓ Compiled in 234ms
+ ✓ Compiled in 193ms
+ ✓ Compiled in 255ms
+ GET /09-coding_theory/ 200 in 2288ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 63ms
+ GET /09-coding_theory/ 200 in 1009ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 54ms
+ GET /09-coding_theory/ 200 in 804ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 62ms
+ GET /09-coding_theory/ 200 in 743ms
+ ✓ Compiled in 209ms
+ ✓ Compiled in 190ms
+ ✓ Compiled in 219ms
+ ✓ Compiled in 230ms
+ ✓ Compiled in 200ms
+ ✓ Compiled in 276ms
+ ✓ Compiled in 261ms
+ ✓ Compiled in 350ms
+ ✓ Compiled in 214ms
+ ✓ Compiled in 213ms
+ GET /09-coding_theory/ 200 in 1769ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 40ms
+ ✓ Compiled in 222ms
+ ✓ Compiled in 338ms
+ ✓ Compiled in 260ms
+ GET /09-coding_theory/ 200 in 1953ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 56ms
+ ✓ Compiled in 330ms
+ ✓ Compiled in 195ms
+ ✓ Compiled in 219ms
+ GET /09-coding_theory/ 200 in 1893ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 59ms
+ ✓ Compiled in 243ms
+ ✓ Compiled in 224ms
+ ✓ Compiled in 218ms
+ ✓ Compiled in 207ms
+ GET /09-coding_theory/ 200 in 1444ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 45ms
+ GET /about/ 200 in 230ms
+ ⨯ [Error: Page "/[...path]/page" is missing param "/09-coding_theory/fig/claude.png" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/09-coding_theory/fig/claude.png'
+}
+ ⨯ [Error: Page "/[...path]/page" is missing param "/09-coding_theory/fig/gavento.jpg" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/09-coding_theory/fig/gavento.jpg'
+}
+ ⨯ [Error: Page "/[...path]/page" is missing param "/09-coding_theory/fig/vasek.jpg" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/09-coding_theory/fig/vasek.jpg'
+}
+ GET /09-coding_theory/fig/claude.png 500 in 288ms
+ GET /09-coding_theory/fig/gavento.jpg 500 in 306ms
+ GET /09-coding_theory/fig/vasek.jpg 500 in 305ms
+ ⨯ [Error: Page "/[...path]/page" is missing param "/about/fig/claude.png" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/about/fig/claude.png'
+}
+ ⨯ [Error: Page "/[...path]/page" is missing param "/about/fig/vasek.jpg" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/about/fig/vasek.jpg'
+}
+ ⨯ [Error: Page "/[...path]/page" is missing param "/about/fig/gavento.jpg" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/about/fig/gavento.jpg'
+}
+ GET /about/fig/claude.png 500 in 243ms
+ GET /about/fig/vasek.jpg 500 in 263ms
+ GET /about/fig/gavento.jpg 500 in 265ms
+ ✓ Compiled in 233ms
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET /00-introduction/ 200 in 825ms

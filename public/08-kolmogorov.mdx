@@ -1,1 +1,26 @@
-TBD
+# Kolmogorov Complexity
+
+Kolmogorov complexity measures the computational resources needed to specify an object. It's defined as the length of the shortest possible description of the object in a given universal description language.
+
+## The Mandelbrot Set
+
+The Mandelbrot set provides a fascinating example of Kolmogorov complexity. Despite its infinite detail and boundary complexity, the entire set can be described by a remarkably simple algorithm:
+
+For a complex number $c$:
+1. Start with $z_0 = 0$
+2. Iterate $z_{n+1} = z_n^2 + c$
+3. If $|z_n|$ remains bounded as $n \to \infty$, then $c$ is in the Mandelbrot set
+
+This short description generates an infinitely complex fractal structure. Explore it below:
+
+<MandelbrotExplorer />
+
+The Mandelbrot set demonstrates a key insight of Kolmogorov complexity: objects with low Kolmogorov complexity (simple descriptions) can exhibit arbitrarily high visual or structural complexity. The entire infinite detail of the Mandelbrot set is compressed into just a few lines of mathematical description.
+
+## Implications
+
+This connects to several important concepts:
+
+1. **Compression**: The Kolmogorov complexity of an object is essentially its ultimate compression limit
+2. **Randomness**: A string is random if its Kolmogorov complexity approximately equals its length
+3. **Information Theory**: Kolmogorov complexity provides a foundation for understanding information content independent of probability distributions

@@ -82,3 +82,4 @@ This ensures the deployment pipeline remains healthy and the static site builds 
   3. Verify the server is running by checking the process or visiting http://localhost:3000
   4. If you need to stop the server later, use `pkill -f "pnpm dev"` or find the specific process ID and kill it
 - Use as much relative positioning and relative lengths as possible
+- Always start by running the development server by pnpm in the background on localhost:3000

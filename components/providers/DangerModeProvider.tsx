@@ -5,12 +5,14 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 interface DangerModeContextType {
   isDangerMode: boolean;
   toggleDangerMode: () => void;
+  isHydrated: boolean;
 }
 
 const DangerModeContext = createContext<DangerModeContextType | undefined>(undefined);
 
 export function DangerModeProvider({ children }: { children: React.ReactNode }) {
   const [isDangerMode, setIsDangerMode] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   // Load state from localStorage on mount
   useEffect(() => {
@@ -18,6 +20,7 @@ export function DangerModeProvider({ children }: { children: React.ReactNode }) 
     if (saved === 'true') {
       setIsDangerMode(true);
     }
+    setIsHydrated(true);
   }, []);
 
   const toggleDangerMode = () => {
@@ -27,7 +30,7 @@ export function DangerModeProvider({ children }: { children: React.ReactNode }) 
   };
 
   return (
-    <DangerModeContext.Provider value={{ isDangerMode, toggleDangerMode }}>
+    <DangerModeContext.Provider value={{ isDangerMode, toggleDangerMode, isHydrated }}>
       {children}
     </DangerModeContext.Provider>
   );

@@ -2,81 +2,106 @@
 
 KL divergence and entropy are deeply connected to coding theory. It would be distasteful not to say anything about the connection. But it's also not so relevant to the main story, hence this bonus chapter. 
 
-<Expand headline = "Code examples">
+The goal of the chapter is to explain what's happening in the riddle about [Wikipedia compression](00-introduction#wikipedia), we discuss it at the end. 
+
+
+## Code intro
 Say you've got a long DNA string built from letters \{A,C,G,T\}. You want to store it using as little disk space as possible.  
 
-To understand this question, it's very helpful to make our life easier by ignoring correlations between letters. What I mean by that is that we will achieve the same compression factor for the string 'AAAACCCCGGGGTTTT' as for the string 'ACACTATTCGGCGAGT' - both strings contain the same letters and the first one has some additional structure, but we will not try to exploit it. Technically speaking, we assume that there's some distribution $p$ over the alphabet, and our string comes from sampling repeatedly and independently from $p$.  
+Here's the most basic plan: We assign a binary code for each letter and encode the string using that code. 
 
-If this distribution $p$ is uniform over \{A,C,G,T\}, the best encoding is to use two bits per letter: <Math math = "A \rightarrow \textsf{00}, C \rightarrow \textsf{01}, G \rightarrow \textsf{10}, T \rightarrow \textsf{11} " />. An $N$-letter string takes $2N$ bits. Done! 
+For example, we can use <Math math = "A \rightarrow \textsf{00}, C \rightarrow \textsf{01}, G \rightarrow \textsf{10}, T \rightarrow \textsf{11} " />. The string gets stored using just 2 bits per letter. Done! 
 
-But what if $p$ is skewed? Say A shows up half the time in our string, C a quarter, and G,T each an eighth. Now we can do better: <Math math = "A \rightarrow \textsf{0}, C \rightarrow \textsf{10}, G \rightarrow \textsf{110}, T \rightarrow \textsf{111} " />. This only uses 
-<Math displayMode={true} id = "code-example" math = "\left( \frac12 \cdot 1 + \frac14 \cdot 2 + \frac18 \cdot 3 + \frac18 \cdot 3 \right) \cdot N = 1.75N" />
-bits on average. Cool! 
+Can we do better? Sometimes, yes! Here's a riddle: try to build a code that encodes the following string with 1.75 bits per letter on average. 
 
-![encoding](02-crossentropy/encoding.png)
+<BuildYourOwnCodeWidget /> 
 
-Sure, giving frequent letters shorter codes makes sense, but what's the best way to do it? Coding theory says: __try to give a letter $i$ with frequency $p_i$ a code-name of length $\log 1/p_i$__. 
+.
 
-For example, looking at <EqRef id = "code-example"/>, you can rewrite it like this: 
-<Math displayMode={true} id = "code-example2" math = "\left( \frac12 \cdot \log \frac{1}{1/2} + \frac14 \cdot \log \frac{1}{1/4} + \frac18 \cdot \log \frac{1}{1/8} + \frac18 \cdot \log\frac{1}{1/8} \right) \cdot N = 1.75N" />
-Every letter with frequency $p$ got code-name of length exactly $\log 1/p$! Notice that in general, the length of codes satisfying the $p \rightarrow \log 1/p$ rule is this: 
+.
+
+.
+
+SPOILER
+
+.
+
+.
+
+.
+
+Here's the solution: <Math math = "A \rightarrow \textsf{0}, C \rightarrow \textsf{10}, G \rightarrow \textsf{110}, T \rightarrow \textsf{111} " />. Since the letter frequencies in the text are <Math math = "\frac12, \frac14, \frac18, \frac18"/>, this encoding only uses 
+<Math displayMode={true} id = "code-example" math = "\frac12 \cdot 1 + \frac14 \cdot 2 + \frac18 \cdot 3 + \frac18 \cdot 3 = 1.75" />
+bits. Notice that when we use the code $A \rightarrow \textsf{0}$, no other letter can get a code-name starting with $\textsf{0}$. The reason is that such a code may not be decodable. E.g., if you use codes <Math  math = "\textsf{0}" /> and <Math  math = "\textsf{00}" />, how do you decode <Math  math = "\textsf{00}" />? 
+
+OK, using shorter codes for more frequent letters makes sense, but what's the best way to do this? Coding theory knows the answer. Roughly speaking, it tells us to __try to give a letter with frequency $p_i$ a code-name of length $\log 1/p_i$__. 
+
+For example, looking at <EqRef id = "code-example"/>, you can rewrite the left-hand side as: 
+<Math displayMode={true} id = "code-example2" math = " \frac12 \cdot \log \frac{1}{1/2} + \frac14 \cdot \log \frac{1}{1/4} + \frac18 \cdot \log \frac{1}{1/8} + \frac18 \cdot \log\frac{1}{1/8}. " />
+Every letter with frequency $p$ got code-name of length exactly $\log 1/p$! Notice that for general strings of length $N$, the length of codes satisfying the $p \rightarrow \log 1/p$ rule is this: 
 <Math displayMode={true} math = "N \cdot \sum_{i = 1}^k p_i \cdot \log \frac{1}{p_i} = N \cdot H(p)." />
 That is, if you manage to construct a code with $p \rightarrow \log 1/p$, you spend $H(p)$ bits per letter on average. 
 
-One of the most beautiful and important results of coding theory is that you can always construct a code that spends close to $H(p)$ bits per letter on average, and there's no better code (if we treat letters independently). Details in the next expand box. 
-</Expand>
-
-<Expand headline = "Code construction details" advanced = {true}>
-
-Let's see
-1. Why we can construct codes with average $H(p)$ bits per letter
-2. Why we can't do better (if the letters are independent)
-
-### Construction of a good code <a id = "construction"></a>
-First, given a distribution of letter frequencies $p_1, \dots, p_k$, I will show you a construction that's called the [Shannon's code](https://en.wikipedia.org/wiki/Shannon_coding). I will assume that $p_1 \ge p_2 \ge \dots \ge p_k$. 
-
-The first step is that we "round" each probability down to be a power of two. For example, the frequency of the letter 'e' is 12.7% which is between $\frac{1}{2^3} = 12.5\%$ and $\frac{1}{2^2} = 25\%$. The number 3 is important - we will assign a binary code of length 3 to e. Which one? We will assign the codes "greedily" as shown in the following widget. The widget starts with the real English letter frequencies, but you can play with it!
+If we implement our $p \rightarrow \log 1/p$-rule-of-thumb, we get what's known as Shannon's code. This code sorts the letter-frequencies down from the largest one, and assigns to each letter of frequency $p$ a code of length $\lceil \log \frac{1}{p} \rceil$ (because we can't have a code name with 1.5 bits). Here it is for English alphabet:
 
 <ShannonCodeWidget />
 
-The problem of Shannon's code is that it only achieves the desired compression of average $H(p)$ bits per letter only if all probabilities are power of two. Only then are all the expressions $\log 1/p_i$ integers and we can make code names of exactly that length. Otherwise, "rounding probabilities down" hurts us. If you do the math, the possibility of dividing each probability by up to 2 in rounding translates to make the compression rate of Shannon's code be up to 1 bit worse that the optimum. That is, you can check in above widget that Average Code Length is always at most 1 bit worse than entropy. 
+You can notice that the number of bits per letter (also called _rate_) is a bit north of the entropy of the underlying distribution. This is because of the rounding $\log 1/p \rightarrow \lceil \log 1/p \rceil$. For example, if $p = 0.49$, we would like to give the letter a code name of length $\log \frac{1}{0.49} \approx 1.03$. Too bad that code names have to be integers and Shannon's code assigns it a code name of length $2$. As a general rule, Shannon's code can use up to 1 bit per letter more than what's the entropy. <Footnote>Try to work out the details of what's happening in Shannon's code. Especially: Why does Shannon's algorithm of assigning letters never runs out of available code names? </Footnote>
 
-Here's how we can get rid of this slack of 1 bit. We can construct Shannon's code not for every letter, but for every _pair of letters_. In the case of English, our alphabet would then have size $26^2$. The good thing is that if we construct the Shannon's code for this larger alphabet and lose up to $1$ bit per encoded letter-pair, this means we are only losing $1/2$ bits per actual letter! Doing this trick not for pair of letters but a tuple of several letters can bring us arbitrarily close to a code that spends $H(p)$ bits per letter. So, there are codes that get arbitrarily close to $H(p)$ bits per letter, though they are a bit less intuitive since they are encoding tuples, not individual letters. 
+Unfortunately, there situations where Shannon's code is really almost 1 bit worse than the entropy. Take a string that uses just two characters $\textsf{A}, \textsf{B}$, but the frequency of $ \textsf{B}$ is close to zero. Then, the entropy is close to zero, but Shannon can't do better than 1 bit per letter. 
 
-### Why we can't do better
+We can get rid of this annoying slack of one bit using the following trick. Think of constructing Shannon's code not for every letter, but for every _pair of letters_ (i.e., the alphabet grows from $26$ to $26^2$). If Shannon's code loses 1 bit per encoded letter-pair, it means it loses $1/2$ bits per actual letter! Doing this trick not for a pair of letters but a tuple of several letters can bring us arbitrarily close to a code that spends $H(p)$ bits per letter. 
 
-To see why we can't do better than $H(p)$ bits per letter on average, we will have to understand [Kraft's inequlaity](https://en.wikipedia.org/wiki/Kraft%E2%80%93McMillan_inequality). This inequality says that if we give our $k$ letters code words of lengths $\ell_1, \dots, \ell_k$, then it has to be the case that 
+So, there are codes that get arbitrarily close to $H(p)$ bits per letter, even if they are a bit less intuitive since they are encoding letter-tuples, not individual letters. This is essentially the first half of the most important theorem in coding theory - [Shannon's source coding theorem](https://en.wikipedia.org/wiki/Shannon%27s_source_coding_theorem). The second part of the theorem says that we can't beat $H(p)$. Details in the expand box. 
+
+<Expand headline = "Details of Shannon's source coding theorem">
+To see why we can't do better than $H(p)$ bits per letter on average, we will have to understand [Kraft's inequlaity](https://en.wikipedia.org/wiki/Kraft%E2%80%93McMillan_inequality). This inequality says that if we work with alphabet with $k$ letters and we build a code with words of lengths $\ell_1, \dots, \ell_k$, then it has to be the case that 
 <Math id = "kraft" displayMode = {true} math = "\sum_{i = 1}^k 2^{- \ell_i} \le 1. " />
 
-To understand this inequality, look at the widget above. Whenever we give a code-name to a letter, like $e \rightarrow 000$, we can no longer use codewords that start with '000' for other letters, since that would create clashes. The node with '000' has to be a _leaf_. Some leaves 'take more space' than others - for example, using code name of '0' intuitively kills off half of the space of possibilities. 
+To understand this inequality, go back to widgets above - whenever we give a code-name to a letter, like $e \rightarrow 000$, we can no longer use codewords that start with '000' for other letters, since that would create clashes. The node with '000' has to be a _leaf_. Some leaves 'take more space' than others - for example, using code name of '0' intuitively kills off half of the space of possibilities. 
 
-A bit more formally, imagine continuing the full binary tree up to some very large depth $N$. Then a code word of length $\ell_i$ is above <Math math="2^{N - \ell_i}" /> of nodes at depth $N$. Since different code words cover disjoint intervals of depth-$N$ nodes, and there are $2^N$ nodes at depth $N$, it has to be the case that 
+A bit more formally, imagine continuing the full binary tree up to some very large depth $N$. Then a code word of length $\ell_i$ is above <Math math="2^{N - \ell_i}" /> of nodes at depth $N$. Since different code words cover disjoint intervals of depth-$N$ nodes, and there are $2^N$ nodes at depth $N$, it has to be the case for any valid code that 
 <Math displayMode={true} math="\sum_{i = 1}^k 2^{N - \ell_i} \le 2^N" />
 Divide by $2^N$ and you get Kraft's inequality <EqRef id = "kraft"/>. 
 
-I actually like to think about Kraft's inequality as equality. Why? Well, if your code is such that the left-hand side is really smaller than $1$, then you are stupid. <Footnote>You can notice that Shannon's code above is stupid and leaves some space at the right. In fact, Shannon's code is useful mostly for didactical reasons and in practice you would construct the code by [Huffman's algorithm](https://en.wikipedia.org/wiki/Huffman_coding). </Footnote> In the widget below, you can see how codes can be iteratively improved to get equality. 
+I actually like to think about Kraft's inequality as equality. Why? Well, if your code is such that the left-hand side is really smaller than $1$, then you are stupid. <Footnote>You can notice that Shannon's code above is 'stupid' since for English, it leaves some space at the right of the binary tree. In fact, Shannon's code is useful mostly for didactical reasons and in practice you would construct the code by [Huffman's algorithm](https://en.wikipedia.org/wiki/Huffman_coding). </Footnote> In the widget below, you can see how codes can be iteratively improved to get equality. 
 
 <KraftInequalityWidget />
 
 
 The reason why this is helpful is that I like to think about the numbers <Math math="q_i = 2^{-\ell_i}" /> as some kind of idealized probabilities. Widget above shows that we can pretty much assume that the numbers $q_i$ always sum up to 1. You can think about the numbers $q_i$ as the probability distribution _implied_ by your code-name lengths $\ell_i$. Intuitively, the code is optimized for the distribution $q$, not $p$. 
 
-This setup with $p$ and $q$ is little bit like our discussions of surprises. In fact, let's write down the fact that KL divergence between $p$ and $q$ is always nonnegative. Remember, KL is the difference between crossentropy and entropy, so this is equivalently saying that $H(p, q) \ge H(p)$. If we write the formulas down:
+This setup with $p$ and $q$ is little bit like our discussions in the first two chapters. In fact, let's write down the fact that KL divergence between $p$ and $q$ is always nonnegative. Let's write it down in the form $H(p, q) \ge H(p)$:
 <Math displayMode = {true} math="\sum_{i = 1}^k p_i \log \frac{1}{q_i} \ge \sum_{i = 1}^k p_i \log \frac{1}{p_i}" />
-and plug in <Math math="q_i = 2^{-\ell_i}" />, we get
+Plugging in <Math math="q_i = 2^{-\ell_i}" />, we get
 <Math displayMode = {true} math="\sum_{i = 1}^k p_i \ell_i \ge H(p)." />
-That is, the average code-name length is at least $H(p)$. In yet another words, no code can beat $H(p)$ bits on average as we wanted to observe. 
+That is, the average code-name length is at least $H(p)$. This works for any code, hence the second part of [Shannon's source coding theorem](https://en.wikipedia.org/wiki/Shannon%27s_source_coding_theorem). 
 </Expand>
 
-The tl;dr is that there is another way to think about entropy. Remember how we defined it as the "average surprisal" of a distribution, say a coin flip? We could also ask: how many bits do we need to store coin flip results? 
+## Entropy intuition
 
-If we are flipping a fair coin and want to keep the results, there is nothing smarter to do then remember a file like '0101100' where 0/1 corresponds to H/T. This is 1 bit per flip. 
+Using the fact that good codes can achieve a rate close to entropy can give us a lot of intuition! Remember [how we defined](/02-crossentropy) entropy as the "average surprisal" of a distribution? We could also ask: if we keep sampling from the distribution, how many bits per result do we need to store them? 
 
-But if we are flipping a coin where heads have only $0.01$ probability, there are better ways to store the results! For example, we could always store how many Ts there have been between each two Hs. Coding theory formalizes that entropy stands for how much space we need to store the results if we used the best possible encoding. The entropy of the coin flips is "how much info there is to store". 
+For example, if we are flipping a fair coin and want to keep the results, there is nothing smarter then remembering a file like '0101100' where 0/1 corresponds to H/T. This is 1 bit per flip. 
 
-With coding theory intuitions, cross-entropy also becomes also very natural: it's how many bits you need when data comes from $p$ but you are using the code that's optimized for a different distribution $q$. And relative entropy is how much worse your mismatched code is compared to the optimal one. 
+But if we are flipping a coin where heads have only $0.01$ probability, there are better ways to store the results! For example, we could split the outcomes to batches of 10, and give a code-name to each of the $2^{10}$ possibilities in a batch. If we use a short code-name for the very probably outcome of 'TTTTTTTTTT', we can spare a lot of disk space!
 
+The entropy of the coin flip is the rate of the best code, it's the speed of how much 'useful information' we are generating with our flips.  
+
+With coding theory intuitions, cross-entropy also becomes also very natural: it's how many bits you need when data comes from $p$ but you are using the code that's optimized for a different distribution $q$. For example, in the top widget, you can construct the best code for 'AACATACG', but then run it on 'AAAAAAAA'. 
+
+Finally, relative entropy is how much worse your mismatched code is compared to the optimal one. 
+
+
+## Better ways of storing data
+
+
+## Wikipedia riddle
 We can now revisit the riddle about how much Wikipedia (and other texts) can be compressed. 
+
+
+<CompressionWidget />
+
 
 <Expand headline = "🌐 How large is Wikipedia?"><a id = "hutter"></a>
 Back to [our Wikipedia riddle](00-introduction#wikipedia) and Hutter's compression challenge. 
@@ -86,7 +111,7 @@ There are more approaches to compress text files. Let's go through them and you 
 
 - _Baseline_: The stadard way to store text files is UTF-8. Lying a bit, this format store each letter using 8 bits. <Footnote>Why is it lying? [UTF-8](https://en.wikipedia.org/wiki/UTF-8) itself is a beautiful example of good engineering inspired by coding theory. There are around 100 characters (English letters, digits) that are stored using 8 bits, fancier letters from reasonable alphabets are stored using 16 bits, and emojis like 😀 or hieroglyphs like 𓀀 take 32 bits. Classic coding theory—rare stuff gets longer codes. But English Wiki is mostly standard stuff, so 8 bits per letter it is. </Footnote>
 
-- _Optimal letter-independent code_: We discussed above, how coding theory tells us what's the best way of compressing files if we don't want to use tricks like "'th' is usually followed by 'e'". We can treat the letters as independent and encode the using $H(p)$ bits per letter on average, where $p$ are the English letter frequencies. [In this widget above](/02-crossentropy#construction), we used those frequencies as an example; the entropy is a bit north of 4 bits. So, we can shrink the file almost by __2x__ just by using that different letters have different frequencies. 
+- _Optimal letter-independent code_: We discussed above, how coding theory tells us what's the best way of compressing files if we don't want to use tricks like "'th' is usually followed by 'e'". We can treat the letters as independent and encode the using $H(p)$ bits per letter on average, where $p$ are the English letter frequencies. [In this widget above](../02-crossentropy#construction), we used those frequencies as an example; the entropy is a bit north of 4 bits. So, we can shrink the file almost by __2x__ just by using that different letters have different frequencies. 
 
 - _Zipping_: Standard compression algorithms like those used in zip use codes, but also look for repeating patterns or take advantage of frequencies of letter pairs. They can compress English text up to a factor around __3x__.  
 
@@ -107,6 +132,5 @@ Before playing with the widget, let me tell you about one of the coolest experim
 
 See compression factors of different types of text and different algorithms with the widget below. Notice how the compression ratio depends heavily on the structure and predictability of the text. <Footnote>Let me know what text I should add to the widget! </Footnote>
 
-<CompressionWidget />
 
 </Expand>

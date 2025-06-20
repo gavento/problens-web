@@ -16,11 +16,17 @@ interface ExpandProps {
 }
 
 export default function Expand({ children, headline, img, color = "#f5f5f5", startOpen = false, advanced = false, id }: ExpandProps) {
-  const { isDangerMode } = useDangerMode();
+  const { isDangerMode, isHydrated } = useDangerMode();
   const [isOpen, setIsOpen] = useState(startOpen);
 
   // Hide advanced sections when danger mode is off
-  if (advanced && !isDangerMode) {
+  // Only apply this logic after hydration to prevent mismatches
+  if (advanced && isHydrated && !isDangerMode) {
+    return null;
+  }
+
+  // Don't render advanced sections during SSR to prevent hydration mismatches
+  if (advanced && !isHydrated) {
     return null;
   }
 
