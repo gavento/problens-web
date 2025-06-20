@@ -11,6 +11,7 @@ interface CompressionResult {
   ratio: string;
   generalDescription: string;
   specificDescription: string;
+  compressionProgression?: Array<{percent: number; ratio: number}>;
 }
 
 interface TextSample {
@@ -28,6 +29,11 @@ export default function CompressionWidget() {
   const [error, setError] = useState<string | null>(null);
   const [useFixedScale, setUseFixedScale] = useState(false);
   const [llmProgressionData, setLlmProgressionData] = useState<any>(null);
+  const [userText, setUserText] = useState('');
+  const [userResults, setUserResults] = useState<CompressionResult[] | null>(null);
+  const [isCompressing, setIsCompressing] = useState(false);
+  const [showUserText, setShowUserText] = useState(false);
+  const [gptLoadingMessage, setGptLoadingMessage] = useState('');
 
   useEffect(() => {
     const loadData = async () => {
@@ -399,6 +405,232 @@ export default function CompressionWidget() {
     };
   };
 
+  // Call Hugging Face GPT-2 compression API using queue system
+  const callGPT2Compression = async (text: string): Promise<{ algorithm: string; bits: number; ratio: string; compressionProgression?: any[] } | null> => {
+    try {
+      console.log('Calling GPT-2 API with text:', text.substring(0, 50) + '...');
+      
+      // Show loading message based on text length
+      const textLength = text.length;
+      if (textLength > 5000) {
+        setGptLoadingMessage('Running GPT-2 compression, this should take <1 min for <10KB files...');
+      } else if (textLength > 1000) {
+        setGptLoadingMessage('Running GPT-2 compression, this takes about a minute...');
+      } else {
+        setGptLoadingMessage('Running GPT-2 compression...');
+      }
+      
+      const sessionHash = Math.random().toString(36).substring(2);
+      
+      const queueResponse = await fetch(
+        'https://vaclavrozhon-gpt2-compression-api.hf.space/gradio_api/queue/join',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            data: [text],
+            event_data: null,
+            fn_index: 2,        // Back to the working value
+            trigger_id: 12,     // Add back the trigger_id
+            session_hash: sessionHash
+          })
+        }
+      );
+      
+      if (!queueResponse.ok) {
+        throw new Error(`Queue join failed: ${queueResponse.status}`);
+      }
+      
+      // Use EventSource to get results
+      return new Promise((resolve, reject) => {
+        const eventSource = new EventSource(
+          `https://vaclavrozhon-gpt2-compression-api.hf.space/gradio_api/queue/data?session_hash=${sessionHash}`
+        );
+        
+        const timeout = setTimeout(() => {
+          eventSource.close();
+          setGptLoadingMessage('');
+          reject(new Error('GPT-2 processing timeout'));
+        }, 120000);  // Increase timeout to 2 minutes for long texts
+          
+        eventSource.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            
+            if (data.msg === 'process_completed') {
+              clearTimeout(timeout);
+              eventSource.close();
+              setGptLoadingMessage('');
+              
+              if (data.output && data.output.data) {
+                const jsonString = data.output.data[0];
+                console.log('Raw JSON string from API:', jsonString);
+                
+                try {
+                  const compressionData = JSON.parse(jsonString);
+                  
+                  if (compressionData.error) {
+                    console.error('GPT-2 compression failed:', compressionData.error);
+                    resolve(null);
+                  } else if (compressionData.algorithm && compressionData.bits && compressionData.ratio) {
+                    resolve({
+                      algorithm: compressionData.algorithm,
+                      bits: compressionData.bits,
+                      ratio: compressionData.ratio,
+                      compressionProgression: compressionData.compression_progression || []
+                    });
+                  } else {
+                    console.error('Invalid data format:', compressionData);
+                    resolve(null);
+                  }
+                } catch (parseError) {
+                  console.error('Failed to parse JSON:', parseError, 'Raw:', jsonString);
+                  resolve(null);
+                }
+              } else {
+                console.error('No output data');
+                resolve(null);
+              }
+            }
+          } catch (e) {
+            // Continue listening
+          }
+        };
+        
+        eventSource.onerror = () => {
+          clearTimeout(timeout);
+          eventSource.close();
+          setGptLoadingMessage('');
+          resolve(null);
+        };
+      });
+      
+    } catch (error) {
+      console.error('Failed to call GPT-2 API:', error);
+      setGptLoadingMessage('');
+      return null;
+    }
+  };
+
+  // Browser-based compression using built-in APIs
+  const compressWithBrowserAPIs = async (text: string) => {
+    const results: CompressionResult[] = [];
+    
+    // Baseline
+    results.push({
+      algorithm: "Baseline",
+      bits: text.length * 8,
+      ratio: "1.00x",
+      generalDescription: "Just store each character as 8 bits in memory, using ASCII encoding.",
+      specificDescription: ""
+    });
+    
+    // Add estimate for Best code (simple entropy calculation) - put BEFORE ZIP
+    const charFreq: { [key: string]: number } = {};
+    for (const char of text) {
+      charFreq[char] = (charFreq[char] || 0) + 1;
+    }
+    
+    let entropy = 0;
+    const textLength = text.length;
+    for (const freq of Object.values(charFreq)) {
+      const p = freq / textLength;
+      if (p > 0) entropy -= p * Math.log2(p);
+    }
+    
+    const bestCodeBits = entropy * textLength;
+    const bestCodeRatio = (textLength * 8) / bestCodeBits;
+    
+    results.push({
+      algorithm: "Best code",
+      bits: Math.round(bestCodeBits),
+      ratio: `${bestCodeRatio.toFixed(2)}x`,
+      generalDescription: "Use optimal codes based on individual character frequencies. We estimate its compression rate by computing the entropy of the frequency distribution.",
+      specificDescription: "Theoretical optimum based on character frequencies in your text"
+    });
+    
+    // Gzip compression using browser CompressionStream - put AFTER Best code
+    try {
+      const stream = new CompressionStream('gzip');
+      const writer = stream.writable.getWriter();
+      const reader = stream.readable.getReader();
+      
+      writer.write(new TextEncoder().encode(text));
+      writer.close();
+      
+      const chunks = [];
+      let done = false;
+      while (!done) {
+        const { value, done: streamDone } = await reader.read();
+        done = streamDone;
+        if (value) chunks.push(value);
+      }
+      
+      const compressedSize = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+      const gzipBits = compressedSize * 8;
+      const gzipRatio = (text.length * 8) / gzipBits;
+      
+      results.push({
+        algorithm: "ZIP (gzip)",
+        bits: gzipBits,
+        ratio: `${gzipRatio.toFixed(2)}x`,
+        generalDescription: "Standard dictionary-based compression algorithm",
+        specificDescription: "Browser-native gzip compression"
+      });
+    } catch (gzipError) {
+      console.error('Gzip compression failed:', gzipError);
+    }
+    
+    return results;
+  };
+
+  const runUserTextCompression = async () => {
+    const trimmedText = userText.trim();
+    if (!trimmedText) {
+      // Handle empty string case
+      const results: CompressionResult[] = [
+        {
+          algorithm: "Baseline",
+          bits: 0,
+          ratio: "N/A",
+          generalDescription: "Empty text requires 0 bits to store.",
+          specificDescription: "No characters to compress."
+        }
+      ];
+      setUserResults(results);
+      return;
+    }
+    
+    setIsCompressing(true);
+    
+    try {
+      // Get initial compression results (gzip, best code, baseline)
+      const initialResults = await compressWithBrowserAPIs(trimmedText);
+      
+      // Show first 3 results immediately
+      setUserResults(initialResults);
+      
+      // Add GPT-2 when ready (this takes longer)
+      const gpt2Result = await callGPT2Compression(trimmedText);
+      if (gpt2Result) {
+        const gpt2ResultFormatted: CompressionResult = {
+          algorithm: gpt2Result.algorithm,
+          bits: gpt2Result.bits,
+          ratio: gpt2Result.ratio,
+          generalDescription: "Use language model for next token prediction. We estimate the compression rate by computing the cross-entropy of the net on the text.",
+          specificDescription: "Actual GPT-2 compression measurement on your text",
+          compressionProgression: gpt2Result.compressionProgression
+        };
+        
+        setUserResults(prev => [...(prev || []), gpt2ResultFormatted]);
+      }
+    } catch (error) {
+      console.error('Compression failed:', error);
+    } finally {
+      setIsCompressing(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="compression-widget bg-white border border-gray-200 rounded-lg p-6 my-6">
@@ -473,9 +705,9 @@ export default function CompressionWidget() {
         {textSamples.map((sample, index) => (
           <button
             key={index}
-            onClick={() => setSelectedSample(sample)}
+            onClick={() => {setSelectedSample(sample); setShowUserText(false);}}
             className={`p-4 text-left border rounded-lg transition-all min-h-[60px] ${
-              selectedSample?.name === sample.name
+              selectedSample?.name === sample.name && !showUserText
                 ? "border-blue-500 bg-blue-50"
                 : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
             }`}
@@ -484,6 +716,21 @@ export default function CompressionWidget() {
             <div className="text-xs sm:text-sm text-gray-600 mt-1">{sample.description}</div>
           </button>
         ))}
+      </div>
+      
+      {/* Your Text button - centered and differently designed */}
+      <div className="flex justify-center mb-6">
+        <button
+          onClick={() => {setShowUserText(true); setSelectedSample(null);}}
+          className={`px-6 py-4 text-center border-2 border-dashed rounded-lg transition-all min-h-[60px] ${
+            showUserText
+              ? "border-blue-500 bg-blue-50 text-blue-700"
+              : "border-gray-300 hover:border-blue-300 hover:bg-blue-50 text-gray-700"
+          }`}
+        >
+          <div className="font-medium text-base">📝 Your Text</div>
+          <div className="text-sm text-gray-600 mt-1">Compress your own text using GPT-2</div>
+        </button>
       </div>
 
       {selectedSample && (
@@ -538,13 +785,13 @@ export default function CompressionWidget() {
                     <div className="flex justify-between text-xs text-gray-500 mt-1">
                       {useFixedScale ? (
                         <>
-                          <span>← Worse compression</span>
-                          <span>Better compression →</span>
+                          <span>Worse compression</span>
+                          <span>Better compression</span>
                         </>
                       ) : (
                         <>
-                          <span>Better compression →</span>
-                          <span>← Worse compression</span>
+                          <span>Better compression</span>
+                          <span>Worse compression</span>
                         </>
                       )}
                     </div>
@@ -630,6 +877,175 @@ export default function CompressionWidget() {
             <div className="text-sm text-gray-700">
               <strong>Hover over bars</strong> to see how each algorithm works. 
               Bar length shows compressed size on a logarithmic scale.
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* User text interface */}
+      {showUserText && (
+        <div className="mt-6">
+          <div className="bg-gray-50 p-4 rounded-lg mb-4">
+            <h4 className="font-medium mb-2">Your Text</h4>
+            <textarea
+              value={userText}
+              onChange={(e) => setUserText(e.target.value)}
+              placeholder="Paste your text here to see how well different algorithms can compress it..."
+              className="w-full h-32 p-3 border border-gray-200 rounded-md text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <div className="flex items-center justify-between mt-3">
+              <div className="text-xs text-gray-500">
+                Length: {userText.length} characters
+              </div>
+              <button
+                onClick={runUserTextCompression}
+                disabled={!userText.trim() || isCompressing}
+                className="px-4 py-2 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+              >
+                {isCompressing ? 'Compressing...' : 'Run Compression'}
+              </button>
+            </div>
+            {gptLoadingMessage && (
+              <div className="mt-2 text-sm text-blue-600 italic">
+                {gptLoadingMessage}
+              </div>
+            )}
+          </div>
+
+          {/* User compression results */}
+          {userResults && (
+            <div className="mt-6">
+              <h4 className="font-medium mb-2">Compression Results:</h4>
+              
+              {(() => {
+                const maxBits = Math.max(...userResults.map(r => r.bits));
+                const minBits = Math.min(...userResults.map(r => r.bits));
+                const globalMaxRatio = useFixedScale ? getGlobalMaxRatio() : undefined;
+                const markers = getCompressionRatioMarkers(minBits, maxBits, globalMaxRatio);
+
+                return (
+                  <>
+                    {/* Color gradient axis */}
+                    <div className="relative mb-6">
+                      <div 
+                        className="h-2 rounded-full relative"
+                        style={{
+                          background: useFixedScale 
+                            ? 'linear-gradient(to right, #ef4444 0%, #f97316 20%, #eab308 40%, #84cc16 60%, #22c55e 80%, #22c55e 100%)'
+                            : 'linear-gradient(to right, #22c55e 0%, #22c55e 25%, #84cc16 50%, #eab308 75%, #f97316 90%, #ef4444 100%)'
+                        }}
+                      >
+                        {/* Compression ratio markers */}
+                        {markers.map((marker, i) => (
+                          <div
+                            key={i}
+                            className="absolute top-0 h-2 w-px bg-gray-600"
+                            style={{ left: `${marker.position}%` }}
+                          >
+                            <span className="absolute -top-5 text-xs text-gray-600 transform -translate-x-1/2">
+                              {marker.ratio}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex justify-between text-xs text-gray-500 mt-1">
+                        {useFixedScale ? (
+                          <>
+                            <span>Worse compression</span>
+                            <span>Better compression</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Better compression</span>
+                            <span>Worse compression</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Compression bars */}
+                    <div className="space-y-3">
+                      {userResults.map((result, index) => {
+                        const ratio = parseFloat(result.ratio.replace('x', '')) || 1;
+                        const width = getBarWidth(result.bits, minBits, maxBits, ratio, globalMaxRatio);
+                        const color = getBarColor(width);
+                        
+                        return (
+                          <HoverCard.Root key={index} openDelay={100} closeDelay={300}>
+                            <HoverCard.Trigger asChild>
+                              <div className="relative cursor-pointer">
+                                <div 
+                                  className="relative h-12 rounded transition-all hover:opacity-90"
+                                  style={{ 
+                                    width: `${width}%`,
+                                    backgroundColor: color
+                                  }}
+                                >
+                                  <div className="absolute inset-0 flex items-center px-3">
+                                    <span className="text-white font-medium text-sm">
+                                      {result.algorithm}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="text-xs text-gray-500 mt-1">
+                                  {formatBits(result.bits)} ({result.ratio})
+                                </div>
+                              </div>
+                            </HoverCard.Trigger>
+                            <HoverCard.Portal>
+                              <HoverCard.Content 
+                                className="z-50 bg-white border border-gray-200 rounded-md shadow-lg p-4 max-w-xl"
+                                sideOffset={5}
+                              >
+                                <div className="text-sm">
+                                  <div className="font-medium mb-2 text-gray-900">{result.algorithm} Algorithm</div>
+                                  <div className="mb-2 text-gray-700">
+                                    <strong>How it works:</strong> {result.generalDescription}
+                                  </div>
+                                  {result.specificDescription && !["Best code", "ZIP (gzip)"].includes(result.algorithm) && (
+                                    <div className="text-gray-700 mb-3">
+                                      <strong>For this text:</strong> <RenderMarkdown text={result.specificDescription} />
+                                    </div>
+                                  )}
+                                  
+                                  {/* Add mini compression chart for GPT-2 with progression data */}
+                                  {result.algorithm.startsWith('LLM') && result.compressionProgression && result.compressionProgression.length > 0 && (
+                                    <div className="mt-3 pt-3 border-t border-gray-200">
+                                      <div className="text-xs font-medium text-gray-700 mb-2">
+                                        Compression progression through text:
+                                      </div>
+                                      <div className="w-full">
+                                        <MiniCompressionChart 
+                                          data={result.compressionProgression.filter(p => 
+                                            p.progressPercent !== undefined && 
+                                            p.bitsPerChar !== undefined && 
+                                            !isNaN(p.progressPercent) && 
+                                            !isNaN(p.bitsPerChar)
+                                          )}
+                                          modelName="GPT-2"
+                                          experimentName="Your Text"
+                                          height={160}
+                                        />
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </HoverCard.Content>
+                            </HoverCard.Portal>
+                          </HoverCard.Root>
+                        );
+                      })}
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+          )}
+
+          <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+            <div className="text-sm text-gray-700">
+              <strong>Enter your text above</strong> and click "Run Compression" to see how different algorithms perform. 
+              GPT-2 processing may take 1-2 minutes for longer texts.
             </div>
           </div>
         </div>
