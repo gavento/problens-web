@@ -53,7 +53,7 @@ const CrossEntropySimulator: React.FC = () => {
 
   // Calculate Y-axis domain
   const yAxisDomain = useMemo(() => {
-    return [0, 'dataMax'];
+    return [0, 'dataMax'] as [number, string];
   }, []);
 
   // Reset the simulation

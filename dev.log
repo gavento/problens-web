@@ -318,3 +318,22 @@ Each child in a list should have a unique "key" prop. See https://react.dev/link
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
  GET /00-introduction/ 200 in 825ms
+ GET /01-kl_intro/ 200 in 755ms
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET /00-introduction/ 200 in 404ms
+ GET /08-kolmogorov/ 200 in 186ms
+ GET /09-coding_theory/ 200 in 481ms
+ ✓ Compiled in 185ms
+ ✓ Compiled in 141ms
+ ✓ Compiled in 147ms
+ ✓ Compiled in 155ms
+ ✓ Compiled in 140ms
+ ✓ Compiled in 132ms
+ ✓ Compiled in 163ms
+ ✓ Compiled in 243ms
+ ✓ Compiled in 132ms

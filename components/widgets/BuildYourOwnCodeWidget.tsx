@@ -203,7 +203,7 @@ const BuildYourOwnCodeWidget: React.FC = () => {
 
   const getCodeForLetter = (letter: string): string | null => {
     const node = treeNodes.find(node => node.letter === letter);
-    return node ? node.code : null;
+    return node?.code || null;
   };
 
   const handleTestCode = async () => {

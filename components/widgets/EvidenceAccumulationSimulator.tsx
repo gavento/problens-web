@@ -58,7 +58,7 @@ const EvidenceAccumulationSimulator: React.FC<EvidenceAccumulationSimulatorProps
   
   // Calculate Y-axis domain based on expected evidence range
   const yAxisDomain = useMemo(() => {
-    return [-2, 'dataMax'];
+    return [-2, 'dataMax'] as [number, string];
   }, []);
 
   // Memoize entropy calculation
@@ -417,7 +417,6 @@ const EvidenceAccumulationSimulator: React.FC<EvidenceAccumulationSimulatorProps
                 />
                 <Tooltip 
                   formatter={(value: number) => `${value.toFixed(2)} bits`}
-                  filter={(entry, index) => !['y'].includes(entry.dataKey) && index < 4}
                 />
                 <Legend />
                 
