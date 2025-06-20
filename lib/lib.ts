@@ -11,6 +11,7 @@ import { Cite, References } from "@/components/content/Citations";
 import { Footnote } from "@/components/content/Footnotes";
 import { Footnotes } from "@/components/content/Footnotes";
 import EvidenceAccumulationSimulator from "@/components/widgets/EvidenceAccumulationSimulator";
+import CrossEntropySimulator from "@/components/widgets/CrossEntropySimulator";
 import MaxEntropyVisualization from "@/components/widgets/MaxEntropyVisualization";
 import FinanceImageSliderWidget from "@/components/widgets/FinanceSlider";
 import FinanceSliderSP from "@/components/widgets/FinanceSliderSP";
@@ -50,6 +51,7 @@ import Expand from "@/components/content/Expand";
 import ExpandableImage from "@/components/content/ExpandableImage";
 import MandelbrotExplorer from "@/components/widgets/MandelbrotExplorer";
 import BuildYourOwnCodeWidget from "@/components/widgets/BuildYourOwnCodeWidget";
+import CoinFlipRandomnessWidget from "@/components/widgets/CoinFlipRandomnessWidget";
 import KeyTakeaway from "@/components/content/KeyTakeaway";
 import RiddleSolution from "@/components/content/RiddleSolution";
 
@@ -159,6 +161,7 @@ export async function getMdxContent(path: string) {
       Footnotes: Footnotes,
       Footnote: Footnote,
       EvidenceAccumulationSimulator: EvidenceAccumulationSimulator,
+      CrossEntropySimulator: CrossEntropySimulator,
       MaxEntropyVisualization: MaxEntropyVisualization,
       FinanceImageSliderWidget: FinanceImageSliderWidget,
       FinanceSliderSP: FinanceSliderSP,
@@ -189,6 +192,7 @@ export async function getMdxContent(path: string) {
       HeartRateWidget: HeartRateWidget,
       MandelbrotExplorer: MandelbrotExplorer,
       BuildYourOwnCodeWidget: BuildYourOwnCodeWidget,
+      CoinFlipRandomnessWidget: CoinFlipRandomnessWidget,
       Math: NumberedMath,
       EqRef: EquationRef,
       Block: Block,
