@@ -11,7 +11,7 @@ interface CompressionResult {
   ratio: string;
   generalDescription: string;
   specificDescription: string;
-  compressionProgression?: Array<{percent: number; ratio: number}>;
+  compressionProgression?: Array<{progressPercent: number; bitsPerChar: number}>;
 }
 
 interface TextSample {
