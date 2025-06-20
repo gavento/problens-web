@@ -3,11 +3,11 @@
 import React, { useState, useMemo } from "react";
 import { InlineMath } from 'react-katex';
 
-type PriorType = 'uniform' | 'log-uniform' | 'power-law';
-
 const XKCDCountdownWidget: React.FC = () => {
-  const [priorType, setPriorType] = useState<PriorType>('uniform');
   const [lambda, setLambda] = useState(1.0);
+  const [logScale, setLogScale] = useState(true);
+  const [showPosterior, setShowPosterior] = useState(true);
+  const [zoomLevel, setZoomLevel] = useState(1);
 
   const targetNumber = 2382;
   const evidenceDigits = "00002382";
@@ -20,8 +20,8 @@ const XKCDCountdownWidget: React.FC = () => {
   const totalSpace = Math.pow(10, totalDigits);
   const evidenceSpace = Math.pow(10, totalDigits - evidenceDigits.length);
   
-  // Calculate posterior probability and bin probabilities
-  const { posteriorProbability, binProbabilities } = useMemo(() => {
+  // Precompute all calculations for smoother performance
+  const { posteriorProbability, binProbabilities, priorProbabilities, maxProb, maxPriorProb } = useMemo(() => {
     const baseNumber = parseInt(evidenceDigits);
     
     // Create log-scale bins from 10^0 to 10^14
@@ -68,7 +68,8 @@ const XKCDCountdownWidget: React.FC = () => {
         binProbabilities: bins.map(bin => ({
           ...bin,
           probability: 0
-        }))
+        })),
+        maxProb: 0
       };
     }
     
@@ -77,33 +78,58 @@ const XKCDCountdownWidget: React.FC = () => {
       probability: bin.probability / normalizingSum
     }));
     
+    // Calculate prior probabilities analytically using continuous approximation
+    const priorBins = [];
+    for (let i = 0; i < 14; i++) {
+      priorBins.push({
+        min: Math.pow(10, i),
+        max: Math.pow(10, i + 0.5),
+        probability: 0
+      });
+      priorBins.push({
+        min: Math.pow(10, i + 0.5),
+        max: Math.pow(10, i + 1),
+        probability: 0
+      });
+    }
+    
+    // Analytical computation of prior probabilities
+    const calculateBinProbability = (a: number, b: number, lambda: number): number => {
+      if (lambda === 0) {
+        // Uniform distribution: P(x ∈ [a,b]) = (b-a) / (10^14 - 1)
+        return (b - a) / (Math.pow(10, 14) - 1);
+      } else if (Math.abs(lambda - 1) < 1e-10) {
+        // Log-uniform distribution: P(x ∈ [a,b]) = ln(b/a) / ln(10^14)
+        if (a <= 0) a = 1; // Handle edge case
+        return Math.log(b / a) / Math.log(Math.pow(10, 14));
+      } else {
+        // Power law x^(-λ): P(x ∈ [a,b]) = [b^(1-λ) - a^(1-λ)] / [10^14^(1-λ) - 1^(1-λ)]
+        if (a <= 0) a = 1; // Handle edge case
+        const numerator = Math.pow(b, 1 - lambda) - Math.pow(a, 1 - lambda);
+        const denominator = Math.pow(Math.pow(10, 14), 1 - lambda) - 1;
+        return numerator / denominator;
+      }
+    };
+    
+    const normalizedPriorBins = priorBins.map(bin => ({
+      ...bin,
+      probability: calculateBinProbability(bin.min, bin.max, lambda)
+    }));
+    
+    const maxProb = Math.max(...normalizedBins.map(b => b.probability));
+    const maxPriorProb = Math.max(...normalizedPriorBins.map(b => b.probability));
+    
     return {
       posteriorProbability: targetPosterior / normalizingSum,
-      binProbabilities: normalizedBins
+      binProbabilities: normalizedBins,
+      priorProbabilities: normalizedPriorBins,
+      maxProb,
+      maxPriorProb
     };
   }, [lambda, targetNumber, evidenceSpace, evidenceDigits]);
 
-  const handlePriorChange = (newPrior: PriorType) => {
-    setPriorType(newPrior);
-    // Auto-adjust lambda for special cases
-    if (newPrior === 'uniform') {
-      setLambda(0);
-    } else if (newPrior === 'log-uniform') {
-      setLambda(1);
-    }
-  };
-
-  const handleLambdaChange = (newLambda: number) => {
-    setLambda(newLambda);
-    // Auto-update prior type based on lambda value
-    if (newLambda === 0) {
-      setPriorType('uniform');
-    } else if (newLambda === 1) {
-      setPriorType('log-uniform');
-    } else {
-      setPriorType('power-law');
-    }
-  };
+  const currentData = showPosterior ? binProbabilities : priorProbabilities;
+  const currentMaxProb = showPosterior ? maxProb : maxPriorProb;
 
   const formatProbability = (prob: number): string => {
     if (prob < 1e-10) {
@@ -117,15 +143,6 @@ const XKCDCountdownWidget: React.FC = () => {
     }
   };
 
-  const getPriorDescription = (): string => {
-    if (lambda === 0) {
-      return "Uniform prior: All numbers are equally likely";
-    } else if (lambda === 1) {
-      return "Log-uniform prior: P(X) ∝ 1/X (Benford's law-like)";
-    } else {
-      return `Power-law prior: P(X) ∝ X^(-${lambda.toFixed(1)})`;
-    }
-  };
 
   return (
     <div className="p-4 sm:p-6 bg-gray-50 rounded-lg space-y-4 sm:space-y-6 max-w-4xl mx-auto">
@@ -134,51 +151,18 @@ const XKCDCountdownWidget: React.FC = () => {
       </h3>
       
 
-      {/* Prior Selection */}
+      {/* Evidence */}
       <div className="bg-white rounded-lg p-4">
-        <h4 className="text-lg font-semibold text-gray-800 mb-3">Select Prior Distribution</h4>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <button
-            onClick={() => handlePriorChange('uniform')}
-            className={`p-4 rounded-lg border text-left transition-colors min-h-[60px] ${
-              priorType === 'uniform'
-                ? 'bg-blue-100 border-blue-300'
-                : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
-            }`}
-          >
-            <div className="font-semibold">Uniform</div>
-            <div className="text-sm text-gray-600"><InlineMath math="P(X) = \text{const}" /></div>
-          </button>
-          
-          <button
-            onClick={() => handlePriorChange('log-uniform')}
-            className={`p-4 rounded-lg border text-left transition-colors min-h-[60px] ${
-              priorType === 'log-uniform'
-                ? 'bg-blue-100 border-blue-300'
-                : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
-            }`}
-          >
-            <div className="font-semibold">Log-uniform</div>
-            <div className="text-sm text-gray-600"><InlineMath math="P(X) \propto 1/X" /></div>
-          </button>
-          
-          <button
-            onClick={() => handlePriorChange('power-law')}
-            className={`p-4 rounded-lg border text-left transition-colors min-h-[60px] ${
-              priorType === 'power-law'
-                ? 'bg-blue-100 border-blue-300'
-                : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
-            }`}
-          >
-            <div className="font-semibold">Power-law</div>
-            <div className="text-sm text-gray-600"><InlineMath math="P(X) \propto X^{-\lambda}" /></div>
-          </button>
+        <div className="text-center text-gray-700">
+          <strong>Evidence:</strong> "last eight digits are 00002382"
         </div>
       </div>
 
       {/* Lambda Slider */}
       <div className="bg-white rounded-lg p-4">
-        <h4 className="text-lg font-semibold text-gray-800 mb-3">Lambda Parameter (λ)</h4>
+        <h4 className="text-lg font-semibold text-gray-800 mb-3">
+          Select λ for the power-law prior <InlineMath math="P(x) \propto x^{-\lambda}" />
+        </h4>
         <div className="space-y-4">
           <div className="flex items-center gap-4">
             <span className="text-sm font-medium text-gray-700 w-16">λ = {lambda.toFixed(1)}</span>
@@ -188,7 +172,7 @@ const XKCDCountdownWidget: React.FC = () => {
               max="2"
               step="0.1"
               value={lambda}
-              onChange={(e) => handleLambdaChange(parseFloat(e.target.value))}
+              onChange={(e) => setLambda(parseFloat(e.target.value))}
               className="flex-1 h-4"
               style={{
                 background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${(lambda / 2) * 100}%, #e5e7eb ${(lambda / 2) * 100}%, #e5e7eb 100%)`
@@ -218,11 +202,45 @@ const XKCDCountdownWidget: React.FC = () => {
         </div>
       </div>
 
-      {/* Posterior Distribution Chart */}
+      {/* Distribution Chart */}
       <div className="bg-white rounded-lg p-4">
-        <h4 className="text-lg font-semibold text-gray-800 mb-3">Posterior Distribution by Scale</h4>
+        <div className="flex justify-between items-center mb-3">
+          <h4 className="text-lg font-semibold text-gray-800">
+            Full {showPosterior ? 'posterior' : 'prior'} distribution
+          </h4>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowPosterior(!showPosterior)}
+              className="px-3 py-1 text-sm rounded bg-green-500 text-white hover:bg-green-600"
+            >
+              Show {showPosterior ? 'prior' : 'posterior'}
+            </button>
+            <button
+              onClick={() => setZoomLevel(zoomLevel === 1 ? 2 : 1)}
+              className="px-3 py-1 text-sm rounded bg-purple-500 text-white hover:bg-purple-600"
+            >
+              Zoom {zoomLevel === 1 ? 'in' : 'out'}
+            </button>
+            <button
+              onClick={() => setLogScale(false)}
+              className={`px-3 py-1 text-sm rounded ${
+                !logScale ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              Normal
+            </button>
+            <button
+              onClick={() => setLogScale(true)}
+              className={`px-3 py-1 text-sm rounded ${
+                logScale ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              Log
+            </button>
+          </div>
+        </div>
         <div className="w-full">
-          <svg width="100%" height="300" viewBox="0 0 640 300" className="border border-gray-200 rounded">
+          <svg width="100%" height="300" viewBox={`0 0 ${640 / zoomLevel} 300`} className="border border-gray-200 rounded">
             <defs>
               <linearGradient id="barGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.8" />
@@ -236,10 +254,10 @@ const XKCDCountdownWidget: React.FC = () => {
               <line x1="0" y1="0" x2="0" y2="240" stroke="#6b7280" strokeWidth="1" />
               
               {/* X-axis */}
-              <line x1="0" y1="240" x2="560" y2="240" stroke="#6b7280" strokeWidth="1" />
+              <line x1="0" y1="240" x2={560 / zoomLevel} y2="240" stroke="#6b7280" strokeWidth="1" />
               
               {/* X-axis labels */}
-              {Array.from({ length: 15 }, (_, i) => (
+              {Array.from({ length: Math.ceil(15 / zoomLevel) }, (_, i) => (
                 <g key={i}>
                   <line 
                     x1={i * 40} 
@@ -256,7 +274,8 @@ const XKCDCountdownWidget: React.FC = () => {
                     fontSize="10" 
                     fill="#6b7280"
                   >
-                    10^{i}
+                    <tspan>10</tspan>
+                    <tspan fontSize="8" dy="-3">{i}</tspan>
                   </text>
                 </g>
               ))}
@@ -285,35 +304,43 @@ const XKCDCountdownWidget: React.FC = () => {
               ))}
               
               {/* Bars */}
-              {binProbabilities.map((bin, i) => {
-                const maxProb = Math.max(...binProbabilities.map(b => b.probability));
-                const barHeight = maxProb > 0 ? (bin.probability / maxProb) * 220 : 0;
+              {currentData.slice(0, Math.ceil(currentData.length / zoomLevel)).map((bin, i) => {
+                const actualHeight = logScale ? 
+                  (bin.probability > 0 ? Math.log10(bin.probability / currentMaxProb) + 4 : 0) * 220 / 4 :
+                  (bin.probability / currentMaxProb) * 220;
+                const barHeight = Math.max(0, actualHeight);
                 const xPos = i * 20;
                 
                 return (
-                  <rect
-                    key={i}
-                    x={xPos}
-                    y={240 - barHeight}
-                    width="18"
-                    height={barHeight}
-                    fill="url(#barGradient)"
-                    stroke="#1e40af"
-                    strokeWidth="0.5"
-                    className="hover:opacity-80"
-                  >
-                    <title>
-                      {`Range: ${bin.min.toExponential(1)} - ${bin.max.toExponential(1)}\\nProbability: ${(bin.probability * 100).toFixed(3)}%`}
-                    </title>
-                  </rect>
+                  <g key={i}>
+                    <rect
+                      x={xPos}
+                      y={240 - barHeight}
+                      width="18"
+                      height={barHeight}
+                      fill="url(#barGradient)"
+                      stroke="#1e40af"
+                      strokeWidth="0.5"
+                      className="hover:opacity-80 cursor-pointer"
+                    />
+                    {/* Tooltip on hover */}
+                    <rect
+                      x={xPos}
+                      y={240 - barHeight}
+                      width="18"
+                      height={barHeight}
+                      fill="transparent"
+                      className="hover:stroke-red-500 hover:stroke-2"
+                    >
+                      <title>
+                        {`Range: ${bin.min.toExponential(1)} - ${bin.max.toExponential(1)}\\nProbability: ${(bin.probability * 100).toFixed(4)}%`}
+                      </title>
+                    </rect>
+                  </g>
                 );
               })}
             </g>
             
-            {/* Chart title */}
-            <text x="50%" y="15" textAnchor="middle" fontSize="12" fill="#374151" fontWeight="bold">
-              Probability Mass by Order of Magnitude
-            </text>
             
             {/* Y-axis label */}
             <text x="20" y="50%" textAnchor="middle" fontSize="12" fill="#6b7280" transform="rotate(-90, 20, 150)">
@@ -322,7 +349,6 @@ const XKCDCountdownWidget: React.FC = () => {
           </svg>
         </div>
         <p className="text-sm text-gray-600 mt-2">
-          Each bar shows the total probability mass for numbers in that scale range. 
           Hover over bars to see exact values.
         </p>
       </div>
