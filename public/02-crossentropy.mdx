@@ -14,7 +14,7 @@ Let's go through some key properties of KL divergence you should know about. Rem
 
 Heads up: KL divergence can be infinite! This happens when $q_i = 0$ but $p_i \neq 0$ for some $i$. We also use the convention $0 \cdot \log 0/0 = 0$ so that KL always gives us either a nice number or $+\infty$.
 
-### Asymmetry
+### Asymmetry<a id = "asymmetry"></a>
 
 The KL formula isn't symmetrical—in general, $D(p,q) \neq D(q,p)$. Some people see this as a bug, especially when comparing KL to nice symmetric distance functions like $\ell_1$ or $\ell_2$<Footnote> <Math math='d_1(p,q) = \sum_{i = 1}^n |p_i - q_i|'/>, <Math math='d_2(p,q) = \sqrt{\sum_{i = 1}^n (p_i - q_i)^2}'/></Footnote>. But I want to stress that the asymmetry is a feature, not a bug! KL measures how well a distribution $p$ is fitted by a model $q$. That's an asymmetrical thing by nature, so we need an asymmetrical formula—nothing to be embarrassed about.
 
@@ -31,13 +31,7 @@ Now flip it around: truth is 100%/0%, model is 50%/50%. Then
 Every flip gives you heads, so you gain one bit of evidence that the coin is biased. As you keep flipping, your belief in fairness drops exponentially fast, but it never hits zero. You've gotta account for the (exponentially unlikely) possibility that a fair coin just coincidentally came heads in all your past flips.
 </Expand>
 
-Here's a riddle for you! The following widget works with two texts: Declaration of Independence and a collection of several anthems. For both texts, we compute the distribution of the frequencies of letters 'a' to 'z' (case insensitive). All probabilities in both distributions are strictly larger than zero, so the two KL divergences between the two texts are finite. The riddle is: which one is larger? 
-
-two distributions of letter frequencies $p_1,p_2$ for two texts: English prose and a collection of anthems of various countries. Both distribution   
-
-Try it yourself! Calculate the KL divergence between letter frequencies of different texts to see the asymmetry in action:
-
-
+Here's a riddle for you! The following widget contains two distributions - one peaky and one broad. Which KL is larger? <Footnote>KL divergence also works for continuous distributions; just replace sum by integral. </Footnote>
 
 <KLAsymmetryVisualizerWidget />
 
@@ -221,7 +215,7 @@ Before clicking on the button, try to guess which of the two texts has larger en
 
 First, we can see that the mixed file has larger entropy. This makes sense! Every language uses different letters with different frequencies. For example, 'z' is quite uncommon in English, but pretty common in German. If we pool different languages together, the distribution of frequencies is becoming 'smoother', more uniform. Hence, larger entropy. Admittedly, it's only slightly larger, since increasing the probability of 'z' from 0.02 to 0.0003 is not really increasing the entropy that much.
 
-For similar reasons, KL between $p_1$ and $p_2$ is smaller than vice versa. Remember, KL is all about probability _ratios_. If $p('e') = 0.12$ and $q('e') = 0.11$, $q$ is a good model of $p$. But if $p('z') = 0.02$ and $q('z')=0.0003$, $q$ is a crappy model of $p$. 
+For similar reasons, KL between $p_1$ and $p_2$ is smaller than vice versa. Remember, KL is all about probability _ratios_. If $p('e') = 0.12$ and $q('e') = 0.11$, $q$ is a good model of $p$. But if $p('z') = 0.02$ and $q('z')=0.0003$, $q$ is a crappy model of $p$. We have seen this above in the [asymmetry section](02-crossentropy#asymmetry). 
 
 </Expand>
 

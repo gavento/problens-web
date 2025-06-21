@@ -54,3 +54,13 @@
  ✓ Compiled in 129ms
  ✓ Compiled in 99ms
  ✓ Compiled in 94ms
+ GET /02-crossentropy/ 200 in 2367ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 30ms
+ ⨯ [Error: Page "/[...path]/page" is missing param "/02-crossentropy/02-crossentropy/password.png" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/02-crossentropy/02-crossentropy/password.png'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 1192ms
+ GET /02-crossentropy/02-crossentropy/password.png 500 in 1427ms
+ ✓ Compiled in 106ms
+ ✓ Compiled in 86ms

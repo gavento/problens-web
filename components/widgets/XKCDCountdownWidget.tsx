@@ -153,7 +153,7 @@ const XKCDCountdownWidget: React.FC = () => {
       {/* Evidence */}
       <div className="bg-white rounded-lg p-4">
         <div className="text-center text-gray-700">
-          <strong>Evidence:</strong> "last eight digits are 00002382"
+          <strong>Evidence:</strong> &quot;last eight digits are 00002382&quot;
         </div>
       </div>
 

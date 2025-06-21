@@ -192,9 +192,9 @@ export default function KLAsymmetryVisualizerWidget() {
         <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
           <div className="text-sm text-blue-800">
             <strong>Why?</strong> Two vertical lines show typical samples from <KatexMath math="p_{\text{peaky}}" /> and <KatexMath math="p_{\text{broad}}" />. 
-            On the left, <KatexMath math="p_{\text{broad}}" /> doesn't know where the peak of <KatexMath math="p_{\text{peaky}}" /> is, 
+            On the left, <KatexMath math="p_{\text{broad}}" /> doesn&apos;t know where the peak of <KatexMath math="p_{\text{peaky}}" /> is, 
             but it is spread out and covers the peak with reasonably-sized probability mass. <br/><br/>
-            On the right, <KatexMath math="p_{\text{peaky}}" /> is concentrated at one place, and it doesn't try to cover elsewhere. 
+            On the right, <KatexMath math="p_{\text{peaky}}" /> is concentrated at one place, and it doesn&apos;t try to cover elsewhere. 
             Thus, its surprise on a typical sample from <KatexMath math="p_{\text{broad}}" /> is really big.
           </div>
         </div>
