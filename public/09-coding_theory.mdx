@@ -5,7 +5,7 @@ KL divergence and entropy are deeply connected to coding theory. It would be dis
 The goal of the chapter is to explain what's happening in the riddle about [Wikipedia compression](00-introduction#wikipedia), we discuss it at the end. 
 
 
-## Code intro
+## 📝 Code intro
 Say you've got a long DNA string built from letters \{A,C,G,T\}. You want to store it using as little disk space as possible.  
 
 Here's the most basic plan: We assign a binary code for each letter and encode the string using that code. 
@@ -78,7 +78,7 @@ Plugging in <Math math="q_i = 2^{-\ell_i}" />, we get
 That is, the average code-name length is at least $H(p)$. This works for any code, hence the second part of [Shannon's source coding theorem](https://en.wikipedia.org/wiki/Shannon%27s_source_coding_theorem). 
 </Expand>
 
-## Entropy intuition
+## 🧠 Entropy intuition
 
 Using the fact that good codes can achieve a rate close to entropy can give us a lot of intuition! Remember [how we defined](/02-crossentropy) entropy as the "average surprisal" of a distribution? We could also ask: if we keep sampling from the distribution, how many bits per result do we need to store them? 
 
@@ -93,10 +93,10 @@ With coding theory intuitions, cross-entropy also becomes also very natural: it'
 Finally, relative entropy is how much worse your mismatched code is compared to the optimal one. 
 
 
-## Better ways of storing data
+## 📦 Better ways of storing data
 
 
-## Wikipedia riddle
+## 🤔 Wikipedia riddle
 We can now revisit the riddle about how much Wikipedia (and other texts) can be compressed. 
 
 

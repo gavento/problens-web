@@ -12,7 +12,7 @@ Let's dive into the details!
 Maximum likelihood and maximum entropy principles are about minimizing KL divergence. 
 </KeyTakeaway>
 
-## Simplifying models by minimizing KL <a id="mle"></a>
+## 🎯 Simplifying models by minimizing KL <a id="mle"></a>
 
 Imagine we have some data—for instance, the 16 foot length measurements $X_1, \dots, X_{16}$ from [our statistics riddle](00-introduction#statistics). Assuming the order of the data doesn't matter, it's convenient to represent these data as an empirical distribution $p$, where each outcome is assigned a probability of $1/16$. This is what we call an _empirical distribution_. In some sense, this empirical distribution is the "best fit" for our data. However, it's a terrible predictive model—it assigns zero probability to outcomes not present in the data! If we were to measure the 17th person's foot, the model is "infinitely surprised" by this. We need something better.
 
@@ -73,7 +73,7 @@ Similarly,
 Setting <Math displayMode={false} math="\frac{\partial \mathcal{L}}{\partial \sigma} = 0"/> then leads to <Math displayMode={false} math="\hat\sigma^2 = \frac{1}{N} \sum_{i = 1}^N (X_i - \mu)^2. "/>
 </Expand>
 
-## Conditioning on steroids <a id="finding-better-model"></a>
+## 💪 Conditioning on steroids <a id="finding-better-model"></a>
 
 So, minimizing <Math math="\min_{q \in Q} D(p,q)" /> is quite useful. But what about the other direction, <Math math="\min_{p \in P} D(p,q)" />? This is also extremely valuable, so let's explore an example of what it stands for.
 
@@ -218,6 +218,6 @@ Whenever people model stuff by probability distributions, they assume that two d
 */}
 </Expand>
 
-## 🚀 Next Steps <a id="next-steps"></a>
+## 🚀 What's next? <a id="next-steps"></a>
 
 In the [next chapter](04-max_entropy), we'll explore more concrete modeling applications of the max entropy principle. We'll see how they apply to various fields like machine learning, statistical modeling, and elsewhere. 

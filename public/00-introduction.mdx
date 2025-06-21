@@ -124,7 +124,10 @@ So... are the odds in our favor?
 <MultipleChoiceQuestion
   options={["Yes", "No", "depends"]}
   correctIndices={[1, 2]}
-  explanation={<>We'll use KL divergence to derive an important tool called the <a href="04-max_entropy">maximum entropy principle</a>. This will allow us to understand various distributions and construct new ones from scratch. We will use the principle to explain our gut feeling that we are not necessarily fine here.<br/><br/>Try the interactive calculator below to see how different priors affect the probability that all digits behind the picture are zeros:<br/><br/><XKCDCountdownWidget /></>}
+  explanation={<>
+  The guy in the hat seems to be confident that at least one digit behind the picture is not zero. If those digits are uniformly random and independent, it's a safe assumption. However, we will develop the maximum entropy principle that will explain our gut feeling: Given all the zeros we can see, it's actually very likely that all other hidden digits are zeros too. 
+
+  More about that later, we will test it out with the calculator below. <br/><br/><XKCDCountdownWidget /></>}
 /> 
 </Expand>
 
@@ -140,6 +143,30 @@ Where the hell does this come from?? [We'll see](05-machine_learning) how KL div
 ![Examples](05-machine_learning/table.png)
 
 </Expand>
+
+
+<Expand headline="🎵 Anthem battle"> <a id = "anthems"></a>
+
+This question is for those of you who already who already encountered KL divergence and entropy. 
+
+I collected anthems of USA, UK, and Australia, and put them into one file. The other text file are anthems of a bunch of random-ish countries. For both text files, I compute the frequencies of 26 letters 'a' to 'z'. So there are two distributions $p_1$ (English-speaking) and $p_2$ (others). The question is: which one has larger entropy? And which of the two KL divergences between them is larger? 
+
+<MultipleChoiceQuestion
+  options={[ 
+      <><Math math="H(p_1) < H(p_2), \,\,\, D(p_1, p_2) < D(p_2, p_1)" /></>, 
+      <><Math math="H(p_1) < H(p_2), \,\,\, D(p_1, p_2) > D(p_2, p_1)" /></>,
+      <><Math math="H(p_1) > H(p_2), \,\,\, D(p_1, p_2) < D(p_2, p_1)" /></>,
+      <><Math math="H(p_1) > H(p_2), \,\,\, D(p_1, p_2) > D(p_2, p_1)" /></>
+     ]}
+  correctIndices={[0]}
+  explanation={<>
+  Try it out in the widget, we'll discuss why [later](02-crossentropy#anthems). 
+<KLCalculatorWidget />
+
+</>}
+/> 
+</Expand>
+
 
 
 <Expand advanced={true} headline="🗳️ Why polling sucks"><a id="polling"></a>
@@ -187,7 +214,7 @@ Marcus Hutter, an AI researcher, started <a href="http://prize.hutter1.net/">thi
 </Expand>
 
 
-## 🚀 Next Steps <a id="next-steps"></a>
+## 🚀 What's next? <a id="next-steps"></a>
 
 
 {/*

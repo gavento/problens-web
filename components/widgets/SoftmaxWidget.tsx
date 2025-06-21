@@ -5,7 +5,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { InlineMath, BlockMath } from "react-katex";
 
 type Props = {
-  values: number[];
+  values?: number[];
   title?: string;
   minLambda?: number;
   maxLambda?: number;
@@ -13,7 +13,7 @@ type Props = {
 };
 
 const SoftmaxWidget: React.FC<Props> = ({
-  values,
+  values = [1, 3, 2, 5, 4],
   title = "Softmax Distribution",
   minLambda = -3,
   maxLambda = 3,
@@ -54,10 +54,6 @@ const SoftmaxWidget: React.FC<Props> = ({
     <div className="p-4 sm:p-6 bg-gray-50 rounded-lg space-y-4 max-w-3xl mx-auto">
       {title && <h3 className="text-lg sm:text-xl font-semibold text-center text-gray-800">{title}</h3>}
 
-      {/* Values display */}
-      <div className="text-center text-sm text-gray-600">
-        for <strong>a</strong> = [{values.join(", ")}]
-      </div>
 
       {/* SVG Chart */}
       <div className="bg-white p-4 rounded-lg border">
@@ -190,26 +186,6 @@ const SoftmaxWidget: React.FC<Props> = ({
         <div className="text-xs text-center text-gray-600">← argmin | uniform distribution | argmax →</div>
       </div>
 
-      {/* Stats */}
-      <div className="bg-white rounded-lg p-4">
-        <h4 className="text-base font-semibold text-gray-800 mb-3">Statistics</h4>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-          <div className="bg-gray-50 p-3 rounded text-center">
-            <div className="font-semibold text-gray-700">Lambda (λ)</div>
-            <div className="text-lg text-purple-600">{lambda.toFixed(2)}</div>
-          </div>
-          <div className="bg-gray-50 p-3 rounded text-center">
-            <div className="font-semibold text-gray-700">Max Probability</div>
-            <div className="text-lg text-blue-600">{Math.max(...probabilities).toFixed(3)}</div>
-          </div>
-          <div className="bg-gray-50 p-3 rounded text-center">
-            <div className="font-semibold text-gray-700">Entropy</div>
-            <div className="text-lg text-green-600">
-              {(-probabilities.reduce((sum, p) => sum + (p > 0 ? p * Math.log2(p) : 0), 0)).toFixed(3)}
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

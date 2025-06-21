@@ -8,7 +8,7 @@ Let's now dive a bit deeper into maximum entropy. Specifically, we'll try to und
 Max-entropy principle constructs the most generic distributions satifying some constraints. 
 </KeyTakeaway>
 
-## General form of maximum entropy distributions
+## 🗺 General form of maximum entropy distributions
 
 So, how do max-entropy distributions look like? 
 
@@ -118,7 +118,7 @@ Now, this formula isn't the complete solution to our problem because it involves
 
 ---
 
-## Catalogue of examples
+## 📚 Catalogue of examples
 
 Let's go through the list of maximum-entropy distributions you might have encountered. In fact, most distributions used in practice are maximum entropy distributions for some specific choice of functions $f_1, \dots f_m$.
 
@@ -208,6 +208,7 @@ A nice bonus is that if you train the network using softmax with $\lambda = 1$, 
 Notice how softmax allowed us to elegantly solve a problem that's so fuzzy that it's otherwise pretty hard to approach -- given a probability distribution $p$, how do we find distributions $p'$ that preserve as much as possible from $p$, yet they are more or less concentrated on the most probable values. */}
 </Expand>
 
+{/*
 <Expand headline = "Modeling Pasta Consumption">
 
 ![Types of pasta -- from https://suttachaibar.com/15-types-of-pasta-shapes-to-know-and-love/](04-max_entropy/pasta.webp)
@@ -219,6 +220,7 @@ How should we adapt this model to allow for non-trivial probability distribution
 However, it's worth noting that one popular interpretation of softmax in behavioral economics is more sophisticated than "softmax seems natural, so let's go with it, whatever." The approach of the **theory of rational inattention** suggests that even if all agents are perfectly rational and have the same utilities, they still need to spend a non-trivial amount of time comparing different options and estimating their utility (at this point, stop thinking about pasta and instead consider buying a flat or a car). If you think about customers as solving an optimization problem that accounts for this, you end up with a type of optimization problem similar to [our derivation of max-entropy distributions](#intuition); under reasonable<Footnote>I.e., I forgot them.</Footnote> circumstances, you can derive the softmax distribution as the distribution of observed purchases.
 
 </Expand>
+*/}
 
 ### Fixing $E[X]$ (Exponential/Geometric Distribution) <a id = "exponential"></a>
 
@@ -251,7 +253,7 @@ I think this provides a good (partial) explanation for "why is there $x^2$ in Ga
 
 Often, I like to think about the Gaussian as the simplest possible distribution on real numbers. Neither the uniform distribution nor the exponential distribution can be normalized over the entire real line, so we salvage this by fixing the first two moments.
 
-<Expand headline = "Maximum Entropy & Central Limit Theorem">
+<Expand advanced={true} headline = "Maximum Entropy & Central Limit Theorem">
 
 The normal distribution has two important properties. First, it's the maximum entropy distribution for a given mean and variance. Second, it's the distribution from the [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem). Roughly speaking: If you keep adding some random variables $X_1, \dots, X_N$, each with mean $\mu$ and variance $\sigma^2$, then the value of <Math math = "\frac{X_1 + \dots + X_N - N\mu}{\sqrt{N\sigma^2}}"/> will be distributed like $N(0,1)$.
 
@@ -270,7 +272,7 @@ The next better model takes into account that the typical deviation of the distr
 
 ### Other Examples
 
-Here are a few more examples you might have encountered. Feel free to skip whatever doesn't ring a bell.
+Here are a few more examples you might have encountered. 
 
 <Expand headline ="Assuming Independence">
 An important property of entropy is that if you have a joint distribution $(p,q)$, then $H((p,q)) \le H(p) + H(q)$, with equality if and only if $p$ and $q$ are independent. <Footnote>This is called [subadditivity of entropy](https://math.stackexchange.com/questions/3326158/proof-of-sub-additivity-for-shannon-entropy). Why is it subadditive? If you still remember [our discussion of mutual information](01-kl_intro#information-theory), mutual information is defined as $D((p,q), p \otimes q)$. You can rewrite this expression as $H(p) + H(q) - H((p,q))$ (try it!), so subadditivity of entropy is equivalent to mutual information being non-negative.</Footnote>
@@ -344,7 +346,7 @@ In some abstract theories (like [Solomonoff induction](https://en.wikipedia.org/
 
 ---
 
-## Applications
+## 🚀 Applications
 
 Let's look at some applications of this to our riddles.
 
@@ -356,11 +358,11 @@ After four chapters developing the theory of KL divergence, we're finally ready 
 
 It's all about how to choose a prior for the number on the wall. The first natural choice is simply the uniform one; that is, before looking at the wall, we think the number is a uniform random number with 14 decimal digits. After observing the right 8 digits, the first 6 are still uniformly random <Footnote>We actually also see a small piece of the leftmost digit in the comic, but let's forget this for simplicity.</Footnote>. So, for that prior, the probability that all 6 digits are zero is $1/10^6$—we are probably fine.
 
-Uniform prior over $[0, 10^{14}]$ kind of sucks, though. Why should the prior probability stay constant and then suddenly drop to zero? Isn't the fact that the countdown is in seconds an evidence that the number may be small? Also, if you look at various catastrophes, the average time until the next one is all over the place -- $\sim 10^{15}$ seconds for $10km$-sized asteroids, $\sim 10^{10}$ for 9+ Richter-scale supervolcano eruption, and $\sim 10^{8}$ for AI doom. <Footnote>See [Precipice](https://books.ms/main/0F4823107289367C7A16C0AB1CF0F71D) by Toby Ord for estimations of these numbers. </Footnote>
+Uniform prior over $[0, 10^{14}]$ kind of sucks, though. Why should the prior probability stay constant and then suddenly drop to zero? Isn't the fact that the countdown is in seconds an evidence that the number may be small? Also, if you look at various catastrophes, the average time until the next one is all over the place -- $\sim 10^{15}$ seconds for $10km$-sized asteroids, $\sim 10^{10}$ for 9+ Richter-scale supervolcano eruption, and up to $\sim 10^{8}$ for AI doom. <Footnote>See [Precipice](https://books.ms/main/0F4823107289367C7A16C0AB1CF0F71D) by Toby Ord for estimations of these numbers. </Footnote>
 
 Given all this, I'd argue for choosing the distribution $p(x) \propto 1/x$ which corresponds to a uniform distribution over the _scales_. <Footnote>By this, I mean that this distribution satisfies <Math math = "\int_{10^1}^{10^2} \frac{1}{x} dx = \int_{10^2}^{10^3} \frac{1}{x} dx = \int_{10^3}^{10^4} \frac{1}{x} dx = \dots " />.  </Footnote> This is also called the [log-uniform distribution](https://en.wikipedia.org/wiki/Reciprocal_distribution). This is a pretty useful distribution with some very nice usecases like [the Benford's law](https://en.wikipedia.org/wiki/Benford%27s_law). 
 
-Both uniform and log-uniform distributions are special cases of power-law (<Math math = "\textrm{uniform = }e^{0\cdot \log X}, \textrm{log-uniform = }e^{1\cdot \log_{10}X}" />). The usual problem with $p(x) \propto 1/x$ is that we can't normalize this distribution if the domain is all real numbers, similarly to why we can't normalize the uniform distribution there. In our case, we can restrict the domain to integers between $0$ and $10^{14}$, so it's fine.
+Both uniform and log-uniform distributions are special cases of power-law (<Math math = "\textrm{uniform = }e^{0\cdot \log X}, \textrm{log-uniform = }e^{1\cdot \ln X}" />). The usual problem with $p(x) \propto 1/x$ is that we can't normalize this distribution if the domain is all real numbers, similarly to why we can't normalize the uniform distribution there. In our case, we can restrict the domain to integers between $0$ and $10^{14}$, so it's fine.
 
 See the posterior probability for $X = 2382$ in the widget below. 
 
@@ -410,7 +412,7 @@ Put differently, while a Gaussian fit implies "I'm pretty sure about today's vol
 
 Our Laplace story suggests that the data should look more like Gaussian at the beginning and then look more and more like Laplace, which really seems to be happening. 
 
-## Is Laplace a good model?
+## 🤔 Is Laplace a good model?
 
 Not really. We now understand that by fitting Laplace, we are claiming that daily variance fluctuates according to exponential distribution. Let's see how daily variance of S&P looks like:
 
@@ -424,6 +426,6 @@ That is, the Student-t distribution takes our model a bit further and adds uncer
 At this point, I should confess that I know nearly nothing about financial mathematics. This discussion is just based on me playing with Claude/GPT and trying some stuff. But this is exactly the point - max-entropy is so powerful because it gives you the right language to talk about data fitting. It enables you to explore, build more and more complicated models of data, and still keep track of what your models stand for, where their weaknesses are, and how to improve them.  
 </Expand>
 
-## 🚀 Next Steps <a id="next-steps"></a>
+## 🚀 What's next? <a id="next-steps"></a>
 
 In the [next chapter](05-machine_learning), we'll see how KL divergence explains the choice of loss functions used in machine learning.

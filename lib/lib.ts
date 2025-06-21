@@ -52,6 +52,8 @@ import ExpandableImage from "@/components/content/ExpandableImage";
 import MandelbrotExplorer from "@/components/widgets/MandelbrotExplorer";
 import BuildYourOwnCodeWidget from "@/components/widgets/BuildYourOwnCodeWidget";
 import CoinFlipRandomnessWidget from "@/components/widgets/CoinFlipRandomnessWidget";
+import KLCalculatorWidget from "@/components/widgets/KLCalculatorWidget";
+import KLAsymmetryVisualizerWidget from "@/components/widgets/KLAsymmetryVisualizerWidget";
 import KeyTakeaway from "@/components/content/KeyTakeaway";
 import RiddleSolution from "@/components/content/RiddleSolution";
 
@@ -193,6 +195,8 @@ export async function getMdxContent(path: string) {
       MandelbrotExplorer: MandelbrotExplorer,
       BuildYourOwnCodeWidget: BuildYourOwnCodeWidget,
       CoinFlipRandomnessWidget: CoinFlipRandomnessWidget,
+      KLCalculatorWidget: KLCalculatorWidget,
+      KLAsymmetryVisualizerWidget: KLAsymmetryVisualizerWidget,
       Math: NumberedMath,
       EqRef: EquationRef,
       Block: Block,

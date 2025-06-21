@@ -6,7 +6,7 @@ In this chapter, we'll introduce KL divergence and see how it's tied to Bayes' t
 KL divergence measures how well a distribution $p$ is fitted by a model distribution $q$.
 </KeyTakeaway>
 
-## Definition of KL divergence <a id="definition-of-kl-divergence"></a>
+## 📝 Definition of KL divergence <a id="definition-of-kl-divergence"></a>
 
 Here's the KL divergence formula <Footnote>KL stands for Kullback and Leibler, two guys who came up with this in the 1950s, right after Claude Shannon dropped his [game-changing paper](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication) about entropy. Here's the first exercise: Try saying "Kullback-Leibler divergence" fast three times in a row. </Footnote> for two discrete distributions $p_1, \dots, p_n$ and $q_1, \dots, q_n$:<Footnote> About notation: Most people write $D_{KL}(p||q)$ instead of $D(p,q)$. The double bars are there to remind you that $D_{KL}(p||q) \not= D_{KL}(q||p)$. We'll keep it simple with $D(p,q)$ since we'll be using this a lot. 🙂 </Footnote>
 
@@ -20,7 +20,7 @@ You can think of KL divergence as a wonky distance measure between two distribut
 
 We'll break this down in the rest of the chapter, bit by bit. 🙂
 
-## Bayes' theorem
+## 🎯 Bayes' theorem
 
 Before we dive into KL, let's refresh on Bayes' theorem—it's how you update your beliefs when you get new info. 
 
@@ -125,7 +125,7 @@ Notice KL divergence is about the evidence, not your starting beliefs. It tells 
 
 ---
 
-## Cracking some riddles
+## 🧩 Cracking some riddles
 
 <Expand headline = "🧠 LLM training" > <a id="application-training-smaller-models"></a>
 
@@ -180,6 +180,6 @@ This works for any joint distribution $(r, s)$. The KL divergence between $(r, s
 
 </RiddleSolution>
 
-## What's next?
+## 🚀 What's next?
 
 In the [next section](../02-crossentropy), we'll dig deeper into the KL formula and see how it connects to entropy and cross-entropy.

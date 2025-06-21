@@ -2,7 +2,7 @@
 
 Kolmogorov complexity measures the computational resources needed to specify an object. It's defined as the length of the shortest possible description of the object in a given universal description language.
 
-## The Mandelbrot Set
+## 🌀 The Mandelbrot Set
 
 The Mandelbrot set provides a fascinating example of Kolmogorov complexity. Despite its infinite detail and boundary complexity, the entire set can be described by a remarkably simple algorithm:
 
@@ -17,7 +17,17 @@ This short description generates an infinitely complex fractal structure. Explor
 
 The Mandelbrot set demonstrates a key insight of Kolmogorov complexity: objects with low Kolmogorov complexity (simple descriptions) can exhibit arbitrarily high visual or structural complexity. The entire infinite detail of the Mandelbrot set is compressed into just a few lines of mathematical description.
 
-## Implications
+## 🎲 Testing Randomness
+
+One key insight from Kolmogorov complexity is that a sequence is random if it cannot be compressed—that is, if the shortest description of the sequence is essentially the sequence itself.
+
+In practice, we can test whether a sequence "looks random" by checking if it exhibits the statistical properties we expect from random sequences. Try creating your own sequence of coin flips and see if it passes standard randomness tests:
+
+<CoinFlipRandomnessWidget />
+
+These tests check whether subsequences (k-mers) appear with the frequency we'd expect in a truly random sequence. If your sequence can be "compressed" by predicting patterns, it likely has lower Kolmogorov complexity than a truly random sequence.
+
+## 🔍 Implications
 
 This connects to several important concepts:
 

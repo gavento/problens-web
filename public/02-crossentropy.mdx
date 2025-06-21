@@ -6,7 +6,7 @@ In this chapter, we'll check out some nice algebraic properties of KL divergence
 ![Formula for KL divergence](02-crossentropy/crossentropy_entropy_formula.png)
 </KeyTakeaway>
 
-## Properties of KL divergence
+## 🔍 Properties of KL divergence
 
 Let's go through some key properties of KL divergence you should know about. Remember, KL divergence is algebraically defined like this:
 
@@ -30,6 +30,17 @@ Now flip it around: truth is 100%/0%, model is 50%/50%. Then
 <Math displayMode={true} math = "1 \cdot \log \frac{1}{1/2} + 0 \cdot \log \frac{1}{1/2} = 1"/>
 Every flip gives you heads, so you gain one bit of evidence that the coin is biased. As you keep flipping, your belief in fairness drops exponentially fast, but it never hits zero. You've gotta account for the (exponentially unlikely) possibility that a fair coin just coincidentally came heads in all your past flips.
 </Expand>
+
+Here's a riddle for you! The following widget works with two texts: Declaration of Independence and a collection of several anthems. For both texts, we compute the distribution of the frequencies of letters 'a' to 'z' (case insensitive). All probabilities in both distributions are strictly larger than zero, so the two KL divergences between the two texts are finite. The riddle is: which one is larger? 
+
+two distributions of letter frequencies $p_1,p_2$ for two texts: English prose and a collection of anthems of various countries. Both distribution   
+
+Try it yourself! Calculate the KL divergence between letter frequencies of different texts to see the asymmetry in action:
+
+
+
+<KLAsymmetryVisualizerWidget />
+
 
 ### Nonnegativity
 
@@ -108,7 +119,7 @@ Here's something cool: any reasonable function with monotonicity and chain rule 
 That's pretty awesome—it means KL divergence isn't some arbitrary formula someone cooked up. There's literally only one measure with these natural properties, and it's KL divergence.
 
 
-## Relative entropy = cross-entropy - entropy
+## 🧠 Relative entropy = cross-entropy - entropy
 
 Quick refresher: In the [previous chapter](01-kl_intro), we saw how KL divergence comes from repeatedly using Bayes' theorem with log-space updating:
 
@@ -133,6 +144,7 @@ These two pieces on the right - $H(p,q)$ is called cross-entropy and $H(p)$ is e
 Think of cross-entropy as _how surprised are you on average when you see data from $p$ and you're modeling it as $q$._ 
 
 Check it out in the widget below. The widget shows what happens when our Bayesian detective from the previous chapter keeps flipping her coin, but now it shows both entropy and cross-entropy, instead of only showing the KL divergence, which is the difference between the two. 
+
 
 Analogously to KL divergence, cross-entropy is additive, so it grows linearly with the number of flips we make and we can thus represent it as a (dashed) line below. The red dashed line is telling us the expected surprise of the model $q$ as we keep flipping. The orange line is the expected surprise of $p$ - the best possible model that matches reality. KL divergence being nonnegative is equivalent to the red line _always_ being above the orange one. 
 
@@ -195,9 +207,23 @@ That's why in some communities, people call KL divergence the _relative entropy_
 
 ### So what's the big deal?
 
-Splitting a sum into two parts isn't exactly rocket science—the real win is that cross-entropy and entropy are super meaningful concepts on their own. <Footnote>Actually, entropy is probably way more famous than KL divergence. I'm building everything from KL divergence instead of entropy because I'm trying to balance between an excited brain dump about cool probability stuff and something that actually makes sense as a coherent text. </Footnote>
+Splitting a sum into two parts isn't exactly rocket science—the real win is that cross-entropy and entropy are super meaningful concepts on their own. <Footnote>Actually, entropy is way more famous than KL divergence. I'm building everything from KL divergence instead of entropy because I'm trying to balance between an excited brain dump about cool math that's hard to find elsewhere, and something resembling a coherent text. </Footnote>
 
 Let's see this in action. 
+
+<Expand headline = "🎵 Anthem battle"><a id="anthems"></a>
+Let's solve our [anthem riddle](00-introduction#anthems). We have two text files, one is purely English text, the other one is a mix of all kinds of languages. 
+
+Before clicking on the button, try to guess which of the two texts has larger entropy and which of the two KL divergences between them is larger. 
+{/*If you want an even harder riddle: One of the two differences $|H(p_1) - H(p_2)|$ and $|D(p_1, p_2)- D(p_2, p_1)|$ is sizable and the other is pretty small. Which is which?*/}
+
+<KLCalculatorWidget />
+
+First, we can see that the mixed file has larger entropy. This makes sense! Every language uses different letters with different frequencies. For example, 'z' is quite uncommon in English, but pretty common in German. If we pool different languages together, the distribution of frequencies is becoming 'smoother', more uniform. Hence, larger entropy. Admittedly, it's only slightly larger, since increasing the probability of 'z' from 0.02 to 0.0003 is not really increasing the entropy that much.
+
+For similar reasons, KL between $p_1$ and $p_2$ is smaller than vice versa. Remember, KL is all about probability _ratios_. If $p('e') = 0.12$ and $q('e') = 0.11$, $q$ is a good model of $p$. But if $p('z') = 0.02$ and $q('z')=0.0003$, $q$ is a crappy model of $p$. 
+
+</Expand>
 
 <Expand headline = "🔮 How good are your predictions?"> <a id="application-evaluating-predictions"></a>
 
@@ -277,7 +303,7 @@ Try the log-score on our example! Also, you can compare it with other popular sc
 </Expand>
 
 
-## 🚀 Next Steps <a id="next-steps"></a>
+## 🚀 What's next? <a id="next-steps"></a>
 
 We're getting the hang of KL divergence! Quick recap:
 

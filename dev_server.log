@@ -1,0 +1,56 @@
+
+> generic-academic-website@0.1.0 dev /home/vasek/problens-web
+> next dev --turbopack
+
+   ▲ Next.js 15.2.4 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://10.13.2.96:3000
+   - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 999ms
+ ○ Compiling /[...path] ...
+ ✓ Compiled /[...path] in 6.4s
+ GET /02-crossentropy/ 200 in 9037ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 574ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 623ms
+ ✓ Compiled in 120ms
+ ✓ Compiled in 145ms
+ ✓ Compiled in 892ms
+ ✓ Compiled in 122ms
+ ✓ Compiled in 116ms
+ ✓ Compiled in 110ms
+ ✓ Compiled in 91ms
+ ✓ Compiled in 98ms
+ ✓ Compiled in 101ms
+ ✓ Compiled in 103ms
+ ✓ Compiled in 98ms
+ ✓ Compiled in 111ms
+ ✓ Compiled in 128ms
+ ✓ Compiled in 104ms
+ ✓ Compiled in 96ms
+ ✓ Compiled in 94ms
+ ✓ Compiled in 176ms
+ ✓ Compiled in 107ms
+ ✓ Compiled in 103ms
+ ✓ Compiled in 106ms
+ ✓ Compiled in 302ms
+ ✓ Compiled in 95ms
+ ✓ Compiled in 90ms
+ ✓ Compiled in 109ms
+ ✓ Compiled in 108ms
+ ✓ Compiled in 103ms
+ ✓ Compiled in 99ms
+ ✓ Compiled in 90ms
+ ✓ Compiled in 123ms
+ ✓ Compiled in 99ms
+ ✓ Compiled in 115ms
+ ✓ Compiled in 112ms
+ ✓ Compiled in 100ms
+ ✓ Compiled in 101ms
+ ✓ Compiled in 86ms
+ ✓ Compiled in 98ms
+ ✓ Compiled in 129ms
+ ✓ Compiled in 99ms
+ ✓ Compiled in 94ms

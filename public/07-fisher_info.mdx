@@ -6,7 +6,7 @@ In this chapter, we will explain a bit more about how KL divergence connects to 
 Fisher information is the limit of KL divergence of close distributions.  
 </KeyTakeaway>
 
-## The polling problem
+## 📊 The polling problem
 
 In [one of our riddles](00-introduction), we have been talking about the problem with polling: If you want to learn the percentage of the vote for one party up to $\eps$, you need sample about $1/\eps^2$ voters. 
 
@@ -28,7 +28,7 @@ $$
 
 The intuition we should take from this is that each time we flip a coin, we get around "$2\eps^2$ bits of information" about whether the coin is fair or biased by $\eps$. Intuitively, once we get around 1 bit of information, we begin to be able to say which of the two coins we are looking at. We conclude that the number of trials we need to estimate the bias of a coin should scale like $n = 1/\eps^2$. 
 
-## Fisher information
+## 🎯 Fisher information
 
 The trick with looking at KL divergence between two very similar distributions can be generalized further. Think of a setup where you have a family of distributions characterized by some number. For example:
 
@@ -86,7 +86,7 @@ In all above cases, it turns out to be the case that our intuition is correct an
 
 The upshot is that computing KL between two close distributions basically answers the most fundamental question of (frequentist) statistics -- how many samples do I need to get a good estimate of a parameter. 
 
-## Fisher metric
+## 📏 Fisher metric
 
 Although KL divergence is asymetrical, it gets symmetrical in the limit. That is, if we do the computation for <Math math="D(p_\theta, p_{\theta + \eps})" /> instead of <Math math="D(p_{\theta + \eps}, p_\theta)" />, we would get the same expression up to some $O(\eps^3)$ terms. So, in this setup where we try to understand two distributions that are very close together, we can really think of it as being symetric. This way, we can define a proper distance function on the space of distributions -- it's called [Fisher information metric](https://en.wikipedia.org/wiki/Fisher_information_metric) and can give useful intuitions. For example, for the case of biased-coin-flipping distributions where coins have bias $p \in [0,1]$, we can represent all of them using a segment like this:
 

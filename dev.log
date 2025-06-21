@@ -349,3 +349,74 @@ Each child in a list should have a unique "key" prop. See https://react.dev/link
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
  GET /00-introduction/ 200 in 262ms
  GET /resources/ 200 in 116ms
+ GET /08-kolmogorov/ 200 in 390ms
+ GET /01-kl_intro/ 200 in 1467ms
+ GET /01-kl_intro/ 200 in 826ms
+ GET /02-crossentropy/ 200 in 2220ms
+ ⨯ [Error: Page "/[...path]/page" is missing param "/02-crossentropy/03-minimizing" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/02-crossentropy/03-minimizing'
+}
+ GET /02-crossentropy/03-minimizing/ 500 in 238ms
+ GET /favicon.ico 200 in 105ms
+ GET /03-minimizing/ 200 in 1186ms
+ ⨯ [Error: Page "/[...path]/page" is missing param "/03-minimizing/04-max_entropy" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/03-minimizing/04-max_entropy'
+}
+ GET /03-minimizing/04-max_entropy/ 500 in 216ms
+ GET /03-minimizing/ 200 in 1651ms
+ GET /04-max_entropy/ 200 in 2339ms
+ ⨯ [Error: Page "/[...path]/page" is missing param "/04-max_entropy/00-introduction" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/04-max_entropy/00-introduction'
+}
+ GET /04-max_entropy/00-introduction/ 500 in 246ms
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET /00-introduction/ 200 in 738ms
+ ⨯ [Error: Page "/[...path]/page" is missing param "/00-introduction/00-introduction/countdown.png" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/00-introduction/00-introduction/countdown.png'
+}
+ GET /00-introduction/00-introduction/countdown.png 500 in 123ms
+ ✓ Compiled in 1056ms
+ ✓ Compiled in 156ms
+ ✓ Compiled in 216ms
+ ✓ Compiled in 192ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 201ms
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET /00-introduction/ 200 in 2202ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 65ms
+ ✓ Compiled in 347ms
+ ✓ Compiled in 304ms
+ ✓ Compiled in 317ms
+ ✓ Compiled in 264ms
+ ✓ Compiled in 341ms
+ ✓ Compiled in 258ms
+ ✓ Compiled in 225ms
+ ✓ Compiled in 433ms
+ ✓ Compiled in 401ms
+ ⚠ Fast Refresh had to perform a full reload when [turbopack]/browser/dev/hmr-client/hmr-client.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⚠ Fast Refresh had to perform a full reload when [turbopack]/browser/dev/hmr-client/hmr-client.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled in 1375ms
+ ✓ Compiled /[...path] in 87ms
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET /00-introduction/ 200 in 32582ms

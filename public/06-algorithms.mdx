@@ -13,7 +13,7 @@ Multiplicative weights update is a useful algorithmic trick based on treating pr
 </KeyTakeaway>
 
 
-## Basic algorithm
+## 🔄 Basic algorithm
 
 Let's return to one of our riddles:
 
@@ -52,7 +52,7 @@ This algorithm interpolates between gradient descent (the limit of this algorith
 If we set $\eps$ in the right way, this turns out to be an amazing algorithm combining the strengths of both approaches. 
 The remarkable property is that if you run multiplicative weights algorithm for $t$ steps and set $\eps$ to be about $1/\sqrt{t}$, the algorithm is _always almost as good as the best expert_! In particular, it gains at most $O(\sqrt{t})$ dollars less than the best expert in expectation. <Footnote>Assuming all gains are between $0$ and $1$. If there are $n$ experts, the algorithm lacks at most <Math math = "O(\sqrt{t\log n})" /> dollars in expectation. Check out [this excellent survey](https://www.cs.princeton.edu/~arora/pubs/MWsurvey.pdf) for more math behind the algorithm and its uses in computer science. </Footnote> In other words, whatever sequence of expert gains we could come up with in our widget, MWU would always end up on top. 
 
-## Intuitions
+## 💡 Intuitions
 
 Let me give you three intuitions for why multiplicative weights update algorithm makes sense.
 
@@ -98,7 +98,7 @@ But wait! KL divergence can't measure distance. We've emphasized how it's import
 
 The general algorithm that generalizes both gradient descent and multiplicative weights is called mirror descent. The algorithm needs to be supplied with a distance-like function. For example, KL divergence works for mirror descent, even though it's asymmetric. It's beyond our scope to analyze what properties a function needs to satisfy to work inside mirror descent. The class of functions that work is called Bregman divergences. This is why _KL divergence_ is called this way -- it's a particular instance of a Bregman divergence.
 
-## Applications
+## 🚀 Applications
 
 Let's briefly discuss some applications of the algorithm.
 
@@ -136,6 +136,6 @@ Let's also revisit our original investment problem and see how different algorit
 
 <MWUWidget />
 
-## The important idea
+## 💡 The important idea
 
 The focus of our minicourse was on how KL divergence and related techniques can be used to model the world around us. I think multiplicative weights are a good example of a different application -- KL can guide us to come up with the right algorithm to approach a problem!

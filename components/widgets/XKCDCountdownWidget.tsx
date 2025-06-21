@@ -264,7 +264,10 @@ const XKCDCountdownWidget: React.FC = () => {
               ))}
               
               {/* Y-axis labels */}
-              {[0, 0.2, 0.4, 0.6, 0.8, 1.0].map((val, i) => (
+              {(logScale ? 
+                [{ val: 0, label: '0.0001' }, { val: 0.25, label: '0.001' }, { val: 0.5, label: '0.01' }, { val: 0.75, label: '0.1' }, { val: 1.0, label: '1.0' }] :
+                [{ val: 0, label: '0.0' }, { val: 0.2, label: '0.2' }, { val: 0.4, label: '0.4' }, { val: 0.6, label: '0.6' }, { val: 0.8, label: '0.8' }, { val: 1.0, label: '1.0' }]
+              ).map(({ val, label }, i) => (
                 <g key={i}>
                   <line 
                     x1="-5" 
@@ -281,7 +284,7 @@ const XKCDCountdownWidget: React.FC = () => {
                     fontSize="10" 
                     fill="#6b7280"
                   >
-                    {val.toFixed(1)}
+                    {label}
                   </text>
                 </g>
               ))}
