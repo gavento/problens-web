@@ -290,10 +290,10 @@ const XKCDCountdownWidget: React.FC = () => {
               ))}
               
               {/* Bars */}
-              {currentData.map((bin, i) => {
+              {currentData && currentData.map((bin, i) => {
                 const actualHeight = logScale ? 
-                  (bin.probability > 0 ? Math.log10(bin.probability / currentMaxProb) + 4 : 0) * 220 / 4 :
-                  (bin.probability / currentMaxProb) * 220;
+                  (bin.probability > 0 && currentMaxProb ? Math.log10(bin.probability / currentMaxProb) + 4 : 0) * 220 / 4 :
+                  (bin.probability / (currentMaxProb || 1)) * 220;
                 const barHeight = Math.max(0, actualHeight);
                 const xPos = i * 20;
                 
