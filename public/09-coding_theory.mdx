@@ -58,7 +58,7 @@ So, there are codes that get arbitrarily close to $H(p)$ bits per letter, even i
 To see why we can't do better than $H(p)$ bits per letter on average, we will have to understand [Kraft's inequlaity](https://en.wikipedia.org/wiki/Kraft%E2%80%93McMillan_inequality). This inequality says that if we work with alphabet with $k$ letters and we build a code with words of lengths $\ell_1, \dots, \ell_k$, then it has to be the case that 
 <Math id = "kraft" displayMode = {true} math = "\sum_{i = 1}^k 2^{- \ell_i} \le 1. " />
 
-To understand this inequality, go back to widgets above - whenever we give a code-name to a letter, like $\mathsf{e} \rightarrow \textsf{000}$, we can no longer use codewords that start with $\textsf{000}$ for other letters, since that would create clashes. The node with $\textsf{000}$ has to be a _leaf_. Some leaves 'take more space' than others - for example, using code name of $\textsf{0}$ intuitively kills off half of the space of possibilities. 
+To understand this inequality, go back to widgets above - whenever we give a code-name to a letter, like <Math math="\mathsf{e} \rightarrow \textsf{000}" />, we can no longer use codewords that start with <Math math="\textsf{000}" /> for other letters, since that would create clashes. The node with <Math math="\textsf{000}" /> has to be a _leaf_. Some leaves 'take more space' than others - for example, using code name of <Math math="\textsf{0}" /> intuitively kills off half of the space of possibilities. 
 
 A bit more formally, imagine continuing the full binary tree up to some very large depth $N$. Then a code word of length $\ell_i$ is above <Math math="2^{N - \ell_i}" /> of nodes at depth $N$. Since different code words cover disjoint intervals of depth-$N$ nodes, and there are $2^N$ nodes at depth $N$, it has to be the case for any valid code that 
 <Math displayMode={true} math="\sum_{i = 1}^k 2^{N - \ell_i} \le 2^N" />
@@ -82,7 +82,7 @@ That is, the average code-name length is at least $H(p)$. This works for any cod
 
 Using the fact that good codes can achieve a rate close to entropy can give us a lot of intuition! Remember [how we defined](/02-crossentropy) entropy as the "average surprisal" of a distribution? We could also ask: if we keep sampling from the distribution, how many bits per result do we need to store them? 
 
-For example, if we are flipping a fair coin and want to keep the results, there is nothing smarter then remembering a file like $\textsf{0101100}$ where $\textsf{0}$/$\textsf{1}$ corresponds to $\mathsf{H}$/$\mathsf{T}$. This is 1 bit per flip. 
+For example, if we are flipping a fair coin and want to keep the results, there is nothing smarter then remembering a file like <Math math="\textsf{0101100}" /> where <Math math="\textsf{0}" />/<Math math="\textsf{1}" /> corresponds to <Math math="\mathsf{H}" />/<Math math="\mathsf{T}" />. This is 1 bit per flip. 
 
 But if we are flipping a coin where heads have only $0.01$ probability, there are better ways to store the results! For example, we could split the outcomes to batches of 10, and give a code-name to each of the $2^{10}$ possibilities in a batch. If we use a short code-name for the very probably outcome of $\mathsf{TTTTTTTTTT}$, we can spare a lot of disk space!
 
