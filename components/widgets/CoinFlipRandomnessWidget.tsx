@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { InlineMath } from 'react-katex';
 import { getAssetPath } from '@/lib/utils';
+import * as Tooltip from '@radix-ui/react-tooltip';
 
 type CoinSide = 'H' | 'T';
 
@@ -26,6 +27,7 @@ const EMPIRICAL_THRESHOLDS: Record<number, number> = {
 
 const CoinFlipRandomnessWidget: React.FC = () => {
   const [sequence, setSequence] = useState<CoinSide[]>([]);
+  const [textInput, setTextInput] = useState<string>('');
   
   // Generate all possible k-mers for a given k
   const generateKmers = (k: number): string[] => {
@@ -108,11 +110,16 @@ const CoinFlipRandomnessWidget: React.FC = () => {
   }, [sequence]);
 
   const addCoin = (side: CoinSide) => {
-    setSequence(prev => [...prev, side]);
+    setSequence(prev => {
+      const newSeq = [...prev, side];
+      setTextInput(newSeq.join(''));
+      return newSeq;
+    });
   };
 
   const resetSequence = () => {
     setSequence([]);
+    setTextInput('');
   };
 
   const generateRandomSequence = (length: number = 50) => {
@@ -121,127 +128,175 @@ const CoinFlipRandomnessWidget: React.FC = () => {
       newSequence.push(Math.random() < 0.5 ? 'H' : 'T');
     }
     setSequence(newSequence);
+    setTextInput(newSequence.join(''));
+  };
+
+  const handleTextInput = () => {
+    const cleaned = textInput.toUpperCase().replace(/[^HT]/g, '');
+    if (cleaned && cleaned.match(/^[HT]+$/)) {
+      const newSequence = cleaned.split('').map(char => char as CoinSide);
+      setSequence(newSequence);
+      setTextInput(cleaned);
+    }
   };
 
   return (
-    <div className="p-4 sm:p-6 bg-gray-50 rounded-lg space-y-4 sm:space-y-6 max-w-4xl mx-auto">
-      <h3 className="text-xl font-semibold text-center text-gray-800">
-        Coin Flip Randomness Tester
-      </h3>
-      
-      <p className="text-center text-gray-600">
-        Click coins to build a sequence, then see if it passes statistical tests for randomness
-      </p>
-
-      {/* Coin buttons */}
-      <div className="flex justify-center gap-4">
-        <button
-          onClick={() => addCoin('H')}
-          className="flex flex-col items-center p-4 bg-white rounded-lg border-2 border-gray-300 hover:border-blue-400 transition-colors"
-        >
-          <img 
-            src={getAssetPath('/images/coin_heads_big.png')} 
-            alt="Heads" 
-            className="w-16 h-16 mb-2"
-          />
-          <span className="text-sm font-medium">Heads (H)</span>
-        </button>
+    <Tooltip.Provider>
+      <div className="p-4 sm:p-6 bg-gray-50 rounded-lg space-y-4 sm:space-y-6 max-w-4xl mx-auto">
+        <h3 className="text-xl font-semibold text-center text-gray-800">
+          Coin Flip Randomness Tester
+        </h3>
         
-        <button
-          onClick={() => addCoin('T')}
-          className="flex flex-col items-center p-4 bg-white rounded-lg border-2 border-gray-300 hover:border-blue-400 transition-colors"
-        >
-          <img 
-            src={getAssetPath('/images/coin_tail_big.png')} 
-            alt="Tails" 
-            className="w-16 h-16 mb-2"
-          />
-          <span className="text-sm font-medium">Tails (T)</span>
-        </button>
-      </div>
-
-      {/* Control buttons */}
-      <div className="flex justify-center gap-3">
-        <button
-          onClick={resetSequence}
-          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
-        >
-          Reset
-        </button>
-        <button
-          onClick={() => generateRandomSequence(20)}
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-        >
-          Random 20
-        </button>
-        <button
-          onClick={() => generateRandomSequence(50)}
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-        >
-          Random 50
-        </button>
-      </div>
-
-      {/* Current sequence */}
-      <div className="bg-white rounded-lg p-4">
-        <h4 className="text-lg font-semibold text-gray-800 mb-3">
-          Current Sequence ({sequence.length} flips)
-        </h4>
-        <div className="min-h-[60px] p-3 bg-gray-50 rounded border-2 border-dashed border-gray-300">
-          {sequence.length === 0 ? (
-            <p className="text-gray-500 text-center">Click coins above to build your sequence</p>
-          ) : (
-            <div className="flex flex-wrap gap-1">
-              {sequence.map((flip, i) => (
-                <span 
-                  key={i}
-                  className={`inline-flex items-center justify-center w-8 h-8 rounded text-sm font-bold ${
-                    flip === 'H' ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800'
-                  }`}
-                >
-                  {flip}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-        <p className="text-sm text-gray-600 mt-2">
-          String representation: {sequence.join('')}
+        <p className="text-center text-gray-600">
+          Click coins to build a sequence, then see if it passes statistical tests for randomness
         </p>
-      </div>
 
-      {/* Test results */}
-      {tests.length > 0 && (
+        {/* Main content area with coins and buttons */}
+        <div className="flex justify-center gap-4">
+          {/* Coin buttons */}
+          <div className="flex gap-4">
+            <button
+              onClick={() => addCoin('H')}
+              className="flex flex-col items-center p-4 bg-white rounded-lg border-2 border-gray-300 hover:border-blue-400 transition-colors"
+            >
+              <img 
+                src={getAssetPath('/images/coin_heads_big.png')} 
+                alt="Heads" 
+                className="w-16 h-16 mb-2"
+              />
+              <span className="text-sm font-medium">Heads (H)</span>
+            </button>
+            
+            <button
+              onClick={() => addCoin('T')}
+              className="flex flex-col items-center p-4 bg-white rounded-lg border-2 border-gray-300 hover:border-blue-400 transition-colors"
+            >
+              <img 
+                src={getAssetPath('/images/coin_tail_big.png')} 
+                alt="Tails" 
+                className="w-16 h-16 mb-2"
+              />
+              <span className="text-sm font-medium">Tails (T)</span>
+            </button>
+          </div>
+
+          {/* Control buttons to the right */}
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={resetSequence}
+              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm"
+            >
+              Reset
+            </button>
+            <button
+              onClick={() => generateRandomSequence(20)}
+              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors text-sm"
+            >
+              Random 20
+            </button>
+            <button
+              onClick={() => generateRandomSequence(50)}
+              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors text-sm"
+            >
+              Random 50
+            </button>
+          </div>
+        </div>
+
+        {/* Current sequence */}
         <div className="bg-white rounded-lg p-4">
           <h4 className="text-lg font-semibold text-gray-800 mb-3">
-            Randomness Tests (k-mer frequency analysis)
+            Current Sequence ({sequence.length} flips)
           </h4>
-          <p className="text-sm text-gray-600 mb-4">
-            These tests check if subsequences appear with expected frequency for a random sequence.
-          </p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {tests.map((test, i) => (
-              <div 
-                key={i} 
-                className="border rounded-lg p-3 hover:bg-gray-50 transition-colors cursor-help"
-                title={`Chi-square: ${test.chiSquare.toFixed(3)} | Threshold: ${test.threshold.toFixed(3)} | Patterns tested: ${Object.keys(test.expectedCounts).length} | Detailed counts: ${Object.keys(test.expectedCounts).map(kmer => `${kmer}: ${test.observedCounts[kmer] || 0}/${test.expectedCounts[kmer].toFixed(1)}`).join(', ')}`}
-              >
-                <div className="flex justify-between items-center">
-                  <h5 className="text-sm font-semibold">
-                    {test.k}-mer Test
-                  </h5>
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${
-                    test.isRandom 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-red-100 text-red-800'
-                  }`}>
-                    {test.isRandom ? '✓ PASS' : '✗ FAIL'}
+          <div className="min-h-[60px] p-3 bg-gray-50 rounded border-2 border-dashed border-gray-300">
+            {sequence.length === 0 ? (
+              <p className="text-gray-500 text-center">Click coins above to build your sequence</p>
+            ) : (
+              <div className="flex flex-wrap gap-1">
+                {sequence.map((flip, i) => (
+                  <span 
+                    key={i}
+                    className={`inline-flex items-center justify-center w-8 h-8 rounded text-sm font-bold ${
+                      flip === 'H' ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800'
+                    }`}
+                  >
+                    {flip}
                   </span>
-                </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
+          
+          {/* Text input */}
+          <div className="mt-3 flex items-center gap-2">
+            <span className="text-sm text-gray-600">Alternatively, write text here:</span>
+            <input
+              type="text"
+              value={textInput}
+              onChange={(e) => setTextInput(e.target.value)}
+              placeholder="e.g., HHTHT"
+              className="flex-1 px-3 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              onClick={handleTextInput}
+              className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+
+        {/* Test results */}
+        {tests.length > 0 && (
+          <div className="bg-white rounded-lg p-4">
+            <h4 className="text-lg font-semibold text-gray-800 mb-3">
+              Randomness Tests: k-mer frequency analysis
+            </h4>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {tests.map((test, i) => (
+                <Tooltip.Root key={i}>
+                  <Tooltip.Trigger asChild>
+                    <div className="border rounded-lg p-3 hover:bg-gray-50 transition-colors cursor-help">
+                      <div className="flex justify-between items-center">
+                        <h5 className="text-sm font-semibold">
+                          {test.k}-mer Test
+                        </h5>
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${
+                          test.isRandom 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {test.isRandom ? '✓ PASS' : '✗ FAIL'}
+                        </span>
+                      </div>
+                    </div>
+                  </Tooltip.Trigger>
+                  <Tooltip.Portal>
+                    <Tooltip.Content
+                      className="bg-gray-800 text-white text-sm p-3 rounded shadow-lg max-w-md"
+                      sideOffset={5}
+                    >
+                      <div className="space-y-2">
+                        <div className="font-semibold">{test.k}-mer Test Details</div>
+                        <div>Chi-square statistic: {test.chiSquare.toFixed(3)}</div>
+                        <div>Threshold (95%): {test.threshold.toFixed(3)}</div>
+                        <div>Patterns tested: {Object.keys(test.expectedCounts).length}</div>
+                        <div className="text-xs">
+                          <div className="font-semibold mt-2">Pattern counts (observed/expected):</div>
+                          {Object.keys(test.expectedCounts).map(kmer => (
+                            <div key={kmer}>
+                              {kmer}: {test.observedCounts[kmer] || 0}/{test.expectedCounts[kmer].toFixed(1)}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <Tooltip.Arrow className="fill-gray-800" />
+                    </Tooltip.Content>
+                  </Tooltip.Portal>
+                </Tooltip.Root>
+              ))}
+            </div>
           
           {/* Overall assessment */}
           <div className="mt-4 p-3 bg-blue-50 rounded-lg">
@@ -259,17 +314,18 @@ const CoinFlipRandomnessWidget: React.FC = () => {
         </div>
       )}
 
-      {/* Help text */}
-      <div className="bg-blue-50 rounded-lg p-4">
-        <h4 className="font-semibold mb-2">How it works</h4>
-        <p className="text-sm text-gray-700">
-          This widget tests for randomness by analyzing the frequency of subsequences (k-mers) of length 1-4. 
-          In a truly random sequence, each k-mer should appear about equally often. We use chi-square tests 
-          with empirically-determined thresholds that account for correlations between overlapping k-mers. 
-          Hover over test results to see detailed statistics.
-        </p>
+        {/* Help text */}
+        <div className="bg-blue-50 rounded-lg p-4">
+          <h4 className="font-semibold mb-2">How it works</h4>
+          <p className="text-sm text-gray-700">
+            This widget tests for randomness by analyzing the frequency of subsequences (k-mers) of length 1-4. 
+            In a truly random sequence, each k-mer should appear about equally often. We use chi-square tests 
+            with empirically-determined thresholds that account for correlations between overlapping k-mers. 
+            Hover over test results to see detailed statistics.
+          </p>
+        </div>
       </div>
-    </div>
+    </Tooltip.Provider>
   );
 };
 

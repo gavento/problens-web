@@ -139,6 +139,7 @@ Think of cross-entropy as _how surprised are you on average when you see data fr
 
 Check it out in the widget below. The widget shows what happens when our Bayesian detective from the previous chapter keeps flipping her coin, but now it shows both entropy and cross-entropy, instead of only showing the KL divergence, which is the difference between the two. 
 
+<CrossEntropySimulator />
 
 Analogously to KL divergence, cross-entropy is additive, so it grows linearly with the number of flips we make and we can thus represent it as a (dashed) line below. The red dashed line is telling us the expected surprise of the model $q$ as we keep flipping. The orange line is the expected surprise of $p$ - the best possible model that matches reality. KL divergence being nonnegative is equivalent to the red line _always_ being above the orange one. 
 

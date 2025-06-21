@@ -16,7 +16,8 @@ Can we do better? Sometimes, yes! Here's a riddle: try to build a code that enco
 
 <BuildYourOwnCodeWidget /> 
 
-.
+While playing, notice that when you e.g. use the code $\mathsf{A} \rightarrow \textsf{0}$, no other letter can get a code-name starting with $\textsf{0}$. The reason is that such a code may not be decodable. E.g., if you use codes <Math  math = "\textsf{0}" /> and <Math  math = "\textsf{00}" />, how do you decode <Math  math = "\textsf{00}" />?
+
 
 .
 
@@ -24,15 +25,15 @@ Can we do better? Sometimes, yes! Here's a riddle: try to build a code that enco
 
 SPOILER
 
-.
 
 .
 
 .
 
-Here's the solution: <Math math = "\mathsf{A} \rightarrow \textsf{0}, \mathsf{C} \rightarrow \textsf{10}, \mathsf{G} \rightarrow \textsf{110}, \mathsf{T} \rightarrow \textsf{111} " />. Since the letter frequencies in the text are <Math math = "\frac12, \frac14, \frac18, \frac18"/>, this encoding only uses 
+Here's the solution: <Math math = "\mathsf{A} \rightarrow \textsf{0}, \mathsf{C} \rightarrow \textsf{10}, \mathsf{G} \rightarrow \textsf{110}, \mathsf{T} \rightarrow \textsf{111} " />. 
+Since the letter frequencies in the text are <Math math = "\frac12, \frac14, \frac18, \frac18"/>, this encoding only uses 
 <Math displayMode={true} id = "code-example" math = "\frac12 \cdot 1 + \frac14 \cdot 2 + \frac18 \cdot 3 + \frac18 \cdot 3 = 1.75" />
-bits. Notice that when we use the code $\mathsf{A} \rightarrow \textsf{0}$, no other letter can get a code-name starting with $\textsf{0}$. The reason is that such a code may not be decodable. E.g., if you use codes <Math  math = "\textsf{0}" /> and <Math  math = "\textsf{00}" />, how do you decode <Math  math = "\textsf{00}" />? 
+bits per letter.  
 
 OK, using shorter codes for more frequent letters makes sense, but what's the best way to do this? Coding theory knows the answer. Roughly speaking, it tells us to __try to give a letter with frequency $p_i$ a code-name of length $\log 1/p_i$__. 
 
@@ -48,7 +49,7 @@ If we implement our $p \rightarrow \log 1/p$-rule-of-thumb, we get what's known 
 
 You can notice that the number of bits per letter (also called _rate_) is a bit north of the entropy of the underlying distribution. This is because of the rounding $\log 1/p \rightarrow \lceil \log 1/p \rceil$. For example, if $p = 0.49$, we would like to give the letter a code name of length $\log \frac{1}{0.49} \approx 1.03$. Too bad that code names have to be integers and Shannon's code assigns it a code name of length $2$. As a general rule, Shannon's code can use up to 1 bit per letter more than what's the entropy. <Footnote>Try to work out the details of what's happening in Shannon's code. Especially: Why does Shannon's algorithm of assigning letters never runs out of available code names? </Footnote>
 
-Unfortunately, there situations where Shannon's code is really almost 1 bit worse than the entropy. Take a string that uses just two characters $\mathsf{A}, \mathsf{B}$, but the frequency of $\mathsf{B}$ is close to zero. Then, the entropy is close to zero, but Shannon can't do better than 1 bit per letter. 
+Unfortunately, there are situations where Shannon's code is really almost 1 bit worse than the entropy. Take a string that uses just two characters $\mathsf{A}, \mathsf{B}$, but the frequency of $\mathsf{B}$ is close to zero. Then, the entropy is close to zero, but Shannon can't do better than 1 bit per letter. 
 
 We can get rid of this annoying slack of one bit using the following trick. Think of constructing Shannon's code not for every letter, but for every _pair of letters_ (i.e., the alphabet grows from $26$ to $26^2$). If Shannon's code loses 1 bit per encoded letter-pair, it means it loses $1/2$ bits per actual letter! Doing this trick not for a pair of letters but a tuple of several letters can bring us arbitrarily close to a code that spends $H(p)$ bits per letter. 
 
@@ -80,21 +81,34 @@ That is, the average code-name length is at least $H(p)$. This works for any cod
 
 ## 🧠 Entropy intuition
 
-Using the fact that good codes can achieve a rate close to entropy can give us a lot of intuition! Remember [how we defined](/02-crossentropy) entropy as the "average surprisal" of a distribution? We could also ask: if we keep sampling from the distribution, how many bits per result do we need to store them? 
+Using the fact that good codes can achieve a rate close to entropy can give us a lot of intuition! Remember [how we defined](/02-crossentropy) entropy as the "average surprisal" of a distribution? We could also ask: if we keep sampling from the distribution, how many bits per flip do we need to store the results? 
 
-For example, if we are flipping a fair coin and want to keep the results, there is nothing smarter then remembering a file like <Math math="\textsf{0101100}" /> where <Math math="\textsf{0}" />/<Math math="\textsf{1}" /> corresponds to <Math math="\mathsf{H}" />/<Math math="\mathsf{T}" />. This is 1 bit per flip. 
+For example, if we are flipping a fair coin and want to keep the results, there is nothing smarter then writing one bit <Math math="\textsf{0}" />/<Math math="\textsf{1}" /> for each heads/tails that we flipped. This is 1 bit per flip. 
 
-But if we are flipping a coin where heads have only $0.01$ probability, there are better ways to store the results! For example, we could split the outcomes to batches of 10, and give a code-name to each of the $2^{10}$ possibilities in a batch. If we use a short code-name for the very probably outcome of $\mathsf{TTTTTTTTTT}$, we can spare a lot of disk space!
+But if we are flipping a biased coin where heads have only $0.01$ probability, there are better ways to store the results! For example, we could split the outcomes into batches of 10, and give a code-name to each of the $2^{10}$ possibilities in a batch. If we use short code-names for very probably outcomes - e.g., $\mathsf{TTTTTTTTTT} \rightarrow \textsf{0}$, we can spare a lot of disk space! <Footnote>This goes back to our discussion of how to improve the slack of one bit in Shannon's code. </Footnote>
 
-The entropy of the coin flip is the rate of the best code, it's the speed of how much 'useful information' we are generating with our flips.  
+The entropy of the coin flip is the rate of the best code, it's the speed of how much 'relevant information' we are generating with our flips.  
 
 With coding theory intuitions, cross-entropy also becomes also very natural: it's how many bits you need when data comes from $p$ but you are using the code that's optimized for a different distribution $q$. For example, in the top widget, you can construct the best code for $\mathsf{AACATACG}$, but then run it on $\mathsf{AAAAAAAA}$. 
 
-Finally, relative entropy is how much worse your mismatched code is compared to the optimal one. 
+Finally, KL divergence (relative entropy) is how much worse your mismatched code is compared to the optimal one. 
 
 
 ## 📦 Better ways of storing data
 
+## 🔬 Programming Language Similarity Experiment
+
+Here's an interesting application of compression theory: we can measure how similar programming languages are by training compression algorithms on one language and seeing how well they compress another language. Languages with similar syntax, keywords, and structure should compress each other better.
+
+<ProgrammingLanguageSimilarityWidget />
+
+This visualization shows a network where each node represents a programming language, and the connections (edges) show compression-based similarity. The widget demonstrates three different compression approaches:
+
+1. **Character Frequency + KL**: Uses character frequency distributions and KL divergence as a baseline similarity metric
+2. **Zstd**: Uses Zstandard dictionary-based compression - train a dictionary on one language, compress another
+3. **Gzip**: Uses gzip with concatenated "pseudo-dictionaries" for comparison
+
+Languages from similar families (like C/C++/Java or Haskell/Lisp) should cluster together, while very different paradigms should be farther apart. The experiment connects information theory, compression, and programming language design!
 
 ## 🤔 Wikipedia riddle
 We can now revisit the riddle about how much Wikipedia (and other texts) can be compressed. 

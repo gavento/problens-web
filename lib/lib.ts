@@ -54,6 +54,7 @@ import BuildYourOwnCodeWidget from "@/components/widgets/BuildYourOwnCodeWidget"
 import CoinFlipRandomnessWidget from "@/components/widgets/CoinFlipRandomnessWidget";
 import KLCalculatorWidget from "@/components/widgets/KLCalculatorWidget";
 import KLAsymmetryVisualizerWidget from "@/components/widgets/KLAsymmetryVisualizerWidget";
+import ProgrammingLanguageSimilarityWidget from "@/components/widgets/ProgrammingLanguageSimilarityWidget";
 import KeyTakeaway from "@/components/content/KeyTakeaway";
 import RiddleSolution from "@/components/content/RiddleSolution";
 
@@ -197,6 +198,7 @@ export async function getMdxContent(path: string) {
       CoinFlipRandomnessWidget: CoinFlipRandomnessWidget,
       KLCalculatorWidget: KLCalculatorWidget,
       KLAsymmetryVisualizerWidget: KLAsymmetryVisualizerWidget,
+      ProgrammingLanguageSimilarityWidget: ProgrammingLanguageSimilarityWidget,
       Math: NumberedMath,
       EqRef: EquationRef,
       Block: Block,
