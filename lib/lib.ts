@@ -55,6 +55,9 @@ import CoinFlipRandomnessWidget from "@/components/widgets/CoinFlipRandomnessWid
 import KLCalculatorWidget from "@/components/widgets/KLCalculatorWidget";
 import KLAsymmetryVisualizerWidget from "@/components/widgets/KLAsymmetryVisualizerWidget";
 import ProgrammingLanguageSimilarityWidget from "@/components/widgets/ProgrammingLanguageSimilarityWidget";
+import UnifiedContentSimilarityWidget from "@/components/widgets/UnifiedContentSimilarityWidget";
+import WikipediaContentSimilarityWidget from "@/components/widgets/WikipediaContentSimilarityWidget";
+import ThreeCategoriesWidget from "@/components/widgets/ThreeCategoriesWidget";
 import KeyTakeaway from "@/components/content/KeyTakeaway";
 import RiddleSolution from "@/components/content/RiddleSolution";
 
@@ -199,6 +202,9 @@ export async function getMdxContent(path: string) {
       KLCalculatorWidget: KLCalculatorWidget,
       KLAsymmetryVisualizerWidget: KLAsymmetryVisualizerWidget,
       ProgrammingLanguageSimilarityWidget: ProgrammingLanguageSimilarityWidget,
+      UnifiedContentSimilarityWidget: UnifiedContentSimilarityWidget,
+      WikipediaContentSimilarityWidget: WikipediaContentSimilarityWidget,
+      ThreeCategoriesWidget: ThreeCategoriesWidget,
       Math: NumberedMath,
       EqRef: EquationRef,
       Block: Block,

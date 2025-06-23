@@ -48,10 +48,13 @@ class CompressionAnalyzer:
         # Get all characters that appear in either distribution
         all_chars = set(p_freq.keys()) | set(q_freq.keys())
         
+        # Use 2^{-10} for stability as requested
+        min_freq = 2**(-10)
+        
         kl_div = 0.0
         for char in all_chars:
-            p = p_freq.get(char, 1e-10)  # Small smoothing to avoid log(0)
-            q = q_freq.get(char, 1e-10)
+            p = p_freq.get(char, min_freq)
+            q = q_freq.get(char, min_freq)
             
             if p > 0:
                 kl_div += p * math.log2(p / q)
@@ -62,10 +65,13 @@ class CompressionAnalyzer:
         """Calculate cross-entropy between two distributions"""
         all_chars = set(p_freq.keys()) | set(q_freq.keys())
         
+        # Use 2^{-10} for stability as requested
+        min_freq = 2**(-10)
+        
         cross_ent = 0.0
         for char in all_chars:
-            p = p_freq.get(char, 1e-10)
-            q = q_freq.get(char, 1e-10)
+            p = p_freq.get(char, min_freq)
+            q = q_freq.get(char, min_freq)
             
             if p > 0:
                 cross_ent += p * (-math.log2(q))
@@ -126,7 +132,7 @@ class CompressionAnalyzer:
         return results
     
     def zstd_compression_analysis(self, dict_size=1024*16):
-        """Zstandard dictionary-based compression analysis"""
+        """Zstandard compression analysis with concatenation approach"""
         print("Running Zstd compression analysis...")
         
         # Load all language data
@@ -143,25 +149,40 @@ class CompressionAnalyzer:
             'distance_matrix': {}
         }
         
-        # Calculate compression ratios for each pair
+        # Calculate compression ratios for each pair using concatenation approach
         for lang1 in language_data:
             results['compression_ratios'][lang1] = {}
             
-            # Train dictionary on lang1
             try:
-                dict_data = zstd.train_dictionary(dict_size, [language_data[lang1].encode('utf-8')])
-                compressor = zstd.ZstdCompressor(dict_data=dict_data)
+                # Use concatenation approach instead of dictionary training
+                compressor = zstd.ZstdCompressor(level=3)
                 
                 for lang2 in language_data:
-                    # Compress lang2 using lang1's dictionary
-                    original_size = len(language_data[lang2].encode('utf-8'))
-                    compressed = compressor.compress(language_data[lang2].encode('utf-8'))
-                    compressed_size = len(compressed)
+                    # Method 1: Compress lang2 alone
+                    lang2_data = language_data[lang2].encode('utf-8')
+                    lang2_compressed = compressor.compress(lang2_data)
                     
-                    ratio = compressed_size / original_size
+                    # Method 2: Compress lang1+lang2 concatenated
+                    concat_data = (language_data[lang1] + "\n" + language_data[lang2]).encode('utf-8')
+                    concat_compressed = compressor.compress(concat_data)
+                    
+                    # Compression ratio based on how much extra space lang2 needs when added to lang1
+                    lang1_size = len(language_data[lang1].encode('utf-8'))
+                    lang2_size = len(lang2_data)
+                    concat_size = len(concat_compressed)
+                    
+                    # Estimate: if languages are similar, concatenation should compress better
+                    expected_separate_size = len(compressor.compress(language_data[lang1].encode('utf-8'))) + len(lang2_compressed)
+                    
+                    # Ratio: how much better does concatenation compress vs separate compression
+                    if expected_separate_size > 0:
+                        ratio = concat_size / expected_separate_size
+                    else:
+                        ratio = 1.0
+                    
                     results['compression_ratios'][lang1][lang2] = ratio
                     
-                print(f"  Trained dictionary for {lang1}")
+                print(f"  Processed {lang1}")
                 
             except Exception as e:
                 print(f"  Error with {lang1}: {e}")
@@ -209,12 +230,17 @@ class CompressionAnalyzer:
                 combined_text = dict_text + "\n" + language_data[lang2]
                 
                 original_size = len(language_data[lang2].encode('utf-8'))
-                compressed = gzip.compress(combined_text.encode('utf-8'))
-                dict_compressed = gzip.compress(dict_text.encode('utf-8'))
                 
-                # Effective compression of lang2
-                effective_compressed_size = len(compressed) - len(dict_compressed)
-                ratio = max(0.1, effective_compressed_size / original_size)  # Avoid negative ratios
+                # Skip if either language is empty
+                if original_size == 0 or len(dict_text) == 0:
+                    ratio = 1.0
+                else:
+                    compressed = gzip.compress(combined_text.encode('utf-8'))
+                    dict_compressed = gzip.compress(dict_text.encode('utf-8'))
+                    
+                    # Effective compression of lang2
+                    effective_compressed_size = len(compressed) - len(dict_compressed)
+                    ratio = max(0.1, effective_compressed_size / original_size)  # Avoid negative ratios
                 
                 results['compression_ratios'][lang1][lang2] = ratio
         
@@ -262,12 +288,20 @@ class CompressionAnalyzer:
             print(f"Gzip analysis failed: {e}")
             all_results['gzip'] = None
         
-        # Save results
+        # Save results to both data directory and public directory for web access
         output_path = self.data_dir / output_file
         with open(output_path, 'w') as f:
             json.dump(all_results, f, indent=2)
         
+        # Also save to public directory for web widget access
+        public_dir = Path("public/data/programming_languages")
+        public_dir.mkdir(parents=True, exist_ok=True)
+        public_output_path = public_dir / output_file
+        with open(public_output_path, 'w') as f:
+            json.dump(all_results, f, indent=2)
+        
         print(f"Results saved to {output_path}")
+        print(f"Web-accessible copy saved to {public_output_path}")
         return all_results
 
 def main():

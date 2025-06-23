@@ -53,7 +53,16 @@ Unfortunately, there are situations where Shannon's code is really almost 1 bit 
 
 We can get rid of this annoying slack of one bit using the following trick. Think of constructing Shannon's code not for every letter, but for every _pair of letters_ (i.e., the alphabet grows from $26$ to $26^2$). If Shannon's code loses 1 bit per encoded letter-pair, it means it loses $1/2$ bits per actual letter! Doing this trick not for a pair of letters but a tuple of several letters can bring us arbitrarily close to a code that spends $H(p)$ bits per letter. 
 
-So, there are codes that get arbitrarily close to $H(p)$ bits per letter, even if they are a bit less intuitive since they are encoding letter-tuples, not individual letters. This is essentially the first half of the most important theorem in coding theory - [Shannon's source coding theorem](https://en.wikipedia.org/wiki/Shannon%27s_source_coding_theorem). The second part of the theorem says that we can't beat $H(p)$. Details in the expand box. 
+So, there are codes that get arbitrarily close to $H(p)$ bits per letter, even if they are a bit less intuitive since they are encoding letter-tuples, not individual letters. This is essentially the first half of the most important theorem in coding theory - [Shannon's source coding theorem](https://en.wikipedia.org/wiki/Shannon%27s_source_coding_theorem). 
+
+### The source coding theorem
+Here's the setup of the source coding theorem. We model texts like this: There is a source that has a distribution over letters. This source keeps sampling letters independently, and sends them to us. This goes on for a long time, say $n$ steps; our goal is to save some binary string to the memory so that later on, we can recover from that string what $n$ letters the source sent. 
+
+This setup with the source sampling independent letters models that we only want to think about the problem of giving code names to letters based on frequencies. We are not trying to use the _correlations_ like '$\mathsf{th}$ often follows by $\mathsf{e}$'. 
+
+The theorem says that first, there's a way to store the emitted string, using close to $H(p)$ bits per letter. We have seen a sketch of that above - it's a combination of Shannon's code and the trick to encode several letters at once. 
+
+The second part of the theorem says that we can't beat the rate $H(p)$. Details for that in the expand box. 
 
 <Expand headline = "Details of Shannon's source coding theorem">
 To see why we can't do better than $H(p)$ bits per letter on average, we will have to understand [Kraft's inequlaity](https://en.wikipedia.org/wiki/Kraft%E2%80%93McMillan_inequality). This inequality says that if we work with alphabet with $k$ letters and we build a code with words of lengths $\ell_1, \dots, \ell_k$, then it has to be the case that 
@@ -96,19 +105,14 @@ Finally, KL divergence (relative entropy) is how much worse your mismatched code
 
 ## 📦 Better ways of storing data
 
-## 🔬 Programming Language Similarity Experiment
+zip 
 
-Here's an interesting application of compression theory: we can measure how similar programming languages are by training compression algorithms on one language and seeing how well they compress another language. Languages with similar syntax, keywords, and structure should compress each other better.
 
-<ProgrammingLanguageSimilarityWidget />
 
-This visualization shows a network where each node represents a programming language, and the connections (edges) show compression-based similarity. The widget demonstrates three different compression approaches:
 
-1. **Character Frequency + KL**: Uses character frequency distributions and KL divergence as a baseline similarity metric
-2. **Zstd**: Uses Zstandard dictionary-based compression - train a dictionary on one language, compress another
-3. **Gzip**: Uses gzip with concatenated "pseudo-dictionaries" for comparison
+## 🏛️🍎🐱 Three Categories Experiment
 
-Languages from similar families (like C/C++/Java or Haskell/Lisp) should cluster together, while very different paradigms should be farther apart. The experiment connects information theory, compression, and programming language design!
+<ThreeCategoriesWidget />
 
 ## 🤔 Wikipedia riddle
 We can now revisit the riddle about how much Wikipedia (and other texts) can be compressed. 

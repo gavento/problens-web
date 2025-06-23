@@ -83,3 +83,8 @@ This ensures the deployment pipeline remains healthy and the static site builds 
   4. If you need to stop the server later, use `pkill -f "pnpm dev"` or find the specific process ID and kill it
 - Use as much relative positioning and relative lengths as possible
 - Always start by running the development server by pnpm in the background on localhost:3000
+- Start the server at 3000. If a process is running at this port, it means that you already started the server
+- If you save files that will later be used by widgets, save them to public directory
+- Start the server if it is not running. You often try to start the server when it is already running. IT IS ANNOYING, DON'T DO THAT
+- to memorize save all scripts in scripts folder
+- to memorize if we use HF endpoint, we have to be careful about  fn_index and trigger_id

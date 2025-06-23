@@ -37,56 +37,316 @@ class RosettaCodeCollector:
             'Ruby': 'ruby',
             'Perl': 'perl',
             'PHP': 'php',
-            'Swift': 'swift',
-            'Kotlin': 'kotlin',
             'Scala': 'scala',
             'Clojure': 'clojure',
-            'Erlang': 'erlang',
-            'Elixir': 'elixir',
             'OCaml': 'ocaml',
-            'F#': 'fsharp',
             'TypeScript': 'typescript',
             'Dart': 'dart',
             'Julia': 'julia',
+            'C#': 'csharp',
             'R': 'r',
             'MATLAB': 'matlab',
-            'Lua': 'lua'
+            'Lua': 'lua',
+            'Brainfuck': 'brainfuck',
+            'Brainf***': 'brainfuck',
+            'Chef': 'chef',
+            'Prolog': 'prolog',
+            'Assembly': 'assembly',
+            'Fortran': 'fortran'
         }
         
         os.makedirs(output_dir, exist_ok=True)
     
-    def get_task_list(self, limit=None):
-        """Get list of programming tasks from Rosetta Code"""
-        print("Fetching task list...")
-        url = f"{self.base_url}/wiki/Category:Programming_Tasks"
+    def clean_code_sample(self, code_text, language):
+        """Remove metadata and outputs from code samples"""
+        lines = code_text.split('\n')
+        cleaned_lines = []
         
-        try:
-            response = self.session.get(url)
-            response.raise_for_status()
-            soup = BeautifulSoup(response.content, 'html.parser')
+        i = 0
+        while i < len(lines):
+            line = lines[i].strip()
             
-            # Find all task links
-            task_links = []
-            for link in soup.find_all('a', href=True):
-                href = link.get('href')
-                if href and href.startswith('/wiki/') and link.text:
-                    # Skip meta pages
-                    if any(skip in href.lower() for skip in ['category:', 'template:', 'user:', 'talk:']):
-                        continue
-                    task_links.append({
-                        'title': link.text.strip(),
-                        'url': urljoin(self.base_url, href)
-                    })
+            # Skip our metadata headers
+            if (line.startswith('# Task:') or 
+                line.startswith('# Language:') or 
+                line.startswith('# Source:')):
+                i += 1
+                continue
             
-            if limit:
-                task_links = task_links[:limit]
+            # Skip likely output/prompt lines
+            if self.is_likely_output(line, language):
+                i += 1
+                continue
             
-            print(f"Found {len(task_links)} tasks")
-            return task_links
+            # Only keep non-empty lines
+            if line:
+                cleaned_lines.append(line)
             
-        except Exception as e:
-            print(f"Error fetching task list: {e}")
-            return []
+            i += 1
+        
+        return '\n'.join(cleaned_lines)
+    
+    def is_likely_output(self, line, language):
+        """Detect lines that are likely program output rather than code"""
+        line = line.strip()
+        
+        # Empty lines
+        if not line:
+            return False
+        
+        # Language-specific REPL prompts and outputs
+        language_specific_patterns = {
+            'julia': ['julia>', 'help?>', 'ERROR:', 'search:', '[...]'],
+            'python': ['>>>', '...', 'Traceback', 'File "<stdin>"'],
+            'haskell': ['ghci>', 'Prelude>', '*Main>'],
+            'prolog': ['?-', 'true.', 'false.'],
+            'r': ['>', '+', '[1]', 'Error in'],
+            'matlab': ['>>', 'ans =', 'Error using'],
+            'scala': ['scala>', 'res0:', 'warning:'],
+            'clojure': ['user=>', 'CompilerException'],
+        }
+        
+        if language in language_specific_patterns:
+            for pattern in language_specific_patterns[language]:
+                if line.startswith(pattern) or pattern in line:
+                    return True
+        
+        # Generic interactive prompts
+        if (line.startswith('?-') or line.startswith('>>>') or line.startswith('> ') or
+            line.startswith('ghci>') or line == '?-' or line == '>' or line == '>>>'):
+            return True
+            
+        # Separator lines (mostly dashes, equals, etc.)
+        if len(line) >= 5 and len(set(line)) <= 2 and any(c in line for c in '-=_*'):
+            return True
+            
+        # Lines that are mostly numbers and spaces (like multiplication tables)
+        alphanum_chars = sum(1 for c in line if c.isalnum())
+        space_punct_chars = sum(1 for c in line if c in ' .,:-')
+        total_chars = len(line)
+        
+        if (total_chars > 10 and 
+            space_punct_chars > alphanum_chars and
+            alphanum_chars / total_chars < 0.3):
+            return True
+            
+        # Common interpreter responses
+        if line in ['true.', 'false.', 'True', 'False', 'nil', 'None', '()', 'ans =']:
+            return True
+            
+        # Lines that look like pure output (mostly digits and basic punctuation)
+        if (len(line) > 5 and 
+            sum(1 for c in line if c.isdigit() or c in ' .,:-()[]') / len(line) > 0.8):
+            return True
+            
+        return False
+    
+    def remove_comments_from_code(self, code_text, language):
+        """Remove comments from code based on language-specific rules"""
+        lines = code_text.split('\n')
+        cleaned_lines = []
+        
+        in_multiline_comment = False
+        multiline_start = None
+        multiline_end = None
+        
+        # Define multiline comment delimiters for languages that use them
+        multiline_comments = {
+            'c': ('/*', '*/'),
+            'cpp': ('/*', '*/'),
+            'java': ('/*', '*/'),
+            'javascript': ('/*', '*/'),
+            'typescript': ('/*', '*/'),
+            'go': ('/*', '*/'),
+            'rust': ('/*', '*/'),
+            'kotlin': ('/*', '*/'),
+            'scala': ('/*', '*/'),
+            'dart': ('/*', '*/'),
+            'swift': ('/*', '*/'),
+            'haskell': ('{-', '-}'),
+            'ocaml': ('(*', '*)'),
+        }
+        
+        if language in multiline_comments:
+            multiline_start, multiline_end = multiline_comments[language]
+        
+        for line in lines:
+            original_line = line
+            
+            # Handle multiline comments first
+            if multiline_start and multiline_end:
+                # Check if we're starting a multiline comment
+                if not in_multiline_comment and multiline_start in line:
+                    start_pos = line.find(multiline_start)
+                    if not self.likely_in_string(line, multiline_start, start_pos):
+                        in_multiline_comment = True
+                        # Check if comment ends on same line
+                        end_pos = line.find(multiline_end, start_pos + len(multiline_start))
+                        if end_pos != -1 and not self.likely_in_string(line[start_pos:], multiline_end):
+                            # Single-line multiline comment
+                            line = line[:start_pos] + line[end_pos + len(multiline_end):]
+                            in_multiline_comment = False
+                        else:
+                            # Start of multiline comment
+                            line = line[:start_pos]
+                
+                # Check if we're ending a multiline comment
+                elif in_multiline_comment and multiline_end in line:
+                    end_pos = line.find(multiline_end)
+                    if not self.likely_in_string(line, multiline_end, end_pos):
+                        line = line[end_pos + len(multiline_end):]
+                        in_multiline_comment = False
+                
+                # If we're in a multiline comment, skip the entire line
+                elif in_multiline_comment:
+                    continue
+            
+            # Remove single-line comments based on language
+            line = self.remove_single_line_comments(line, language)
+            
+            # Only keep lines that have substantial content after cleaning
+            if line.strip():
+                cleaned_lines.append(line.rstrip())
+        
+        return '\n'.join(cleaned_lines)
+    
+    def remove_single_line_comments(self, line, language):
+        """Aggressively remove single-line comments from a line"""
+        
+        # Be aggressive - remove everything after comment markers
+        # Don't worry about strings, focus on getting clean code structure
+        
+        comment_patterns = {
+            'python': '#',
+            'ruby': '#', 
+            'perl': '#',
+            'r': '#',
+            'julia': '#',
+            'shell': '#',
+            
+            'c': '//',
+            'cpp': '//',
+            'java': '//',
+            'javascript': '//',
+            'typescript': '//',
+            'go': '//',
+            'rust': '//',
+            'kotlin': '//',
+            'scala': '//',
+            'dart': '//',
+            'swift': '//',
+            'php': '//',  # Prefer // over # for PHP
+            
+            'haskell': '--',
+            'lua': '--',
+            
+            'erlang': '%',
+            'prolog': '%',
+            'matlab': '%',
+            
+            'lisp': ';',
+            'scheme': ';',
+            'clojure': ';',
+            
+            'fortran': '!',
+            
+            'apl': '⍝',
+        }
+        
+        # Special handling for esoteric languages
+        if language == 'brainfuck':
+            # Only keep the 8 Brainfuck commands: > < + - . , [ ]
+            brainfuck_chars = set('><+-.,[]')
+            return ''.join(c for c in line if c in brainfuck_chars)
+        
+        if language not in comment_patterns:
+            return line  # For other esoteric languages, don't remove anything
+        
+        pattern = comment_patterns[language]
+        
+        # Special handling for Fortran C/c comments (old style)
+        if language == 'fortran':
+            stripped = line.strip()
+            if stripped.startswith('C ') or stripped.startswith('c ') or stripped == 'C' or stripped == 'c':
+                return ''
+        
+        # Aggressively remove everything after comment marker
+        pos = line.find(pattern)
+        if pos != -1:
+            line = line[:pos].rstrip()
+        
+        return line
+    
+    def likely_in_string(self, line, pattern, pos=None):
+        """Enhanced heuristic to check if pattern is likely inside a string literal"""
+        if pos is None:
+            pos = line.find(pattern)
+        if pos == -1:
+            return False
+            
+        before_pattern = line[:pos]
+        
+        # Count unescaped quotes
+        single_quotes = 0
+        double_quotes = 0
+        i = 0
+        
+        while i < len(before_pattern):
+            if before_pattern[i] == "'" and (i == 0 or before_pattern[i-1] != '\\'):
+                single_quotes += 1
+            elif before_pattern[i] == '"' and (i == 0 or before_pattern[i-1] != '\\'):
+                double_quotes += 1
+            i += 1
+        
+        # If odd number of quotes, we're inside a string
+        return (single_quotes % 2 == 1) or (double_quotes % 2 == 1)
+    
+    def get_curated_task_list(self):
+        """Get curated list of programming tasks"""
+        # Curated list of high-quality programming tasks
+        tasks = [
+            "Factorial",
+            "Fibonacci_sequence", 
+            "FizzBuzz",
+            "99_Bottles_of_Beer",
+            "Towers_of_Hanoi",
+            "Quicksort",
+            "Binary_search",
+            "Greatest_common_divisor",
+            "Prime_decomposition",
+            "Array_concatenation",
+            "Associative_array/Creation",
+            "Loops/For",
+            "Loops/While", 
+            "Conditional_structures",
+            "Function_definition",
+            "String_concatenation",
+            "Reverse_a_string",
+            "Palindrome_detection",
+            "Count_in_octal",
+            "Sum_and_product_of_an_array",
+            "Find_largest_number_in_array",
+            "Arithmetic/Integer",
+            "Generic_swap",
+            "Multiplication_tables",
+            "Caesar_cipher",
+            "Huffman_coding",
+            "Dijkstra's_algorithm",
+            "Merge_sort",
+            "Binary_tree_traversal",
+            "Regular_expression_matching",
+            "Hash_table"
+        ]
+        
+        task_list = []
+        for task in tasks:
+            task_list.append({
+                'title': task.replace('_', ' '),
+                'url': f"{self.base_url}/wiki/{task}"
+            })
+        
+        print(f"Using {len(task_list)} curated tasks")
+        return task_list
     
     def extract_code_sections(self, soup, task_title):
         """Extract code sections by language from a task page"""
@@ -131,7 +391,8 @@ class RosettaCodeCollector:
             if code_blocks:
                 if standard_name not in language_codes:
                     language_codes[standard_name] = []
-                language_codes[standard_name].extend(code_blocks)
+                # Only take the first code block to avoid collecting output sections
+                language_codes[standard_name].append(code_blocks[0])
         
         return language_codes
     
@@ -157,11 +418,13 @@ class RosettaCodeCollector:
                     filename = f"{clean_title}_{i}.txt"
                     filepath = os.path.join(lang_dir, filename)
                     
-                    with open(filepath, 'w', encoding='utf-8') as f:
-                        f.write(f"# Task: {task['title']}\n")
-                        f.write(f"# Language: {lang}\n")
-                        f.write(f"# Source: {task['url']}\n\n")
-                        f.write(code)
+                    # Clean the code sample
+                    cleaned_code = self.clean_code_sample(code, lang)
+                    
+                    # Only save if there's substantial cleaned code
+                    if len(cleaned_code.strip()) > 10:
+                        with open(filepath, 'w', encoding='utf-8') as f:
+                            f.write(cleaned_code)
             
             return language_codes
             
@@ -171,7 +434,7 @@ class RosettaCodeCollector:
     
     def collect_all(self, max_tasks=100):
         """Collect code samples from multiple tasks"""
-        tasks = self.get_task_list(limit=max_tasks)
+        tasks = self.get_curated_task_list()
         
         stats = {}
         
@@ -230,13 +493,29 @@ class RosettaCodeCollector:
                 consolidated_code.append(content)
                 total_size += len(content)
             
-            # Save consolidated file
+            # Save consolidated file with comment removal
             if consolidated_code:
+                # Join all code for this language
+                all_code = '\n\n'.join(consolidated_code)
+                
+                # Apply language-specific comment removal
+                cleaned_code = self.remove_comments_from_code(all_code, lang)
+                
                 consolidated_path = os.path.join(self.output_dir, f"{lang}_consolidated.txt")
                 with open(consolidated_path, 'w', encoding='utf-8') as f:
-                    f.write('\n\n'.join(consolidated_code))
+                    f.write(cleaned_code)
                 
-                print(f"  {lang}: {total_size / (1024*1024):.2f} MB")
+                # Also save to public directory for web access
+                public_dir = "public/data/programming_languages"
+                os.makedirs(public_dir, exist_ok=True)
+                public_path = os.path.join(public_dir, f"{lang}_consolidated.txt")
+                with open(public_path, 'w', encoding='utf-8') as f:
+                    f.write(cleaned_code)
+                
+                # Show before/after sizes
+                original_size = total_size / (1024*1024)
+                cleaned_size = len(cleaned_code.encode('utf-8')) / (1024*1024)
+                print(f"  {lang}: {original_size:.2f} MB → {cleaned_size:.2f} MB (comments removed)")
 
 def main():
     parser = argparse.ArgumentParser(description='Collect programming language samples from Rosetta Code')

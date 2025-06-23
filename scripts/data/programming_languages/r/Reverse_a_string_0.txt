@@ -1,0 +1,6 @@
+revstring <- function(stringtorev) {
+return(
+paste(
+,collapse="")
+)
+}

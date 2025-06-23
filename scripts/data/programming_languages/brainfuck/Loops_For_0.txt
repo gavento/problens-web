@@ -1,0 +1,3 @@
++++++[                           set outer loop count
+[>+                              increment inner counter
+>[-]>[-]<<[->+>+<<]>>[-<<+>>]<<  copy inner counter

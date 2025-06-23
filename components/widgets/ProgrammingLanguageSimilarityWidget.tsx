@@ -32,14 +32,41 @@ interface AnalysisData {
   gzip?: CompressionResults;
 }
 
+interface DeflateAnalysisData {
+  metadata: {
+    languages: string[];
+    num_languages: number;
+    analysis_type: string;
+    dictionary_size: number;
+    compression_strategy: string;
+  };
+  deflate_analysis: {
+    languages: string[];
+    distance_matrix: Record<string, Record<string, number>>;
+    compression_benefits: Record<string, Record<string, number>>;
+  };
+}
+
 const ProgrammingLanguageSimilarityWidget: React.FC = () => {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [data, setData] = useState<AnalysisData | null>(null);
-  const [selectedMethod, setSelectedMethod] = useState<'baseline' | 'zstd' | 'gzip'>('baseline');
+  const [klData, setKlData] = useState<AnalysisData | null>(null);
+  const [deflateData, setDeflateData] = useState<DeflateAnalysisData | null>(null);
+  const [dataMode, setDataMode] = useState<'kl' | 'deflate'>('kl');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showDistanceDistribution, setShowDistanceDistribution] = useState(false);
+  const [showControls, setShowControls] = useState(false);
+  
+  // Physics parameters with sliders
+  const [maxKLDistance, setMaxKLDistance] = useState(0.3); // Maximum KL distance to show connections
+  const [baseSpringDistance, setBaseSpringDistance] = useState(30);
+  const [maxSpringDistance, setMaxSpringDistance] = useState(200);
+  const [linkStrength, setLinkStrength] = useState(0.8);
+  const [chargeStrength, setChargeStrength] = useState(-1000);
+  const [collisionRadius, setCollisionRadius] = useState(5);
 
   // Language family color mapping
   const languageColors: Record<string, string> = {
@@ -77,7 +104,17 @@ const ProgrammingLanguageSimilarityWidget: React.FC = () => {
     
     // Other
     'julia': '#9558B2',
-    'matlab': '#0076A8'
+    'matlab': '#0076A8',
+    
+    // Esoteric languages
+    'brainfuck': '#FF0000',
+    'chef': '#8B4513',
+    'apl': '#FFD700',
+    'prolog': '#228B22',
+    'fortran': '#4169E1',
+    
+    // Assembly/Systems
+    'assembly': '#696969'
   };
 
   const getLanguageColor = (lang: string): string => {
@@ -93,38 +130,42 @@ const ProgrammingLanguageSimilarityWidget: React.FC = () => {
       setLoading(true);
       setError(null);
       
-      // For now, use mock data. In production, this would load from the analysis results
-      const mockData: AnalysisData = {
-        metadata: {
-          languages: ['python', 'java', 'javascript', 'c', 'cpp', 'go', 'rust', 'haskell', 'lisp'],
-          num_languages: 9
-        },
-        baseline: {
-          languages: ['python', 'java', 'javascript', 'c', 'cpp', 'go', 'rust', 'haskell', 'lisp'],
-          distance_matrix: {
-            'python': {'python': 0, 'java': 0.8, 'javascript': 0.7, 'c': 0.9, 'cpp': 0.85, 'go': 0.75, 'rust': 0.8, 'haskell': 0.95, 'lisp': 0.9},
-            'java': {'python': 0.8, 'java': 0, 'javascript': 0.7, 'c': 0.6, 'cpp': 0.5, 'go': 0.6, 'rust': 0.65, 'haskell': 0.9, 'lisp': 0.85},
-            'javascript': {'python': 0.7, 'java': 0.7, 'javascript': 0, 'c': 0.8, 'cpp': 0.75, 'go': 0.65, 'rust': 0.7, 'haskell': 0.85, 'lisp': 0.8},
-            'c': {'python': 0.9, 'java': 0.6, 'javascript': 0.8, 'c': 0, 'cpp': 0.3, 'go': 0.5, 'rust': 0.6, 'haskell': 0.95, 'lisp': 0.9},
-            'cpp': {'python': 0.85, 'java': 0.5, 'javascript': 0.75, 'c': 0.3, 'cpp': 0, 'go': 0.55, 'rust': 0.5, 'haskell': 0.9, 'lisp': 0.85},
-            'go': {'python': 0.75, 'java': 0.6, 'javascript': 0.65, 'c': 0.5, 'cpp': 0.55, 'go': 0, 'rust': 0.4, 'haskell': 0.8, 'lisp': 0.75},
-            'rust': {'python': 0.8, 'java': 0.65, 'javascript': 0.7, 'c': 0.6, 'cpp': 0.5, 'go': 0.4, 'rust': 0, 'haskell': 0.75, 'lisp': 0.7},
-            'haskell': {'python': 0.95, 'java': 0.9, 'javascript': 0.85, 'c': 0.95, 'cpp': 0.9, 'go': 0.8, 'rust': 0.75, 'haskell': 0, 'lisp': 0.4},
-            'lisp': {'python': 0.9, 'java': 0.85, 'javascript': 0.8, 'c': 0.9, 'cpp': 0.85, 'go': 0.75, 'rust': 0.7, 'haskell': 0.4, 'lisp': 0}
-          },
-          entropy_values: {
-            'python': 4.2, 'java': 4.5, 'javascript': 4.3, 'c': 4.1, 'cpp': 4.4, 'go': 4.0, 'rust': 4.3, 'haskell': 4.8, 'lisp': 4.6
-          }
+      // Load KL divergence data
+      let klResponse;
+      try {
+        klResponse = await fetch('/data/programming_languages/compression_analysis_results.json');
+        if (!klResponse.ok) {
+          throw new Error('Dev path failed');
         }
-      };
+      } catch {
+        klResponse = await fetch('/problens-web/data/programming_languages/compression_analysis_results.json');
+        if (!klResponse.ok) {
+          throw new Error('Failed to fetch KL data');
+        }
+      }
       
-      // Copy baseline to other methods with slight variations
-      mockData.zstd = JSON.parse(JSON.stringify(mockData.baseline));
-      mockData.gzip = JSON.parse(JSON.stringify(mockData.baseline));
+      const klAnalysisData = await klResponse.json();
+      setKlData(klAnalysisData);
       
-      setData(mockData);
+      // Load DEFLATE compression data
+      let deflateResponse;
+      try {
+        deflateResponse = await fetch('/data/programming_languages/deflate_compression_analysis.json');
+        if (!deflateResponse.ok) {
+          throw new Error('Dev path failed');
+        }
+      } catch {
+        deflateResponse = await fetch('/problens-web/data/programming_languages/deflate_compression_analysis.json');
+        if (!deflateResponse.ok) {
+          throw new Error('Failed to fetch DEFLATE data');
+        }
+      }
+      
+      const deflateAnalysisData = await deflateResponse.json();
+      setDeflateData(deflateAnalysisData);
+      
     } catch (err) {
-      setError('Failed to load compression analysis data');
+      setError('Failed to load analysis data');
       console.error(err);
     } finally {
       setLoading(false);
@@ -132,17 +173,58 @@ const ProgrammingLanguageSimilarityWidget: React.FC = () => {
   };
 
   const createVisualization = useCallback(() => {
-    if (!data || !svgRef.current) return;
-
-    const currentData = data[selectedMethod];
+    if (!svgRef.current) return;
+    
+    // Choose data based on mode
+    let currentData: CompressionResults | null = null;
+    if (dataMode === 'kl' && klData?.baseline) {
+      currentData = klData.baseline;
+    } else if (dataMode === 'deflate' && deflateData?.deflate_analysis) {
+      // Convert DEFLATE data to same format
+      currentData = {
+        languages: deflateData.deflate_analysis.languages,
+        distance_matrix: deflateData.deflate_analysis.distance_matrix,
+        entropy_values: {} // DEFLATE doesn't have entropy values
+      };
+    }
+    
     if (!currentData) return;
 
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
-    const width = 800;
-    const height = 600;
-    const margin = 40;
+    // Calculate responsive dimensions with consistent aspect ratio
+    const parentContainer = svgRef.current.parentElement;
+    if (!parentContainer) return;
+    
+    const aspectRatio = 16 / 10; // 1.6:1 aspect ratio (16:10)
+    let width, height, scaleFactor;
+    
+    if (isFullscreen) {
+      // Fullscreen: use most of viewport, maintaining aspect ratio
+      const maxWidth = window.innerWidth - 40;
+      const maxHeight = window.innerHeight - 120; // Leave space for header and controls
+      
+      // Use the constraining dimension to maintain aspect ratio
+      if (maxWidth / aspectRatio <= maxHeight) {
+        width = maxWidth;
+        height = width / aspectRatio;
+      } else {
+        height = maxHeight;
+        width = height * aspectRatio;
+      }
+      scaleFactor = width / 800; // Base scale on reference width of 800px
+    } else {
+      // Normal mode: use available width with same aspect ratio
+      const containerRect = parentContainer.getBoundingClientRect();
+      const availableWidth = Math.max(600, containerRect.width - 32);
+      width = Math.min(800, availableWidth); // Max 800px in normal mode
+      height = width / aspectRatio;
+      scaleFactor = width / 800; // Same reference width
+    }
+    
+    const margin = 40 * scaleFactor;
+    const nodeRadius = 25 * scaleFactor;
 
     svg.attr("width", width).attr("height", height);
 
@@ -152,39 +234,69 @@ const ProgrammingLanguageSimilarityWidget: React.FC = () => {
     // Prepare nodes and links
     const nodes: LanguageNode[] = currentData.languages.map(lang => ({
       id: lang,
-      size: currentData.entropy_values?.[lang] || 1
+      size: currentData!.entropy_values?.[lang] || 1
     }));
 
     const links: LanguageLink[] = [];
-    const maxDistance = Math.max(...Object.values(currentData.distance_matrix).flatMap(row => Object.values(row)));
+    const allDistances = Object.values(currentData.distance_matrix).flatMap(row => Object.values(row));
+    const maxDistance = Math.max(...allDistances);
+    
+    // Use percentile-based normalization instead of max normalization
+    const sortedDistances = allDistances.filter(d => d > 0).sort((a, b) => a - b);
+    const p90Distance = sortedDistances[Math.floor(sortedDistances.length * 0.9)]; // 90th percentile
     
     currentData.languages.forEach(lang1 => {
-      currentData.languages.forEach(lang2 => {
+      currentData!.languages.forEach(lang2 => {
         if (lang1 !== lang2) {
-          const distance = currentData.distance_matrix[lang1][lang2];
-          const similarity = 1 - (distance / maxDistance); // Convert distance to similarity
+          const rawKLDistance = currentData!.distance_matrix[lang1][lang2];
           
-          if (similarity > 0.3) { // Only show stronger connections
+          // For KL data, subtract 0.05 to give closer pairs an advantage
+          const adjustedKLDistance = dataMode === 'kl' 
+            ? Math.max(0, rawKLDistance - 0.05)
+            : rawKLDistance;
+          
+          // Only show connections for close pairs (small adjusted distances)
+          if (adjustedKLDistance <= maxKLDistance) {
+            // Normalize distance for spring calculations (0 = closest, 1 = furthest within threshold)
+            const normalizedDistance = adjustedKLDistance / maxKLDistance;
+            
             links.push({
               source: lang1,
               target: lang2,
-              value: similarity,
-              distance: distance
+              value: 1 - normalizedDistance, // Higher value = closer languages
+              distance: rawKLDistance // Keep original distance for display
             });
           }
         }
       });
     });
 
-    // Create force simulation
+    // Create force simulation optimized for close pairs
     const simulation = d3.forceSimulation<LanguageNode>(nodes)
       .force("link", d3.forceLink<LanguageNode, LanguageLink>(links)
         .id(d => d.id)
-        .distance(d => 50 + (1 - d.value) * 150)
-        .strength(d => d.value * 0.5))
-      .force("charge", d3.forceManyBody().strength(-300))
+        .distance(d => {
+          // Short spring distances for close languages, longer for distant ones
+          // Scale distances proportionally to canvas size
+          return (baseSpringDistance + (1 - d.value) * maxSpringDistance) * scaleFactor;
+        })
+        .strength(d => {
+          // Exponential strength - very strong for similar pairs
+          const exponentialSimilarity = Math.pow(d.value, 2); // Square for emphasis
+          return exponentialSimilarity * linkStrength;
+        }))
+      .force("charge", d3.forceManyBody().strength(chargeStrength * scaleFactor)) // Scale repulsion force
       .force("center", d3.forceCenter((width - 2 * margin) / 2, (height - 2 * margin) / 2))
-      .force("collision", d3.forceCollide().radius(25));
+      .force("collision", d3.forceCollide().radius(nodeRadius + collisionRadius * scaleFactor))
+      .force("boundary", () => {
+        // Keep nodes within bounds
+        nodes.forEach(node => {
+          if (node.x !== undefined && node.y !== undefined) {
+            node.x = Math.max(nodeRadius + 10, Math.min(width - 2 * margin - nodeRadius - 10, node.x));
+            node.y = Math.max(nodeRadius + 10, Math.min(height - 2 * margin - nodeRadius - 10, node.y));
+          }
+        });
+      });
 
     // Create links
     const link = container.append("g")
@@ -192,15 +304,19 @@ const ProgrammingLanguageSimilarityWidget: React.FC = () => {
       .data(links)
       .join("line")
       .attr("stroke", "#999")
-      .attr("stroke-opacity", 0.6)
-      .attr("stroke-width", d => Math.sqrt(d.value) * 4);
+      .attr("stroke-opacity", 0.8)
+      .attr("stroke-width", d => {
+        // Emphasize close pairs with much thicker edges
+        const exponentialThickness = Math.pow(d.value, 1.5);
+        return exponentialThickness * 8 * scaleFactor; // Scale edge thickness
+      });
 
     // Create nodes
     const node = container.append("g")
       .selectAll("circle")
       .data(nodes)
       .join("circle")
-      .attr("r", d => 8 + (d.size || 1) * 3)
+      .attr("r", d => Math.min(nodeRadius, 8 + (d.size || 1) * 3))
       .attr("fill", d => getLanguageColor(d.id))
       .attr("stroke", "#fff")
       .attr("stroke-width", 2)
@@ -212,7 +328,7 @@ const ProgrammingLanguageSimilarityWidget: React.FC = () => {
       .data(nodes)
       .join("text")
       .text(d => d.id)
-      .attr("font-size", "12px")
+      .attr("font-size", `${12 * scaleFactor}px`)
       .attr("font-weight", "bold")
       .attr("text-anchor", "middle")
       .attr("dy", 4)
@@ -283,11 +399,23 @@ const ProgrammingLanguageSimilarityWidget: React.FC = () => {
         .attr("y", d => d.y!);
     });
 
-  }, [data, selectedMethod, selectedNode]);
+  }, [klData, deflateData, dataMode, selectedNode, isFullscreen, maxKLDistance, baseSpringDistance, maxSpringDistance, linkStrength, chargeStrength, collisionRadius]);
 
   useEffect(() => {
     createVisualization();
   }, [createVisualization]);
+
+  // Handle window resize in fullscreen mode
+  useEffect(() => {
+    if (!isFullscreen) return;
+
+    const handleResize = () => {
+      createVisualization();
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isFullscreen, createVisualization]);
 
   if (loading) {
     return (
@@ -305,43 +433,347 @@ const ProgrammingLanguageSimilarityWidget: React.FC = () => {
     );
   }
 
-  const currentData = data?.[selectedMethod];
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
+  };
+
+  const getDistanceStatistics = () => {
+    const currentDistanceMatrix = dataMode === 'kl' 
+      ? klData?.baseline?.distance_matrix 
+      : deflateData?.deflate_analysis?.distance_matrix;
+      
+    const languages = dataMode === 'kl'
+      ? klData?.baseline?.languages
+      : deflateData?.deflate_analysis?.languages;
+      
+    if (!currentDistanceMatrix || !languages) return null;
+    
+    const distances: number[] = [];
+    
+    // Collect all pairwise distances
+    for (let i = 0; i < languages.length; i++) {
+      for (let j = i + 1; j < languages.length; j++) {
+        const lang1 = languages[i];
+        const lang2 = languages[j];
+        const distance = currentDistanceMatrix[lang1][lang2];
+        distances.push(distance);
+      }
+    }
+    
+    distances.sort((a, b) => a - b);
+    
+    // Create focused histogram bins for 0.0-0.5 range with 0.05 bin width
+    const focusMin = 0.0;
+    const focusMax = 0.5;
+    const binSize = 0.05;
+    const numBins = Math.ceil((focusMax - focusMin) / binSize);
+    
+    const bins = Array(numBins).fill(0);
+    const outOfRangeCount = distances.filter(d => d > focusMax).length;
+    
+    distances.forEach(d => {
+      if (d >= focusMin && d <= focusMax) {
+        const binIndex = Math.min(Math.floor((d - focusMin) / binSize), numBins - 1);
+        bins[binIndex]++;
+      }
+    });
+    
+    const sortedDistances = distances.filter(d => d > 0).sort((a, b) => a - b);
+    const p90Distance = sortedDistances[Math.floor(sortedDistances.length * 0.9)];
+    
+    return {
+      distances,
+      min: Math.min(...distances).toFixed(3),
+      max: Math.max(...distances).toFixed(3),
+      p90: p90Distance.toFixed(3),
+      mean: (distances.reduce((a, b) => a + b, 0) / distances.length).toFixed(3),
+      median: distances[Math.floor(distances.length / 2)].toFixed(3),
+      bins,
+      binSize,
+      focusMin,
+      focusMax,
+      outOfRangeCount,
+      numPairs: distances.length
+    };
+  };
+
+  const containerClass = isFullscreen 
+    ? "fixed inset-0 z-50 bg-white p-4 space-y-4 overflow-y-auto"
+    : "p-4 sm:p-6 bg-gray-50 rounded-lg space-y-4 w-full mx-auto";
 
   return (
-    <div className="p-4 sm:p-6 bg-gray-50 rounded-lg space-y-4 max-w-6xl mx-auto">
-      <h3 className="text-xl font-semibold text-center text-gray-800">
-        Programming Language Similarity Network
-      </h3>
+    <div className={containerClass}>
+      <div className="flex justify-between items-center">
+        <h3 className="text-xl font-semibold text-gray-800">
+          Programming Language Similarity Network
+        </h3>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setDataMode(dataMode === 'kl' ? 'deflate' : 'kl')}
+            className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors text-sm"
+          >
+            Mode: {dataMode === 'kl' ? 'KL Divergence' : 'DEFLATE Compression'}
+          </button>
+          <button
+            onClick={() => setShowControls(!showControls)}
+            className="px-3 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors text-sm"
+          >
+            {showControls ? 'Hide Controls' : 'Show Controls'}
+          </button>
+          <button
+            onClick={() => setShowDistanceDistribution(!showDistanceDistribution)}
+            className="px-3 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors text-sm"
+          >
+            {showDistanceDistribution ? 'Hide Debug' : 'Show Debug'}
+          </button>
+          <button
+            onClick={toggleFullscreen}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+          </button>
+        </div>
+      </div>
       
       <p className="text-center text-gray-600 text-sm">
-        Languages clustered by compression-based similarity. 
-        Closer nodes and thicker edges indicate higher similarity.
+        {dataMode === 'kl' 
+          ? 'Languages clustered by KL divergence of character frequencies. Closer nodes and thicker edges indicate more similar character usage patterns.'
+          : 'Languages clustered by DEFLATE dictionary compression. Closer nodes indicate better cross-compression using static dictionaries.'
+        }
       </p>
 
-      {/* Method selector */}
-      <div className="flex justify-center gap-2">
-        {(['baseline', 'zstd', 'gzip'] as const).map((method) => (
-          <button
-            key={method}
-            onClick={() => setSelectedMethod(method)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
-              selectedMethod === method
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            {method === 'baseline' ? 'Character Freq + KL' : method.toUpperCase()}
-          </button>
-        ))}
-      </div>
+      {/* Physics Controls Panel */}
+      {showControls && (
+        <div className="bg-purple-50 rounded-lg border border-purple-200 p-4">
+          <h4 className="font-semibold mb-3">Physics Parameters</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Max Distance: {maxKLDistance.toFixed(2)}
+              </label>
+              <input
+                type="range"
+                min="0.1"
+                max="1.0"
+                step="0.05"
+                value={maxKLDistance}
+                onChange={(e) => setMaxKLDistance(parseFloat(e.target.value))}
+                className="w-full"
+              />
+              <div className="text-xs text-gray-500">Only show connections ≤ this distance</div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Base Spring Distance: {baseSpringDistance}px
+              </label>
+              <input
+                type="range"
+                min="10"
+                max="100"
+                step="5"
+                value={baseSpringDistance}
+                onChange={(e) => setBaseSpringDistance(parseInt(e.target.value))}
+                className="w-full"
+              />
+              <div className="text-xs text-gray-500">Spring length for closest languages</div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Max Spring Distance: {maxSpringDistance}px
+              </label>
+              <input
+                type="range"
+                min="100"
+                max="500"
+                step="25"
+                value={maxSpringDistance}
+                onChange={(e) => setMaxSpringDistance(parseInt(e.target.value))}
+                className="w-full"
+              />
+              <div className="text-xs text-gray-500">Spring length for furthest connected languages</div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Link Strength: {linkStrength.toFixed(1)}
+              </label>
+              <input
+                type="range"
+                min="0.1"
+                max="2.0"
+                step="0.1"
+                value={linkStrength}
+                onChange={(e) => setLinkStrength(parseFloat(e.target.value))}
+                className="w-full"
+              />
+              <div className="text-xs text-gray-500">How strongly springs pull nodes together</div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Charge Strength: {chargeStrength}
+              </label>
+              <input
+                type="range"
+                min="-2000"
+                max="-50"
+                step="50"
+                value={chargeStrength}
+                onChange={(e) => setChargeStrength(parseInt(e.target.value))}
+                className="w-full"
+              />
+              <div className="text-xs text-gray-500">Repulsion between all nodes (negative = repel)</div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Collision Radius: {collisionRadius}px
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="30"
+                step="2"
+                value={collisionRadius}
+                onChange={(e) => setCollisionRadius(parseInt(e.target.value))}
+                className="w-full"
+              />
+              <div className="text-xs text-gray-500">Extra spacing around nodes</div>
+            </div>
+
+          </div>
+          
+          <div className="mt-4 flex gap-2">
+            <button
+              onClick={() => {
+                setMaxKLDistance(0.3);
+                setBaseSpringDistance(30);
+                setMaxSpringDistance(200);
+                setLinkStrength(0.8);
+                setChargeStrength(-1000);
+                setCollisionRadius(5);
+              }}
+              className="px-3 py-1 bg-purple-500 text-white rounded text-sm hover:bg-purple-600"
+            >
+              Reset to Defaults
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Debug Panel */}
+      {showDistanceDistribution && (() => {
+        const stats = getDistanceStatistics();
+        return stats ? (
+          <div className="bg-yellow-50 rounded-lg border border-yellow-200 p-4">
+            <h4 className="font-semibold mb-2">Distance Distribution Debug ({dataMode.toUpperCase()})</h4>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm mb-4">
+              <div><strong>Total pairs:</strong> {stats.numPairs}</div>
+              <div><strong>Min:</strong> {stats.min}</div>
+              <div><strong>Max:</strong> {stats.max}</div>
+              <div><strong>90th percentile:</strong> {stats.p90}</div>
+              <div><strong>Mean:</strong> {stats.mean}</div>
+              <div><strong>Median:</strong> {stats.median}</div>
+            </div>
+            
+            {/* Most similar language pairs */}
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <div className="font-bold text-sm mb-2">Most similar language pairs:</div>
+                <div className="text-xs space-y-1">
+                  {(() => {
+                    const currentDistanceMatrix = dataMode === 'kl' 
+                      ? klData?.baseline?.distance_matrix 
+                      : deflateData?.deflate_analysis?.distance_matrix;
+                    const languages = dataMode === 'kl'
+                      ? klData?.baseline?.languages
+                      : deflateData?.deflate_analysis?.languages;
+                      
+                    if (!currentDistanceMatrix || !languages) return null;
+                    
+                    // Create pairs with distances and remove duplicates
+                    const pairs: Array<{lang1: string, lang2: string, distance: number}> = [];
+                    
+                    for (let j = 0; j < languages.length; j++) {
+                      for (let k = j + 1; k < languages.length; k++) {
+                        const lang1 = languages[j];
+                        const lang2 = languages[k];
+                        const distance = currentDistanceMatrix[lang1][lang2];
+                        pairs.push({lang1, lang2, distance});
+                      }
+                    }
+                    
+                    // Sort by distance and take first 10
+                    const sortedPairs = pairs.sort((a, b) => a.distance - b.distance).slice(0, 10);
+                    
+                    return sortedPairs.map((pair, i) => (
+                      <div key={`${pair.lang1}-${pair.lang2}`}>
+                        {pair.lang1} ↔ {pair.lang2}: {pair.distance.toFixed(3)}
+                        {dataMode === 'deflate' && deflateData && (
+                          <span className="text-gray-500 ml-2">
+                            ({(deflateData.deflate_analysis.compression_benefits[pair.lang1][pair.lang2] * 100).toFixed(1)}%, 
+                            {(deflateData.deflate_analysis.compression_benefits[pair.lang2][pair.lang1] * 100).toFixed(1)}%)
+                          </span>
+                        )}
+                      </div>
+                    ));
+                  })()}
+                </div>
+              </div>
+              
+              <div>
+                <div className="font-bold text-sm mb-2">Most distant language pairs:</div>
+                <div className="text-xs space-y-1">
+                  {(() => {
+                    const currentDistanceMatrix = dataMode === 'kl' 
+                      ? klData?.baseline?.distance_matrix 
+                      : deflateData?.deflate_analysis?.distance_matrix;
+                    const languages = dataMode === 'kl'
+                      ? klData?.baseline?.languages
+                      : deflateData?.deflate_analysis?.languages;
+                      
+                    if (!currentDistanceMatrix || !languages) return null;
+                    
+                    // Create pairs with distances and remove duplicates
+                    const pairs: Array<{lang1: string, lang2: string, distance: number}> = [];
+                    
+                    for (let j = 0; j < languages.length; j++) {
+                      for (let k = j + 1; k < languages.length; k++) {
+                        const lang1 = languages[j];
+                        const lang2 = languages[k];
+                        const distance = currentDistanceMatrix[lang1][lang2];
+                        pairs.push({lang1, lang2, distance});
+                      }
+                    }
+                    
+                    // Sort by distance (descending) and take first 10
+                    const sortedPairs = pairs.sort((a, b) => b.distance - a.distance).slice(0, 10);
+                    
+                    return sortedPairs.map((pair, i) => (
+                      <div key={`${pair.lang1}-${pair.lang2}`}>
+                        {pair.lang1} ↔ {pair.lang2}: {pair.distance.toFixed(3)}
+                      </div>
+                    ));
+                  })()}
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null;
+      })()}
 
       {/* Visualization */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4 flex justify-center">
-        <svg ref={svgRef}></svg>
+      <div className="bg-white rounded-lg border border-gray-200 p-4 overflow-hidden">
+        <div className="w-full flex justify-center">
+          <svg ref={svgRef}></svg>
+        </div>
       </div>
 
       {/* Language info panel */}
-      {(hoveredNode || selectedNode) && currentData && (
+      {(hoveredNode || selectedNode) && (
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           <h4 className="font-semibold text-lg mb-2">
             {hoveredNode || selectedNode}
@@ -349,30 +781,61 @@ const ProgrammingLanguageSimilarityWidget: React.FC = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <h5 className="font-medium text-gray-700 mb-2">Most Similar Languages:</h5>
-              {currentData.distance_matrix[hoveredNode || selectedNode!] && (
-                <div className="space-y-1">
-                  {Object.entries(currentData.distance_matrix[hoveredNode || selectedNode!])
-                    .filter(([lang]) => lang !== (hoveredNode || selectedNode))
-                    .sort(([,a], [,b]) => a - b)
-                    .slice(0, 5)
-                    .map(([lang, distance]) => (
-                      <div key={lang} className="flex justify-between items-center">
-                        <span className="text-sm">{lang}</span>
-                        <span className="text-xs text-gray-500">
-                          {(1 - distance).toFixed(3)} similarity
-                        </span>
-                      </div>
-                    ))}
-                </div>
-              )}
+              <h5 className="font-medium text-gray-700 mb-2">
+                Closest Languages (by {dataMode === 'kl' ? 'KL distance' : 'DEFLATE compression'}):
+              </h5>
+              {(() => {
+                const currentDistanceMatrix = dataMode === 'kl' 
+                  ? klData?.baseline?.distance_matrix 
+                  : deflateData?.deflate_analysis?.distance_matrix;
+                  
+                if (!currentDistanceMatrix || !currentDistanceMatrix[hoveredNode || selectedNode!]) {
+                  return null;
+                }
+                
+                return (
+                  <div className="space-y-1">
+                    {Object.entries(currentDistanceMatrix[hoveredNode || selectedNode!])
+                      .filter(([lang]) => lang !== (hoveredNode || selectedNode))
+                      .sort(([,a], [,b]) => a - b)
+                      .slice(0, 5)
+                      .map(([lang, distance]) => (
+                        <div key={lang} className="flex justify-between items-center">
+                          <span className="text-sm">{lang}</span>
+                          <span className="text-xs text-gray-500">
+                            {distance.toFixed(3)} {dataMode === 'kl' ? 'KL' : 'dist'}
+                            {dataMode === 'deflate' && deflateData && (
+                              <span className="ml-2">
+                                ({(deflateData.deflate_analysis.compression_benefits[hoveredNode || selectedNode!][lang] * 100).toFixed(1)}%)
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                );
+              })()}
             </div>
             
-            {currentData.entropy_values && (
+            {dataMode === 'kl' && klData?.baseline?.entropy_values && (
               <div>
                 <h5 className="font-medium text-gray-700 mb-2">Properties:</h5>
                 <div className="text-sm space-y-1">
-                  <div>Character Entropy: {currentData.entropy_values[hoveredNode || selectedNode!]?.toFixed(3)} bits</div>
+                  <div>Character Entropy: {klData.baseline.entropy_values[hoveredNode || selectedNode!]?.toFixed(3)} bits</div>
+                </div>
+              </div>
+            )}
+            
+            {dataMode === 'deflate' && deflateData && (
+              <div>
+                <h5 className="font-medium text-gray-700 mb-2">Compression Benefits:</h5>
+                <div className="text-sm space-y-1">
+                  <div>As dictionary for others: Average {
+                    (Object.values(deflateData.deflate_analysis.compression_benefits[hoveredNode || selectedNode!])
+                      .filter((_, i, arr) => Object.keys(deflateData.deflate_analysis.compression_benefits[hoveredNode || selectedNode!])[i] !== (hoveredNode || selectedNode))
+                      .reduce((a, b) => a + b, 0) / 
+                      (deflateData.deflate_analysis.languages.length - 1) * 100).toFixed(1)
+                  }% improvement</div>
                 </div>
               </div>
             )}
@@ -384,10 +847,19 @@ const ProgrammingLanguageSimilarityWidget: React.FC = () => {
       <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
         <h4 className="font-semibold mb-2">How to Read This Visualization</h4>
         <div className="text-sm text-gray-700 space-y-1">
-          <div>• <strong>Node size:</strong> Larger nodes have higher character entropy</div>
-          <div>• <strong>Edge thickness:</strong> Thicker edges indicate higher compression similarity</div>
+          {dataMode === 'kl' ? (
+            <>
+              <div>• <strong>Node size:</strong> Larger nodes have higher character entropy</div>
+              <div>• <strong>Edge thickness:</strong> Thicker edges indicate smaller KL divergence (more similar)</div>
+            </>
+          ) : (
+            <>
+              <div>• <strong>Node size:</strong> All nodes same size (no entropy data for DEFLATE)</div>
+              <div>• <strong>Edge thickness:</strong> Thicker edges indicate better compression benefit</div>
+            </>
+          )}
           <div>• <strong>Node color:</strong> Different colors represent language families</div>
-          <div>• <strong>Distance:</strong> Closer nodes are more similar according to compression analysis</div>
+          <div>• <strong>Distance:</strong> Closer nodes are more similar according to {dataMode === 'kl' ? 'character frequency' : 'compression'} analysis</div>
           <div>• <strong>Interaction:</strong> Hover over nodes to see connections, click to pin details</div>
         </div>
       </div>
