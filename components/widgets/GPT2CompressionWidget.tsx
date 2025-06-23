@@ -32,7 +32,7 @@ interface CompressionResult {
 }
 
 const GPT2CompressionWidget: React.FC = () => {
-  const [inputText, setInputText] = useState("hello world");
+  const [inputText, setInputText] = useState("Language models can compress text by predicting the next token");
   const [compressionData, setCompressionData] = useState<CompressionResult | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -133,8 +133,8 @@ const GPT2CompressionWidget: React.FC = () => {
   };
 
   const runCompression = async () => {
-    if (!inputText.trim() || inputText.length > 50) {
-      setError("Text must be between 1 and 50 characters");
+    if (!inputText.trim() || inputText.length > 500) {
+      setError("Text must be between 1 and 500 characters");
       return;
     }
 
@@ -199,10 +199,6 @@ const GPT2CompressionWidget: React.FC = () => {
       <h3 className="text-xl font-semibold text-gray-800 text-center">
         GPT2 Compression Visualization
       </h3>
-      
-      <p className="text-sm text-gray-600 text-center">
-        Watch how a language model can compress text by predicting the next token and encoding it with Shannon codes
-      </p>
 
       {/* Input Section */}
       <div className="space-y-4">
@@ -211,9 +207,9 @@ const GPT2CompressionWidget: React.FC = () => {
             type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            placeholder="Enter text to compress (max 50 chars)"
+            placeholder="Enter text to compress (max 500 chars)"
             className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            maxLength={50}
+            maxLength={500}
             disabled={isLoading}
           />
           <button
@@ -226,7 +222,7 @@ const GPT2CompressionWidget: React.FC = () => {
         </div>
         
         <div className="text-sm text-gray-500">
-          {inputText.length}/50 characters
+          {inputText.length}/500 characters
         </div>
       </div>
 
@@ -246,79 +242,19 @@ const GPT2CompressionWidget: React.FC = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
                 <span className="text-gray-600">Original:</span>
-                <div className="font-mono">{compressionData.original_bits} bits</div>
+                <div className="font-mono">{compressionData.original_text.length}×8={compressionData.original_bits} bits</div>
               </div>
               <div>
                 <span className="text-gray-600">Compressed:</span>
                 <div className="font-mono">{compressionData.total_bits} bits</div>
               </div>
               <div>
-                <span className="text-gray-600">Ratio:</span>
-                <div className="font-mono">{compressionData.compression_ratio.toFixed(2)}</div>
+                <span className="text-gray-600">Bits per letter:</span>
+                <div className="font-mono">{(compressionData.total_bits / compressionData.original_text.length).toFixed(2)}</div>
               </div>
               <div>
                 <span className="text-gray-600">Tokens:</span>
                 <div className="font-mono">{compressionData.tokens.length}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Tokenization Display */}
-          <div className="bg-white p-4 rounded-lg border">
-            <h4 className="font-semibold mb-2">Tokenization</h4>
-            <div className="flex flex-wrap gap-1 mb-3">
-              {compressionData.tokens.map((token, index) => (
-                <span
-                  key={index}
-                  className={`px-2 py-1 rounded text-sm font-mono border ${
-                    index <= currentStep
-                      ? index === currentStep
-                        ? 'bg-blue-200 border-blue-400'
-                        : 'bg-green-100 border-green-300'
-                      : 'bg-gray-100 border-gray-300'
-                  }`}
-                >
-                  {token.replace(/ /g, '·')}
-                </span>
-              ))}
-            </div>
-            
-            {/* Shannon Codes */}
-            <div className="border-t pt-3">
-              <h5 className="text-sm font-medium text-gray-700 mb-2">Shannon Codes:</h5>
-              <div className="flex flex-wrap gap-1 mb-2">
-                {compressionData.steps.map((step, index) => (
-                  <div key={index} className="text-center">
-                    <div className={`px-2 py-1 rounded text-xs font-mono border ${
-                      index <= currentStep
-                        ? index === currentStep
-                          ? 'bg-blue-200 border-blue-400'
-                          : 'bg-green-100 border-green-300'
-                        : 'bg-gray-100 border-gray-300'
-                    }`}>
-                      {index <= currentStep ? step.shannon_code : '?'.repeat(step.shannon_code_length)}
-                    </div>
-                    <div className="text-xs text-gray-500 mt-1">
-                      {step.shannon_code_length} bits
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              {/* Concatenated final code */}
-              <div className="mt-3 p-2 bg-gray-50 rounded">
-                <div className="text-sm text-gray-600 mb-1">Final compressed code:</div>
-                <div className="font-mono text-sm break-all">
-                  {compressionData.steps
-                    .slice(0, currentStep + 1)
-                    .map(step => step.shannon_code)
-                    .join('')}
-                  {currentStep < compressionData.steps.length - 1 && (
-                    <span className="text-gray-400">
-                      {'?'.repeat(compressionData.steps.slice(currentStep + 1).reduce((sum, step) => sum + step.shannon_code_length, 0))}
-                    </span>
-                  )}
-                </div>
               </div>
             </div>
           </div>
@@ -347,93 +283,121 @@ const GPT2CompressionWidget: React.FC = () => {
             </button>
           </div>
 
+          {/* Tokenization Display */}
+          <div className="bg-white p-4 rounded-lg border">
+            <h4 className="font-semibold mb-2">Tokenization</h4>
+            <div className="flex flex-wrap gap-1 mb-3">
+              {compressionData.tokens.map((token, index) => (
+                <span
+                  key={index}
+                  className={`px-2 py-1 rounded text-sm font-mono border ${
+                    index <= currentStep
+                      ? index === currentStep
+                        ? 'bg-blue-200 border-blue-400'
+                        : 'bg-green-100 border-green-300'
+                      : 'bg-gray-100 border-gray-300'
+                  }`}
+                >
+                  {token.replace(/ /g, '·')}
+                </span>
+              ))}
+            </div>
+            
+            {/* Shannon Codes */}
+            <div className="border-t pt-3">
+              <h5 className="text-sm font-medium text-gray-700 mb-2">Shannon Codes:</h5>
+              <div className="flex flex-wrap gap-1 mb-2">
+                {compressionData.tokens.map((token, index) => (
+                  <div key={index} className="text-center">
+                    <div className={`px-3 py-2 rounded text-xs border min-w-[40px] ${
+                      index <= currentStep
+                        ? index === currentStep
+                          ? 'bg-blue-200 border-blue-400'
+                          : 'bg-green-100 border-green-300'
+                        : 'bg-gray-100 border-gray-300'
+                    }`}>
+                      {index <= currentStep ? `${compressionData.steps[index].shannon_code_length} bits` : '? bits'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
           {/* Current Step Visualization */}
           {currentStepData && (
             <div className="bg-white p-4 rounded-lg border space-y-4">
-              <div className="flex items-center justify-between">
-                <h4 className="font-semibold">
-                  Step {currentStep + 1}/{compressionData.steps.length}
-                </h4>
-                <div className="text-sm text-gray-600">
-                  Total bits so far: {currentStepData.total_bits_so_far}
-                </div>
-              </div>
-
-              {/* Current Token and Context */}
-              <div className="space-y-2">
-                <div className="text-sm text-gray-600">Context + Current Token:</div>
-                <div className="flex flex-wrap gap-1 items-center">
-                  {currentStepData.context_tokens.map((token, index) => (
-                    <span
-                      key={index}
-                      className="px-2 py-1 rounded text-sm font-mono bg-green-100 border border-green-300"
-                    >
-                      {token.replace(/ /g, '·')}
-                    </span>
-                  ))}
-                  {currentStepData.context_tokens.length > 0 && (
-                    <div className="mx-2 text-2xl text-blue-600">▼</div>
-                  )}
-                  <span className="px-2 py-1 rounded text-sm font-mono bg-blue-200 border border-blue-400 font-semibold">
-                    {currentStepData.token.replace(/ /g, '·')}
-                  </span>
-                </div>
-              </div>
 
               {/* Predictions */}
               <div className="space-y-2">
-                <div className="text-sm text-gray-600">Top 5 Predictions:</div>
+                <div className="text-sm text-gray-600">Predictions (sorted by probability):</div>
                 <div className="grid gap-2">
-                  {currentStepData.top_predictions.map((pred, index) => (
-                    <div
-                      key={index}
-                      className={`flex justify-between items-center px-3 py-2 rounded text-sm ${
-                        pred.token === currentStepData.token
-                          ? 'bg-blue-100 border border-blue-300 font-semibold'
-                          : 'bg-gray-50 border border-gray-200'
-                      }`}
-                    >
-                      <span className="font-mono">
-                        {pred.token.replace(/ /g, '·')}
-                      </span>
-                      <span className="font-mono">
-                        {(pred.probability * 100).toFixed(1)}%
-                      </span>
-                    </div>
-                  ))}
+                  {(() => {
+                    // Helper function to format probability
+                    const formatProbability = (prob: number) => {
+                      const percentage = prob * 100;
+                      if (percentage >= 0.1) {
+                        return percentage.toFixed(1) + '%';
+                      } else if (percentage >= 0.01) {
+                        return percentage.toFixed(2) + '%';
+                      } else if (percentage >= 0.001) {
+                        return percentage.toFixed(3) + '%';
+                      } else {
+                        return percentage.toFixed(6) + '%';
+                      }
+                    };
+
+                    // Create combined list with actual token and top predictions
+                    const actualToken = {
+                      token: currentStepData.token,
+                      probability: currentStepData.actual_probability,
+                      isActual: true
+                    };
+                    
+                    const topPreds = currentStepData.top_predictions.map(pred => ({
+                      ...pred,
+                      isActual: false
+                    }));
+                    
+                    // Combine and remove duplicates, then sort by probability
+                    const allTokens = [actualToken, ...topPreds]
+                      .filter((token, index, array) => 
+                        array.findIndex(t => t.token === token.token) === index
+                      )
+                      .sort((a, b) => b.probability - a.probability)
+                      .slice(0, 6); // Show top 6
+                    
+                    return allTokens.map((tokenData, index) => (
+                      <div
+                        key={index}
+                        className={`flex justify-between items-center px-3 py-2 rounded text-sm ${
+                          tokenData.isActual
+                            ? 'bg-blue-100 border border-blue-300 font-semibold'
+                            : 'bg-gray-50 border border-gray-200'
+                        }`}
+                      >
+                        <span className="font-mono">
+                          {tokenData.token.replace(/ /g, '·')}{tokenData.isActual ? ' (actual)' : ''}
+                        </span>
+                        <span className="font-mono">
+                          {formatProbability(tokenData.probability)}
+                        </span>
+                      </div>
+                    ));
+                  })()}
                 </div>
               </div>
 
               {/* Shannon Code */}
               <div className="space-y-2">
-                <div className="text-sm text-gray-600">Actual Token Encoding:</div>
-                <div className="bg-gray-100 p-3 rounded border">
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-gray-600">Probability:</span>
-                      <div className="font-mono font-semibold">
-                        {(currentStepData.actual_probability * 100).toFixed(2)}%
-                      </div>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Shannon Code Length:</span>
-                      <div className="font-mono font-semibold">
-                        {currentStepData.shannon_code_length} bits
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-2">
-                    <span className="text-gray-600">Shannon Code: </span>
-                    <span className="font-mono font-semibold text-blue-600 text-lg">
-                      {currentStepData.shannon_code}
-                    </span>
-                    <span className="text-xs text-gray-500 ml-2">
-                      ({currentStepData.shannon_code_length} bits)
-                    </span>
-                  </div>
-                  <div className="mt-1 text-xs text-gray-500">
-                    Length = ⌈-log₂({(currentStepData.actual_probability).toFixed(4)})⌉ = {currentStepData.shannon_code_length} bits
-                  </div>
+                <div className="text-xs text-gray-500">
+                  Length = ⌈log₂(1/{(() => {
+                    const prob = currentStepData.actual_probability;
+                    if (prob >= 0.1) return prob.toFixed(2);
+                    if (prob >= 0.01) return prob.toFixed(3);
+                    if (prob >= 0.001) return prob.toFixed(4);
+                    return prob.toExponential(1);
+                  })()})⌉ = {Math.ceil(-Math.log2(currentStepData.actual_probability))} bits
                 </div>
               </div>
             </div>

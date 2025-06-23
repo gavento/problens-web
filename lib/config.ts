@@ -30,7 +30,7 @@ export const CHAPTERS = [
   ["", ""], // Gap
   ...BONUS_CHAPTERS,
 ];
-export const rootSlug = "index";
+export const rootSlug = "00-introduction";
 export const contentDirectory = join(process.cwd(), "public");
 export const GTM_ID = undefined;
 export const referencesPath = join(contentDirectory, "references.bib");
