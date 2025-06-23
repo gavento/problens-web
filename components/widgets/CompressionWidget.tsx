@@ -430,7 +430,7 @@ export default function CompressionWidget() {
           body: JSON.stringify({ 
             data: [text],
             event_data: null,
-            fn_index: 2,        // Compression Analysis tab (third interface)
+            fn_index: 7,        // Compression Analysis tab (correct index from HF logs)
             session_hash: sessionHash
           })
         }
@@ -461,7 +461,7 @@ export default function CompressionWidget() {
               eventSource.close();
               setGptLoadingMessage('');
               
-              console.log('Full API response:', data);
+              console.log('Full API response:', JSON.stringify(data, null, 2));
               
               if (data.output && data.output.data) {
                 const jsonString = data.output.data[0];
@@ -489,8 +489,8 @@ export default function CompressionWidget() {
                   resolve(null);
                 }
               } else {
-                console.log('data.output:', data.output);
-                console.error('No output data - full response:', data);
+                console.log('data.output:', JSON.stringify(data.output, null, 2));
+                console.error('No output data - full response:', JSON.stringify(data, null, 2));
                 resolve(null);
               }
             }
