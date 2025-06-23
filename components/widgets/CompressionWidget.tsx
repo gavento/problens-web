@@ -431,7 +431,6 @@ export default function CompressionWidget() {
             data: [text],
             event_data: null,
             fn_index: 2,        // Compression Analysis tab (third interface)
-            trigger_id: 7,      // Updated trigger_id for new tab
             session_hash: sessionHash
           })
         }
