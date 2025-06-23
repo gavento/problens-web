@@ -53,7 +53,7 @@ const GPT2CompressionWidget: React.FC = () => {
           body: JSON.stringify({ 
             data: [text],
             event_data: null,
-            fn_index: 1,  // Try index 1 for GPT2 Compression
+            fn_index: 7,  // Correct index from HF logs for GPT2 Compression
             session_hash: sessionHash
           })
         }
