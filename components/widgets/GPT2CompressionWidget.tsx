@@ -143,14 +143,13 @@ const GPT2CompressionWidget: React.FC = () => {
     setIsPlaying(false);
 
     try {
-      const resultString = await callCompressionAPI(inputText.trim());
-      const result: CompressionResult = JSON.parse(resultString);
+      const result = await callCompressionAPI(inputText.trim());
       
-      if (result.success) {
+      if (result && result.success) {
         setCompressionData(result);
         setError(null);
       } else {
-        setError(result.error || "Compression failed");
+        setError(result?.error || "Compression failed");
         setCompressionData(null);
       }
     } catch (err) {
