@@ -88,3 +88,5 @@ This ensures the deployment pipeline remains healthy and the static site builds 
 - Start the server if it is not running. You often try to start the server when it is already running. IT IS ANNOYING, DON'T DO THAT
 - to memorize save all scripts in scripts folder
 - to memorize if we use HF endpoint, we have to be careful about  fn_index and trigger_id
+- related github repos (HF workspaces) are cloned in the home folder
+- you can change files in related HF repos and push them

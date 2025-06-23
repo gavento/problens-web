@@ -13,6 +13,9 @@ import requests
 import re
 from typing import Dict, List, Tuple
 import traceback
+import math
+from transformers import GPT2Tokenizer, GPT2LMHeadModel
+import torch
 
 class DivergenceCalculator:
     def __init__(self):
@@ -307,8 +310,127 @@ def calculate_divergences(url: str, reference_texts_json: str) -> str:
             "traceback": traceback.format_exc()
         })
 
-# Create Gradio interface
-iface = gr.Interface(
+class GPT2Compressor:
+    def __init__(self):
+        self.tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
+        self.model = GPT2LMHeadModel.from_pretrained('gpt2')
+        self.model.eval()
+        
+        # Set pad token to eos token
+        if self.tokenizer.pad_token is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
+    
+    def shannon_code_length(self, prob: float) -> int:
+        """Calculate Shannon code length in bits for given probability"""
+        if prob <= 0:
+            return 32  # Max reasonable code length
+        return max(1, math.ceil(-math.log2(prob)))
+    
+    def compress_string_step_by_step(self, text: str) -> Dict:
+        """
+        Compress a string using GPT2 predictions, returning step-by-step information
+        """
+        try:
+            # Tokenize the input
+            tokens = self.tokenizer.encode(text)
+            token_strings = [self.tokenizer.decode([token]) for token in tokens]
+            
+            steps = []
+            total_bits = 0
+            
+            for i in range(len(tokens)):
+                # Get context (all previous tokens)
+                context = tokens[:i] if i > 0 else []
+                current_token = tokens[i]
+                
+                # Get model predictions for next token
+                if context:
+                    input_ids = torch.tensor([context])
+                    with torch.no_grad():
+                        outputs = self.model(input_ids)
+                        logits = outputs.logits[0, -1, :]  # Last token predictions
+                else:
+                    # For first token, use unconditional distribution
+                    input_ids = torch.tensor([[]])
+                    with torch.no_grad():
+                        # Get the model's initial state predictions
+                        logits = self.model.get_input_embeddings().weight.mean(dim=0)
+                        logits = torch.zeros(self.tokenizer.vocab_size)
+                        logits[current_token] = 1.0  # Give some default probability
+                
+                # Convert logits to probabilities
+                probabilities = torch.softmax(logits, dim=-1)
+                
+                # Get top 5 predictions
+                top_probs, top_indices = torch.topk(probabilities, 5)
+                top_predictions = [
+                    {
+                        "token": self.tokenizer.decode([idx.item()]),
+                        "token_id": idx.item(),
+                        "probability": prob.item()
+                    }
+                    for idx, prob in zip(top_indices, top_probs)
+                ]
+                
+                # Get actual token probability
+                actual_prob = probabilities[current_token].item()
+                
+                # Calculate Shannon code length
+                code_length = self.shannon_code_length(actual_prob)
+                total_bits += code_length
+                
+                # Create step information
+                step = {
+                    "step_number": i,
+                    "token": token_strings[i],
+                    "token_id": current_token,
+                    "context_tokens": [token_strings[j] for j in range(i)],
+                    "top_predictions": top_predictions,
+                    "actual_probability": actual_prob,
+                    "shannon_code_length": code_length,
+                    "total_bits_so_far": total_bits
+                }
+                steps.append(step)
+            
+            # Calculate compression ratio
+            original_bits = len(text.encode('utf-8')) * 8
+            compression_ratio = total_bits / original_bits if original_bits > 0 else 0
+            
+            return {
+                "original_text": text,
+                "tokens": token_strings,
+                "steps": steps,
+                "total_bits": total_bits,
+                "original_bits": original_bits,
+                "compression_ratio": compression_ratio,
+                "success": True
+            }
+            
+        except Exception as e:
+            return {
+                "error": str(e),
+                "traceback": traceback.format_exc(),
+                "success": False
+            }
+
+def compress_with_gpt2(text: str) -> str:
+    """
+    API endpoint for GPT2-based compression analysis
+    """
+    if not text or len(text) > 50:
+        return json.dumps({
+            "error": "Text must be between 1 and 50 characters",
+            "success": False
+        })
+    
+    compressor = GPT2Compressor()
+    result = compressor.compress_string_step_by_step(text)
+    return json.dumps(result, indent=2)
+
+# Create Gradio interfaces
+
+# Divergence interface
+divergence_iface = gr.Interface(
     fn=calculate_divergences,
     inputs=[
         gr.Textbox(
@@ -325,12 +447,36 @@ iface = gr.Interface(
     ],
     outputs=gr.JSON(label="Divergence Results"),
     title="Text Divergence Calculator",
-    description="Calculate KL divergence (character frequency based) and ZIP divergence (compression based) between URL content and reference texts.",
+    description="Calculate KL divergence (character frequency based) and ZIP divergence (compression based) between URL content and reference texts."
+)
+
+# GPT2 compression interface
+gpt2_iface = gr.Interface(
+    fn=compress_with_gpt2,
+    inputs=[
+        gr.Textbox(
+            label="Text to Compress",
+            placeholder="hello world",
+            value="hello world",
+            max_lines=1
+        )
+    ],
+    outputs=gr.JSON(label="GPT2 Compression Steps"),
+    title="GPT2 Compression Visualization",
+    description="Visualize how GPT2 can be used for text compression using predictive coding. Shows tokenization, predictions, probabilities, and Shannon codes.",
     examples=[
-        ["https://en.wikipedia.org/wiki/France", '{"test": "France is a country in Europe..."}'],
-        ["https://en.wikipedia.org/wiki/Football", '{"test": "Football is a popular sport..."}']
+        ["hello world"],
+        ["the cat sat"],
+        ["once upon a time"]
     ]
 )
 
+# Combine interfaces in tabs
+app = gr.TabbedInterface(
+    [divergence_iface, gpt2_iface],
+    ["Text Divergence", "GPT2 Compression"],
+    title="Text Analysis Tools"
+)
+
 if __name__ == "__main__":
-    iface.launch()
+    app.launch()

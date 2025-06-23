@@ -103,9 +103,11 @@ With coding theory intuitions, cross-entropy also becomes also very natural: it'
 Finally, KL divergence (relative entropy) is how much worse your mismatched code is compared to the optimal one. 
 
 
-## 📦 Better ways of storing data
+## 📦 Better ways of compressing data
 
-zip 
+So far, all our discussion was encoding the text letter-by-letter. This is not too hard. The real fun starts when we want to compress a given text _without the assumption that letters are independent_. We now want to use the fact that $\textsf{th}$ usually follows by $\textsf{e}$ to achieve as good compression as possible. 
+
+<GPT2CompressionWidget />
 
 
 

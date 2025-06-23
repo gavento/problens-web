@@ -204,6 +204,36 @@ class DivergenceCalculator:
         
         # Symmetrize
         return (divergence_a_to_b + divergence_b_to_a) / 2
+    
+    def compute_zip_similarity(self, content_a: str, content_b: str) -> float:
+        """
+        Compute Normalized Compression Distance (NCD) between two texts.
+        Uses formula: NCD(x,y) ≈ (C(xy) – min{C(x),C(y)}) / max{C(x),C(y)}
+        Where C(x) is the compressed size of x.
+        """
+        # Compress individual texts
+        compressed_a = self.compress_with_deflate(content_a)
+        compressed_b = self.compress_with_deflate(content_b)
+        
+        # Compress concatenated text
+        compressed_ab = self.compress_with_deflate(content_a + content_b)
+        
+        # Get compressed sizes
+        c_a = len(compressed_a)
+        c_b = len(compressed_b)
+        c_ab = len(compressed_ab)
+        
+        # Compute NCD: (C(xy) – min{C(x),C(y)}) / max{C(x),C(y)}
+        min_c = min(c_a, c_b)
+        max_c = max(c_a, c_b)
+        
+        if max_c == 0:
+            return 0.0  # Both texts are empty
+        
+        ncd = (c_ab - min_c) / max_c
+        
+        # Ensure NCD is in [0, 1] range
+        return max(0.0, min(1.0, ncd))
 
 def calculate_divergences(url: str, reference_texts_json: str) -> str:
     """
@@ -233,7 +263,8 @@ def calculate_divergences(url: str, reference_texts_json: str) -> str:
             "url": url,
             "content_length": len(url_content),
             "kl_divergences": {},
-            "zip_divergences": {}
+            "zip_divergences": {},
+            "zip_similarities": {}
         }
         
         # Get character frequencies for URL content
@@ -249,6 +280,10 @@ def calculate_divergences(url: str, reference_texts_json: str) -> str:
             # ZIP divergence
             zip_div = calc.compute_zip_divergence(url_content, ref_content)
             results["zip_divergences"][text_id] = round(zip_div, 4)
+            
+            # ZIP similarity
+            zip_sim = calc.compute_zip_similarity(url_content, ref_content)
+            results["zip_similarities"][text_id] = round(zip_sim, 4)
         
         return json.dumps(results)
         

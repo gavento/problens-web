@@ -279,6 +279,38 @@ class ThreeCategoriesAnalyzer:
         
         return symmetric_divergence
     
+    def compute_zip_similarity(self, content_a, content_b):
+        """
+        Compute Normalized Compression Distance (NCD) between two texts.
+        Uses formula: NCD(x,y) ≈ (C(xy) – min{C(x),C(y)}) / max{C(x),C(y)}
+        Where C(x) is the compressed size of x.
+        """
+        # Compress individual texts
+        compressed_a = self.compress_with_deflate(content_a)
+        compressed_b = self.compress_with_deflate(content_b)
+        
+        # Compress concatenated text
+        compressed_ab = self.compress_with_deflate(content_a + content_b)
+        
+        # Get compressed sizes
+        c_a = len(compressed_a)
+        c_b = len(compressed_b)
+        c_ab = len(compressed_ab)
+        
+        # Compute NCD: (C(xy) – min{C(x),C(y)}) / max{C(x),C(y)}
+        min_c = min(c_a, c_b)
+        max_c = max(c_a, c_b)
+        
+        if max_c == 0:
+            return 0.0  # Both texts are empty
+        
+        ncd = (c_ab - min_c) / max_c
+        
+        # Ensure NCD is in [0, 1] range
+        distance = max(0.0, min(1.0, ncd))
+        
+        return distance
+    
     def run_generalized_divergence_analysis(self):
         """Run generalized divergence analysis on all content"""
         print("\\nRunning generalized divergence analysis...")
@@ -309,6 +341,36 @@ class ThreeCategoriesAnalyzer:
             'categories': self.categories
         }
     
+    def run_zip_similarity_analysis(self):
+        """Run zip-based similarity analysis on all content"""
+        print("\nRunning zip similarity analysis...")
+        
+        item_ids = list(self.items.keys())
+        
+        # Compute similarity matrix
+        distance_matrix = {}
+        for item1 in item_ids:
+            distance_matrix[item1] = {}
+            print(f"  Computing similarities for {item1}...")
+            
+            for item2 in item_ids:
+                if item1 == item2:
+                    distance_matrix[item1][item2] = 0.0
+                else:
+                    # Compute zip-based similarity distance
+                    distance = self.compute_zip_similarity(
+                        self.items[item1], 
+                        self.items[item2]
+                    )
+                    distance_matrix[item1][item2] = distance
+                    print(f"    {item1} ↔ {item2}: {distance:.3f}")
+        
+        return {
+            'languages': item_ids,
+            'distance_matrix': distance_matrix,
+            'categories': self.categories
+        }
+    
     def run_full_analysis(self):
         """Run complete analysis pipeline"""
         print("Starting three categories content analysis...")
@@ -328,9 +390,10 @@ class ThreeCategoriesAnalyzer:
         print(f"  Sports: {sport_count}")
         print(f"  Animals: {animal_count}")
         
-        # Run both analyses
+        # Run all analyses
         kl_results = self.run_kl_analysis()
         gen_div_results = self.run_generalized_divergence_analysis()
+        zip_sim_results = self.run_zip_similarity_analysis()
         
         # Combine results
         final_results = {
@@ -339,12 +402,13 @@ class ThreeCategoriesAnalyzer:
                 'countries': country_count,
                 'fruits': sport_count,
                 'animals': animal_count,
-                'analysis_types': ['kl_divergence', 'generalized_divergence']
+                'analysis_types': ['kl_divergence', 'generalized_divergence', 'zip_similarity']
             },
             'kl_analysis': {
                 'baseline': kl_results
             },
-            'generalized_divergence_analysis': gen_div_results
+            'generalized_divergence_analysis': gen_div_results,
+            'zip_similarity_analysis': zip_sim_results
         }
         
         # Save results

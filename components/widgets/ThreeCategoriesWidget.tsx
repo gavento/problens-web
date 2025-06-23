@@ -36,12 +36,13 @@ interface ThreeCategoriesData {
     baseline: CategoryResults;
   };
   generalized_divergence_analysis: CategoryResults;
+  zip_similarity_analysis?: CategoryResults;
 }
 
 const ThreeCategoriesWidget: React.FC = () => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [data, setData] = useState<ThreeCategoriesData | null>(null);
-  const [dataMode, setDataMode] = useState<'kl' | 'generalized'>('kl');
+  const [dataMode, setDataMode] = useState<'kl' | 'generalized' | 'zip'>('kl');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
@@ -55,7 +56,8 @@ const ThreeCategoriesWidget: React.FC = () => {
     url: string, 
     content: string,
     kl: Record<string, number>, 
-    zip: Record<string, number>,
+    zip_div: Record<string, number>,
+    zip_sim: Record<string, number>,
     debugInfo?: any[]
   }>>({});
   
@@ -222,6 +224,7 @@ const ThreeCategoriesWidget: React.FC = () => {
       };
     });
   };
+
   
   const addCustomUrl = async () => {
     if (!customUrl || !data) return;
@@ -245,10 +248,12 @@ const ThreeCategoriesWidget: React.FC = () => {
         }
       }
       
-      // Step 1: Calculate divergences vs Wikipedia texts
-      console.log('Calling API with URL vs Wikipedia texts:', customUrl);
+      // Step 1: Calculate divergences vs reference texts
+      console.log('Processing URL:', customUrl);
       console.log('Reference texts loaded:', Object.keys(referenceTexts).length);
       
+      // Use API for all calculations - more reliable with URL fetching and CORS handling
+      console.log('Calling API for divergence calculations...');
       const result = await callDivergenceAPI(customUrl, referenceTexts);
       
       // Handle different result formats
@@ -261,7 +266,6 @@ const ThreeCategoriesWidget: React.FC = () => {
         throw new Error('Unexpected result format');
       }
       
-      console.log('Parsed divergences:', divergences);
       
       if (divergences.error) {
         throw new Error(divergences.error);
@@ -272,7 +276,7 @@ const ThreeCategoriesWidget: React.FC = () => {
       
       // OPTION B: Calculate divergences with existing custom nodes
       const existingCustomNodeIds = Object.keys(customNodes);
-      const customDivergences: { kl: Record<string, number>, zip: Record<string, number>, debugInfo?: any[] } = { kl: {}, zip: {} };
+      const customDivergences: { kl: Record<string, number>, zip_div: Record<string, number>, zip_sim: Record<string, number>, debugInfo?: any[] } = { kl: {}, zip_div: {}, zip_sim: {} };
       
       // Step 2: Calculate divergences vs existing custom nodes
       if (existingCustomNodeIds.length > 0) {
@@ -294,17 +298,25 @@ const ThreeCategoriesWidget: React.FC = () => {
               customDiv = customResult;
             }
             
-            if (!customDiv.error && customDiv.kl_divergences && customDiv.zip_divergences) {
-              customDivergences.kl[existingCustomId] = customDiv.kl_divergences[existingCustomId];
-              customDivergences.zip[existingCustomId] = customDiv.zip_divergences[existingCustomId];
+            if (!customDiv.error) {
+              // Handle KL divergences
+              if (customDiv.kl_divergences) {
+                customDivergences.kl[existingCustomId] = customDiv.kl_divergences[existingCustomId];
+              }
+              
+              // Handle ZIP divergences and similarities separately
+              if (customDiv.zip_divergences && customDiv.zip_divergences[existingCustomId] !== null) {
+                customDivergences.zip_div[existingCustomId] = customDiv.zip_divergences[existingCustomId];
+              }
+              if (customDiv.zip_similarities && customDiv.zip_similarities[existingCustomId] !== null) {
+                customDivergences.zip_sim[existingCustomId] = customDiv.zip_similarities[existingCustomId];
+              }
               
               // Store debugging info for custom vs custom comparisons
               if (customDiv.compression_debug && customDiv.compression_debug.length > 0) {
-                // Add debug info to both nodes for custom vs custom comparison
-                const debugInfo = { ...customDiv.compression_debug[0] }; // Copy the debug entry
+                const debugInfo = { ...customDiv.compression_debug[0] };
                 debugInfo.comparison = `Custom URL vs Custom URL`;
                 
-                // Store in a temporary array for the new node
                 if (!customDivergences.debugInfo) {
                   customDivergences.debugInfo = [];
                 }
@@ -329,9 +341,13 @@ const ThreeCategoriesWidget: React.FC = () => {
               ...updatedCustomNodes[existingCustomId].kl,
               [customId]: customDivergences.kl[existingCustomId]
             },
-            zip: {
-              ...updatedCustomNodes[existingCustomId].zip,
-              [customId]: customDivergences.zip[existingCustomId]
+            zip_div: {
+              ...updatedCustomNodes[existingCustomId].zip_div || {},
+              [customId]: customDivergences.zip_div[existingCustomId]
+            },
+            zip_sim: {
+              ...updatedCustomNodes[existingCustomId].zip_sim || {},
+              [customId]: customDivergences.zip_sim[existingCustomId]
             }
           };
         }
@@ -345,9 +361,13 @@ const ThreeCategoriesWidget: React.FC = () => {
           ...divergences.kl_divergences || {},
           ...customDivergences.kl
         },
-        zip: {
+        zip_div: {
           ...divergences.zip_divergences || {},
-          ...customDivergences.zip
+          ...customDivergences.zip_div
+        },
+        zip_sim: {
+          ...divergences.zip_similarities || {},
+          ...customDivergences.zip_sim
         },
         debugInfo: [
           ...(divergences.compression_debug || []),
@@ -401,7 +421,14 @@ const ThreeCategoriesWidget: React.FC = () => {
     if (!data || !svgRef.current) return;
     
     // Choose data based on mode
-    const currentData = dataMode === 'kl' ? data.kl_analysis.baseline : data.generalized_divergence_analysis;
+    let currentData: CategoryResults | undefined;
+    if (dataMode === 'kl') {
+      currentData = data.kl_analysis.baseline;
+    } else if (dataMode === 'generalized') {
+      currentData = data.generalized_divergence_analysis;
+    } else if (dataMode === 'zip' && data.zip_similarity_analysis) {
+      currentData = data.zip_similarity_analysis;
+    }
     if (!currentData) return;
 
     // Show all categories
@@ -495,29 +522,27 @@ const ThreeCategoriesWidget: React.FC = () => {
             rawDistance = currentData.distance_matrix[item1]?.[item2] || 0;
           } else if (item1.startsWith('custom_') && !item2.startsWith('custom_')) {
             // item1 is custom, item2 is original
-            const divergences = dataMode === 'kl' ? customNodes[item1]?.kl : customNodes[item1]?.zip;
+            const divergences = dataMode === 'kl' ? customNodes[item1]?.kl : 
+                                (dataMode === 'zip' ? customNodes[item1]?.zip_sim : customNodes[item1]?.zip_div);
             rawDistance = divergences?.[item2] || 0;
           } else if (!item1.startsWith('custom_') && item2.startsWith('custom_')) {
             // item1 is original, item2 is custom
-            const divergences = dataMode === 'kl' ? customNodes[item2]?.kl : customNodes[item2]?.zip;
+            const divergences = dataMode === 'kl' ? customNodes[item2]?.kl : 
+                                (dataMode === 'zip' ? customNodes[item2]?.zip_sim : customNodes[item2]?.zip_div);
             rawDistance = divergences?.[item1] || 0;
           } else {
             // Both are custom nodes - use actual calculated divergences
-            const divergences1 = dataMode === 'kl' ? customNodes[item1]?.kl : customNodes[item1]?.zip;
-            const divergences2 = dataMode === 'kl' ? customNodes[item2]?.kl : customNodes[item2]?.zip;
+            const divergences1 = dataMode === 'kl' ? customNodes[item1]?.kl : 
+                                 (dataMode === 'zip' ? customNodes[item1]?.zip_sim : customNodes[item1]?.zip_div);
+            const divergences2 = dataMode === 'kl' ? customNodes[item2]?.kl : 
+                                 (dataMode === 'zip' ? customNodes[item2]?.zip_sim : customNodes[item2]?.zip_div);
             
             // Try to get divergence from either node's perspective
             rawDistance = divergences1?.[item2] || divergences2?.[item1] || 0.5; // Fallback only if no data
           }
           
-          // Adjust distance based on mode
-          if (dataMode === 'generalized') {
-            // Generalized divergence is now in 0-0.063 range
-            adjustedDistance = Math.max(0, rawDistance) / 0.063;
-          } else {
-            // KL divergence, subtract 0.05 as in original
-            adjustedDistance = Math.max(0, rawDistance - 0.05);
-          }
+          // For now, just use raw distance - percentile normalization will be applied later
+          adjustedDistance = rawDistance;
           
           allPossibleLinks.push({
             source: item1,
@@ -528,6 +553,28 @@ const ThreeCategoriesWidget: React.FC = () => {
           });
         }
       });
+    });
+    
+    // Apply percentile-based normalization for all modes to make them comparable
+    // Sort all distances to compute percentiles
+    const allDistances = allPossibleLinks.map(link => link.adjustedDistance);
+    const sortedDistances = [...allDistances].sort((a, b) => a - b);
+    
+    // Convert each distance to its percentile
+    allPossibleLinks.forEach(link => {
+      // Find the percentile rank of this distance
+      let rank = 0;
+      for (let i = 0; i < sortedDistances.length; i++) {
+        if (sortedDistances[i] <= link.adjustedDistance) {
+          rank = i + 1;
+        }
+      }
+      
+      // Convert rank to percentile (0.0 to 1.0)
+      const percentile = rank / sortedDistances.length;
+      
+      // Use percentile as the adjusted distance
+      link.adjustedDistance = percentile;
     });
     
     // Sort by adjusted distance (closest first) and take top (edgeMultiplier * n) links
@@ -752,25 +799,31 @@ const ThreeCategoriesWidget: React.FC = () => {
         Clustering by divergence
       </h3>
       <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2 bg-gray-100 rounded-full px-4 py-2">
-          <span className="text-sm font-medium">KL</span>
-          <div className="relative w-16 h-6">
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="1"
-              value={dataMode === 'kl' ? 0 : 1}
-              onChange={(e) => setDataMode(e.target.value === '0' ? 'kl' : 'generalized')}
-              className="absolute w-full h-full opacity-0 cursor-pointer z-10"
-            />
-            <div className="absolute inset-0 bg-gray-300 rounded-full"></div>
-            <div 
-              className="absolute top-1 w-4 h-4 bg-green-500 rounded-full transition-transform duration-200"
-              style={{ transform: `translateX(${dataMode === 'kl' ? '0' : '40px'})` }}
-            ></div>
-          </div>
-          <span className="text-sm font-medium">ZIP</span>
+        <div className="flex items-center gap-3 bg-gray-100 rounded-full px-4 py-2">
+          <button
+            onClick={() => setDataMode('kl')}
+            className={`text-sm font-medium px-3 py-1 rounded-full transition-colors ${
+              dataMode === 'kl' ? 'bg-green-500 text-white' : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            KL
+          </button>
+          <button
+            onClick={() => setDataMode('generalized')}
+            className={`text-sm font-medium px-3 py-1 rounded-full transition-colors ${
+              dataMode === 'generalized' ? 'bg-green-500 text-white' : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            ZIP-div
+          </button>
+          <button
+            onClick={() => setDataMode('zip')}
+            className={`text-sm font-medium px-3 py-1 rounded-full transition-colors ${
+              dataMode === 'zip' ? 'bg-green-500 text-white' : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            ZIP-sim
+          </button>
         </div>
         <div className="flex gap-2">
           <button
@@ -789,7 +842,11 @@ const ThreeCategoriesWidget: React.FC = () => {
       </div>
       
       <p className="text-center text-gray-600 text-sm">
-        Three categories of Wikipedia texts clustered by {dataMode === 'kl' ? 'KL divergence' : "'ZIP divergence'"}
+        Three categories of Wikipedia texts clustered by {
+          dataMode === 'kl' ? 'KL divergence' : 
+          dataMode === 'generalized' ? "'ZIP divergence'" :
+          'Normalized Compression Distance (NCD)'
+        }
       </p>
 
 
@@ -801,7 +858,10 @@ const ThreeCategoriesWidget: React.FC = () => {
             
             <div>
               <label className="block text-sm font-medium mb-1">
-                Edge Count: {edgeMultiplier}n = {data ? edgeMultiplier * (dataMode === 'kl' ? data.kl_analysis.baseline.languages.length : data.generalized_divergence_analysis.languages.length) : 0} edges
+                Edge Count: {edgeMultiplier}n = {data ? edgeMultiplier * ((
+                  dataMode === 'kl' ? data.kl_analysis.baseline.languages.length : 
+                  data.generalized_divergence_analysis.languages.length
+                ) + Object.keys(customNodes).length) : 0} edges
               </label>
               <input
                 type="range"
@@ -912,11 +972,17 @@ const ThreeCategoriesWidget: React.FC = () => {
               {getDisplayName(hoveredNode)} {getTextName(hoveredNode)}
             </div>
             <div className="text-xs opacity-90">
-              <div className="mb-1">Closest by {dataMode === 'kl' ? 'KL divergence' : 'compression'}:</div>
+              <div className="mb-1">Closest by {
+                dataMode === 'kl' ? 'KL divergence' : 
+                dataMode === 'generalized' ? 'compression divergence' :
+                'NCD'
+              }:</div>
               {(() => {
                 // Handle custom nodes
                 if (hoveredNode.startsWith('custom_') && customNodes[hoveredNode]) {
-                  const divergences = dataMode === 'kl' ? customNodes[hoveredNode].kl : customNodes[hoveredNode].zip;
+                  const divergences = dataMode === 'kl' ? customNodes[hoveredNode].kl : 
+                                      (dataMode === 'zip' ? customNodes[hoveredNode].zip_sim : customNodes[hoveredNode].zip_div);
+                  
                   
                   if (!divergences) {
                     return <div className="text-xs opacity-75">No divergence data available</div>;
@@ -932,7 +998,9 @@ const ThreeCategoriesWidget: React.FC = () => {
                           <div key={itemId} className="flex justify-between gap-2">
                             <span>{getDisplayName(itemId)} {getTextName(itemId)}</span>
                             <span className="opacity-75">
-                              {dataMode === 'generalized' ? `${(distance as number).toFixed(3)}` : (distance as number).toFixed(3)}
+                              {dataMode === 'zip' ? `${(distance as number).toFixed(3)}` :
+                               dataMode === 'generalized' ? `${(distance as number).toFixed(3)}` : 
+                               (distance as number).toFixed(3)}
                             </span>
                           </div>
                         ))}
@@ -943,7 +1011,9 @@ const ThreeCategoriesWidget: React.FC = () => {
                 // Handle original nodes
                 const currentDistanceMatrix = dataMode === 'kl' 
                   ? data.kl_analysis.baseline.distance_matrix 
-                  : data.generalized_divergence_analysis.distance_matrix;
+                  : dataMode === 'zip' 
+                    ? data.zip_similarity_analysis?.distance_matrix
+                    : data.generalized_divergence_analysis.distance_matrix;
                   
                 if (!currentDistanceMatrix || !currentDistanceMatrix[hoveredNode]) {
                   return null;
@@ -959,7 +1029,9 @@ const ThreeCategoriesWidget: React.FC = () => {
                         <div key={itemId} className="flex justify-between gap-2">
                           <span>{getDisplayName(itemId)} {getTextName(itemId)}</span>
                           <span className="opacity-75">
-                            {dataMode === 'generalized' ? `${distance.toFixed(3)}` : distance.toFixed(3)}
+                            {dataMode === 'zip' ? `${distance.toFixed(3)}` :
+                             dataMode === 'generalized' ? `${distance.toFixed(3)}` : 
+                             distance.toFixed(3)}
                           </span>
                         </div>
                       ))}
@@ -989,63 +1061,6 @@ const ThreeCategoriesWidget: React.FC = () => {
           {isAddingUrl ? 'Adding...' : 'Add'}
         </button>
       </div>
-
-      {/* Info panel */}
-      {(hoveredNode || selectedNode) && data && (
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <h4 className="font-semibold text-lg mb-2">
-            {getDisplayName(hoveredNode || selectedNode!)} {getTextName(hoveredNode || selectedNode!)}
-            <span className="text-sm font-normal text-gray-500 ml-2">
-              ({data.kl_analysis.baseline.categories[hoveredNode || selectedNode!]})
-            </span>
-          </h4>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <h5 className="font-medium text-gray-700 mb-2">
-                Most Similar Content ({dataMode === 'kl' ? 'KL distance' : 'Gen. divergence'}):
-              </h5>
-              {(() => {
-                const currentDistanceMatrix = dataMode === 'kl' 
-                  ? data.kl_analysis.baseline.distance_matrix 
-                  : data.generalized_divergence_analysis.distance_matrix;
-                  
-                if (!currentDistanceMatrix || !currentDistanceMatrix[hoveredNode || selectedNode!]) {
-                  return null;
-                }
-                
-                return (
-                  <div className="space-y-1">
-                    {Object.entries(currentDistanceMatrix[hoveredNode || selectedNode!])
-                      .filter(([itemId]) => itemId !== (hoveredNode || selectedNode))
-                      .sort(([,a], [,b]) => a - b)
-                      .slice(0, 5)
-                      .map(([itemId, distance]) => (
-                        <div key={itemId} className="flex justify-between items-center">
-                          <span className="text-sm">{getDisplayName(itemId)} {getTextName(itemId)}</span>
-                          <span className="text-xs text-gray-500">
-                            {dataMode === 'generalized' ? `${distance.toFixed(3)} bits/char` : distance.toFixed(3)}
-                          </span>
-                        </div>
-                      ))}
-                  </div>
-                );
-              })()}
-            </div>
-            
-            <div>
-              <h5 className="font-medium text-gray-700 mb-2">Properties:</h5>
-              <div className="text-sm space-y-1">
-                {dataMode === 'kl' && data.kl_analysis.baseline.entropy_values && (
-                  <div>Entropy: {data.kl_analysis.baseline.entropy_values[hoveredNode || selectedNode!]?.toFixed(3)} bits</div>
-                )}
-                <div>Category: {data.kl_analysis.baseline.categories[hoveredNode || selectedNode!]}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
 
     </div>
   );

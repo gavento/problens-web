@@ -39,6 +39,7 @@ import ShannonCodeWidget from "@/components/widgets/ShannonCodeWidget";
 import KraftInequalityWidget from "@/components/widgets/KraftInequalityWidget";
 import VolatilityDistributionWidget from "@/components/widgets/VolatilityDistributionWidget";
 import HeartRateWidget from "@/components/widgets/CoinFlipWidget";
+import GPT2CompressionWidget from "@/components/widgets/GPT2CompressionWidget";
 import { compile, evaluate } from "@mdx-js/mdx";
 import chalk from "chalk";
 import * as runtime from "react/jsx-runtime";
@@ -205,6 +206,7 @@ export async function getMdxContent(path: string) {
       UnifiedContentSimilarityWidget: UnifiedContentSimilarityWidget,
       WikipediaContentSimilarityWidget: WikipediaContentSimilarityWidget,
       ThreeCategoriesWidget: ThreeCategoriesWidget,
+      GPT2CompressionWidget: GPT2CompressionWidget,
       Math: NumberedMath,
       EqRef: EquationRef,
       Block: Block,

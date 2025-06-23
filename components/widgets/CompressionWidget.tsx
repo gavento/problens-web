@@ -423,15 +423,15 @@ export default function CompressionWidget() {
       const sessionHash = Math.random().toString(36).substring(2);
       
       const queueResponse = await fetch(
-        'https://vaclavrozhon-gpt2-compression-api.hf.space/gradio_api/queue/join',
+        'https://vaclavrozhon-zip-compression-clustering.hf.space/queue/join',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
             data: [text],
             event_data: null,
-            fn_index: 2,        // Back to the working value
-            trigger_id: 12,     // Add back the trigger_id
+            fn_index: 1,        // GPT2 Compression tab (second interface)
+            trigger_id: 5,      // Updated trigger_id for new space
             session_hash: sessionHash
           })
         }
@@ -444,7 +444,7 @@ export default function CompressionWidget() {
       // Use EventSource to get results
       return new Promise((resolve, reject) => {
         const eventSource = new EventSource(
-          `https://vaclavrozhon-gpt2-compression-api.hf.space/gradio_api/queue/data?session_hash=${sessionHash}`
+          `https://vaclavrozhon-zip-compression-clustering.hf.space/queue/data?session_hash=${sessionHash}`
         );
         
         const timeout = setTimeout(() => {
