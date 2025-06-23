@@ -54,7 +54,6 @@ const GPT2CompressionWidget: React.FC = () => {
             data: [text],
             event_data: null,
             fn_index: 2,  // Third interface (GPT2 Compression, now at index 2)
-            trigger_id: 5, // This might need to be adjusted based on the actual HF space
             session_hash: sessionHash
           })
         }
@@ -83,14 +82,20 @@ const GPT2CompressionWidget: React.FC = () => {
               clearTimeout(timeout);
               eventSource.close();
               
+              console.log('GPT2 Full API response:', JSON.stringify(data, null, 2));
+              
               if (data.output && data.output.data) {
+                console.log('GPT2 Raw data from API:', data.output.data[0]);
                 resolve(data.output.data[0]);
               } else {
+                console.log('GPT2 data.output:', JSON.stringify(data.output, null, 2));
+                console.error('GPT2 No output data - full response:', JSON.stringify(data, null, 2));
                 reject(new Error('No output data'));
               }
             } else if (data.msg === 'process_errored') {
               clearTimeout(timeout);
               eventSource.close();
+              console.error('GPT2 API processing error:', JSON.stringify(data, null, 2));
               reject(new Error('API processing error'));
             }
           } catch (e) {
