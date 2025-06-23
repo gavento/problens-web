@@ -430,8 +430,8 @@ export default function CompressionWidget() {
           body: JSON.stringify({ 
             data: [text],
             event_data: null,
-            fn_index: 1,        // GPT2 Compression tab (second interface)
-            trigger_id: 5,      // Updated trigger_id for new space
+            fn_index: 2,        // Compression Analysis tab (third interface)
+            trigger_id: 7,      // Updated trigger_id for new tab
             session_hash: sessionHash
           })
         }
