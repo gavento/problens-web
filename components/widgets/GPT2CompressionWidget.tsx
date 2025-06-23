@@ -85,8 +85,24 @@ const GPT2CompressionWidget: React.FC = () => {
               console.log('GPT2 Full API response:', JSON.stringify(data, null, 2));
               
               if (data.output && data.output.data) {
-                console.log('GPT2 Raw data from API:', data.output.data[0]);
-                resolve(data.output.data[0]);
+                const resultData = data.output.data[0];
+                console.log('GPT2 Raw data from API:', resultData);
+                
+                // Check if it's already an object or needs parsing
+                let parsedData;
+                if (typeof resultData === 'string') {
+                  try {
+                    parsedData = JSON.parse(resultData);
+                  } catch (parseError) {
+                    console.error('GPT2 Failed to parse JSON:', parseError, 'Raw:', resultData);
+                    reject(new Error('Failed to parse response'));
+                    return;
+                  }
+                } else {
+                  parsedData = resultData;
+                }
+                
+                resolve(parsedData);
               } else {
                 console.log('GPT2 data.output:', JSON.stringify(data.output, null, 2));
                 console.error('GPT2 No output data - full response:', JSON.stringify(data, null, 2));
