@@ -430,7 +430,7 @@ export default function CompressionWidget() {
           body: JSON.stringify({ 
             data: [text],
             event_data: null,
-            fn_index: 7,        // Compression Analysis tab (correct index from HF logs)
+            fn_index: 0,        // Compression Analysis tab (now first interface)
             session_hash: sessionHash
           })
         }

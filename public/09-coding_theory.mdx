@@ -102,55 +102,60 @@ With coding theory intuitions, cross-entropy also becomes also very natural: it'
 
 Finally, KL divergence (relative entropy) is how much worse your mismatched code is compared to the optimal one. 
 
+We will now see more examples of how entropy and compression clicks. 
 
-## 📦 Better ways of compressing data
+## 📦 Predictive coding and LLMs
 
 So far, all our discussion was encoding the text letter-by-letter. This is not too hard. The real fun starts when we want to compress a given text _without the assumption that letters are independent_. We now want to use the fact that $\textsf{th}$ usually follows by $\textsf{e}$ to achieve as good compression as possible. 
 
+Here is a generic approach of how most compressions algorithm work, called [predictive coding](). A generic predictive-coding algorithm goes through the text letter by letter and tries to build some kind of understanding of it. For each letter, it tries to predict it using the past text. As we know, once you have a distribution over the next letter, we can convert it to a code, e.g. Shannon's code. This way, we can encode the whole text.  
+
+I want to explain two examples of predictive coding algorithms. The first example is how LLMs can be used to compress text, the second example would be a typical implementation of ZIP. 
+
+### LLMs 
+
+LLMs are exactly fitting the description of our next-letter predictor. A small technicality - to make the prediction task easier, the text is first split into so-called tokens (think short words, syllables). The net then predicts the next token, not the next letter. 
+
+We have discussed LLMs in the main text; they are trained by reading the Internet, minimizing the cross-entropy loss. But we can now understand that equivalently, __they are trained to compress Internet as much as possible__!  
+
+In the next widget, you can see how it works. 
+
 <GPT2CompressionWidget />
 
+This way of compressing test is extremely efficient, since LLMs can predict the next token even more efficiently than us, people. The catch is that to use this to compression, we would have to send the LLM with the compressed text, so that the receiver can decode. Modern LLMs are huge, so this is not really practical. 
+
+### ZIP 
+Typical algorithm used in ZIP works like this: It reads the text and constructs a dictionary -- list of common patterns (syllables, words) that were frequent in the past. When it encounters a word it has in its dictionary, instead of writing 'divergence', it writes something like [now comes entry 42 in the dictionary]. The algorithm does not juggle with any probabilities. However, due to the connection of probabilties and code lengths, we can now understand that if the ZIP algorithm can at some position encode the word 'divergence' in 10 bits, we can interpret it as the ZIP algorithm __predicting__ that the probability of 'divergence' is $2^{-10}$. 
+
+### Prediction = Compression
+
+These two examples of predictive coding algorithms go back to our discussion of coding intuition for entropy. We defined entropy in the language of surprise, probabilities, prediction. Coding theory uses the language of codes, and compression. But since the probability $p$ corresponds both to surprise of $\log 1/p$ and ideal-code-length of $\log 1/p$, the math is the same for both. 
+
+Hence, whenever there is a good prediction, there's a good compression, and vice versa. This is really super important and we will return to it in the [Kolmogorov complexity chapter](08-kolmogorov). 
 
 
+## 🌐 How large is Wikipedia?
+We can now revisit [our Wikipedia riddle](00-introduction#wikipedia) about Hutter's compression challenge. Remember, the question is about how much can we compress a single 1GB file of English Wikipedia. Hutter is an AI researcher and he started his challenge because he understands very well the topic of this chapter - if you can compress text, you can also predict it, and that implies you have to have some kind of knowledge/intelligence.  
 
-## 🏛️🍎🐱 Three Categories Experiment
+The honest answer is that we don't know (see the [Kolmogorov complexity](08-kolmogorov) chapter), but w
 
-<ThreeCategoriesWidget />
-
-## 🤔 Wikipedia riddle
-We can now revisit the riddle about how much Wikipedia (and other texts) can be compressed. 
-
-
-<CompressionWidget />
-
-
-<Expand headline = "🌐 How large is Wikipedia?"><a id = "hutter"></a>
-Back to [our Wikipedia riddle](00-introduction#wikipedia) and Hutter's compression challenge. 
-Remember, the riddle is about how much can we compress a file with English Wikipedia. 
+We broadly understand how well different algorithms compress English text. 
 
 There are more approaches to compress text files. Let's go through them and you can see in the next widget how they fare for various types of data. 
 
 - _Baseline_: The stadard way to store text files is UTF-8. Lying a bit, this format store each letter using 8 bits. <Footnote>Why is it lying? [UTF-8](https://en.wikipedia.org/wiki/UTF-8) itself is a beautiful example of good engineering inspired by coding theory. There are around 100 characters (English letters, digits) that are stored using 8 bits, fancier letters from reasonable alphabets are stored using 16 bits, and emojis like 😀 or hieroglyphs like 𓀀 take 32 bits. Classic coding theory—rare stuff gets longer codes. But English Wiki is mostly standard stuff, so 8 bits per letter it is. </Footnote>
 
-- _Optimal letter-independent code_: We discussed above, how coding theory tells us what's the best way of compressing files if we don't want to use tricks like "$\mathsf{th}$ is usually followed by $\mathsf{e}$". We can treat the letters as independent and encode the using $H(p)$ bits per letter on average, where $p$ are the English letter frequencies. [In this widget above](../02-crossentropy#construction), we used those frequencies as an example; the entropy is a bit north of 4 bits. So, we can shrink the file almost by __2x__ just by using that different letters have different frequencies. 
+- _Optimal code_: Treat letters as independent, we can encode them using $H(p)$ bits per letter on average, where $p$ is the distribution of English letter frequencies. [In the Shannon's coding widget above](../02-crossentropy#construction), we saw that the entropy is around 4.2 bits. So, we can shrink the file by almost __2x__ just by using that different letters have different frequencies. 
 
-- _Zipping_: Standard compression algorithms like those used in zip use codes, but also look for repeating patterns or take advantage of frequencies of letter pairs. They can compress English text up to a factor around __3x__.  
+- _Zipping_: Standard compression algorithms like those used in ZIP implement dictionaries to catch patterns that are often reused in the text. They can compress English text up to a factor around __3x__.  
 
-- _The best algorithms_ in Hutter's competition have compress by a factor of about __8x__. That's about 1 bit per letter.  
+- _LLMs_: Large Language Models are trained to predict text, hence they compress it. If we disregard the fact that technically speaking, LLM size should count towards the size of the compressed text, they compress English text around __7x__ for old LLMs like GPT-2 and up to perhaps __10x__ for state-of-the-art networks. 
 
-- _LLMs_: We know about algorithms that are arguably even better compressors - LLMs. Large Language Models are literally trained on being able to predict text - given a snippet of the text like "My name is A", LLM tries to predict the distribution $p$ of the next letter <Footnote>Well, token.</Footnote>. 
+I encourage you to play with the following widget, especially making GPT-2 compress your texts. 🙂
 
-If we can predict the next letter of a text, this means you can also compress the text. The compression algorithm is this: Given text $s$ = "My name is A", we run LLM to guess the distribution $p_s$ of the next letter. Then, we use the best code for $p_s$ to store the actual next letter, say $\mathsf{l}$. 
+<CompressionWidget />
 
-If the actual next letter is $\mathsf{l}$, then the surprisal of LLM upon seeing this letter is $\log 1/p(\mathsf{l})$. We can now save the letter $\mathsf{l}$ to a file by using the best possible code encoding symbols with frequencies $p$; that is, we can store $\mathsf{l}$ using $\log 1/p(\mathsf{l})$ bits of memory. The decoding algorithm is very similar, it runs the same LLM and always compute the next code $p_s$ used to decode the next letter. <Footnote>In practice, this gets more complicated whenever $\log 1/p(\mathsf{l})$ is not a whole number. We had the same issue in our coding theory discussion, let's not go into it. </Footnote>
+The best algorithms in Hutter's competition have compress by a factor of about 9x. But unfortunately, while the challenge is backed by a very deep understanding of the nature of intelligence, the precise parameters of the challenge make it hard to relate to the winning algorithms. Since the file size is 'only' 1GB, the compression-by-LLM approach doesn't easily work. You have to append the LLM to the compressed text and it becomes huge.<Footnote>Or you have to train it 'inside' the compression/decompression algorithm, and for that the file is too small. </Footnote> The winning algorithms are thus used on more 'combinatorial' approaches, like those used in ZIP or stuff like [multiplicative weights](06-algorithms). 
 
-The fun part (that we will understand better later on) is that LLMs are being trained to optimize the so-called cross-entropy loss - in a nutshell this means that if the next letter is $\mathsf{l}$, we want the surprisal $\log 1/p(\mathsf{l})$ of the network to be as small as possible. Using our coding-theory intuitions - the surprisal is also the code length in the best code - we can view the training of LLMs as the training to compress English text as much as possible. 
+Finally, let me tell you about one of the coolest experiments I know of. Claude Shannon, the GOAT who invented information theory in the late 40s, did the following a few years after his invention. He measured the prediction ability of people: he showed them partial sentences and asked them to guess the next letter. This way, he figured that people can compress English to about 0.5 - 1 bits per letter, roughly on par with the performance of GPT2-4. <Footnote>TODO crunch the numbers more precisely. </Footnote> As far as I can say, this is the first experiment about next-token prediction; Claude Shannon was so based he did it 60+ years before it became cool!
 
-[todo fill numbers]
-It is thus maybe not so surprising that they are incredibly good at it! In the following experiments, GPT2 achieved similar compression to the winners of Hutter challenge and Llamma 3 was a good bit better. Wait a minute, how come then that the world record is 120MB and not ~50MB? The problem is that Hutter only wants you to compress 1GB of text, not the whole Internet. If you use GPT2 to compress a piece of text, then the size of the compressed file should also include the size of GPT2 itself. If Hutter's challenge was about compressing 1000GB-sized file, using LLMs would be a no-brainer, but, alas, Hutter created his challenge before the current AI paradigm based on working with _lots_ of data. 
-
-Before playing with the widget, let me tell you about one of the coolest experiments I know of. Claude Shannon, who [invented information theory](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication) in the late 40s, did [the following](https://www.princeton.edu/~wbialek/rome/refs/shannon_51.pdf) a few years later. He'd show people partial sentences and ask them to guess the next letter. This way, he figured that people can compress English to about 0.5 - 1 bits per letter, similarly to the GPT-2 performance. As far as I can say, this is the first experiment about next-token prediction; Claude Shannon was so based he did it 60+ years before it became cool! 
-
-See compression factors of different types of text and different algorithms with the widget below. Notice how the compression ratio depends heavily on the structure and predictability of the text. <Footnote>Let me know what text I should add to the widget! </Footnote>
-
-
-</Expand>

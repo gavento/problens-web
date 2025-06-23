@@ -151,3 +151,30 @@ Each child in a list should have a unique "key" prop. See https://react.dev/link
  GET /favicon.ico?favicon.35dd0f14.ico 200 in 31ms
  ✓ Compiled in 141ms
  ✓ Compiled in 281ms
+ ✓ Compiled in 141ms
+ GET /09-coding_theory/ 200 in 983ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 41ms
+ ✓ Compiled in 103ms
+ ✓ Compiled in 127ms
+ ✓ Compiled in 115ms
+ GET /09-coding_theory/ 200 in 1630ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 40ms
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET /00-introduction/ 200 in 341ms
+ GET /09-coding_theory/ 200 in 409ms
+ GET /09-coding_theory/ 200 in 764ms
+ GET /favicon.ico?favicon.35dd0f14.ico 200 in 39ms
+ ✓ Compiled in 169ms
+ ✓ Compiled in 169ms
+ ✓ Compiled in 137ms
+ ✓ Compiled in 123ms
+ ✓ Compiled in 143ms
