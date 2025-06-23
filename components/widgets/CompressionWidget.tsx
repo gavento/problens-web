@@ -464,28 +464,35 @@ export default function CompressionWidget() {
               console.log('Full API response:', JSON.stringify(data, null, 2));
               
               if (data.output && data.output.data) {
-                const jsonString = data.output.data[0];
-                console.log('Raw JSON string from API:', jsonString);
+                const compressionData = data.output.data[0];
+                console.log('Raw data from API:', compressionData);
                 
-                try {
-                  const compressionData = JSON.parse(jsonString);
-                  
-                  if (compressionData.error) {
-                    console.error('GPT-2 compression failed:', compressionData.error);
+                // Check if it's already an object or needs parsing
+                let parsedData;
+                if (typeof compressionData === 'string') {
+                  try {
+                    parsedData = JSON.parse(compressionData);
+                  } catch (parseError) {
+                    console.error('Failed to parse JSON:', parseError, 'Raw:', compressionData);
                     resolve(null);
-                  } else if (compressionData.algorithm && compressionData.bits && compressionData.ratio) {
-                    resolve({
-                      algorithm: compressionData.algorithm,
-                      bits: compressionData.bits,
-                      ratio: compressionData.ratio,
-                      compressionProgression: compressionData.compression_progression || []
-                    });
-                  } else {
-                    console.error('Invalid data format:', compressionData);
-                    resolve(null);
+                    return;
                   }
-                } catch (parseError) {
-                  console.error('Failed to parse JSON:', parseError, 'Raw:', jsonString);
+                } else {
+                  parsedData = compressionData;
+                }
+                
+                if (parsedData.error) {
+                  console.error('GPT-2 compression failed:', parsedData.error);
+                  resolve(null);
+                } else if (parsedData.algorithm && parsedData.bits && parsedData.ratio) {
+                  resolve({
+                    algorithm: parsedData.algorithm,
+                    bits: parsedData.bits,
+                    ratio: parsedData.ratio,
+                    compressionProgression: parsedData.compression_progression || []
+                  });
+                } else {
+                  console.error('Invalid data format:', parsedData);
                   resolve(null);
                 }
               } else {
