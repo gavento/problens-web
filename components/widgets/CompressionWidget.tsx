@@ -461,6 +461,8 @@ export default function CompressionWidget() {
               eventSource.close();
               setGptLoadingMessage('');
               
+              console.log('Full API response:', data);
+              
               if (data.output && data.output.data) {
                 const jsonString = data.output.data[0];
                 console.log('Raw JSON string from API:', jsonString);
@@ -487,7 +489,8 @@ export default function CompressionWidget() {
                   resolve(null);
                 }
               } else {
-                console.error('No output data');
+                console.log('data.output:', data.output);
+                console.error('No output data - full response:', data);
                 resolve(null);
               }
             }
