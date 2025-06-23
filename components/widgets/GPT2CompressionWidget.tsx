@@ -16,6 +16,7 @@ interface CompressionStep {
   top_predictions: TokenPrediction[];
   actual_probability: number;
   shannon_code_length: number;
+  shannon_code: string;
   total_bits_so_far: number;
 }
 
@@ -265,7 +266,7 @@ const GPT2CompressionWidget: React.FC = () => {
           {/* Tokenization Display */}
           <div className="bg-white p-4 rounded-lg border">
             <h4 className="font-semibold mb-2">Tokenization</h4>
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap gap-1 mb-3">
               {compressionData.tokens.map((token, index) => (
                 <span
                   key={index}
@@ -280,6 +281,45 @@ const GPT2CompressionWidget: React.FC = () => {
                   {token.replace(/ /g, '·')}
                 </span>
               ))}
+            </div>
+            
+            {/* Shannon Codes */}
+            <div className="border-t pt-3">
+              <h5 className="text-sm font-medium text-gray-700 mb-2">Shannon Codes:</h5>
+              <div className="flex flex-wrap gap-1 mb-2">
+                {compressionData.steps.map((step, index) => (
+                  <div key={index} className="text-center">
+                    <div className={`px-2 py-1 rounded text-xs font-mono border ${
+                      index <= currentStep
+                        ? index === currentStep
+                          ? 'bg-blue-200 border-blue-400'
+                          : 'bg-green-100 border-green-300'
+                        : 'bg-gray-100 border-gray-300'
+                    }`}>
+                      {index <= currentStep ? step.shannon_code : '?'.repeat(step.shannon_code_length)}
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      {step.shannon_code_length} bits
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Concatenated final code */}
+              <div className="mt-3 p-2 bg-gray-50 rounded">
+                <div className="text-sm text-gray-600 mb-1">Final compressed code:</div>
+                <div className="font-mono text-sm break-all">
+                  {compressionData.steps
+                    .slice(0, currentStep + 1)
+                    .map(step => step.shannon_code)
+                    .join('')}
+                  {currentStep < compressionData.steps.length - 1 && (
+                    <span className="text-gray-400">
+                      {'?'.repeat(compressionData.steps.slice(currentStep + 1).reduce((sum, step) => sum + step.shannon_code_length, 0))}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -383,13 +423,16 @@ const GPT2CompressionWidget: React.FC = () => {
                     </div>
                   </div>
                   <div className="mt-2">
-                    <span className="text-gray-600">Code: </span>
-                    <span className="font-mono font-semibold text-blue-600">
-                      {"1".repeat(currentStepData.shannon_code_length)}
+                    <span className="text-gray-600">Shannon Code: </span>
+                    <span className="font-mono font-semibold text-blue-600 text-lg">
+                      {currentStepData.shannon_code}
                     </span>
                     <span className="text-xs text-gray-500 ml-2">
-                      (⌈-log₂({(currentStepData.actual_probability).toFixed(4)})⌉ = {currentStepData.shannon_code_length})
+                      ({currentStepData.shannon_code_length} bits)
                     </span>
+                  </div>
+                  <div className="mt-1 text-xs text-gray-500">
+                    Length = ⌈-log₂({(currentStepData.actual_probability).toFixed(4)})⌉ = {currentStepData.shannon_code_length} bits
                   </div>
                 </div>
               </div>
