@@ -12,20 +12,13 @@ interface PageProps {
 
 export async function generateStaticParams() {
   const paths = getAllMdxPaths();
-  return paths
-    .filter((path) => path !== rootSlug) // Skip intro as it's handled by the root page
-    .map((path) => ({
-      path: [path],
-    }));
+  return paths.map((path) => ({
+    path: [path],
+  }));
 }
 
 export default async function ChapterPage({ params }: PageProps) {
   const path = (await params).path.join("/");
-
-  // Redirect /intro to root
-  if (path === rootSlug) {
-    redirect("/");
-  }
 
   return singlePage(path);
 }

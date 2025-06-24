@@ -1,0 +1,13 @@
+# Requirements for LLM evaluation on RunPod
+torch>=2.0.0
+transformers>=4.30.0
+numpy>=1.21.0
+tqdm>=4.64.0
+accelerate>=0.20.0
+scipy>=1.9.0
+sentencepiece>=0.1.97
+tokenizers>=0.13.0
+
+# For specific model architectures
+# flash-attn>=2.0.0  # Uncomment if using flash attention
+# bitsandbytes>=0.39.0  # Uncomment for quantization

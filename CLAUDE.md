@@ -90,3 +90,4 @@ This ensures the deployment pipeline remains healthy and the static site builds 
 - to memorize if we use HF endpoint, we have to be careful about  fn_index and trigger_id
 - related github repos (HF workspaces) are cloned in the home folder
 - you can change files in related HF repos and push them
+- when adding stuff to HF space, try to minimize the probability of disrupting fn_index values of other tabs

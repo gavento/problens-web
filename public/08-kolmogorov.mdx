@@ -1,32 +1,108 @@
 # Kolmogorov Complexity
 
-Kolmogorov complexity measures the computational resources needed to specify an object. It's defined as the length of the shortest possible description of the object in a given universal description language.
+This chapter loosely follows the chapter about [coding theory](09-coding_theory). In that chapter, we have seen what entropy and tells us about compressing strings, if we treat letters independently. But whenever we use the language of entropy, there has to be some probabilistic model behind - We have to be talking about a whole distribution of strings, and model our string as being picked from it. 
+This works well for encoding single letters, but gets awkard pretty soon. What kind of distribution was this website sampled from? 
+
+Kolmogorov complexity is the ultimate answer to the problem of compression, it helps us to talk about complexities of single objects. It's immense power is balanced by the fact that we can't really compute it. My favorite applications of Kolmogorov complexity are not practical applications, but a clean, conceptual language we can use to talk about stuff. 
+
+<KeyTakeaway>
+Kolmogorov complexity of an object is the length of its shortest specification. 
+</KeyTakeaway>
 
 ## 🌀 The Mandelbrot Set
 
-The Mandelbrot set provides a fascinating example of Kolmogorov complexity. Despite its infinite detail and boundary complexity, the entire set can be described by a remarkably simple algorithm:
+Take a good look at the following picture.<Footnote>Be careful, though, excessive zooming may result in psychedelic experience. </Footnote> It shows a so called Mandelbrot set -- we color each pixel of the plane based on how quickly a certain sequence of numbers shoots to infinity. 
 
-For a complex number $c$:
-1. Start with $z_0 = 0$
-2. Iterate $z_{n+1} = z_n^2 + c$
-3. If $|z_n|$ remains bounded as $n \to \infty$, then $c$ is in the Mandelbrot set
-
-This short description generates an infinitely complex fractal structure. Explore it below:
+If you take print screen of this picture and save it on your disk, it's going to take a few MB. But what if you instead save the _instruction_ for how to create this image? All relevant ingredients are stored in the two boxes below the picture - the formula used to create it, and the coordinates of the plane you are looking at. We are talking about less than kilobyte of memory now. 
 
 <MandelbrotExplorer />
 
-The Mandelbrot set demonstrates a key insight of Kolmogorov complexity: objects with low Kolmogorov complexity (simple descriptions) can exhibit arbitrarily high visual or structural complexity. The entire infinite detail of the Mandelbrot set is compressed into just a few lines of mathematical description.
+This is the gist of Kolmogorov complexity. For any given object - say, represented as a binary string - it's Kolmogorov complexity is the length of the shortest program that prints that string. 
 
-## 🎲 Testing Randomness
+Here are a few more examples. 
 
-One key insight from Kolmogorov complexity is that a sequence is random if it cannot be compressed—that is, if the shortest description of the sequence is essentially the sequence itself.
+- Although digits of $\pi$ have many random-like properties, the Kolmogorov complexity of it's first million digits is extremely small. That's because there are some [extremely short](https://cs.uwaterloo.ca/~alopez-o/math-faq/mathtext/node12.html) programs printing it. 
+- Whenever you can ZIP a file to a size of 100MB, you can say that "Kolmogorov complexity of the file is at most 100MB"
+- The Hutter's challenge from [coding theory chapter](09-coding_theory) is about estimating the Kolmogorov complexity of 1GB of Wikipedia
+- If you keep flipping a coin $n$ times, the resulting sequence is likely to have Kolmogorov complexity of about $n$. There's no good way of compressing it.  
 
-In practice, we can test whether a sequence "looks random" by checking if it exhibits the statistical properties we expect from random sequences. Try creating your own sequence of coin flips and see if it passes standard randomness tests:
+## Choosing the language
+
+There is an awkard problem with the definition of Kolmogorov complexity. It's the length of the shortest program -- but what programming language do we use? Python? C? Assembly? Turing machine? Do we allow languages _and_ libraries? Printing million digits of $\pi$ can then reduce to this:
+
+```
+import sympy
+print(sympy.N(sympy.pi, 1000000))
+```
+
+The important insight is that, at least if we stay on the theoretical side of things, the choice does not matter that much. The trick is that in any ([Turing-complete](https://en.wikipedia.org/wiki/Turing_completeness)) programming language, we can build an [interpreter](https://en.wikipedia.org/wiki/Interpreter_(computing)) of any other programming language. 
+Interpreter is a piece of code that reads a code written in some language, and executes its instructions. 
+
+In any reasonable programming language, you can write an interpreter of any other reasonable language of size at most, say, 1MB. But this means that Kolmogorov complexity of any object is fixed 'up to 1MB': If you have a 100MB Python script that prints the file, then you have a 101MB C, Assembly, Java, ... script printing the same file - just write a code where the first 1MB is a Python interpreter tasked to execute the remaining 100MB. 
+
+So for large objects (like the 1GB Wikipedia file from Hutter's prize), there's nothing awkward in using Kolmogorov complexity. The flip side is that it's pretty meaningless to argue whether the Kolmogorov complexity of $\pi$ is 200 or 300 bytes. That difference depends on the choice of programming language too much. 
+
+## A love story: $E[K(x)] \approx H(X)$ 
+
+Both Kolmogorov complexity and entropy are trying to measure something very similar: complexity, information, compression limit. Naturally, there are closely connected. The connection goes like this: If you have a reasonable distribution ($X$) over bit strings and you sample from it ($x$), then the entropy of the distribution is roughly equal to the expected Kolmogorov complexity of the sample. I.e., <Math displayMode={false} math = "E[K(x)] \approx H(X)"/>. 
+
+<Block headline = "Example: uniform distribution">
+Let's see why this is true on an example. Take a sequence of $n$ fair coin flips. This is a uniform distribution over $2^n$ binary strings of length $n$. The entropy of this distribution is $n$. Let's now look at the Kolmogorov complexity. 
+
+On one hand, the Kolmogorov complexity of any $n$-bit string is at most <Math displayMode={true} math = "K(\underbrace{\textsf{01000\dots 010110}}_{\textrm{$n$ bits}}) \le n + \textrm{something small}." /> That's because in any (reasonable) language, you can just print the string:
+
+```
+print('01000...010110')
+```
+
+But can the average Kolmogorov complexity be much smaller than $n$? Notice that our uniform distribution contains many strings with very small Kolmogorov complexity, like the string $000\dots 0$. The reason why those special snowflakes don't really matter on average is [coding theory](/08-coding_theory). 
+We can construct a concrete code like this: for any string in our distribution, its code name is the shortest program that prints it.<Footnote>There is a subtlety here. Code has to be prefix-free: If $\mathsf{0}$ is a code, then <Math math = "\mathsf{01}"/> can't be a code. So, to interpret a program as a code name, our programming language has to be prefix-free -- no program can be a prefix of another program. This can be done e.g. by appending a [null-character at the end of the string](https://en.wikipedia.org/wiki/Null-terminated_string), or writing its length at the beginning. </Footnote> The average length of this code is exactly $E[K(x)]$. But [we have seen](/08-coding_theory#source-coding) that any code has its average length at least as big as the entropy. Hence, $E[K(x)] \ge H(X) = n$ and we have the formula:
+<Math displayMode={true} math = "E[K(x)] \approx H(X)"/> 
+</Block>
+
+If you look at above proof sketch, you can notice that we did not really used that the distribution is uniform, it works pretty much for any distribution.<Footnote>There is an annoying detail. The distribution _itself_ can be hard to describe in the sense of having large Kolmogorov complexity. See e.g. 14.3 in [Elements of Information theory](http://staff.ustc.edu.cn/~cgong821/Wiley.Interscience.Elements.of.Information.Theory.Jul.2006.eBook-DDU.pdf). </Footnote> 
+
+However, the case of a uniform distribution is the most interesting: It tells us that most $n$-bit strings can't really be compressed, since their Kolmogorov complexity is close to $n$! In fact, $n$-bit strings with Kolmogorov complexity $>n$ are called _Kolmogorov random_, to highlight the insight that __bits are random if we can't compress them__. 
+
+<Expand headline="Long runs">
+Think of a long $n$-bit string generated by flipping a fair coin $n$ times. What is the longest consecutive run of heads in such a string? You can use classical tools of probability theory like [Chernoff's inequality](https://en.wikipedia.org/wiki/Chernoff_bound) to compute that with high probability, the string won't contain runs of length more than $O(\log n)$. 
+
+But there's also a more direct way to see this: If a bit string $s$ contains a large run of zeros of length $k$ at position $i$, i.e., 
+<Math displayMode={true} math = "s = s_1 \underbrace{00\dots 0}_{k} s_2"/>
+
+you can store only $s_1, s_2, k, i$ in memory. The overhead to store a few additional numbers is definitely less than $10(1 + \log_2 n)$ (the true constant factor is better than 10). The good part is that we store $k$ bits less. So, the Kolmogorov complexity of strings with pattern of $k$ zeros is 
+<Math displayMode={true} math = "K(x) \le n - k + O(\log n)." />
+If it was often the case that a random string contains a long substring of zeros, we could use this trick to compress random strings on average. But that's not possible, so random strings typically can't have long runs of zeros. 
+
+The true power of this view is that we can now understand why random strings can't have any long interesting patterns in them. If there were patterns, they would be predictable, and hence the strings compressible. But $E[K(x)] \ge H(X) = n$ says that this can't happen. 
+</Expand>
+
+## 🎲 What the hell is randomness? 
+
+If there is a person who we can call the 'father of probability theory', it would be [Pierre Laplace](https://en.wikipedia.org/wiki/Pierre-Simon_Laplace). Laplace lived around the year 1800. At this point in time, everybody, Laplace included, was amazed by how Newton seemingly solved physics (~1700) by postulating a few simple laws that seemingly described pretty much all there is. In fact, Laplace himself is an author of [Laplace demon](https://en.wikipedia.org/wiki/Laplace%27s_demon) - a thought experiment based on the idea that if you knew all the info about the present-state universe, you could deterministically simulate it and know all there is about the future. 
+
+Yet, Laplace spent a lot of his time developing probability theory <Tooltip tooltip="![chesterton](/fig/chesterton2.jpg)">exactly</Tooltip> because he believed in the deterministic nature of the world. He understood that we can never know all there is to the world anyway. Hence, we need a language - probability - to talk about our epistemic uncertainty.  
+
+When [Solomonoff](https://en.wikipedia.org/wiki/Ray_Solomonoff) and [Kolmogorov](https://en.wikipedia.org/wiki/Andrey_Kolmogorov) devoloped Kolmogorov complexity,<Footnote>Even though 'Kolmogorov complexity' sticked, Solomonoff was first by a couple of years. We are talking ~1960s. </Footnote> they came from similar angle. At the heart of the matter, probability is not about whether our world is governed by deterministic Newton laws, or what's your favorite intepretation of quantum physics. It's about modelling unpredictability. 
+
+This kind of intuition is extremely helpful in computer science. Algorithms frequently want to work with random bits, but how do we get them fast? In practice, we typically use a [_pseudorandom generator_](https://en.wikipedia.org/wiki/Pseudorandom_generator): We ask the operating system for a [_seed_](https://en.wikipedia.org/wiki/Random_seed) of perhaps 32 'truly random' bits, that the system gets by e.g. measuring some hardware sensor. The pseudorandom generator is then some obscure function that gets the 32 bits as input and it repeatedly applies obscure mathematical operations to it to generate more random looking bits. 
+
+How can we understand those pseudorandom bits? As they are a deterministic function of the initial seed, from the perspective of classical probability theory, they are not random at all. However, if we understand Kolmogorov complexity, we can generalize the fact 'a strin' say that 'a string looks random to an algorithm $A$ if $A$ cannot compress this string'. 
+
+
+think of them like this. We can think of each algorithm working with random bits as a statistical test trying to distinugish truly random bits from pseudorandom random bits. We   It outputs a different distribution of results if we supply 
 
 <CoinFlipRandomnessWidget />
 
 These tests check whether subsequences (k-mers) appear with the frequency we'd expect in a truly random sequence. If your sequence can be "compressed" by predicting patterns, it likely has lower Kolmogorov complexity than a truly random sequence.
 
+## Application: Randomness intuition
+
+## compression = prediction = understanding
+
+
+
+## LLMs & AI safety
 ## 🔍 Implications
 
 This connects to several important concepts:
@@ -34,3 +110,11 @@ This connects to several important concepts:
 1. **Compression**: The Kolmogorov complexity of an object is essentially its ultimate compression limit
 2. **Randomness**: A string is random if its Kolmogorov complexity approximately equals its length
 3. **Information Theory**: Kolmogorov complexity provides a foundation for understanding information content independent of probability distributions
+
+
+
+
+
+## 🏛️🍎🐱 Three Categories Experiment
+
+<ThreeCategoriesWidget />

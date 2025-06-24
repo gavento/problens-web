@@ -55,7 +55,7 @@ We can get rid of this annoying slack of one bit using the following trick. Thin
 
 So, there are codes that get arbitrarily close to $H(p)$ bits per letter, even if they are a bit less intuitive since they are encoding letter-tuples, not individual letters. This is essentially the first half of the most important theorem in coding theory - [Shannon's source coding theorem](https://en.wikipedia.org/wiki/Shannon%27s_source_coding_theorem). 
 
-### The source coding theorem
+### The source coding theorem <a id="source-coding"></a>
 Here's the setup of the source coding theorem. We model texts like this: There is a source that has a distribution over letters. This source keeps sampling letters independently, and sends them to us. This goes on for a long time, say $n$ steps; our goal is to save some binary string to the memory so that later on, we can recover from that string what $n$ letters the source sent. 
 
 This setup with the source sampling independent letters models that we only want to think about the problem of giving code names to letters based on frequencies. We are not trying to use the _correlations_ like '$\mathsf{th}$ often follows by $\mathsf{e}$'. 
@@ -158,4 +158,3 @@ I encourage you to play with the following widget, especially making GPT-2 compr
 The best algorithms in Hutter's competition have compress by a factor of about 9x. But unfortunately, while the challenge is backed by a very deep understanding of the nature of intelligence, the precise parameters of the challenge make it hard to relate to the winning algorithms. Since the file size is 'only' 1GB, the compression-by-LLM approach doesn't easily work. You have to append the LLM to the compressed text and it becomes huge.<Footnote>Or you have to train it 'inside' the compression/decompression algorithm, and for that the file is too small. </Footnote> The winning algorithms are thus used on more 'combinatorial' approaches, like those used in ZIP or stuff like [multiplicative weights](06-algorithms). 
 
 Finally, let me tell you about one of the coolest experiments I know of. Claude Shannon, the GOAT who invented information theory in the late 40s, did the following a few years after his invention. He measured the prediction ability of people: he showed them partial sentences and asked them to guess the next letter. This way, he figured that people can compress English to about 0.5 - 1 bits per letter, roughly on par with the performance of GPT2-4. <Footnote>TODO crunch the numbers more precisely. </Footnote> As far as I can say, this is the first experiment about next-token prediction; Claude Shannon was so based he did it 60+ years before it became cool!
-

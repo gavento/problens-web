@@ -1,0 +1,157 @@
+.tooltip-trigger {
+  display: inline;
+  cursor: help;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: #6b7280;
+  text-underline-offset: 0.2em;
+  color: inherit;
+}
+
+.tooltip-trigger:hover {
+  text-decoration-color: #374151;
+}
+
+.tooltip-content {
+  z-index: 1000;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  padding: 0.75rem 1rem;
+  width: max-content;
+  max-width: min(24rem, calc(100vw - 2rem));
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: #1f2937;
+  text-align: left;
+  white-space: normal;
+  animation-duration: 200ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+/* Markdown content styles */
+.tooltip-paragraph {
+  display: block;
+  margin: 0;
+}
+
+.tooltip-line {
+  margin: 0.25rem 0;
+}
+
+.tooltip-line:first-child {
+  margin-top: 0;
+}
+
+.tooltip-line:last-child {
+  margin-bottom: 0;
+}
+
+.tooltip-list-item {
+  margin: 0.25rem 0;
+  padding-left: 0.5rem;
+  text-indent: -0.5rem;
+}
+
+.tooltip-strong {
+  font-weight: 600;
+  color: #111827;
+}
+
+.tooltip-em {
+  font-style: italic;
+}
+
+.tooltip-code {
+  background-color: #f3f4f6;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.8em;
+  color: #1f2937;
+}
+
+.tooltip-link {
+  color: #1d4ed8;
+  text-decoration: underline;
+  text-underline-offset: 0.125em;
+}
+
+.tooltip-link:hover {
+  color: #1e3a8a;
+}
+
+.tooltip-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.25rem;
+  margin: 0.5rem 0;
+  display: block;
+}
+
+.tooltip-loading {
+  color: #6b7280;
+  font-style: italic;
+}
+
+.tooltip-content[data-side="top"] {
+  animation-name: slideDownAndFade;
+}
+
+.tooltip-content[data-side="bottom"] {
+  animation-name: slideUpAndFade;
+}
+
+.tooltip-content[data-side="left"] {
+  animation-name: slideRightAndFade;
+}
+
+.tooltip-content[data-side="right"] {
+  animation-name: slideLeftAndFade;
+}
+
+@keyframes slideUpAndFade {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDownAndFade {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideLeftAndFade {
+  from {
+    opacity: 0;
+    transform: translateX(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideRightAndFade {
+  from {
+    opacity: 0;
+    transform: translateX(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

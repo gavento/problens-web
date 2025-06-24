@@ -1,0 +1,1075 @@
+{
+  "summary": {
+    "total_snapshots": 1000,
+    "flagged_count": 92,
+    "flagged_percentage": 9.2
+  },
+  "flagged_ids": [
+    0,
+    4,
+    8,
+    9,
+    21,
+    24,
+    29,
+    39,
+    49,
+    100,
+    113,
+    147,
+    186,
+    209,
+    238,
+    248,
+    255,
+    273,
+    281,
+    286,
+    292,
+    303,
+    321,
+    345,
+    382,
+    387,
+    391,
+    423,
+    429,
+    441,
+    445,
+    452,
+    460,
+    466,
+    477,
+    490,
+    503,
+    508,
+    517,
+    520,
+    523,
+    526,
+    563,
+    584,
+    592,
+    595,
+    597,
+    599,
+    606,
+    611,
+    616,
+    618,
+    631,
+    633,
+    635,
+    640,
+    671,
+    683,
+    700,
+    708,
+    712,
+    729,
+    733,
+    739,
+    742,
+    750,
+    755,
+    766,
+    768,
+    774,
+    775,
+    795,
+    797,
+    811,
+    813,
+    822,
+    826,
+    827,
+    849,
+    851,
+    867,
+    868,
+    882,
+    887,
+    889,
+    920,
+    928,
+    933,
+    950,
+    964,
+    965,
+    991
+  ],
+  "flagged_snapshots": [
+    {
+      "id": 0,
+      "index": 0,
+      "issues": [
+        "First sentence ends with academic abbreviation",
+        "Context ends with very short incomplete word"
+      ],
+      "first_sentence": "Lincoln's second inaugural address is also greatly admired and often quoted",
+      "context": "In these speeches, Lincoln articulated better th",
+      "target_letter": "a"
+    },
+    {
+      "id": 4,
+      "index": 4,
+      "issues": [
+        "First sentence ends with title abbreviation",
+        "Contains multiple asterisks (likely markdown)",
+        "Contains academic volume/date references",
+        "Context ends with very short incomplete word",
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Randall (4 vol., 1945\u201355; reprint 2000.) by prize winning scholar **Mr",
+      "context": "he Prairie Years (2 vol 1926); The War Years (4 vo",
+      "target_letter": "l"
+    },
+    {
+      "id": 8,
+      "index": 8,
+      "issues": [
+        "First sentence ends with academic abbreviation",
+        "Context ends with very short incomplete word"
+      ],
+      "first_sentence": "He is trapped by a moral code that makes him a willing victim, and rather than challenge that morali...",
+      "context": "n Conway appears in sections 145 and 146, and is m",
+      "target_letter": "e"
+    },
+    {
+      "id": 9,
+      "index": 9,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "The President was taken across the street from the theater to the Petersen House, where he lay in a ...",
+      "context": "Several physicians attended Linco",
+      "target_letter": "l"
+    },
+    {
+      "id": 21,
+      "index": 21,
+      "issues": [
+        "First sentence ends with title abbreviation",
+        "Context ends with very short incomplete word"
+      ],
+      "first_sentence": "John Wilkes Booth, a well-known actor and Southern sympathizer from Maryland, heard that the preside...",
+      "context": "Lincoln, along with th",
+      "target_letter": "e"
+    },
+    {
+      "id": 24,
+      "index": 24,
+      "issues": [
+        "First sentence ends with academic abbreviation",
+        "Context ends with very short incomplete word"
+      ],
+      "first_sentence": "I do not expect the Union to be dissolved \u2014 I do not expect the house to fall \u2014 but I do expect it w...",
+      "context": "It will become all one thing, or all t",
+      "target_letter": "h"
+    },
+    {
+      "id": 29,
+      "index": 29,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "Based upon this evidence, Armstrong was acquitted",
+      "context": "Illinois Democrat Steph",
+      "target_letter": "e"
+    },
+    {
+      "id": 39,
+      "index": 39,
+      "issues": [
+        "Second sentence appears to be list item",
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "History of Alabama and Dictionary of Alabama Biography 4 vols",
+      "context": "Inside Alabama: A Personal History ",
+      "target_letter": "o"
+    },
+    {
+      "id": 49,
+      "index": 49,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "The following day, Halley retired, sold the rights to his music, and disappeared",
+      "context": "ned in sections 112, 114, 133, and 141, and appear",
+      "target_letter": "s"
+    },
+    {
+      "id": 100,
+      "index": 100,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "Communication difficulties may contribute to autistic people becoming socially anxious or depressed",
+      "context": "These behaviors might be extrem",
+      "target_letter": "e"
+    },
+    {
+      "id": 113,
+      "index": 113,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "Thus everyone who 60 days after July 17, 1862 supported the rebellion was to be punished by having a...",
+      "context": "The goal was to weake",
+      "target_letter": "n"
+    },
+    {
+      "id": 147,
+      "index": 147,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "Sugar, coffee, machinery, metal work of all kinds, clothing and pottery are largely imported",
+      "context": "Of the",
+      "target_letter": "s"
+    },
+    {
+      "id": 186,
+      "index": 186,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "The entire story of Atlas Shrugged can be seen as an answer to the question, what would happen if th...",
+      "context": "ving himself of the burden of carrying the world, ",
+      "target_letter": "h"
+    },
+    {
+      "id": 209,
+      "index": 209,
+      "issues": [
+        "First sentence ends with academic abbreviation",
+        "Context ends with very short incomplete word"
+      ],
+      "first_sentence": "After the increase, in 1892, of the French minimum tariff, which applied to Algeria also, foreign tr...",
+      "context": "ria's most significant exports, financially, are p",
+      "target_letter": "e"
+    },
+    {
+      "id": 238,
+      "index": 238,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "Although he wrote dialogues early in his career, no more than fragments of these have survived",
+      "context": "The works of Aristotle that still exist ",
+      "target_letter": "t"
+    },
+    {
+      "id": 248,
+      "index": 248,
+      "issues": [
+        "First sentence ends with academic abbreviation",
+        "Context ends with very short incomplete word"
+      ],
+      "first_sentence": "Of course, Lincoln would not survive to see the surrender of all Confederate forces; just five days ...",
+      "context": "He w",
+      "target_letter": "a"
+    },
+    {
+      "id": 255,
+      "index": 255,
+      "issues": [
+        "Second sentence appears to be list item",
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "A Literary History of Alabama: The Nineteenth Century 1979",
+      "context": "Alabama (1939) * for a detailed bibliography see H",
+      "target_letter": "i"
+    },
+    {
+      "id": 273,
+      "index": 273,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "In the early years of the 20th century efforts to extend the cultivation of the plant were renewed",
+      "context": "A small amount of cotton is ",
+      "target_letter": "a"
+    },
+    {
+      "id": 281,
+      "index": 281,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "Similar to deaf culture, autistic culture is based in a belief that autism is a unique way of being ...",
+      "context": "sm in general as a culture, not just autistic cult",
+      "target_letter": "u"
+    },
+    {
+      "id": 286,
+      "index": 286,
+      "issues": [
+        "First sentence ends with title abbreviation"
+      ],
+      "first_sentence": "In the world of Atlas Shrugged all Presidents and Prime Ministers are referred to simply as Head of ...",
+      "context": "ause countries have been standardized as People's ",
+      "target_letter": "s"
+    },
+    {
+      "id": 292,
+      "index": 292,
+      "issues": [
+        "First sentence ends with capital letter (likely incomplete)",
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Abraham Lincoln, Constitutionalism, and Equal Rights in the Civil War Era (1998) *Boritt, Gabor S",
+      "context": "Lincoln and the Economics of ",
+      "target_letter": "t"
+    },
+    {
+      "id": 303,
+      "index": 303,
+      "issues": [
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Peter Kropotkin, often seen as the most important theorist, outlined his economic ideas in The Conqu...",
+      "context": " illustrated in nature in Mutual Aid: A Factor of ",
+      "target_letter": "e"
+    },
+    {
+      "id": 321,
+      "index": 321,
+      "issues": [
+        "First sentence ends with academic abbreviation",
+        "Context ends with very short incomplete word"
+      ],
+      "first_sentence": "In 1811, they were able to lease 30 acres (0.1 kmsup2;) of a 230 acre (0.9 kmsup2;) farm on Knob Cre...",
+      "context": "In a valley of the Rolling Fork River, this was so",
+      "target_letter": "m"
+    },
+    {
+      "id": 345,
+      "index": 345,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "Based upon this evidence, Armstrong was acquitted",
+      "context": "Illinois Democra",
+      "target_letter": "t"
+    },
+    {
+      "id": 382,
+      "index": 382,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "When he became a pirate, he was disowned and excommunicated",
+      "context": "here is a price on his head in Norway, Portugal, T",
+      "target_letter": "u"
+    },
+    {
+      "id": 387,
+      "index": 387,
+      "issues": [
+        "First sentence ends with academic abbreviation",
+        "Context ends with very short incomplete word"
+      ],
+      "first_sentence": "The social alienation of autistic and Asperger's people is so intense from childhood that many of th...",
+      "context": "However, having an im",
+      "target_letter": "a"
+    },
+    {
+      "id": 391,
+      "index": 391,
+      "issues": [
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Lincoln and the Economics of the American Dream (1994)",
+      "context": "Lincoln's ",
+      "target_letter": "e"
+    },
+    {
+      "id": 423,
+      "index": 423,
+      "issues": [
+        "First sentence ends with academic abbreviation",
+        "Context ends with very short incomplete word"
+      ],
+      "first_sentence": "During the debates of 1858 the issue of race was often discussed",
+      "context": "However, m",
+      "target_letter": "a"
+    },
+    {
+      "id": 429,
+      "index": 429,
+      "issues": [
+        "Context ends with very short incomplete word",
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Battle Cry of Freedom: The Civil War Era (1988)",
+      "context": "Pulitzer Prize w",
+      "target_letter": "i"
+    },
+    {
+      "id": 441,
+      "index": 441,
+      "issues": [
+        "First sentence ends with academic abbreviation",
+        "Context ends with very short incomplete word"
+      ],
+      "first_sentence": "Akston's name is so hallowed that a young lady, on hearing that Francisco had studied under him, is ...",
+      "context": "She thought he must have been one of those great n",
+      "target_letter": "a"
+    },
+    {
+      "id": 445,
+      "index": 445,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "Lincoln wrote: :This morning, as for some days past, it seems exceedingly probable that this Adminis...",
+      "context": "ts, hoping to make setbacks in the war a top campa",
+      "target_letter": "i"
+    },
+    {
+      "id": 452,
+      "index": 452,
+      "issues": [
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Inside Alabama: A Personal History of My State (2004) * solid reporting on politics and economics 19...",
+      "context": "A Litera",
+      "target_letter": "r"
+    },
+    {
+      "id": 460,
+      "index": 460,
+      "issues": [
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Lincoln: Speeches and Writings 2 vol Library of America edition, (1989)",
+      "context": "The Life and Writings of Abraham L",
+      "target_letter": "i"
+    },
+    {
+      "id": 466,
+      "index": 466,
+      "issues": [
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Lincoln at Cooper Union: The Speech That Made Abraham Lincoln President (2004)",
+      "context": "the Second American Revolution (1992) *McPherson, ",
+      "target_letter": "j"
+    },
+    {
+      "id": 477,
+      "index": 477,
+      "issues": [
+        "First sentence ends with capital letter (likely incomplete)",
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "AL's plans for Reconstruction *Hendrick, Burton J",
+      "context": "Lincoln's Wa",
+      "target_letter": "r"
+    },
+    {
+      "id": 490,
+      "index": 490,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "His works were wide-ranging and systematic so that they could give the impression that no significan...",
+      "context": "He was also much les",
+      "target_letter": "s"
+    },
+    {
+      "id": 503,
+      "index": 503,
+      "issues": [
+        "First sentence ends with academic abbreviation",
+        "Context ends with very short incomplete word"
+      ],
+      "first_sentence": "Pieces of the spear were scraped off onto the wound and Telephus was healed",
+      "context": "This is an example of sy",
+      "target_letter": "m"
+    },
+    {
+      "id": 508,
+      "index": 508,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "He believes that the source of his sustenance is evil and would love to see him destroyed",
+      "context": " and spends his time perfunctorily working for var",
+      "target_letter": "i"
+    },
+    {
+      "id": 517,
+      "index": 517,
+      "issues": [
+        "First sentence ends with title abbreviation"
+      ],
+      "first_sentence": "The intellectual heir of Dr",
+      "context": " Meigs comes to a fitting end at the hands of Proj",
+      "target_letter": "e"
+    },
+    {
+      "id": 520,
+      "index": 520,
+      "issues": [
+        "First sentence ends with capital letter (likely incomplete)",
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Pulitzer Prize winner by famous poet *Abraham Lincoln: A Biography by Benjamin P",
+      "context": "Thomas; (1952) ===Specialty topics=== *Bake",
+      "target_letter": "r"
+    },
+    {
+      "id": 523,
+      "index": 523,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "He discovered a technique for extracting oil from wells that had been abandoned as dried up",
+      "context": "very suddenly and unexpectedly turned Colorado int",
+      "target_letter": "o"
+    },
+    {
+      "id": 526,
+      "index": 526,
+      "issues": [
+        "First sentence ends with title abbreviation"
+      ],
+      "first_sentence": "There are at least three statues of Lincoln in the United Kingdom\u2014one in London by Augustus St",
+      "context": "Gaud",
+      "target_letter": "e"
+    },
+    {
+      "id": 563,
+      "index": 563,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "Some of the problems associated with Rett syndrome can be treated",
+      "context": "Physical, occ",
+      "target_letter": "u"
+    },
+    {
+      "id": 584,
+      "index": 584,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "Its adherents propose that those preventing ethnic groups (or races) from living in separate autonom...",
+      "context": "Anti-Racist Action is not an anarchist ",
+      "target_letter": "g"
+    },
+    {
+      "id": 592,
+      "index": 592,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "Diagnosis is based on a list of psychiatric criteria, and a series of standardized clinical tests ma...",
+      "context": "A",
+      "target_letter": "u"
+    },
+    {
+      "id": 595,
+      "index": 595,
+      "issues": [
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Lincoln's Melancholy: How Depression Challenged a President and Fueled His Greatness (2005)",
+      "context": "Named one of the best books of 2005 by Th",
+      "target_letter": "e"
+    },
+    {
+      "id": 597,
+      "index": 597,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "The root of the name Oscar is contested",
+      "context": " on a table and said, it looks just like my uncle ",
+      "target_letter": "o"
+    },
+    {
+      "id": 599,
+      "index": 599,
+      "issues": [
+        "First sentence ends with capital letter (likely incomplete)",
+        "Context ends with very short incomplete word",
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Abraham Lincoln and the Second American Revolution (1992) *McPherson, James M",
+      "context": "Battle Cry o",
+      "target_letter": "f"
+    },
+    {
+      "id": 606,
+      "index": 606,
+      "issues": [
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "The Greatest Nation of the Earth: Republican Economic Policies during the Civil War (1997) * Shenk, ...",
+      "context": "Lincoln's Melancholy: How De",
+      "target_letter": "p"
+    },
+    {
+      "id": 611,
+      "index": 611,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "This has been interpreted as a rejection of his warrior life, but also as indignity to his martyrdom...",
+      "context": "The kings of Epiru",
+      "target_letter": "s"
+    },
+    {
+      "id": 616,
+      "index": 616,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "Since the Western social formet in the 1960s and 1970s a number new of movements and schools have ap...",
+      "context": "of these stances are limited to even smaller numbe",
+      "target_letter": "r"
+    },
+    {
+      "id": 618,
+      "index": 618,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "This alludes to the Greek myth of Prometheus, who gave mankind the gift of fire, allowing it to rais...",
+      "context": "In Atlas Shrugged, it is the mind ",
+      "target_letter": "o"
+    },
+    {
+      "id": 631,
+      "index": 631,
+      "issues": [
+        "First sentence ends with academic abbreviation",
+        "Context ends with very short incomplete word"
+      ],
+      "first_sentence": "Meso-American influence is evident in the agrarian Mississippian culture that followed",
+      "context": "The French established the first European se",
+      "target_letter": "t"
+    },
+    {
+      "id": 633,
+      "index": 633,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "Anti-Racist Action is not an anarchist group, but many anarchists are involved",
+      "context": "It focuses on publicly confron",
+      "target_letter": "t"
+    },
+    {
+      "id": 635,
+      "index": 635,
+      "issues": [
+        "First sentence ends with academic abbreviation",
+        "Context ends with very short incomplete word"
+      ],
+      "first_sentence": "A great variety of vegetables and of fruits, especially citrus products, is exported",
+      "context": " considerable amount of cotton was grown at the ti",
+      "target_letter": "m"
+    },
+    {
+      "id": 640,
+      "index": 640,
+      "issues": [
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "The American Political Tradition: And the Men Who Made It (1948) ch 5: Abraham Lincoln and the Self-...",
+      "context": "Lincol",
+      "target_letter": "n"
+    },
+    {
+      "id": 671,
+      "index": 671,
+      "issues": [
+        "First sentence ends with title abbreviation"
+      ],
+      "first_sentence": "The Looters include: Mr",
+      "context": "Thompson, Balph Eubank, Floyd Fe",
+      "target_letter": "r"
+    },
+    {
+      "id": 683,
+      "index": 683,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "There are several different perspectives on how benefit (or interest) should be defined",
+      "context": "xhibit altruistic behavior, they cannot have altru",
+      "target_letter": "i"
+    },
+    {
+      "id": 700,
+      "index": 700,
+      "issues": [
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Lincoln's War Cabinet (1946) *Hofstadter, Richard",
+      "context": "The America",
+      "target_letter": "n"
+    },
+    {
+      "id": 708,
+      "index": 708,
+      "issues": [
+        "First sentence ends with title abbreviation",
+        "Context ends with very short incomplete word"
+      ],
+      "first_sentence": "Dagny Taggart contacts Mr",
+      "context": "Ayers to inquire as to t",
+      "target_letter": "h"
+    },
+    {
+      "id": 712,
+      "index": 712,
+      "issues": [
+        "First sentence ends with capital letter (likely incomplete)",
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Alabama in the Twentieth Century (2004) * Owen Thomas M",
+      "context": "History of Alabama and Dictionary of Alabama B",
+      "target_letter": "i"
+    },
+    {
+      "id": 729,
+      "index": 729,
+      "issues": [
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "With Charity for All: Lincoln and the Restoration of the Union (1997)",
+      "context": "AL's plan",
+      "target_letter": "s"
+    },
+    {
+      "id": 733,
+      "index": 733,
+      "issues": [
+        "First sentence ends with title abbreviation",
+        "Context ends with very short incomplete word"
+      ],
+      "first_sentence": "Later, Dagny calls Mr",
+      "context": "Ayers to find o",
+      "target_letter": "u"
+    },
+    {
+      "id": 739,
+      "index": 739,
+      "issues": [
+        "First sentence ends with academic abbreviation",
+        "Context ends with very short incomplete word"
+      ],
+      "first_sentence": "Autism, Asperger's syndrome, and Sensory Integration Dysfunction are all closely related and overlap",
+      "context": "ions of classical autism, regressive autism and ea",
+      "target_letter": "r"
+    },
+    {
+      "id": 742,
+      "index": 742,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "However, he maintained that the federal government could not constitutionally bar slavery in states ...",
+      "context": "his presidency, Lincoln made it clear that the Nor",
+      "target_letter": "t"
+    },
+    {
+      "id": 750,
+      "index": 750,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "During the debates of 1858 the issue of race was often discussed",
+      "context": " political nature of these debates offer reliable ",
+      "target_letter": "e"
+    },
+    {
+      "id": 755,
+      "index": 755,
+      "issues": [
+        "First sentence ends with academic abbreviation",
+        "Context ends with very short incomplete word"
+      ],
+      "first_sentence": "In section 146 the principle is stated explicitly by Dan Conway: I suppose somebody's got to be sacr...",
+      "context": "If it turned out to be me, I ha",
+      "target_letter": "v"
+    },
+    {
+      "id": 766,
+      "index": 766,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "It is a common misperception that people with autism do not marry; many do get married",
+      "context": "Often, they marry anothe",
+      "target_letter": "r"
+    },
+    {
+      "id": 768,
+      "index": 768,
+      "issues": [
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Robert Stadler is a brilliant scientist",
+      "context": "Rand herself ",
+      "target_letter": "r"
+    },
+    {
+      "id": 774,
+      "index": 774,
+      "issues": [
+        "First sentence ends with title abbreviation",
+        "Context ends with very short incomplete word"
+      ],
+      "first_sentence": "At the same time an Austrian scientist, Dr",
+      "context": "The majority of his work wasn't w",
+      "target_letter": "i"
+    },
+    {
+      "id": 775,
+      "index": 775,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "Agriculture was collectivised, and a massive industrialization drive launched",
+      "context": "In foreign ",
+      "target_letter": "p"
+    },
+    {
+      "id": 795,
+      "index": 795,
+      "issues": [
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Abraham Lincoln: His Speeches and Writings (1946) * Lincoln, Abraham",
+      "context": "Lincoln: Speeche",
+      "target_letter": "s"
+    },
+    {
+      "id": 797,
+      "index": 797,
+      "issues": [
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "He felt co-operation is more beneficial than competition, illustrated in nature in Mutual Aid: A Fac...",
+      "context": "communists include Emma Goldman and Alexander Berk",
+      "target_letter": "m"
+    },
+    {
+      "id": 811,
+      "index": 811,
+      "issues": [
+        "First sentence ends with academic abbreviation",
+        "Context ends with very short incomplete word"
+      ],
+      "first_sentence": "Physical, occupational, and speech therapy can help with problems of coordination, movement, and spe...",
+      "context": "r several months, the child will deteriorate in in",
+      "target_letter": "t"
+    },
+    {
+      "id": 813,
+      "index": 813,
+      "issues": [
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Rand's first major professional success came with her best-selling novel The Fountainhead (1943), wh...",
+      "context": "ntellectual and opposed to the mainstream of Ameri",
+      "target_letter": "c"
+    },
+    {
+      "id": 822,
+      "index": 822,
+      "issues": [
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Lanham, MD: University Press of America for the White Burkett Miller Center of Public Affairs at the...",
+      "context": "The Fate of Liberty: Abraham Lincol",
+      "target_letter": "n"
+    },
+    {
+      "id": 826,
+      "index": 826,
+      "issues": [
+        "Context ends with very short incomplete word",
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Rand herself replied to these literary criticisms (and in advance of much of them) with her essay Th...",
+      "context": "Rand's views on sex h",
+      "target_letter": "a"
+    },
+    {
+      "id": 827,
+      "index": 827,
+      "issues": [
+        "First sentence ends with capital letter (likely incomplete)",
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Thomas; (1952) ===Specialty topics=== *Baker, Jean H",
+      "context": "Mary Todd Lincoln: A Biography (1987) *Belz, ",
+      "target_letter": "h"
+    },
+    {
+      "id": 849,
+      "index": 849,
+      "issues": [
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Current (1957) *Abraham Lincoln: The Prairie Years (2 vol 1926); The War Years (4 vol 1939) biograph...",
+      "context": "Pulitzer Prize winne",
+      "target_letter": "r"
+    },
+    {
+      "id": 851,
+      "index": 851,
+      "issues": [
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Lincoln and the Tools of War (1956) on weapons development during the war *Donald, David Herbert",
+      "context": "Lincoln Reconsider",
+      "target_letter": "e"
+    },
+    {
+      "id": 867,
+      "index": 867,
+      "issues": [
+        "First sentence ends with title abbreviation"
+      ],
+      "first_sentence": "As Booth fled from the theater, a young physician, Dr",
+      "context": "Charles Leale, made his way through ",
+      "target_letter": "t"
+    },
+    {
+      "id": 868,
+      "index": 868,
+      "issues": [
+        "First sentence ends with title abbreviation"
+      ],
+      "first_sentence": "Later, he is noticed working as transient labor by the unsuccessful/unmotivated businessman Mr",
+      "context": "Owen Kellog eventually reaches, and set",
+      "target_letter": "t"
+    },
+    {
+      "id": 882,
+      "index": 882,
+      "issues": [
+        "First sentence ends with capital letter (likely incomplete)",
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Lincoln's economic theory and policies *Boritt, Gabor S",
+      "context": "Lincoln the War ",
+      "target_letter": "p"
+    },
+    {
+      "id": 887,
+      "index": 887,
+      "issues": [
+        "First sentence ends with academic abbreviation",
+        "Context ends with very short incomplete word"
+      ],
+      "first_sentence": "In 1833 Warren wrote and published The Peaceful Revolutionist, which some have noted to be the first...",
+      "context": "Benjamin Tucker says that Warren was the first ma",
+      "target_letter": "n"
+    },
+    {
+      "id": 889,
+      "index": 889,
+      "issues": [
+        "Second sentence appears to be list item",
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Collected Works of Abraham Lincoln 9 vols",
+      "context": "n: His Speeches and Writings (1946) * Lincoln, Abr",
+      "target_letter": "a"
+    },
+    {
+      "id": 920,
+      "index": 920,
+      "issues": [
+        "First sentence ends with capital letter (likely incomplete)",
+        "Context ends with very short incomplete word",
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Urbana: University of Illinois Press, 1988, historiography *Bruce, Robert V",
+      "context": "of War (1956) on weapons development during the wa",
+      "target_letter": "r"
+    },
+    {
+      "id": 928,
+      "index": 928,
+      "issues": [
+        "First sentence ends with title abbreviation"
+      ],
+      "first_sentence": "Dagny Taggart hires Mr",
+      "context": "Mowen to produce switches made of Reard",
+      "target_letter": "e"
+    },
+    {
+      "id": 933,
+      "index": 933,
+      "issues": [
+        "First sentence ends with academic abbreviation",
+        "Context ends with very short incomplete word"
+      ],
+      "first_sentence": "Enceladus, a moon of Saturn, has the highest known albedo of any body in the solar system, with 99% ...",
+      "context": "s have changed the albedo (via forest clearance an",
+      "target_letter": "d"
+    },
+    {
+      "id": 950,
+      "index": 950,
+      "issues": [
+        "First sentence ends with academic abbreviation"
+      ],
+      "first_sentence": "It will be routinely reverted, until the vandals give up",
+      "context": "I",
+      "target_letter": "f"
+    },
+    {
+      "id": 964,
+      "index": 964,
+      "issues": [
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "These films were re-edited into a new version which was approved by Rand and re-released as We the L...",
+      "context": "Rand's first majo",
+      "target_letter": "r"
+    },
+    {
+      "id": 965,
+      "index": 965,
+      "issues": [
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Mary Todd Lincoln: A Biography (1987) *Belz, Herman",
+      "context": "Abraham Lincoln, Constitutionalism, and Equal Righ",
+      "target_letter": "t"
+    },
+    {
+      "id": 991,
+      "index": 991,
+      "issues": [
+        "Second sentence appears to be list item",
+        "Contains bibliography/reference formatting"
+      ],
+      "first_sentence": "Guide to Alabama (1939) * for a detailed bibliography see History of Alabama ==External links== * - ...",
+      "context": "Census Burea",
+      "target_letter": "u"
+    }
+  ],
+  "issue_frequency": {
+    "First sentence ends with academic abbreviation": 47,
+    "Context ends with very short incomplete word": 267,
+    "First sentence ends with title abbreviation": 12,
+    "Contains multiple asterisks (likely markdown)": 1,
+    "Contains academic volume/date references": 1,
+    "Contains bibliography/reference formatting": 34,
+    "First sentence ends with capital letter (likely incomplete)": 38,
+    "Second sentence appears to be list item": 11,
+    "High word repetition": 1
+  }
+}

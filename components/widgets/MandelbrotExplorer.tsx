@@ -312,7 +312,16 @@ const MandelbrotExplorer = () => {
   // Calculate viewport bounds
   const getViewportBounds = () => {
     const canvas = canvasRef.current;
-    if (!canvas) return { left: 0, right: 0, top: 0, bottom: 0 };
+    if (!canvas || canvas.width === 0 || canvas.height === 0) {
+      // Return default bounds when canvas isn't ready
+      const defaultWidth = 800;
+      const defaultHeight = 600;
+      const left = viewport.centerX - defaultWidth / 2 / viewport.scale;
+      const right = viewport.centerX + defaultWidth / 2 / viewport.scale;
+      const top = viewport.centerY - defaultHeight / 2 / viewport.scale;
+      const bottom = viewport.centerY + defaultHeight / 2 / viewport.scale;
+      return { left, right, top, bottom };
+    }
     
     const width = canvas.width;
     const height = canvas.height;
@@ -330,7 +339,15 @@ const MandelbrotExplorer = () => {
   // Format number with precision based on viewport size
   const formatCoord = (num: number) => {
     const canvas = canvasRef.current;
-    if (!canvas) return num.toFixed(4);
+    if (!canvas || canvas.width === 0) {
+      // Use default viewport width when canvas isn't ready
+      const defaultWidth = 800;
+      const viewportWidth = defaultWidth / viewport.scale;
+      const targetPrecision = viewportWidth * 0.01;
+      let decimalPlaces = Math.max(0, Math.ceil(-Math.log10(targetPrecision)));
+      decimalPlaces = Math.min(12, Math.max(0, decimalPlaces));
+      return num.toFixed(decimalPlaces);
+    }
     
     // Calculate the width of the viewport in complex plane units
     const viewportWidth = canvas.width / viewport.scale;

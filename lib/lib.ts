@@ -10,6 +10,7 @@ import rehypeHighlight from "rehype-highlight";
 import { Cite, References } from "@/components/content/Citations";
 import { Footnote } from "@/components/content/Footnotes";
 import { Footnotes } from "@/components/content/Footnotes";
+import { Tooltip } from "@/components/content/Tooltip";
 import EvidenceAccumulationSimulator from "@/components/widgets/EvidenceAccumulationSimulator";
 import CrossEntropySimulator from "@/components/widgets/CrossEntropySimulator";
 import MaxEntropyVisualization from "@/components/widgets/MaxEntropyVisualization";
@@ -40,6 +41,7 @@ import KraftInequalityWidget from "@/components/widgets/KraftInequalityWidget";
 import VolatilityDistributionWidget from "@/components/widgets/VolatilityDistributionWidget";
 import HeartRateWidget from "@/components/widgets/CoinFlipWidget";
 import GPT2CompressionWidget from "@/components/widgets/GPT2CompressionWidget";
+import LetterPredictionWidget from "@/components/widgets/LetterPredictionWidget";
 import { compile, evaluate } from "@mdx-js/mdx";
 import chalk from "chalk";
 import * as runtime from "react/jsx-runtime";
@@ -167,6 +169,7 @@ export async function getMdxContent(path: string) {
       References: References,
       Footnotes: Footnotes,
       Footnote: Footnote,
+      Tooltip: Tooltip,
       EvidenceAccumulationSimulator: EvidenceAccumulationSimulator,
       CrossEntropySimulator: CrossEntropySimulator,
       MaxEntropyVisualization: MaxEntropyVisualization,
@@ -207,6 +210,7 @@ export async function getMdxContent(path: string) {
       WikipediaContentSimilarityWidget: WikipediaContentSimilarityWidget,
       ThreeCategoriesWidget: ThreeCategoriesWidget,
       GPT2CompressionWidget: GPT2CompressionWidget,
+      LetterPredictionWidget: LetterPredictionWidget,
       Math: NumberedMath,
       EqRef: EquationRef,
       Block: Block,

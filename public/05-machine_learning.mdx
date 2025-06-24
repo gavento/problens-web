@@ -141,7 +141,8 @@ Next, the maximum likelihood principle states that we should maximize the log-li
 
 Maximizing the log-likelihood is equivalent to minimizing cross-entropy. Therefore, in this context, we usually refer to this as _training the network by minimizing the cross-entropy loss <Math math = "\sum_{i = 1}^n \log 1/p_{\ell_i}(X_i)" />._
 </Expand>
-<Expand headline="Variational autoencoders"> <a id="variational-autoencoders"></a>
+
+<Expand advanced={true} headline="Variational autoencoders"> <a id="variational-autoencoders"></a>
 
 Here's an observation relevant to the previous example as well. When we store images on a hard drive, we do so pixel by pixel, i.e., in the *pixel space*. However, in our brains, we store them very differently; perhaps we remember "it was a picture of a brown dog that looked like a muffin," or something similar. This corresponds to utilizing what's called the *latent space*. This is a hypothesized space where two images are considered "close" if they refer to similar objects. For instance, two images might be close in the latent space even if they are extremely far apart in the pixel space.
 
@@ -219,4 +220,13 @@ You are the master of KL, congrats!
 
 If you want to know even more, click on the Danger button in the menu. It reveals bonus riddles & chapters. Also, it reveals some advanced Expand blocks in the chapters you already read. All bonus content is marked with ⚠️. Also, check out [Resources](../resources) and leave us feedback at the [About](../about) page.
 
+
+TODO Add FREE intelligence test widget. 
+
+
+## 🧠 Human vs AI: Next Letter Prediction
+
+Inspired by Shannon's original experiment, you can now test your own next-letter prediction abilities against modern language models! The widget below shows you partial sentences from Wikipedia and asks you to guess the missing letter. Your score is based on how many attempts it takes you to find the correct letter.
+
+<LetterPredictionWidget />
 
