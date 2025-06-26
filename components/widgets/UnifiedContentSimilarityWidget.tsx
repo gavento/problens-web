@@ -230,9 +230,9 @@ const UnifiedContentSimilarityWidget: React.FC = () => {
     // Choose data based on mode and dataset
     let currentData;
     if (datasetMode === 'three_categories') {
-      currentData = dataMode === 'kl' ? activeData.kl_analysis.baseline : activeData.generalized_divergence_analysis;
+      currentData = dataMode === 'kl' ? activeData.kl_analysis.baseline : (activeData as any).generalized_divergence_analysis;
     } else {
-      currentData = dataMode === 'kl' ? activeData.kl_analysis.baseline : activeData.deflate_analysis;
+      currentData = dataMode === 'kl' ? activeData.kl_analysis.baseline : (activeData as any).deflate_analysis;
     }
     if (!currentData) return;
 
@@ -241,22 +241,22 @@ const UnifiedContentSimilarityWidget: React.FC = () => {
     if (datasetMode === 'three_categories') {
       if (analysisMode === 'programming') {
         // For three categories, 'programming' filter shows countries (🏛️)
-        filteredItems = currentData.languages.filter(item => 
+        filteredItems = currentData.languages.filter((item: any) => 
           currentData.categories[item] === 'country'
         );
       } else if (analysisMode === 'text') {
         // For three categories, 'text' filter shows fruits (🍎)
-        filteredItems = currentData.languages.filter(item => 
+        filteredItems = currentData.languages.filter((item: any) => 
           currentData.categories[item] === 'fruit'
         );
       }
     } else {
       if (analysisMode === 'programming') {
-        filteredItems = currentData.languages.filter(item => 
+        filteredItems = currentData.languages.filter((item: any) => 
           currentData.categories[item] === 'programming'
         );
       } else if (analysisMode === 'text') {
-        filteredItems = currentData.languages.filter(item => 
+        filteredItems = currentData.languages.filter((item: any) => 
           currentData.categories[item] === 'text'
         );
       }
@@ -301,7 +301,7 @@ const UnifiedContentSimilarityWidget: React.FC = () => {
       .attr("transform", `translate(${margin}, ${margin})`);
 
     // Prepare nodes
-    const nodes: ContentNode[] = filteredItems.map(itemId => ({
+    const nodes: ContentNode[] = filteredItems.map((itemId: any) => ({
       id: itemId,
       category: currentData.categories[itemId] as 'programming' | 'text',
       displayName: getDisplayName(itemId),
@@ -310,10 +310,10 @@ const UnifiedContentSimilarityWidget: React.FC = () => {
 
     // Prepare links
     const links: ContentLink[] = [];
-    const allDistances = Object.values(currentData.distance_matrix).flatMap(row => Object.values(row));
+    const allDistances = Object.values(currentData.distance_matrix as any).flatMap((row: any) => Object.values(row));
     
-    filteredItems.forEach(item1 => {
-      filteredItems.forEach(item2 => {
+    filteredItems.forEach((item1: any) => {
+      filteredItems.forEach((item2: any) => {
         if (item1 !== item2) {
           const rawDistance = currentData.distance_matrix[item1][item2];
           
@@ -434,7 +434,7 @@ const UnifiedContentSimilarityWidget: React.FC = () => {
         d.fy = null;
       });
 
-    node.call(drag);
+    node.call(drag as any);
 
     // Update positions on simulation tick
     simulation.on("tick", () => {
@@ -723,7 +723,7 @@ const UnifiedContentSimilarityWidget: React.FC = () => {
                 {dataMode === 'deflate' && data.deflate_analysis.compression_benefits && (
                   <div>Avg compression benefit: {
                     (Object.values(data.deflate_analysis.compression_benefits[hoveredNode || selectedNode!])
-                      .filter((_, i, arr) => Object.keys(data.deflate_analysis.compression_benefits[hoveredNode || selectedNode!])[i] !== (hoveredNode || selectedNode))
+                      .filter((_, i, arr) => Object.keys(data.deflate_analysis.compression_benefits![hoveredNode || selectedNode!])[i] !== (hoveredNode || selectedNode))
                       .reduce((a, b) => a + b, 0) / 
                       (Object.keys(data.deflate_analysis.compression_benefits).length - 1) * 100).toFixed(1)
                   }%</div>

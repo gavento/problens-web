@@ -265,7 +265,7 @@ const LetterPredictionWidget: React.FC = () => {
             {currentGame.completed && (
               <div className="bg-green-50 p-3 rounded border border-green-200">
                 <div className="text-green-800">
-                  ✓ Correct! You found '{currentGame.snapshot.target_letter}' in {currentGame.attempts} attempts.
+                  ✓ Correct! You found &lsquo;{currentGame.snapshot.target_letter}&rsquo; in {currentGame.attempts} attempts.
                 </div>
                 <div className="text-sm text-green-700">
                   Your score: {currentGame.score.toFixed(2)} bits (log₂({currentGame.attempts}))
@@ -329,7 +329,7 @@ const LetterPredictionWidget: React.FC = () => {
           </div>
 
           <div className="mt-4 text-xs text-gray-500">
-            * AI scores use "optimistic ranking" - if the correct letter was the AI's k-th choice, score = log₂(k)
+            * AI scores use &ldquo;optimistic ranking&rdquo; - if the correct letter was the AI&rsquo;s k-th choice, score = log₂(k)
           </div>
         </div>
       )}

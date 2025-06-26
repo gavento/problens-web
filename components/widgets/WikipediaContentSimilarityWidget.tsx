@@ -322,7 +322,7 @@ const WikipediaContentSimilarityWidget: React.FC = () => {
         d.fy = null;
       });
 
-    node.call(drag);
+    node.call(drag as any);
 
     // Update positions on simulation tick
     simulation.on("tick", () => {
@@ -590,7 +590,7 @@ const WikipediaContentSimilarityWidget: React.FC = () => {
                 {dataMode === 'deflate' && data.deflate_analysis.compression_benefits && (
                   <div>Avg compression benefit: {
                     (Object.values(data.deflate_analysis.compression_benefits[hoveredNode || selectedNode!])
-                      .filter((_, i, arr) => Object.keys(data.deflate_analysis.compression_benefits[hoveredNode || selectedNode!])[i] !== (hoveredNode || selectedNode))
+                      .filter((_, i, arr) => Object.keys(data.deflate_analysis.compression_benefits![hoveredNode || selectedNode!])[i] !== (hoveredNode || selectedNode))
                       .reduce((a, b) => a + b, 0) / 
                       (Object.keys(data.deflate_analysis.compression_benefits).length - 1) * 100).toFixed(1)
                   }%</div>
