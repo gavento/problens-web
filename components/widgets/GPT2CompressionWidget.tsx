@@ -146,11 +146,11 @@ const GPT2CompressionWidget: React.FC = () => {
     try {
       const result = await callCompressionAPI(inputText.trim());
       
-      if (result && result.success) {
-        setCompressionData(result);
+      if (result && (result as any).success) {
+        setCompressionData(result as CompressionResult);
         setError(null);
       } else {
-        setError(result?.error || "Compression failed");
+        setError((result as any)?.error || "Compression failed");
         setCompressionData(null);
       }
     } catch (err) {

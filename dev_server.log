@@ -207,3 +207,4 @@ Each child in a list should have a unique "key" prop. See https://react.dev/link
  GET /08-kolmogorov/ 200 in 2317ms
  ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
  GET /favicon.ico?favicon.35dd0f14.ico 500 in 32ms
+ ✓ Compiled in 179ms

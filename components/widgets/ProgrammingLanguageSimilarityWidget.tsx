@@ -380,7 +380,7 @@ const ProgrammingLanguageSimilarityWidget: React.FC = () => {
         d.fy = null;
       });
 
-    node.call(drag);
+    node.call(drag as any);
 
     // Update positions on simulation tick
     simulation.on("tick", () => {
