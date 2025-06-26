@@ -57,6 +57,9 @@ import BuildYourOwnCodeWidget from "@/components/widgets/BuildYourOwnCodeWidget"
 import CoinFlipRandomnessWidget from "@/components/widgets/CoinFlipRandomnessWidget";
 import KLCalculatorWidget from "@/components/widgets/KLCalculatorWidget";
 import KLAsymmetryVisualizerWidget from "@/components/widgets/KLAsymmetryVisualizerWidget";
+import BICModelSelectionWidget from "@/components/widgets/BICModelSelectionWidget";
+import PolynomialRegressionWidget from "@/components/widgets/PolynomialRegressionWidget";
+import ParametricCurveWidget from "@/components/widgets/ParametricCurveWidget";
 import ProgrammingLanguageSimilarityWidget from "@/components/widgets/ProgrammingLanguageSimilarityWidget";
 import UnifiedContentSimilarityWidget from "@/components/widgets/UnifiedContentSimilarityWidget";
 import WikipediaContentSimilarityWidget from "@/components/widgets/WikipediaContentSimilarityWidget";
@@ -205,6 +208,9 @@ export async function getMdxContent(path: string) {
       CoinFlipRandomnessWidget: CoinFlipRandomnessWidget,
       KLCalculatorWidget: KLCalculatorWidget,
       KLAsymmetryVisualizerWidget: KLAsymmetryVisualizerWidget,
+      BICModelSelectionWidget: BICModelSelectionWidget,
+      PolynomialRegressionWidget: PolynomialRegressionWidget,
+      ParametricCurveWidget: ParametricCurveWidget,
       ProgrammingLanguageSimilarityWidget: ProgrammingLanguageSimilarityWidget,
       UnifiedContentSimilarityWidget: UnifiedContentSimilarityWidget,
       WikipediaContentSimilarityWidget: WikipediaContentSimilarityWidget,

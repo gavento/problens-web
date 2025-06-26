@@ -134,7 +134,7 @@ These two examples of predictive coding algorithms go back to our discussion of 
 Hence, whenever there is a good prediction, there's a good compression, and vice versa. This is really super important and we will return to it in the [Kolmogorov complexity chapter](08-kolmogorov). 
 
 
-## 🌐 How large is Wikipedia?
+## 🌐 How large is Wikipedia? <a id = "compression"></a>
 We can now revisit [our Wikipedia riddle](00-introduction#wikipedia) about Hutter's compression challenge. Remember, the question is about how much can we compress a single 1GB file of English Wikipedia. Hutter is an AI researcher and he started his challenge because he understands very well the topic of this chapter - if you can compress text, you can also predict it, and that implies you have to have some kind of knowledge/intelligence.  
 
 The honest answer is that we don't know (see the [Kolmogorov complexity](08-kolmogorov) chapter), but w
@@ -143,7 +143,7 @@ We broadly understand how well different algorithms compress English text.
 
 There are more approaches to compress text files. Let's go through them and you can see in the next widget how they fare for various types of data. 
 
-- _Baseline_: The stadard way to store text files is UTF-8. Lying a bit, this format store each letter using 8 bits. <Footnote>Why is it lying? [UTF-8](https://en.wikipedia.org/wiki/UTF-8) itself is a beautiful example of good engineering inspired by coding theory. There are around 100 characters (English letters, digits) that are stored using 8 bits, fancier letters from reasonable alphabets are stored using 16 bits, and emojis like 😀 or hieroglyphs like 𓀀 take 32 bits. Classic coding theory—rare stuff gets longer codes. But English Wiki is mostly standard stuff, so 8 bits per letter it is. </Footnote>
+- _Baseline_: The stadard way to store text files is UTF-8. Lying a bit, this format store each letter using 8 bits. <Footnote>Why is it lying? [UTF-8](https://en.wikipedia.org/wiki/UTF-8) itself is a beautiful example of good engineering inspired by coding theory. There are around 100 characters (English letters, digits) that are stored using 8 bits, fancier letters from reasonable alphabets are stored using 16 bits, and emojis like 😀 or hieroglyphs like 𓀀 take 32 bits. Classic coding theory—rare stuff gets longer codes. But English Wiki is mostly standard English letters, so 8 bits per character it is. </Footnote>
 
 - _Optimal code_: Treat letters as independent, we can encode them using $H(p)$ bits per letter on average, where $p$ is the distribution of English letter frequencies. [In the Shannon's coding widget above](../02-crossentropy#construction), we saw that the entropy is around 4.2 bits. So, we can shrink the file by almost __2x__ just by using that different letters have different frequencies. 
 
