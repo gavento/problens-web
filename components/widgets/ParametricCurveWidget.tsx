@@ -19,24 +19,14 @@ const ParametricCurveWidget: React.FC = () => {
   
   const presets: CurvePreset[] = [
     {
-      name: "Von Neumann's Elephant",
-      description: "The famous elephant that can be made to wiggle its trunk",
+      name: "Elephant",
+      description: "Von Neumann's famous elephant that can be made to wiggle its trunk",
       xParams: [-60, 30, -8, 10],
       yParams: [50, 18, -12, 14],
       xTerms: ['cos(t)', 'sin(t)', 'sin(2t)', 'sin(3t)'],
       yTerms: ['sin(t)', 'sin(2t)', 'cos(3t)', 'cos(5t)'],
       evaluateX: (t, p) => p[0] * Math.cos(t) + p[1] * Math.sin(t) + p[2] * Math.sin(2*t) + p[3] * Math.sin(3*t),
       evaluateY: (t, p) => p[0] * Math.sin(t) + p[1] * Math.sin(2*t) + p[2] * Math.cos(3*t) + p[3] * Math.cos(5*t)
-    },
-    {
-      name: "Figure-8 (Lissajous)",
-      description: "Classic figure-eight shape: A·sin(3t+π/2), B·sin(2t)",
-      xParams: [1, 3, Math.PI/2, 0],
-      yParams: [1, 2, 0, 0],
-      xTerms: ['A', 'a', 'δ', '—'],
-      yTerms: ['B', 'b', '—', '—'],
-      evaluateX: (t, p) => p[0] * Math.sin(p[1] * t + p[2]),
-      evaluateY: (t, p) => p[0] * Math.sin(p[1] * t)
     },
     {
       name: "Heart",
@@ -49,24 +39,14 @@ const ParametricCurveWidget: React.FC = () => {
       evaluateY: (t, p) => p[0] * Math.cos(t) + p[1] * Math.cos(2*t) + p[2] * Math.cos(3*t) + p[3] * Math.cos(4*t)
     },
     {
-      name: "Deltoid",
-      description: "3-cusped hypocycloid: 2cos(t) + cos(2t), 2sin(t) - sin(2t)",
-      xParams: [2, 1, 0, 0],
-      yParams: [2, -1, 0, 0],
-      xTerms: ['cos(t)', 'cos(2t)', '—', '—'],
-      yTerms: ['sin(t)', 'sin(2t)', '—', '—'],
-      evaluateX: (t, p) => p[0] * Math.cos(t) + p[1] * Math.cos(2*t),
-      evaluateY: (t, p) => p[0] * Math.sin(t) + p[1] * Math.sin(2*t)
-    },
-    {
-      name: "Nephroid",
-      description: "Kidney curve: 3cos(t) - cos(3t), 3sin(t) - sin(3t)",
-      xParams: [3, -1, 0, 0],
-      yParams: [3, -1, 0, 0],
-      xTerms: ['cos(t)', 'cos(3t)', '—', '—'],
-      yTerms: ['sin(t)', 'sin(3t)', '—', '—'],
-      evaluateX: (t, p) => p[0] * Math.cos(t) + p[1] * Math.cos(3*t),
-      evaluateY: (t, p) => p[0] * Math.sin(t) + p[1] * Math.sin(3*t)
+      name: "Lissajous",
+      description: "Classic figure-eight shape: A·sin(at), B·sin(bt)",
+      xParams: [1, 3, 0, 0],
+      yParams: [1, 2, 0, 0],
+      xTerms: ['sin(3t)', 'sin(t)', '—', '—'],
+      yTerms: ['sin(2t)', 'cos(2t)', '—', '—'],
+      evaluateX: (t, p) => p[0] * Math.sin(3 * t) + p[1] * Math.sin(t),
+      evaluateY: (t, p) => p[0] * Math.sin(2 * t) + p[1] * Math.cos(2 * t)
     }
   ];
 
@@ -176,7 +156,6 @@ const ParametricCurveWidget: React.FC = () => {
 
       {/* Curve visualization */}
       <div className="border rounded p-4">
-        <h4 className="text-lg font-semibold mb-3">Parametric Curve</h4>
         <svg width={width} height={height} className="w-full border" style={{ maxWidth: `${width}px` }}>
           {/* Grid */}
           <defs>
@@ -227,27 +206,32 @@ const ParametricCurveWidget: React.FC = () => {
         <div>
           <h4 className="text-lg font-semibold mb-3">X(t) Parameters</h4>
           <div className="space-y-3">
-            {xParams.map((param, idx) => (
-              <div key={idx} className="flex items-center gap-3">
-                <label className="w-20 text-sm font-mono">{presets[currentPreset].xTerms[idx]}:</label>
-                <input
-                  type="range"
-                  min="-100"
-                  max="100"
-                  step="0.1"
-                  value={param}
-                  onChange={(e) => updateXParam(idx, parseFloat(e.target.value))}
-                  className="flex-1"
-                />
-                <input
-                  type="number"
-                  value={param.toFixed(2)}
-                  onChange={(e) => updateXParam(idx, parseFloat(e.target.value) || 0)}
-                  className="w-20 px-2 py-1 border rounded text-sm"
-                  step="0.1"
-                />
-              </div>
-            ))}
+            {xParams.map((param, idx) => {
+              const term = presets[currentPreset].xTerms[idx];
+              if (term === '—' || term === '0') return null;
+              
+              return (
+                <div key={idx} className="flex items-center gap-3">
+                  <label className="w-20 text-sm font-mono">{term}:</label>
+                  <input
+                    type="range"
+                    min="-100"
+                    max="100"
+                    step="0.1"
+                    value={param}
+                    onChange={(e) => updateXParam(idx, parseFloat(e.target.value))}
+                    className="flex-1"
+                  />
+                  <input
+                    type="number"
+                    value={param.toFixed(2)}
+                    onChange={(e) => updateXParam(idx, parseFloat(e.target.value) || 0)}
+                    className="w-20 px-2 py-1 border rounded text-sm"
+                    step="0.1"
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -255,27 +239,32 @@ const ParametricCurveWidget: React.FC = () => {
         <div>
           <h4 className="text-lg font-semibold mb-3">Y(t) Parameters</h4>
           <div className="space-y-3">
-            {yParams.map((param, idx) => (
-              <div key={idx} className="flex items-center gap-3">
-                <label className="w-20 text-sm font-mono">{presets[currentPreset].yTerms[idx]}:</label>
-                <input
-                  type="range"
-                  min="-100"
-                  max="100"
-                  step="0.1"
-                  value={param}
-                  onChange={(e) => updateYParam(idx, parseFloat(e.target.value))}
-                  className="flex-1"
-                />
-                <input
-                  type="number"
-                  value={param.toFixed(2)}
-                  onChange={(e) => updateYParam(idx, parseFloat(e.target.value) || 0)}
-                  className="w-20 px-2 py-1 border rounded text-sm"
-                  step="0.1"
-                />
-              </div>
-            ))}
+            {yParams.map((param, idx) => {
+              const term = presets[currentPreset].yTerms[idx];
+              if (term === '—' || term === '0') return null;
+              
+              return (
+                <div key={idx} className="flex items-center gap-3">
+                  <label className="w-20 text-sm font-mono">{term}:</label>
+                  <input
+                    type="range"
+                    min="-100"
+                    max="100"
+                    step="0.1"
+                    value={param}
+                    onChange={(e) => updateYParam(idx, parseFloat(e.target.value))}
+                    className="flex-1"
+                  />
+                  <input
+                    type="number"
+                    value={param.toFixed(2)}
+                    onChange={(e) => updateYParam(idx, parseFloat(e.target.value) || 0)}
+                    className="w-20 px-2 py-1 border rounded text-sm"
+                    step="0.1"
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

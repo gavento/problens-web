@@ -2,15 +2,373 @@
 > generic-academic-website@0.1.0 dev /home/vasek/problens-web
 > next dev --turbopack
 
-   ▲ Next.js 15.2.4 (Turbopack)
+   [1m[38;2;173;127;168m▲ Next.js 15.2.4[39m[22m (Turbopack)
    - Local:        http://localhost:3000
    - Network:      http://10.13.2.96:3000
    - Environments: .env
 
- ✓ Starting...
- ✓ Ready in 970ms
- ○ Compiling / ...
- ✓ Compiled / in 7.1s
+ [32m[1m✓[22m[39m Starting...
+ [32m[1m✓[22m[39m Ready in 874ms
+ [37m[1m○[22m[39m Compiling /[...path] ...
+ [32m[1m✓[22m[39m Compiled /[...path] in 8.2s
+ GET /08-kolmogorov/ [32m200[39m in 10932ms
+ GET /08-kolmogorov/ [32m200[39m in 1137ms
+ [37m[1m○[22m[39m Compiling /_error ...
+ [32m[1m✓[22m[39m Compiled /_error in 1905ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 2110ms
+ [32m[1m✓[22m[39m Compiled in 431ms
+ GET /08-kolmogorov/ [32m200[39m in 1006ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 23ms
+ [31m[1m⨯[22m[39m [Error: Page "/[...path]/page" is missing param "/problens-web/fig/William_of_Ockham.png" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/problens-web/fig/William_of_Ockham.png'
+}
+ [31m[1m⨯[22m[39m [Error: Page "/[...path]/page" is missing param "/problens-web/fig/epikuros.jpg" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/problens-web/fig/epikuros.jpg'
+}
+ GET /problens-web/fig/epikuros.jpg [31m500[39m in 180ms
+ GET /problens-web/fig/William_of_Ockham.png [31m500[39m in 182ms
+ GET /08-kolmogorov/ [32m200[39m in 1197ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 33ms
+ [32m[1m✓[22m[39m Compiled in 257ms
+ GET /08-kolmogorov/ [32m200[39m in 1169ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 34ms
+ GET /08-kolmogorov/ [32m200[39m in 1312ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 210ms
+ [32m[1m✓[22m[39m Compiled in 246ms
+ GET /08-kolmogorov/ [32m200[39m in 1111ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 34ms
+ GET /08-kolmogorov/ [32m200[39m in 1299ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 41ms
+ [32m[1m✓[22m[39m Compiled in 234ms
+ [32m[1m✓[22m[39m Compiled in 294ms
+ [32m[1m✓[22m[39m Compiled /[...path] in 37ms
+ GET /08-kolmogorov/ [32m200[39m in 1520ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 39ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 21ms
+ GET /08-kolmogorov/ [32m200[39m in 1795ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 36ms
+ [32m[1m✓[22m[39m Compiled /[...path] in 22ms
+ GET /08-kolmogorov/ [32m200[39m in 1720ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 22ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 13ms
+ [32m[1m✓[22m[39m Compiled /[...path] in 22ms
+ GET /08-kolmogorov/ [32m200[39m in 1527ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 30ms
+ [32m[1m✓[22m[39m Compiled in 107ms
+ [32m[1m✓[22m[39m Compiled in 126ms
+ [32m[1m✓[22m[39m Compiled /[...path] in 14ms
+ GET /08-kolmogorov/ [32m200[39m in 1684ms
+ GET /08-kolmogorov/ [32m200[39m in 1875ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 33ms
+ [32m[1m✓[22m[39m Compiled /[...path] in 86ms
+ GET /08-kolmogorov/ [32m200[39m in 1511ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 24ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 17ms
+ GET /08-kolmogorov/ [32m200[39m in 1551ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 38ms
+ [32m[1m✓[22m[39m Compiled /[...path] in 19ms
+ GET /08-kolmogorov/ [32m200[39m in 1513ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 34ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 19ms
+ GET /08-kolmogorov/ [32m200[39m in 1669ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 28ms
+ GET /08-kolmogorov/ [32m200[39m in 1489ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 65ms
+ [32m[1m✓[22m[39m Compiled in 507ms
+ [32m[1m✓[22m[39m Compiled /[...path] in 305ms
+ GET /08-kolmogorov/ [32m200[39m in 3205ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 72ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 51ms
+ GET /08-kolmogorov/ [32m200[39m in 2517ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 42ms
+ GET /08-kolmogorov/ [32m200[39m in 3543ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 244ms
+ [32m[1m✓[22m[39m Compiled in 292ms
+ [32m[1m✓[22m[39m Compiled /[...path] in 175ms
+ GET /08-kolmogorov/ [32m200[39m in 2929ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 99ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 60ms
+ [31m[1m⨯[22m[39m ./components/content/ImageGallery.tsx:3:1
+[1m[31mModule not found[39m[22m: Can't resolve [32m'react-markdown'[39m
+[0m [90m 1 |[39m [36mimport[39m [33mExpandableImage[39m [36mfrom[39m [32m"./ExpandableImage"[39m[33m;[39m[0m
+[0m [90m 2 |[39m [36mimport[39m [33mReact[39m [36mfrom[39m [32m"react"[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m [33mReactMarkdown[39m [36mfrom[39m [32m"react-markdown"[39m[33m;[39m[0m
+[0m [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 4 |[39m[0m
+[0m [90m 5 |[39m [36minterface[39m [33mImageItem[39m {[0m
+[0m [90m 6 |[39m   src[33m:[39m string[33m;[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ [31m[1m⨯[22m[39m ./components/content/ImageGallery.tsx:3:1
+[1m[31mModule not found[39m[22m: Can't resolve [32m'react-markdown'[39m
+[0m [90m 1 |[39m [36mimport[39m [33mExpandableImage[39m [36mfrom[39m [32m"./ExpandableImage"[39m[33m;[39m[0m
+[0m [90m 2 |[39m [36mimport[39m [33mReact[39m [36mfrom[39m [32m"react"[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m [33mReactMarkdown[39m [36mfrom[39m [32m"react-markdown"[39m[33m;[39m[0m
+[0m [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 4 |[39m[0m
+[0m [90m 5 |[39m [36minterface[39m [33mImageItem[39m {[0m
+[0m [90m 6 |[39m   src[33m:[39m string[33m;[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ [31m[1m⨯[22m[39m ./components/content/ImageGallery.tsx:3:1
+[1m[31mModule not found[39m[22m: Can't resolve [32m'react-markdown'[39m
+[0m [90m 1 |[39m [36mimport[39m [33mExpandableImage[39m [36mfrom[39m [32m"./ExpandableImage"[39m[33m;[39m[0m
+[0m [90m 2 |[39m [36mimport[39m [33mReact[39m [36mfrom[39m [32m"react"[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m [33mReactMarkdown[39m [36mfrom[39m [32m"react-markdown"[39m[33m;[39m[0m
+[0m [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 4 |[39m[0m
+[0m [90m 5 |[39m [36minterface[39m [33mImageItem[39m {[0m
+[0m [90m 6 |[39m   src[33m:[39m string[33m;[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ [31m[1m⨯[22m[39m ./components/content/ImageGallery.tsx:3:1
+[1m[31mModule not found[39m[22m: Can't resolve [32m'react-markdown'[39m
+[0m [90m 1 |[39m [36mimport[39m [33mExpandableImage[39m [36mfrom[39m [32m"./ExpandableImage"[39m[33m;[39m[0m
+[0m [90m 2 |[39m [36mimport[39m [33mReact[39m [36mfrom[39m [32m"react"[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m [33mReactMarkdown[39m [36mfrom[39m [32m"react-markdown"[39m[33m;[39m[0m
+[0m [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 4 |[39m[0m
+[0m [90m 5 |[39m [36minterface[39m [33mImageItem[39m {[0m
+[0m [90m 6 |[39m   src[33m:[39m string[33m;[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ [31m[1m⨯[22m[39m ./components/content/ImageGallery.tsx:3:1
+[1m[31mModule not found[39m[22m: Can't resolve [32m'react-markdown'[39m
+[0m [90m 1 |[39m [36mimport[39m [33mExpandableImage[39m [36mfrom[39m [32m"./ExpandableImage"[39m[33m;[39m[0m
+[0m [90m 2 |[39m [36mimport[39m [33mReact[39m [36mfrom[39m [32m"react"[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m [33mReactMarkdown[39m [36mfrom[39m [32m"react-markdown"[39m[33m;[39m[0m
+[0m [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 4 |[39m[0m
+[0m [90m 5 |[39m [36minterface[39m [33mImageItem[39m {[0m
+[0m [90m 6 |[39m   src[33m:[39m string[33m;[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ [31m[1m⨯[22m[39m ./components/content/ImageGallery.tsx:3:1
+[1m[31mModule not found[39m[22m: Can't resolve [32m'react-markdown'[39m
+[0m [90m 1 |[39m [36mimport[39m [33mExpandableImage[39m [36mfrom[39m [32m"./ExpandableImage"[39m[33m;[39m[0m
+[0m [90m 2 |[39m [36mimport[39m [33mReact[39m [36mfrom[39m [32m"react"[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m [33mReactMarkdown[39m [36mfrom[39m [32m"react-markdown"[39m[33m;[39m[0m
+[0m [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 4 |[39m[0m
+[0m [90m 5 |[39m [36minterface[39m [33mImageItem[39m {[0m
+[0m [90m 6 |[39m   src[33m:[39m string[33m;[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ [31m[1m⨯[22m[39m ./components/content/ImageGallery.tsx:3:1
+[1m[31mModule not found[39m[22m: Can't resolve [32m'react-markdown'[39m
+[0m [90m 1 |[39m [36mimport[39m [33mExpandableImage[39m [36mfrom[39m [32m"./ExpandableImage"[39m[33m;[39m[0m
+[0m [90m 2 |[39m [36mimport[39m [33mReact[39m [36mfrom[39m [32m"react"[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m [33mReactMarkdown[39m [36mfrom[39m [32m"react-markdown"[39m[33m;[39m[0m
+[0m [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 4 |[39m[0m
+[0m [90m 5 |[39m [36minterface[39m [33mImageItem[39m {[0m
+[0m [90m 6 |[39m   src[33m:[39m string[33m;[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ [31m[1m⨯[22m[39m ./components/content/ImageGallery.tsx:3:1
+[1m[31mModule not found[39m[22m: Can't resolve [32m'react-markdown'[39m
+[0m [90m 1 |[39m [36mimport[39m [33mExpandableImage[39m [36mfrom[39m [32m"./ExpandableImage"[39m[33m;[39m[0m
+[0m [90m 2 |[39m [36mimport[39m [33mReact[39m [36mfrom[39m [32m"react"[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m [33mReactMarkdown[39m [36mfrom[39m [32m"react-markdown"[39m[33m;[39m[0m
+[0m [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 4 |[39m[0m
+[0m [90m 5 |[39m [36minterface[39m [33mImageItem[39m {[0m
+[0m [90m 6 |[39m   src[33m:[39m string[33m;[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ [31m[1m⨯[22m[39m ./components/content/ImageGallery.tsx:3:1
+[1m[31mModule not found[39m[22m: Can't resolve [32m'react-markdown'[39m
+[0m [90m 1 |[39m [36mimport[39m [33mExpandableImage[39m [36mfrom[39m [32m"./ExpandableImage"[39m[33m;[39m[0m
+[0m [90m 2 |[39m [36mimport[39m [33mReact[39m [36mfrom[39m [32m"react"[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m [33mReactMarkdown[39m [36mfrom[39m [32m"react-markdown"[39m[33m;[39m[0m
+[0m [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 4 |[39m[0m
+[0m [90m 5 |[39m [36minterface[39m [33mImageItem[39m {[0m
+[0m [90m 6 |[39m   src[33m:[39m string[33m;[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ [31m[1m⨯[22m[39m ./components/content/ImageGallery.tsx:3:1
+[1m[31mModule not found[39m[22m: Can't resolve [32m'react-markdown'[39m
+[0m [90m 1 |[39m [36mimport[39m [33mExpandableImage[39m [36mfrom[39m [32m"./ExpandableImage"[39m[33m;[39m[0m
+[0m [90m 2 |[39m [36mimport[39m [33mReact[39m [36mfrom[39m [32m"react"[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m [33mReactMarkdown[39m [36mfrom[39m [32m"react-markdown"[39m[33m;[39m[0m
+[0m [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 4 |[39m[0m
+[0m [90m 5 |[39m [36minterface[39m [33mImageItem[39m {[0m
+[0m [90m 6 |[39m   src[33m:[39m string[33m;[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ [31m[1m⨯[22m[39m ./components/content/ImageGallery.tsx:3:1
+[1m[31mModule not found[39m[22m: Can't resolve [32m'react-markdown'[39m
+[0m [90m 1 |[39m [36mimport[39m [33mExpandableImage[39m [36mfrom[39m [32m"./ExpandableImage"[39m[33m;[39m[0m
+[0m [90m 2 |[39m [36mimport[39m [33mReact[39m [36mfrom[39m [32m"react"[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m [33mReactMarkdown[39m [36mfrom[39m [32m"react-markdown"[39m[33m;[39m[0m
+[0m [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 4 |[39m[0m
+[0m [90m 5 |[39m [36minterface[39m [33mImageItem[39m {[0m
+[0m [90m 6 |[39m   src[33m:[39m string[33m;[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ [31m[1m⨯[22m[39m ./components/content/ImageGallery.tsx:3:1
+[1m[31mModule not found[39m[22m: Can't resolve [32m'react-markdown'[39m
+[0m [90m 1 |[39m [36mimport[39m [33mExpandableImage[39m [36mfrom[39m [32m"./ExpandableImage"[39m[33m;[39m[0m
+[0m [90m 2 |[39m [36mimport[39m [33mReact[39m [36mfrom[39m [32m"react"[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m [33mReactMarkdown[39m [36mfrom[39m [32m"react-markdown"[39m[33m;[39m[0m
+[0m [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 4 |[39m[0m
+[0m [90m 5 |[39m [36minterface[39m [33mImageItem[39m {[0m
+[0m [90m 6 |[39m   src[33m:[39m string[33m;[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ [31m[1m⨯[22m[39m ./components/content/ImageGallery.tsx:3:1
+[1m[31mModule not found[39m[22m: Can't resolve [32m'react-markdown'[39m
+[0m [90m 1 |[39m [36mimport[39m [33mExpandableImage[39m [36mfrom[39m [32m"./ExpandableImage"[39m[33m;[39m[0m
+[0m [90m 2 |[39m [36mimport[39m [33mReact[39m [36mfrom[39m [32m"react"[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m [33mReactMarkdown[39m [36mfrom[39m [32m"react-markdown"[39m[33m;[39m[0m
+[0m [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 4 |[39m[0m
+[0m [90m 5 |[39m [36minterface[39m [33mImageItem[39m {[0m
+[0m [90m 6 |[39m   src[33m:[39m string[33m;[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ GET /08-kolmogorov/ [31m500[39m in 148ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico [31m500[39m in 80ms
+ [32m[1m✓[22m[39m Compiled /[...path] in 16ms
+ [31m[1m⨯[22m[39m [Assertion: Unexpected value `[object Object]` for `children` prop, expected `string`] {
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  generated: false,
+  operator: 'ok',
+  digest: '1373315459'
+}
+ GET /08-kolmogorov/ [32m200[39m in 3758ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 27ms
+ [32m[1m✓[22m[39m Compiled in 210ms
+ [32m[1m✓[22m[39m Compiled /[...path] in 52ms
+ GET /08-kolmogorov/ [32m200[39m in 3425ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 51ms
+ GET /08-kolmogorov/ [32m200[39m in 2030ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 79ms
+ [32m[1m✓[22m[39m Compiled in 608ms
+ [32m[1m✓[22m[39m Compiled /[...path] in 185ms
+ GET /08-kolmogorov/ [32m200[39m in 4170ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 118ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 50ms
+ GET /08-kolmogorov/ [32m200[39m in 2756ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 71ms
+ GET /08-kolmogorov/ [32m200[39m in 2601ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 187ms
+ [32m[1m✓[22m[39m Compiled in 668ms
+ [32m[1m✓[22m[39m Compiled /[...path] in 243ms
+ GET /08-kolmogorov/ [32m200[39m in 3784ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 62ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 52ms
+ GET /08-kolmogorov/ [32m200[39m in 3908ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 95ms
+ [32m[1m✓[22m[39m Compiled in 364ms
+ [32m[1m✓[22m[39m Compiled /[...path] in 75ms
+ GET /08-kolmogorov/ [32m200[39m in 5334ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 110ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 60ms
+ GET /08-kolmogorov/ [32m200[39m in 3670ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 115ms
+ GET /08-kolmogorov/ [32m200[39m in 1185ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 37ms
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
@@ -21,190 +379,158 @@ Each child in a list should have a unique "key" prop. See https://react.dev/link
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
- GET / 200 in 8546ms
- ○ Compiling /[...path] ...
- ✓ Compiled /[...path] in 2.4s
- GET /08-kolmogorov/ 200 in 3675ms
- ○ Compiling /_error ...
- ✓ Compiled /_error in 1477ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 1600ms
- GET /08-kolmogorov/ 200 in 544ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 30ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 26ms
- GET /04-max_entropy/ 200 in 2162ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 22ms
- GET /03-minimizing/ 200 in 919ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 17ms
- GET /02-crossentropy/ 200 in 911ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 23ms
- GET /03-minimizing/ 200 in 870ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 36ms
- GET /05-machine_learning/ 200 in 1283ms
- ⨯ [Error: Page "/[...path]/page" is missing param "/problens-web/data/prediction_snapshots.json" in "generateStaticParams()", which is required with "output: export" config.] {
+ GET /00-introduction/ [32m200[39m in 516ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 92ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 70ms
+ GET /08-kolmogorov/ [32m200[39m in 783ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 49ms
+ GET /09-coding_theory/ [32m200[39m in 560ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 49ms
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET /00-introduction/ [32m200[39m in 453ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 63ms
+ [31m[1m⨯[22m[39m [Error: Page "/[...path]/page" is missing param "/problens-web/data/prediction_snapshots.json" in "generateStaticParams()", which is required with "output: export" config.] {
   page: '/problens-web/data/prediction_snapshots.json'
 }
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 36ms
- GET /problens-web/data/prediction_snapshots.json 500 in 186ms
- ⨯ [Error: Page "/[...path]/page" is missing param "/problens-web/data/prediction_snapshots.json" in "generateStaticParams()", which is required with "output: export" config.] {
+ GET /problens-web/data/prediction_snapshots.json [31m500[39m in 186ms
+ [31m[1m⨯[22m[39m [Error: Page "/[...path]/page" is missing param "/problens-web/data/prediction_snapshots.json" in "generateStaticParams()", which is required with "output: export" config.] {
   page: '/problens-web/data/prediction_snapshots.json'
 }
- GET /problens-web/data/prediction_snapshots.json 500 in 62ms
- GET /04-max_entropy/ 200 in 2132ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 41ms
- GET /09-coding_theory/ 200 in 583ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 42ms
- GET /08-kolmogorov/ 200 in 711ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 24ms
- GET /08-kolmogorov/ 200 in 676ms
- GET /09-coding_theory/ 200 in 451ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 43ms
- GET /08-kolmogorov/ 200 in 591ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 29ms
- ✓ Compiled in 846ms
- ✓ Compiled /[...path] in 67ms
- GET /08-kolmogorov/ 200 in 1683ms
- GET /08-kolmogorov/ 200 in 924ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 27ms
- GET /08-kolmogorov/ 200 in 999ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 37ms
- ✓ Compiled in 475ms
- ⚠ Fast Refresh had to perform a full reload when [turbopack]/browser/dev/hmr-client/hmr-client.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
- GET /08-kolmogorov/ 200 in 298ms
- ✓ Compiled in 649ms
- GET /08-kolmogorov/ 200 in 3119ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 19ms
- ✓ Compiled in 266ms
- ✓ Compiled in 465ms
- GET /08-kolmogorov/ 200 in 1878ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 44ms
- ✓ Compiled in 480ms
- GET /08-kolmogorov/ 200 in 2094ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 87ms
- GET /08-kolmogorov/ 200 in 964ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 22ms
- ✓ Compiled in 192ms
- GET /08-kolmogorov/ 200 in 2041ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 32ms
- ✓ Compiled in 2.2s
- ✓ Compiled in 904ms
- ✓ Compiled in 185ms
- ⚠ Fast Refresh had to perform a full reload when [turbopack]/browser/dev/hmr-client/hmr-client.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
- ✓ Compiled /[...path] in 100ms
- GET /08-kolmogorov/ 200 in 3382ms
- GET /08-kolmogorov/ 200 in 3383ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 35ms
- ✓ Compiled in 145ms
- ✓ Compiled in 121ms
- ✓ Compiled in 346ms
- ✓ Compiled in 174ms
- ✓ Compiled in 162ms
- GET /08-kolmogorov/ 200 in 2653ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 30ms
- ✓ Compiled in 130ms
- GET /08-kolmogorov/ 200 in 1678ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 31ms
- ✓ Compiled in 133ms
- ⚠ Fast Refresh had to perform a full reload due to a runtime error.
- ✓ Compiled in 161ms
- ⨯ ReferenceError: hoveredModel is not defined
-    at PolynomialRegressionWidget (components/widgets/PolynomialRegressionWidget.tsx:325:11)
-  323 |           
-  324 |           {/* Model curve if hovering */}
-> 325 |           {hoveredModel !== null && modelCurve.length > 0 && (
-      |           ^
-  326 |             <polyline
-  327 |               points={modelCurve.map(p => 
-  328 |                 `${margin.left + (p.x / 5) * (width - margin.left - margin.right)},${height - margin.bottom - (Math.min(5, Math.max(0, p.y)) / 5) * (height - margin.top - margin.bottom)}` {
-  digest: '4084821272'
+ GET /problens-web/data/prediction_snapshots.json [31m500[39m in 93ms
+ [32m[1m✓[22m[39m Compiled in 174ms
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET /00-introduction/ [32m200[39m in 1952ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 31ms
+ [31m[1m⨯[22m[39m [Error: Page "/[...path]/page" is missing param "/data/llm_prediction_scores.json" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/data/llm_prediction_scores.json'
 }
- GET /08-kolmogorov/ 500 in 1945ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico 500 in 34ms
- ⚠ Fast Refresh had to perform a full reload due to a runtime error.
- ✓ Compiled in 143ms
- ⨯ ReferenceError: hoveredModel is not defined
-    at PolynomialRegressionWidget (components/widgets/PolynomialRegressionWidget.tsx:351:11)
-  349 |           
-  350 |           {/* Legend if model is shown */}
-> 351 |           {hoveredModel !== null && (
-      |           ^
-  352 |             <g>
-  353 |               <rect x={width - 150} y={margin.top + 10} width={15} height={15} fill="#8884d8" />
-  354 |               <text x={width - 130} y={margin.top + 22} fontSize="12" fill="#374151">Data Points</text> {
-  digest: '4084821272'
+ GET /data/llm_prediction_scores.json [31m500[39m in 167ms
+ [31m[1m⨯[22m[39m [Error: Page "/[...path]/page" is missing param "/data/llm_prediction_scores.json" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/data/llm_prediction_scores.json'
 }
- GET /08-kolmogorov/ 500 in 1909ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico 500 in 38ms
- ⚠ Fast Refresh had to perform a full reload due to a runtime error.
- ✓ Compiled in 145ms
- GET /08-kolmogorov/ 200 in 1844ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 165ms
- ✓ Compiled in 154ms
- ✓ Compiled in 170ms
- ✓ Compiled in 152ms
- ✓ Compiled in 180ms
- ✓ Compiled in 199ms
- ✓ Compiled in 458ms
- ✓ Compiled in 209ms
- ✓ Compiled in 233ms
- ✓ Compiled in 201ms
- ✓ Compiled in 249ms
- ✓ Compiled in 204ms
- ✓ Compiled in 207ms
- GET /08-kolmogorov/ 200 in 2268ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 52ms
- GET /08-kolmogorov/ 200 in 1047ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 28ms
- ✓ Compiled in 152ms
- ⚠ Fast Refresh had to perform a full reload when [turbopack]/browser/dev/hmr-client/hmr-client.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
- ✓ Compiled in 801ms
- ✓ Compiled /[...path] in 136ms
- GET /08-kolmogorov/ 200 in 4089ms
- GET /08-kolmogorov/ 200 in 4084ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 46ms
- GET /08-kolmogorov/ 200 in 1281ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 190ms
- ✓ Compiled in 176ms
- ✓ Compiled in 204ms
- ⚠ Fast Refresh had to perform a full reload due to a runtime error.
- ✓ Compiled in 218ms
- GET /08-kolmogorov/ 200 in 2818ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 43ms
- ✓ Compiled in 205ms
- ✓ Compiled in 226ms
- ✓ Compiled in 191ms
- ✓ Compiled in 246ms
- GET /08-kolmogorov/ 200 in 2317ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.35dd0f14.ico 500 in 32ms
- ✓ Compiled in 179ms
+ GET /data/llm_prediction_scores.json [31m500[39m in 70ms
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET /00-introduction/ [32m200[39m in 1904ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 28ms
+ [31m[1m⨯[22m[39m [Error: Page "/[...path]/page" is missing param "/data/llm_prediction_scores.json" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/data/llm_prediction_scores.json'
+}
+ GET /data/llm_prediction_scores.json [31m500[39m in 298ms
+ [31m[1m⨯[22m[39m [Error: Page "/[...path]/page" is missing param "/data/llm_prediction_scores.json" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/data/llm_prediction_scores.json'
+}
+ GET /data/llm_prediction_scores.json [31m500[39m in 89ms
+ [32m[1m✓[22m[39m Compiled in 157ms
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET /00-introduction/ [32m200[39m in 1612ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 55ms
+ [31m[1m⨯[22m[39m [Error: Page "/[...path]/page" is missing param "/data/llm_prediction_scores.json" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/data/llm_prediction_scores.json'
+}
+ GET /data/llm_prediction_scores.json [31m500[39m in 207ms
+ [31m[1m⨯[22m[39m [Error: Page "/[...path]/page" is missing param "/data/llm_prediction_scores.json" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/data/llm_prediction_scores.json'
+}
+ GET /data/llm_prediction_scores.json [31m500[39m in 96ms
+ [32m[1m✓[22m[39m Compiled in 149ms
+ GET /02-crossentropy/ [32m200[39m in 1896ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 119ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 35ms
+ GET /03-minimizing/ [32m200[39m in 1164ms
+ GET /02-crossentropy/ [32m200[39m in 1211ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 37ms
+ GET /02-crossentropy/ [32m200[39m in 1127ms
+ GET /01-kl_intro/ [32m200[39m in 962ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 60ms
+ [32m[1m✓[22m[39m Compiled in 379ms
+ [32m[1m✓[22m[39m Compiled /[...path] in 45ms
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET /00-introduction/ [32m200[39m in 2099ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 87ms
+ [31m[1m⨯[22m[39m [Error: Page "/[...path]/page" is missing param "/data/llm_prediction_scores.json" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/data/llm_prediction_scores.json'
+}
+ GET /data/llm_prediction_scores.json [31m500[39m in 244ms
+ [31m[1m⨯[22m[39m [Error: Page "/[...path]/page" is missing param "/data/llm_prediction_scores.json" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/data/llm_prediction_scores.json'
+}
+ GET /data/llm_prediction_scores.json [31m500[39m in 103ms
+ GET /02-crossentropy/ [32m200[39m in 2345ms
+ GET /01-kl_intro/ [32m200[39m in 1596ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 81ms
+ [31m[1m⨯[22m[39m [Error: Page "/[...path]/page" is missing param "/01-kl_intro/00-introduction/independence2.png" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/01-kl_intro/00-introduction/independence2.png'
+}
+ GET /01-kl_intro/00-introduction/independence2.png [31m500[39m in 225ms
+ GET /02-crossentropy/ [32m200[39m in 3429ms
+ GET /02-crossentropy/ [32m200[39m in 2123ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 55ms
+ GET /01-kl_intro/ [32m200[39m in 1342ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 99ms
+ GET /02-crossentropy/ [32m200[39m in 2077ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 160ms
+ GET /02-crossentropy/ [32m200[39m in 4112ms
+ [31m[1m⨯[22m[39m A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
+ GET /favicon.ico?favicon.35dd0f14.ico [31m500[39m in 56ms

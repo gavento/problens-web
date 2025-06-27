@@ -12,11 +12,22 @@ Let's go through some key properties of KL divergence you should know about. Rem
 
 <Math id="kl-definition" displayMode={true} math="D(p,q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}" />
 
-Heads up: KL divergence can be infinite! This happens when $q_i = 0$ but $p_i \neq 0$ for some $i$. We also use the convention $0 \cdot \log 0/0 = 0$ so that KL always gives us either a nice number or $+\infty$.
+Here's the biggest difference between KL and some more standard, geometrical, ways of mesuring distance like $\ell_1$ norm ($\sum |p_i - q_i|$) or $\ell_2$ norm (<Math math = "\sqrt{\sum (p_i - q_i)^2}" />). Take these two possibilities. 
+
+1. $p_i = 0.5, q_i = 0.49$
+2. $p_i = 0.01, q_i = 0.0$
+
+Regular norms ($\ell_1, \ell_2$) think that the errors made by $q$ are about the same size. But KL knows better: The first situation is basically fine, but the second model $q$ is a total disaster! For example, letters "God" typically do not follow with "zilla", but any model of language should understand that this _may_ sometimes happen. If $q(\textrm{'zilla'} \mid \textrm{'God'}) = 0.0$, the model is going to be infinitely surprised once Godzilla arrives! 
+
+Heads up: KL divergence can be infinite! Try to make it infinite in the following widget. Next level: Try to make it infinite while keeping $\ell_1$ and $\ell_2$ norm close to zero!
+
+<DistributionComparisonWidget title="KL Divergence Explorer" />
+
+
 
 ### Asymmetry<a id = "asymmetry"></a>
 
-The KL formula isn't symmetrical—in general, $D(p,q) \neq D(q,p)$. Some people see this as a bug, especially when comparing KL to nice symmetric distance functions like $\ell_1$ or $\ell_2$<Footnote> <Math math='d_1(p,q) = \sum_{i = 1}^n |p_i - q_i|'/>, <Math math='d_2(p,q) = \sqrt{\sum_{i = 1}^n (p_i - q_i)^2}'/></Footnote>. But I want to stress that the asymmetry is a feature, not a bug! KL measures how well a distribution $p$ is fitted by a model $q$. That's an asymmetrical thing by nature, so we need an asymmetrical formula—nothing to be embarrassed about.
+The KL formula isn't symmetrical—in general, $D(p,q) \neq D(q,p)$. Some people see this as a disadvantage, especially when comparing KL to simple symmetric distance functions like $\ell_1$ or $\ell_2$. But I want to stress that the asymmetry is a feature, not a bug! KL measures how well a distribution $p$ is fitted by a model $q$. That's an asymmetrical thing by nature, so we need an asymmetrical formula—nothing to be embarrassed about.
 
 In fact, that's why we call it a [_divergence_](https://en.wikipedia.org/wiki/Bregman_divergence) instead of a distance—it acts kinda like a distance but isn't symmetric.
 
@@ -64,17 +75,6 @@ Let's estimate what's inside the sum: $\ln \frac{p_i}{q_i}$. Since we know the i
 
 </Expand>
 
-
-<Expand headline="Monotonicity" advanced={true}>
-
-There's also a stronger version of nonnegativity called monotonicity. 
-Say you've got two distributions $p,q$ over countries (\{🇺🇸,🇨🇦,🇲🇽,🇯🇵,🇬🇧,🇮🇳,...\}). Now zoom out and group them into continents (\{North America, Europe, ...\}). You can convert $p,q$ to this rougher grouping to get $p', q'$. Like: <Math math = "p'(\textrm{North America}) = p(🇺🇸) + p(🇨🇦) + p(🇲🇽)" />. Then:
-
-<Math displayMode={true} math="D(p, q) \ge D(p', q')" />
-
-This totally makes sense! Remember, KL divergence tells us how hard it is to tell $p$ apart from $q$ using Bayes' theorem. When you group outcomes together, it gets harder for our Bayesian detective to spot the difference. In the extreme, you could group everything into a single outcome SOMETHING_HAPPENED—then the inequality becomes $D(p,q) \ge 0$. So nonnegativity is just a special case of this!
-</Expand>
-
 ### Additivity
 
 Say you've got two distribution pairs $(p, q)$ and $(p', q')$. Then:
@@ -85,7 +85,7 @@ where $p \otimes p'$ means the product distribution where $p,p'$ are independent
 We actually used this implicitly before—it's just saying that when you're computing KL divergence for many coin flips, you add up the divergences from each flip. 
 
 
-<Expand headline="Chain rule" advanced={true}>
+<Expand headline="Chain rule & uniqueness" advanced={true}>
 There's also a slightly fancier version of additivity called the _chain rule_. 
 
 
@@ -100,17 +100,22 @@ D(p_{\textrm{overall}}, q_{\textrm{overall}}) = D(p,q) + p_{\textrm{bus}} \cdot 
 "/>
 where <Math math = "p_{\text{bus}}" /> is how often I take the bus according to $p$. 
 
-This is pretty intuitive! First off, telling $p_{overall}$ apart from $q_{overall}$ is easier than just telling $p$ from $q$. But the formula even tells us how much easier: the bus refinement helps by $D(p', q')$ whenever it comes up, which is <Math math = "p_{\textrm{bus}}" /> of the time. 
+This is pretty intuitive! First off, telling $p_{overall}$ apart from $q_{overall}$ is easier than just telling $p$ from $q$. 
+
+ADD SOME MONOTONICITY
+
+But the formula even tells us how much easier: the bus refinement helps by $D(p', q')$ whenever it comes up, which is <Math math = "p_{\textrm{bus}}" /> of the time. 
 
 Try proving this yourself or see how it gives us additivity! 
-</Expand>
 
-
-### Uniqueness
 
 Here's something cool: any reasonable function with monotonicity and chain rule properties [has to be KL divergence](https://blog.alexalemi.com/kl.html).
 
 That's pretty awesome—it means KL divergence isn't some arbitrary formula someone cooked up. There's literally only one measure with these natural properties, and it's KL divergence.
+
+
+</Expand>
+
 
 
 ## 🧠 Relative entropy = cross-entropy - entropy

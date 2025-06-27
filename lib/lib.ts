@@ -66,6 +66,8 @@ import WikipediaContentSimilarityWidget from "@/components/widgets/WikipediaCont
 import ThreeCategoriesWidget from "@/components/widgets/ThreeCategoriesWidget";
 import KeyTakeaway from "@/components/content/KeyTakeaway";
 import RiddleSolution from "@/components/content/RiddleSolution";
+import ImageGallery from "@/components/content/ImageGallery";
+import Quote from "@/components/content/Quote";
 
 // Force color support for CI/build environments
 chalk.level = 3;
@@ -224,6 +226,8 @@ export async function getMdxContent(path: string) {
       Expand: Expand,
       KeyTakeaway: KeyTakeaway,
       RiddleSolution: RiddleSolution,
+      ImageGallery: ImageGallery,
+      Quote: Quote,
       img: ExpandableImage,
     },
     options: {

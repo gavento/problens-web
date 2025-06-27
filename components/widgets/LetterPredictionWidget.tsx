@@ -40,14 +40,15 @@ const LetterPredictionWidget: React.FC = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Load snapshots
-        const snapshotResponse = await fetch('/problens-web/data/prediction_snapshots.json');
+        // Load snapshots - use appropriate path for dev/prod
+        const basePath = process.env.NODE_ENV === 'production' ? '/problens-web' : '';
+        const snapshotResponse = await fetch(`${basePath}/data/prediction_snapshots.json`);
         const snapshotData = await snapshotResponse.json();
         setSnapshots(snapshotData.snapshots);
 
         // Try to load LLM scores (may not exist yet)
         try {
-          const llmResponse = await fetch('/problens-web/data/llm_prediction_scores.json');
+          const llmResponse = await fetch(`${basePath}/data/llm_prediction_scores.json`);
           const llmData = await llmResponse.json();
           setLlmScores(llmData.summary || {});
         } catch (e) {
@@ -174,7 +175,7 @@ const LetterPredictionWidget: React.FC = () => {
 
   const currentGame = gameStates.length > 0 ? gameStates[gameStates.length - 1] : null;
   const completedGames = gameStates.filter(g => g.completed);
-  const canShowResults = completedGames.length >= 5;
+  const canShowResults = completedGames.length >= 1;
 
   return (
     <div className="p-6 bg-gray-50 rounded-lg space-y-6 max-w-4xl mx-auto">
@@ -183,7 +184,7 @@ const LetterPredictionWidget: React.FC = () => {
       </h3>
       
       <p className="text-sm text-gray-600 text-center">
-        Can you predict the next letter better than an AI? Try to guess the missing letter in these Wikipedia sentences.
+        Predict the next letter (the answer is one of 26 English letters, case-insensitive)
       </p>
 
       {/* Game Controls */}
@@ -196,12 +197,12 @@ const LetterPredictionWidget: React.FC = () => {
           {gameStates.length === 0 ? 'Start Game' : 'Next Sentence'}
         </button>
         
-        {canShowResults && !showResults && (
+        {canShowResults && completedGames.length >= 5 && !showResults && (
           <button
             onClick={() => setShowResults(true)}
             className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
           >
-            Show Results
+            Show Detailed Results
           </button>
         )}
       </div>
@@ -213,7 +214,7 @@ const LetterPredictionWidget: React.FC = () => {
             {/* Context Display */}
             <div className="text-lg">
               <span className="text-gray-700">
-                {currentGame.snapshot.first_sentence} {currentGame.snapshot.context}
+                {currentGame.snapshot.first_sentence}. {currentGame.snapshot.context}
               </span>
               <span className="bg-yellow-200 px-1 rounded">_</span>
               {currentGame.completed && (
@@ -222,7 +223,7 @@ const LetterPredictionWidget: React.FC = () => {
                     {currentGame.snapshot.target_letter}
                   </span>
                   <span className="text-gray-700">
-                    {currentGame.snapshot.remaining}
+                    {currentGame.snapshot.remaining} {currentGame.snapshot.second_sentence}.
                   </span>
                 </>
               )}
@@ -276,18 +277,82 @@ const LetterPredictionWidget: React.FC = () => {
         </div>
       )}
 
-      {/* Progress */}
-      {gameStates.length > 0 && (
-        <div className="bg-white p-4 rounded-lg border">
-          <h4 className="font-semibold mb-2">Progress</h4>
+      {/* Performance Comparison */}
+      {completedGames.length > 0 && (
+        <div className="bg-white p-4 rounded-lg border space-y-4">
+          <h4 className="font-semibold">Performance Comparison</h4>
+          
+          {/* Number of Guesses */}
+          <div>
+            <div className="text-sm text-gray-600 mb-2">Number of guesses</div>
+            <div className="relative h-8">
+              {/* Line */}
+              <div className="absolute w-full h-0.5 bg-gray-300 top-1/2 transform -translate-y-1/2"></div>
+              
+              {/* User dot */}
+              <div 
+                className="absolute w-3 h-3 bg-blue-600 rounded-full top-1/2 transform -translate-y-1/2"
+                style={{
+                  left: `${Math.min(95, (completedGames[completedGames.length - 1].attempts / 26) * 100)}%`
+                }}
+                title={`You: ${completedGames[completedGames.length - 1].attempts} guesses`}
+              ></div>
+              
+              {/* AI dots */}
+              {Object.entries(llmScores).map(([model, scores]) => (
+                <div
+                  key={model}
+                  className="absolute w-3 h-3 bg-red-500 rounded-full top-1/2 transform -translate-y-1/2"
+                  style={{
+                    left: `${Math.min(95, (Math.pow(2, scores.avg_optimistic) / 26) * 100)}%`
+                  }}
+                  title={`${model}: ${Math.round(Math.pow(2, scores.avg_optimistic))} guesses (avg)`}
+                ></div>
+              ))}
+            </div>
+            <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <span>1</span>
+              <span>26</span>
+            </div>
+          </div>
+          
+          {/* Overall Score */}
+          <div>
+            <div className="text-sm text-gray-600 mb-2">Overall score (optimistic cross-entropy bound)</div>
+            <div className="relative h-8">
+              {/* Line */}
+              <div className="absolute w-full h-0.5 bg-gray-300 top-1/2 transform -translate-y-1/2"></div>
+              
+              {/* User dot */}
+              <div 
+                className="absolute w-3 h-3 bg-blue-600 rounded-full top-1/2 transform -translate-y-1/2"
+                style={{
+                  left: `${Math.min(95, (calculateUserAverage() / 5) * 100)}%`
+                }}
+                title={`You: ${calculateUserAverage().toFixed(2)} bits`}
+              ></div>
+              
+              {/* AI dots */}
+              {Object.entries(llmScores).map(([model, scores]) => (
+                <div
+                  key={model}
+                  className="absolute w-3 h-3 bg-red-500 rounded-full top-1/2 transform -translate-y-1/2"
+                  style={{
+                    left: `${Math.min(95, (scores.avg_optimistic / 5) * 100)}%`
+                  }}
+                  title={`${model}: ${scores.avg_optimistic.toFixed(2)} bits`}
+                ></div>
+              ))}
+            </div>
+            <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <span>0 bits</span>
+              <span>5 bits</span>
+            </div>
+          </div>
+          
           <div className="text-sm text-gray-600">
             Games played: {gameStates.length} | Completed: {completedGames.length}
           </div>
-          {completedGames.length > 0 && (
-            <div className="text-sm text-gray-600">
-              Average score: {calculateUserAverage().toFixed(2)} bits
-            </div>
-          )}
         </div>
       )}
 

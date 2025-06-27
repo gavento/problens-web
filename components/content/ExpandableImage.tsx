@@ -36,6 +36,7 @@ const ExpandableImage: React.FC<ExpandableImageProps> = ({
               src={imageSrc}
               alt={alt}
               className="max-w-full max-h-full object-contain cursor-pointer"
+              style={{ maxWidth: '100vw', maxHeight: '100vh' }}
               onClick={handleClick}
             />
             <button

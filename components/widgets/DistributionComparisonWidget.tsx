@@ -208,12 +208,12 @@ const DistributionComparisonWidget: React.FC<Props> = ({
             const categoryX = margin.left + i * categoryWidth;
             
             // Red bar
-            const redBarHeight = redProb * yScale;
+            const redBarHeight = Math.max(10, redProb * yScale); // Minimum 10px height for better draggability
             const redX = categoryX + barGap;
             const redY = margin.top + innerHeight - redBarHeight;
             
             // Blue bar
-            const blueBarHeight = blueProb * yScale;
+            const blueBarHeight = Math.max(10, blueProb * yScale); // Minimum 10px height for better draggability
             const blueX = categoryX + barGap + barWidth + barGap;
             const blueY = margin.top + innerHeight - blueBarHeight;
             
@@ -225,8 +225,8 @@ const DistributionComparisonWidget: React.FC<Props> = ({
                   y={redY}
                   width={barWidth}
                   height={redBarHeight}
-                  fill="#DC2626"
-                  stroke="#B91C1C"
+                  fill={redProb === 0 ? "#fee2e2" : "#DC2626"} // Light red for zero probability
+                  stroke={redProb === 0 ? "#fca5a5" : "#B91C1C"}
                   strokeWidth="1"
                   className="cursor-ns-resize"
                   onMouseDown={(e) => handleBarDrag(true, i, e)}
@@ -238,8 +238,8 @@ const DistributionComparisonWidget: React.FC<Props> = ({
                   y={blueY}
                   width={barWidth}
                   height={blueBarHeight}
-                  fill="#2563EB"
-                  stroke="#1D4ED8"
+                  fill={blueProb === 0 ? "#dbeafe" : "#2563EB"} // Light blue for zero probability
+                  stroke={blueProb === 0 ? "#93c5fd" : "#1D4ED8"}
                   strokeWidth="1"
                   className="cursor-ns-resize"
                   onMouseDown={(e) => handleBarDrag(false, i, e)}

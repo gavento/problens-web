@@ -91,3 +91,6 @@ This ensures the deployment pipeline remains healthy and the static site builds 
 - related github repos (HF workspaces) are cloned in the home folder
 - you can change files in related HF repos and push them
 - when adding stuff to HF space, try to minimize the probability of disrupting fn_index values of other tabs
+- everything should work both in deployment and on local server.
+- some widgets are connected to HF space called probabilistic-lenses-widgets that is cloned in the home folder.
+- when adding something to the github repo with HF code, add it there and push yourself, instead of asking me to copy the code there.

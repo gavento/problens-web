@@ -48,6 +48,16 @@ This gives you a pretty stable number that shouldn't change much if you do it ag
 />
 </Expand>
 
+<Expand headline = "🧠 Intelligence test">
+Test your intelligence with the following widget! You will be given a bunch of text snippets cut from Wikipedia.<Footnote>It's taken from the first 1GB of big articles - so be prepared for a lot of Abraham Lincoln, Anarchy, Achilles, and spoilers from Atlas Shrugged. </Footnote> They consist of two consecutive sentences, second one being cut at random place. Your task is to predict the next letter. You can compare your performance with some leading neural nets! 
+
+<LetterPredictionWidget/>
+
+Why are neural nets so good in this? Why should it measure intelligence? And why did Claude Shannon - the information theory GOAT - make this experiment in 1940's? 
+
+</Expand>
+
+
 <Expand headline="📈 S&P shape"> <a id="financial-mathematics"></a>
 
 {/* ![Financial Data Distribution](00-introduction/sap_graph.png) */}
@@ -69,13 +79,11 @@ I grabbed some historical data, calculated the daily price changes, normalized t
 
 </Expand>
 
-
+{/*
 <Expand headline="🧠 LLM training"> <a id="deep-learning"></a>
 
 So you wanna train a large language model (LLM) like GPT/Gemini/Claude. These beasts take text, do some crazy computations, and spit out the next letter (Well, actually the next [token](https://en.wikipedia.org/wiki/Large_language_model#Tokenization), which is like a little chunk of letters).
 LLMs don't just guess a single letter—they predict the whole distribution $p$ of what might come next. 
-
-{/* We want to train a new model that is at least as good as, say, GPT-4. In practice, this would involve collecting a lot of text and running both GPT-4 and our LLM on them -- for each predicted letter, we would look at the distribution outputted by GPT-4 and try to nudge our model to make its distribution look similar. */}
 
 Training LLMs is complicated as hell, but one super important bit is picking the _loss function_. Here's the deal: take some text that shows up everywhere online, like "My name is A". We know what usually comes next—maybe "l" is common (all those Alexes), but "a" not so much. Call this the ground-truth distribution $p$.
 
@@ -91,6 +99,7 @@ Your LLM tries to guess this distribution with its own guess $q$. We need to mea
   explanation={<>The first two work okay, but practioners typically use KL divergence. Here's why it's nice: if <Math math="p_i = 0.5" /> and <Math math="q_i = 0.49" />, KL thinks that's basically fine. But if <Math math="p_i = 0.01" /> and <Math math="q_i = 0.0" />, KL freaks out (the ratio <Math math="p_i/q_i" /> is infinite). On the other hand, the other two loss functions think both situations are similar problem. <br/><br/>Check out this widget with two distributions and all three loss functions. <br/><br/><DistributionComparisonWidget title="KL Divergence Explorer" /></>}
 />
 </Expand>
+*/}
 
 <Expand headline="🔗 Distance from independence"> <a id="information-theory"></a>
 

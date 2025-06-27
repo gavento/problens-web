@@ -134,11 +134,19 @@ Here is a coding-theory intuition for why this makes sense. The hypothesis that 
 
 ### Formalization of medieval philosophy
 
+<ImageGallery 
+  images={[
+    { src: "/fig/epikuros.jpg", alt: "Epicurus" },
+    { src: "/fig/William_of_Ockham.png", alt: "William of Ockham" }
+  ]}
+  caption={`[Epicurus](https://en.wikipedia.org/wiki/Epicurus) (~300 BC) is the father of Epicureanism - a school of thought which is a kind of like an early atheism. [William of Ockham](https://en.wikipedia.org/wiki/William_of_Ockham) (~1400) was a major medieval philosopher.`}
+/>
+
 Imagine a special case of Solomonoff induction where each observation either is predicted by the model (likelihood = 1) or is not (likelihood = 0). Then, Solmonoff induction consists of crossing out models incompatible with data, and having a distribution on top of them, where probability of $q$ is proportional to $2^{-K(q)}$. This generalizes [Occam's razor](https://en.wikipedia.org/wiki/Occam%27s_razor) that says that we should prefer simple hypothesis, and [Epicurus principle](https://en.wikipedia.org/wiki/Epicurus#Principle_of_Multiple_Explanations) that says that if more hypothesis explain the data, we should not disregard any of them. 
 
 ### 🐘 Von Neumann's elephant
 
-[John von Neumann](https://en.wikipedia.org/wiki/John_von_Neumann) [allegedly](https://en.wikipedia.org/wiki/Von_Neumann%27s_elephant) said "With four parameters I can fit an elephant, and with five I can make him wiggle his trunk." This quote famously illustrates the danger of _overfitting_: adding more parameters to a model can make it fit any data. 
+[John von Neumann](https://en.wikipedia.org/wiki/John_von_Neumann) [allegedly](https://en.wikipedia.org/wiki/Von_Neumann%27s_elephant) said "With four parameters I can fit an elephant, and with five I can make him wiggle his trunk." This quote famously illustrates the danger of [_overfitting_](https://en.wikipedia.org/wiki/Overfitting): adding more parameters to a model can make it fit any data. 
 
 Solomonoff induction explains what's happening: We should charge each hypothesis for the number of parameters it uses!
 
@@ -146,14 +154,11 @@ The widget below shows von Neumann's elephant curve and other parametric curves.
 
 <ParametricCurveWidget />
 
-### Application: AIC & BIC model selection
+### AIC & BIC model selection
 
-Let me give you two applications 
+In practice, we can't compute Kolmogorov complexity, but we can estimate it as the number of parameters in the model: Instead of simply taking the model with minimum crossentropy loss (MLE), we should add a term $C \cdot k$ to the overall loss. Here, $k$ is the number of parameters and $C$ is 'how many bits per parameter'. If parameters are small numbers, we may opt for $C \approx 1$. If the parameters are some kind of real numbers, it is typically more sensible to think about them as having $O(\log n)$ bits. The choice of $C = 1$ is called [AIC](https://en.wikipedia.org/wiki/Akaike_information_criterion) and $C = \frac{1}{2}\ln n$ is called [BIC](https://en.wikipedia.org/wiki/Bayesian_information_criterion). Both of these choices are typically justified by a different argument with some more concrete assumptions. 
 
-Kolmogorov complexity can't be computed exactly, but we can still make our insights more practical: If you have a bunch of theories 
-
-
-occam
+You can test both rules on the following widget that fits input points with a polynomial curve. The crossentropy is computed by so-called [cross-validation](https://en.wikipedia.org/wiki/Cross-validation_(statistics)), and you can see how the choice of the best model slightly differs between MLE, AIC, and BIC. 
 
 <PolynomialRegressionWidget />
 
@@ -164,11 +169,9 @@ occam
 
 Unfortunately, there's no simple way to compute the Kolmogorov complexity of most strings, even after we decide on which programming language we use in the definition. To see why, let's see a fun paradox known as [Berry's paradox](https://en.wikipedia.org/wiki/Berry_paradox). Consider the expression:
 
-<Block>
-<div className="text-center">
-_The smallest positive integer not definable in under sixty letters._
-</div>
-</Block>
+<Quote>
+The smallest positive integer not definable in under sixty letters.
+</Quote>
 
 Presumably, there are only so many numbers you can define with sixty letters, so there should be the smallest 'undefinable' one. But wait a minute, that number is 'definable' by the sentence above! <Footnote>I often hear the following, more cheeky variant of Berry's paradox: I claim that all postive integers are interesting. Why? Well, consider the smallest noninteresting number. But this is a very interesting property! </Footnote>
 

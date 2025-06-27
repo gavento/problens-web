@@ -123,26 +123,8 @@ When this number is small (less than 1), you can think of $1/D(p,q)$ as "how man
 
 Notice KL divergence is about the evidence, not your starting beliefs. It tells you how fast beliefs change, no matter where you start. Sometimes, we like to divide statistics into Bayesian and frequentist; KL is useful for both. 
 
----
 
 ## 🧩 Cracking some riddles
-
-<Expand headline = "🧠 LLM training" > <a id="application-training-smaller-models"></a>
-
-Remember [our riddle](00-introduction#deep-learning) about training a language model? We've got some true distribution $p$ of what letter typically follows short pieces of text like "My name is A". We also have our model's guess $q$, and we need to measure how good the match is.
-
-This is done by optimizing KL divergence, because this literally means that we want to make it hard for a Bayesian detective to distinguish between the true language $p$ and language model $q$. Later on, we will discuss that we can't optimize KL divergence, but instead optimize cross-entropy, but the story stays the same. 
-
-What about using $\ell_1$ norm ($\sum |p_i - q_i|$) or $\ell_2$ norm ($\sum (p_i - q_i)^2$)? They might work okay, but they don't have the probability story behind them, which leads to some iffy behavior. Take these two possibilities. 
-
-1. $p_i = 0.5, q_i = 0.49$
-2. $p_i = 0.01, q_i = 0.0$
-
-Regular norms ($\ell_1, \ell_2$) think these errors are about the same size. But KL knows better—the first one's basically fine, but the second is a disaster model! For example, the word "God" typically does not follow with "zilla", but your model should understand that this may sometimes happen. The distribution $q(\textrm{'zilla'} \mid \textrm{'God'}) = 0.0$ means that the model does not even begin to consider this option which makes it pretty bad!
-
-<DistributionComparisonWidget title="KL Divergence Explorer" />
-
-</Expand>
 
 <RiddleSolution riddle="independence" id="information-theory">
 
