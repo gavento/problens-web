@@ -1,27 +1,67 @@
 import { join } from "path";
 
-export const TITLE = "KL divergence: the best bits";
-export const DESCRIPTION = "KL divergence: the best bits";
-export const TITLE_SHORT = "KL divergence";
-export const TITLE_ABBR = "KL divergence";
-export const MAIN_CHAPTERS = [
-  ["Riddles", "00-introduction"],
-  ["", ""], // Gap
-  ["KL divergence & Bayes", "01-kl_intro"],
-  ["Crossentropy & Entropy", "02-crossentropy"],
-  ["Minimizing KL", "03-minimizing"],
-  ["Max entropy distributions", "04-max_entropy"],
-  ["Machine learning", "05-machine_learning"],
-  ["", ""], // Gap
+export const TITLE = "Bayes, bits & brains";
+export const DESCRIPTION = "Bayes, bits & brains";
+export const TITLE_SHORT = "Bayes, bits & brains";
+export const TITLE_ABBR = "BBB";
+// Part structure
+export const PARTS = [
+  {
+    name: "Intro",
+    chapters: [
+      ["Riddles", "00-introduction"],
+    ]
+  },
+  {
+    name: "Part I: Foundations",
+    chapters: [
+      ["Bayes & KL divergence", "01-kl_intro"],
+      ["Crossentropy & Entropy", "02-crossentropy"],
+    ]
+  },
+  {
+    name: "Part II: Optimization", 
+    chapters: [
+      ["Minimizing KL", "03-minimizing"],
+      ["Maximizing entropy", "04-max_entropy"],
+      ["Loss functions", "05-machine_learning"],
+    ]
+  },
+  {
+    name: "Part III: Compression",
+    chapters: [
+      ["Coding theory", "09-coding_theory"],
+      ["Kolmogorov complexity", "08-kolmogorov"],
+    ]
+  },
+  {
+    name: "Part IV: Topics",
+    chapters: [
+      ["Multiplicative weights", "06-algorithms"],
+    ]
+  }
+];
+
+// Meta pages (always visible)
+export const META_PAGES = [
   ["Resources", "resources"],
   ["About", "about"],
 ];
 
+// For backward compatibility
+export const MAIN_CHAPTERS = [
+  ...PARTS[0].chapters,
+  ["", ""], // Gap
+  ...PARTS[1].chapters,
+  ["", ""], // Gap
+  ...PARTS[2].chapters,
+  ["", ""], // Gap
+  ...META_PAGES,
+];
+
 export const BONUS_CHAPTERS = [
-  ["Coding theory", "09-coding_theory"],
-  ["Kolmogorov complexity", "08-kolmogorov"],
-  ["Fisher information", "07-fisher_info"],
-  ["Multiplicative weights", "06-algorithms"],
+  ...PARTS[3].chapters,
+  ...PARTS[4].chapters,
 ];
 
 // Combined chapters for compatibility
