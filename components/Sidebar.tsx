@@ -3,11 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { MAIN_CHAPTERS, BONUS_CHAPTERS, TITLE } from "@/lib/config";
+import { PARTS, META_PAGES, TITLE } from "@/lib/config";
 import { TableOfContents } from "./TableOfContents";
 import styles from "./Sidebar.module.css";
-import DangerButton from "./DangerButton";
-import { useDangerMode } from "./providers/DangerModeProvider";
 
 interface SidebarProps {
   className?: string;
@@ -19,7 +17,6 @@ export default function Sidebar({ className = "", onLinkClick, style }: SidebarP
   const pathname = usePathname();
   const [prevActive, setPrevActive] = useState<string | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const { isDangerMode } = useDangerMode();
 
   useEffect(() => {
     if (prevActive !== pathname) {
@@ -41,80 +38,64 @@ export default function Sidebar({ className = "", onLinkClick, style }: SidebarP
       </div>
       
       <div className={styles.scrollableContent}>
-        <ul className={styles.list}>
-          {MAIN_CHAPTERS.map(([title, path], index) => {
-            // Render gaps as spacers
-            if (title === "" && path === "") {
-              return <li key={`gap-${index}`} className={styles.gap}></li>;
-            }
+        {/* Render all Parts (always visible) */}
+        {PARTS.map((part, partIndex) => (
+          <div key={`part-${partIndex}`}>
+            {/* Add separator between parts (but not before the first one) */}
+            {partIndex > 0 && (
+              <div className="my-4 border-t border-gray-200"></div>
+            )}
+            
+            <ul className={styles.list}>
+              {part.chapters.map(([title, path]) => {
+                const href = `/${path}`;
+                const isActive = pathname === href || (path === "" && pathname === "/");
+                const wasActive = prevActive === href || (path === "" && prevActive === "/");
 
-            const href = `/${path}`;
-            const isActive = pathname === href || (path === "" && pathname === "/");
-            const wasActive = prevActive === href || (path === "" && prevActive === "/");
-
-            return (
-              <li key={path} className={styles.item}>
-                <Link href={href} onClick={onLinkClick} className={`${styles.link} ${isActive ? styles.active : ""}`}>
-                  {title}
-                </Link>
-                <div
-                  className={`${styles.subsections} ${
-                    (isActive || (wasActive && isTransitioning)) && styles.subsectionsVisible
-                  }`}
-                >
-                  <div
-                    className={`${styles.subsectionWrapper} ${
-                      isActive ? styles.subsectionWrapperVisible : styles.subsectionWrapperHidden
-                    }`}
-                  >
-                    {(isActive || (wasActive && isTransitioning)) && (
-                      <TableOfContents className={styles.tableOfContents} onSubsectionClick={onLinkClick} />
-                    )}
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+                return (
+                  <li key={path} className={styles.item}>
+                    <Link href={href} onClick={onLinkClick} className={`${styles.link} ${isActive ? styles.active : ""}`}>
+                      {title}
+                    </Link>
+                    <div
+                      className={`${styles.subsections} ${
+                        (isActive || (wasActive && isTransitioning)) && styles.subsectionsVisible
+                      }`}
+                    >
+                      <div
+                        className={`${styles.subsectionWrapper} ${
+                          isActive ? styles.subsectionWrapperVisible : styles.subsectionWrapperHidden
+                        }`}
+                      >
+                        {(isActive || (wasActive && isTransitioning)) && (
+                          <TableOfContents className={styles.tableOfContents} onSubsectionClick={onLinkClick} />
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
         
-        {/* Danger Button - positioned before bonus chapters */}
-        <div className="my-4">
-          <DangerButton />
-        </div>
-        
-        {/* Bonus chapters - only shown when danger mode is active */}
-        {isDangerMode && (
+        {/* Meta pages */}
+        <div className="mt-6 pt-4 border-t border-gray-200">
           <ul className={styles.list}>
-            {BONUS_CHAPTERS.map(([title, path], index) => {
+            {META_PAGES.map(([title, path]) => {
               const href = `/${path}`;
-              const isActive = pathname === href || (path === "" && pathname === "/");
-              const wasActive = prevActive === href || (path === "" && prevActive === "/");
-
+              const isActive = pathname === href;
+              
               return (
                 <li key={path} className={styles.item}>
                   <Link href={href} onClick={onLinkClick} className={`${styles.link} ${isActive ? styles.active : ""}`}>
                     {title}
                   </Link>
-                  <div
-                    className={`${styles.subsections} ${
-                      (isActive || (wasActive && isTransitioning)) && styles.subsectionsVisible
-                    }`}
-                  >
-                    <div
-                      className={`${styles.subsectionWrapper} ${
-                        isActive ? styles.subsectionWrapperVisible : styles.subsectionWrapperHidden
-                      }`}
-                    >
-                      {(isActive || (wasActive && isTransitioning)) && (
-                        <TableOfContents className={styles.tableOfContents} onSubsectionClick={onLinkClick} />
-                      )}
-                    </div>
-                  </div>
                 </li>
               );
             })}
           </ul>
-        )}
+        </div>
       </div>
     </nav>
   );

@@ -223,7 +223,7 @@ const LetterPredictionWidget: React.FC = () => {
                     {currentGame.snapshot.target_letter}
                   </span>
                   <span className="text-gray-700">
-                    {currentGame.snapshot.remaining} {currentGame.snapshot.second_sentence}.
+                    {currentGame.snapshot.remaining}.
                   </span>
                 </>
               )}

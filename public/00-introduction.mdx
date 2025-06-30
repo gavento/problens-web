@@ -1,8 +1,9 @@
 # All those riddles <a id="introduction"></a>
 
-This site contains an introduction to various topics at the intersection of probability, information theory, and machine learning. Our tour guide through this corner of the world is a formula called _Kullback-Leibler (KL) divergence_. 
+This site contains an introduction to various topics at the intersection of probability, information theory, and machine learning. 
+{/*Our tour guide through this corner of the world is a formula called _Kullback-Leibler (KL) divergence_. */}
 
-Check out [this page](about) for logistics. Here, we've got several riddles. I hope that some of them will [nerd-snipe](https://xkcd.com/356/) you! 😉 You will understand all of them at the end of this minicourse. 
+Check out [this page](about) for logistics. Here, I've got several riddles. I hope that some of them will [nerd-snipe](https://xkcd.com/356/) you! 😉 You will understand all of them at the end of this minicourse. 
 
 
 <Expand headline="🔮 How good are your predictions?"> <a id="predictions"></a>
@@ -177,8 +178,8 @@ I collected anthems of USA, UK, and Australia, and put them into one file. The o
 </Expand>
 
 
-
-<Expand advanced={true} headline="🗳️ Why polling sucks"><a id="polling"></a>
+{/*
+<Expand advanced={false} headline="🗳️ Why polling sucks"><a id="polling"></a>
 
 A typical [US election poll](https://en.wikipedia.org/wiki/Nationwide_opinion_polling_for_the_2024_United_States_presidential_election) asks 1000-2000 random people. Do the math and you'll find such polls are usually within 2-3% of the truth.<Footnote>This assumes you can actually sample random voters, they tell the truth, etc. This is never true but stick with me.</Footnote> Pretty wild—it doesn't even matter how many people live in the country, 1000 random ones get you within a few percent!
 
@@ -190,8 +191,9 @@ But here's the thing: US elections are super close. We already know both parties
   explanation={<>It's about 1,000,000! That's a huge chunk of the whole US! The general rule: to get error margin <Math math="\eps" />, you need roughly <Math math="1/\eps^2" /> samples. That square is killer—it's why getting better estimates gets expensive fast! No wonder most polls stick to a few thousand people.<br/><br/>But why <Math math="1/\eps^2" />? Explore the relationship below:<br/><br/><PollingErrorCalculator /></>}
 />
 </Expand>
+*/}
 
-<Expand advanced={true} headline="💰 How to get rich"> <a id="get-rich"></a>
+<Expand advanced={false} headline="💰 How to get rich"> <a id="get-rich"></a>
 
 Here's a riddle that's behind a ton of recent algorithms in CS and ML. Say you wanna get rich trading stocks. Lucky you—$n$ investors share their tips every day. Each day $t$, they give advice, and afterward you find out how they did. For investor $i$, you get $g_i^{(t)}$ - how many dollars she gained that day.
 
@@ -210,7 +212,7 @@ How should you update? What's best? <Footnote>The symbol $\propto$ means that th
 />
 </Expand>
 
-<Expand advanced={true} headline="🌐 How large is Wikipedia?"><a id="wikipedia"></a>
+<Expand advanced={false} headline="🌐 How large is Wikipedia?"><a id="wikipedia"></a>
 Marcus Hutter, an AI researcher, started <a href="http://prize.hutter1.net/">this challenge</a>: Take a 1GB file of Wikipedia text. How small can you compress it? <a href="https://en.wikipedia.org/wiki/ZIP_(file_format)">Zipping it</a> gets you about 300MB. But we can do way better. What's the current record? 
 
 <MultipleChoiceQuestion

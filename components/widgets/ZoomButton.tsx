@@ -26,7 +26,7 @@ export default function ZoomButton({
   const getButtonText = () => {
     switch (type) {
       case 'reset':
-        return 'Reset All';
+        return 'Reset';
       case 'zoom-toggle':
         return isZoomed ? '🗗 Exit Fullscreen' : '🔍 Zoom';
       case 'zoom-in':

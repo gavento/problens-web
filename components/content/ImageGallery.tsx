@@ -11,11 +11,32 @@ interface ImageGalleryProps {
   images: ImageItem[];
   caption?: string;
   height?: number;
+  fullWidth?: boolean;
 }
 
 const DEFAULT_HEIGHT = 160;
 
-export default function ImageGallery({ images, caption, height = DEFAULT_HEIGHT }: ImageGalleryProps) {
+export default function ImageGallery({ images, caption, height = DEFAULT_HEIGHT, fullWidth = false }: ImageGalleryProps) {
+  // Special handling for single image with fullWidth
+  if (fullWidth && images.length === 1) {
+    const image = images[0];
+    return (
+      <div className="my-6">
+        <div className="w-full rounded shadow-sm overflow-hidden bg-white">
+          <ExpandableImage 
+            src={image.src} 
+            alt={image.alt} 
+            className="w-full h-auto object-contain block" 
+          />
+        </div>
+        {/* Markdown caption below */}
+        <div className="text-center text-sm text-gray-600 max-w-2xl mx-auto min-h-[1.5em] mt-4 px-6 py-2">
+          {typeof caption === "string" ? <ReactMarkdown>{caption}</ReactMarkdown> : caption || null}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="my-6">
       {/* Images grid */}
@@ -44,7 +65,7 @@ export default function ImageGallery({ images, caption, height = DEFAULT_HEIGHT 
         </div>
       </div>
       {/* Markdown caption below (always rendered) */}
-      <div className="text-center text-sm text-gray-600 max-w-2xl mx-auto min-h-[1.5em]">
+      <div className="text-center text-sm text-gray-600 max-w-2xl mx-auto min-h-[1.5em] px-6 py-2">
         {typeof caption === "string" ? <ReactMarkdown>{caption}</ReactMarkdown> : caption || null}
       </div>
     </div>

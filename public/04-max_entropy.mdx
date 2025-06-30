@@ -126,13 +126,13 @@ So, when you come across a distribution, the right question isn't really "Is thi
 
 Let's go through the examples with this in mind. 
 
-### No Constraints
+### 🌅 No Constraints
 
 In the absence of any constraints, we have $p(x) \propto e^{0}$, which means the max entropy distribution is *uniform*. In other words, the maximum entropy principle is truly an extension of [the principle of indifference](03-minimizing#maximum-entropy-principle) that we discussed in the previous chapter.
 
 One painful fact to keep in mind is that the uniform distribution doesn't always exist. Concretely, there's no uniform distribution over all real numbers.
 
-### Fixing $E[X]$ (Logits)
+### 🎲 Fixing $E[X]$ (Logits)
 
 If we believe the mean is an important parameter of a distribution (as we usually do), the max entropy principle states that the right family of distributions to work with are those with the shape:
 
@@ -222,7 +222,7 @@ However, it's worth noting that one popular interpretation of softmax in behavio
 </Expand>
 */}
 
-### Fixing $E[X]$ (Exponential/Geometric Distribution) <a id = "exponential"></a>
+### 📉 Fixing $E[X]$ (Exponential/Geometric Distribution) <a id = "exponential"></a>
 
 If the domain of the probability distribution is non-negative integers or reals, then we get the so-called [geometric](https://en.wikipedia.org/wiki/Geometric_distribution) / [exponential](https://en.wikipedia.org/wiki/Exponential_distribution) distribution—another very basic and useful distribution. You should think of this as **the most natural** distribution on the domain of positive numbers (whether integers or reals).
 
@@ -270,7 +270,7 @@ We could also try to approach this modeling problem purely from the max-entropy 
 The next better model takes into account that the typical deviation of the distribution from the mean is probably quite a bit smaller than the mean. The max entropy distribution if we now consider both the mean and the variance (which represents the scale) is going to be the normal distribution. <Footnote>More precisely, since the domain is _positive_ real numbers, the max entropy distribution is a Gaussian that is clipped to zero for negative numbers and rescaled to sum up to 1.</Footnote>
 </Expand>
 
-### Other Examples
+### 🔢 Other Examples
 
 Here are a few more examples you might have encountered. 
 

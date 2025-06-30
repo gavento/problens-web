@@ -30,7 +30,7 @@ Now, let's assume we believe a normal distribution is a suitable model for this 
 
 Why does this make sense? Recall that KL divergence is designed to measure how well a model $q$ approximates the true distribution $p$. More specifically, it is the rate of how quickly a Bayesian detective learns that the true distribution is $p$, not $q$. So, minimizing KL simply means selecting the best "imposter" that it takes the longest to separate from the truth. That's pretty reasonable!
 
-### Maximum likelihood principle <a id="mle"></a>
+### 🔍 Maximum likelihood principle <a id="mle"></a>
 
 Let's examine our approach of minimizing $D(p, q)$ more closely. We'll focus on the most common scenario where $p$ is an empirical distribution derived from data points $X_1, \dots, X_n$. To keep the notation tidy, let's assume all $X_i$ are distinct, which means that $p$ is uniform distribution<Footnote>In the general case, $p$ is not necessarily uniform and the probability of each value $x$ is proportional to the count of $x$ in the data. The general case does not change much in the argument we are about to make. </Footnote>. In this situation, we can express the KL divergence we're minimizing as:
 
@@ -141,7 +141,7 @@ The observation we can now make is that <Math math="p_{new} = \argmin_{p \in P} 
 </Expand>
 */}
 
-### The maximum entropy principle <a id="maximum-entropy-principle"></a>
+### ⚫ The maximum entropy principle <a id="maximum-entropy-principle"></a>
 
 Let's delve deeper into the minimum relative entropy principle. A conceptual issue with it is that it only allows us to refine an existing model $q$ into a better model $p$. But how did we choose the initial model $q$ in the first place? It feels a bit like a chicken-and-egg dilemma.
 

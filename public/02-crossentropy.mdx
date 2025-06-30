@@ -201,11 +201,11 @@ The mutual information is then 1 bit. That's because learning the value of one d
 </Expand>
 
 
-### Relative entropy: 
+### 🔐 Relative entropy: 
 KL divergence can be interpreted as the gap between cross-entropy and entropy. It tells us how far your average surprise (cross-entropy) is from the best possible (entropy). 
 That's why in some communities, people call KL divergence the _relative entropy_ between $p$ and $q$. <Footnote>Way better name than 'KL divergence' if you ask me. But 'KL divergence' is what most people use, so I guess we're stuck with it. </Footnote>
 
-### So what's the big deal?
+### 🎆 So what's the big deal?
 
 Splitting a sum into two parts isn't exactly rocket science—the real win is that cross-entropy and entropy are super meaningful concepts on their own. <Footnote>Actually, entropy is way more famous than KL divergence. I'm building everything from KL divergence instead of entropy because I'm trying to balance between an excited brain dump about cool math that's hard to find elsewhere, and something resembling a coherent text. </Footnote>
 
@@ -246,7 +246,7 @@ If all $n$ events are independent,<Footnote>They of course never are, but here w
 
 But wait—there's a huge problem with this score. Can you spot it?
 
-### Cross-entropy score
+### 🎯 Cross-entropy score
 
 The problem: we have no clue what the "true" probabilities are! <Footnote> We could go down a philosophical rabbit hole about whether "true" probability even is even a meaningful concept. But let's not. </Footnote>
 
@@ -263,7 +263,7 @@ S_{CE}(q) =
 
 This is why this formula is often called the _cross-entropy score_, though forecasting community calls it the [Log-score](https://forecasting.wiki/wiki/Log_score). 
 
-### Connection to the idealized score
+### 🔗 Connection to the idealized score
 Let's dig into how cross-entropy score relates to our idealized KL score. Technically, cross-entropy score is a random variable—it depends on which outcomes actually happen. Each $\hat{p}_i$ is 1 with probability $p_i$, otherwise 0.
 
 So what's the expected cross-entropy score? Since $E_p[\hat{p}_i] = p_i$, linearity of expectation gives us:

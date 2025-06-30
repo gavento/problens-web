@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import styles from "./Expand.module.css";
-import { useDangerMode } from "../providers/DangerModeProvider";
 
 interface ExpandProps {
   children: React.ReactNode;
@@ -16,19 +15,7 @@ interface ExpandProps {
 }
 
 export default function Expand({ children, headline, img, color = "#f5f5f5", startOpen = false, advanced = false, id }: ExpandProps) {
-  const { isDangerMode, isHydrated } = useDangerMode();
   const [isOpen, setIsOpen] = useState(startOpen);
-
-  // Hide advanced sections when danger mode is off
-  // Only apply this logic after hydration to prevent mismatches
-  if (advanced && isHydrated && !isDangerMode) {
-    return null;
-  }
-
-  // Don't render advanced sections during SSR to prevent hydration mismatches
-  if (advanced && !isHydrated) {
-    return null;
-  }
 
   // Use subtle red background for advanced sections header
   const headerColor = advanced ? "#fff5f5" : color;

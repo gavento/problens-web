@@ -36,7 +36,7 @@ Bayes' rule calculates the new probability (the _posterior_) that it's fair. The
 
 This is no rocket science — if you multiply both sides by $P(\textrm{heads})$, both sides express the quantity <Math math = "P(\textrm{fair AND heads})" /> using conditional probabilities.
 
-## Divide and conquer
+## 🔀 Divide and conquer
 
 I like to think about Bayes' rule a bit differently:
 
@@ -54,7 +54,7 @@ We increased our probability of fair coin from $66.7\%$ to $80\%$. Our suspicion
 
 {/*Bayes' theorem simply says we should do the simplest thing possible with the two relevant ratios -- multiply them -- to arrive at the posterior odds $P(\textrm{fair} | \textrm{heads}) : P(\textrm{biased} | \textrm{heads})$ .*/}
 
-## Go forth and multiply
+## ✖️ Go forth and multiply
 
 KL divergence is about what happens when we keep flipping. Picture our Bayesian hero flipping over and over, updating her beliefs each time using Bayes. If she gets $\{H, T, T, H, T\}$, here's what's happening:
 
@@ -64,7 +64,7 @@ Every flip, she multiplies her odds by a likelihood ratio: $2/1$ for heads, $2/3
 
 In this example, three tails out of five slightly favor the fair-coin hypothesis. After converting back to probabilities, her initial 66.7% belief in fairness increased to about 70%. Gonna need way more flips to know for sure!
 
-## A bit better summary
+## 📊 A bit better summary
 
 Before we see what happens long-term, let's improve our calculator a bit. We'll get a bit more clarity if we take logs of everything. Instead of multiplying odds and likelihood, we will be adding so-called _log-odds_. 
 
@@ -105,7 +105,7 @@ Try it yourself! I recommend checking edge cases like 50% vs 51% (to get  intuit
 
 <EvidenceAccumulationSimulator only_kl_mode={true} />
 
-## KL divergence, in general
+## 🔄 KL divergence, in general
 
 KL divergence is just the general formula for expected evidence accumulation. Say you've got two distributions $p$ and $q$, where $p$ is what's really happening, but you only know it's either $p$ or $q$. 
 

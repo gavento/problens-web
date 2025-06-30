@@ -411,28 +411,31 @@ const MandelbrotExplorer = () => {
         />
         
         <div className="text-sm text-gray-600">
-          Drag to pan, scroll/pinch to zoom, double-click to zoom in
+          Drag • Scroll to zoom • Double-click
         </div>
       </div>
 
       <div className="space-y-4">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1 border-2 border-gray-300 bg-white p-4 rounded-lg">
-            <div className="font-medium mb-3 text-center">Mandelbrot Set Formula</div>
-            <div className="text-center space-y-2">
-              <div>z₀ = 0, z<sub>n+1</sub> = z<sub>n</sub>² + c</div>
-              <div>c ∈ M if |z<sub>n</sub>| remains bounded</div>
-              <div className="text-sm text-gray-600">Max iterations: {maxIterations}</div>
+        <div className="bg-gray-50 p-4 rounded-lg border-2 border-gray-200">
+          <div className="font-medium mb-4 text-center text-gray-700">Image Parameters</div>
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 border border-gray-300 bg-white p-4 rounded-lg">
+              <div className="font-medium mb-3 text-center">Mandelbrot Set Formula</div>
+              <div className="text-center space-y-2">
+                <div>z₀ = 0, z<sub>n+1</sub> = z<sub>n</sub>² + c</div>
+                <div>c ∈ M if |z<sub>n</sub>| remains bounded</div>
+                <div className="text-sm text-gray-600">Max iterations: {maxIterations}</div>
+              </div>
             </div>
-          </div>
-          
-          <div className="flex-1 border-2 border-gray-300 bg-white p-4 rounded-lg">
-            <div className="font-medium mb-3 text-center">Viewport Coordinates</div>
-            <div className="font-mono text-sm space-y-1">
-              <div>Left: {formatCoord(bounds.left)}</div>
-              <div>Right: {formatCoord(bounds.right)}</div>
-              <div>Top: {formatCoord(bounds.top)}</div>
-              <div>Bottom: {formatCoord(bounds.bottom)}</div>
+            
+            <div className="flex-1 border border-gray-300 bg-white p-4 rounded-lg">
+              <div className="font-medium mb-3 text-center">Viewport Coordinates</div>
+              <div className="font-mono text-sm space-y-1">
+                <div>Left: {formatCoord(bounds.left)}</div>
+                <div>Right: {formatCoord(bounds.right)}</div>
+                <div>Top: {formatCoord(bounds.top)}</div>
+                <div>Bottom: {formatCoord(bounds.bottom)}</div>
+              </div>
             </div>
           </div>
         </div>

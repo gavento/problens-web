@@ -55,7 +55,7 @@ We can get rid of this annoying slack of one bit using the following trick. Thin
 
 So, there are codes that get arbitrarily close to $H(p)$ bits per letter, even if they are a bit less intuitive since they are encoding letter-tuples, not individual letters. This is essentially the first half of the most important theorem in coding theory - [Shannon's source coding theorem](https://en.wikipedia.org/wiki/Shannon%27s_source_coding_theorem). 
 
-### The source coding theorem <a id="source-coding"></a>
+### 📜 The source coding theorem <a id="source-coding"></a>
 Here's the setup of the source coding theorem. We model texts like this: There is a source that has a distribution over letters. This source keeps sampling letters independently, and sends them to us. This goes on for a long time, say $n$ steps; our goal is to save some binary string to the memory so that later on, we can recover from that string what $n$ letters the source sent. 
 
 This setup with the source sampling independent letters models that we only want to think about the problem of giving code names to letters based on frequencies. We are not trying to use the _correlations_ like '$\mathsf{th}$ often follows by $\mathsf{e}$'. 
@@ -112,7 +112,7 @@ Here is a generic approach of how most compressions algorithm work, called [pred
 
 I want to explain two examples of predictive coding algorithms. The first example is how LLMs can be used to compress text, the second example would be a typical implementation of ZIP. 
 
-### LLMs 
+### 🤖 LLMs 
 
 LLMs are exactly fitting the description of our next-letter predictor. A small technicality - to make the prediction task easier, the text is first split into so-called tokens (think short words, syllables). The net then predicts the next token, not the next letter. 
 
@@ -124,10 +124,10 @@ In the next widget, you can see how it works.
 
 This way of compressing test is extremely efficient, since LLMs can predict the next token even more efficiently than us, people. The catch is that to use this to compression, we would have to send the LLM with the compressed text, so that the receiver can decode. Modern LLMs are huge, so this is not really practical. 
 
-### ZIP 
+### 🗁️ ZIP 
 Typical algorithm used in ZIP works like this: It reads the text and constructs a dictionary -- list of common patterns (syllables, words) that were frequent in the past. When it encounters a word it has in its dictionary, instead of writing 'divergence', it writes something like [now comes entry 42 in the dictionary]. The algorithm does not juggle with any probabilities. However, due to the connection of probabilties and code lengths, we can now understand that if the ZIP algorithm can at some position encode the word 'divergence' in 10 bits, we can interpret it as the ZIP algorithm __predicting__ that the probability of 'divergence' is $2^{-10}$. 
 
-### Prediction = Compression
+### 🕰️ Prediction = Compression
 
 These two examples of predictive coding algorithms go back to our discussion of coding intuition for entropy. We defined entropy in the language of surprise, probabilities, prediction. Coding theory uses the language of codes, and compression. But since the probability $p$ corresponds both to surprise of $\log 1/p$ and ideal-code-length of $\log 1/p$, the math is the same for both. 
 
