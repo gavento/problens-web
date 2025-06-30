@@ -423,7 +423,7 @@ export default function CompressionWidget() {
       const sessionHash = Math.random().toString(36).substring(2);
       
       const queueResponse = await fetch(
-        'https://vaclavrozhon-zip-compression-clustering.hf.space/queue/join',
+        'https://vaclavrozhon-probabilistic-lenses-widgets.hf.space/queue/join',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -443,7 +443,7 @@ export default function CompressionWidget() {
       // Use EventSource to get results
       return new Promise((resolve, reject) => {
         const eventSource = new EventSource(
-          `https://vaclavrozhon-zip-compression-clustering.hf.space/queue/data?session_hash=${sessionHash}`
+          `https://vaclavrozhon-probabilistic-lenses-widgets.hf.space/queue/data?session_hash=${sessionHash}`
         );
         
         const timeout = setTimeout(() => {

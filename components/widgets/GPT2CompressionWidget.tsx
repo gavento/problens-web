@@ -39,7 +39,7 @@ const GPT2CompressionWidget: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const API_URL = "https://vaclavrozhon-zip-compression-clustering.hf.space";
+  const API_URL = "https://vaclavrozhon-probabilistic-lenses-widgets.hf.space";
 
   const callCompressionAPI = async (text: string) => {
     const sessionHash = Math.random().toString(36).substring(2, 12);
@@ -54,7 +54,7 @@ const GPT2CompressionWidget: React.FC = () => {
           body: JSON.stringify({ 
             data: [text],
             event_data: null,
-            fn_index: 7,  // Correct index from HF logs for GPT2 Compression
+            fn_index: 2,  // GPT2 Compression tab
             session_hash: sessionHash
           })
         }
