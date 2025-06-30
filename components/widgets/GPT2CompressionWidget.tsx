@@ -54,7 +54,7 @@ const GPT2CompressionWidget: React.FC = () => {
           body: JSON.stringify({ 
             data: [text],
             event_data: null,
-            fn_index: 2,  // GPT2 Compression tab
+            fn_index: 2,  // GPT2 Compression tab (updated)
             session_hash: sessionHash
           })
         }
