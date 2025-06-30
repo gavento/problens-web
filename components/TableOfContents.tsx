@@ -35,52 +35,64 @@ export function TableOfContents({ className = "", onSubsectionClick }: TableOfCo
   }, []);
 
   useEffect(() => {
-    // Get all h2 elements from the document, excluding Footnotes and References
-    const headings = Array.from(document.querySelectorAll("h2")).filter(
-      (heading) => !["Footnotes", "References"].includes(heading.textContent || "")
-    );
-
-    const extractedSections = headings.map((heading) => {
-      // Generate ID if not present
-      if (!heading.id) {
-        heading.id = slugify(heading.textContent || "");
-      }
-      return {
-        id: heading.id,
-        text: heading.textContent || "",
-        level: 2,
-      };
-    });
-    setSections(extractedSections);
-
-    // Only set up intersection observer if not mobile
-    if (!isMobile) {
-      let prevRatio = 0;
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.intersectionRatio > prevRatio) {
-              setActiveSection(entry.target.id);
-            }
-            prevRatio = entry.intersectionRatio;
-          });
-        },
-        {
-          threshold: [0, 0.25, 0.5, 0.75, 1],
-          rootMargin: "-48px 0px -80% 0px",
-        }
+    // Delay to ensure content is rendered
+    const timer = setTimeout(() => {
+      // Get all h2 elements from the document, excluding Footnotes and References
+      const headings = Array.from(document.querySelectorAll("h2")).filter(
+        (heading) => !["Footnotes", "References"].includes(heading.textContent || "")
       );
 
-      // Observe all section headings
-      headings.forEach((heading) => observer.observe(heading));
+      console.log('TableOfContents: Found headings:', headings.length, headings.map(h => h.textContent));
 
-      // Set initial active section
-      if (headings.length > 0) {
+      const extractedSections = headings.map((heading) => {
+        // Generate ID if not present
+        if (!heading.id) {
+          heading.id = slugify(heading.textContent || "");
+        }
+        
+        // Extract shorter label if available (text before first colon)
+        const fullText = heading.textContent || "";
+        const shortText = fullText.includes(':') ? fullText.split(':')[0].trim() : fullText;
+        
+        return {
+          id: heading.id,
+          text: shortText,
+          level: 2,
+        };
+      });
+      
+      console.log('TableOfContents: Extracted sections:', extractedSections);
+      setSections(extractedSections);
+
+      // Only set up intersection observer if not mobile
+      if (!isMobile && headings.length > 0) {
+        let prevRatio = 0;
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.intersectionRatio > prevRatio) {
+                setActiveSection(entry.target.id);
+              }
+              prevRatio = entry.intersectionRatio;
+            });
+          },
+          {
+            threshold: [0, 0.25, 0.5, 0.75, 1],
+            rootMargin: "-48px 0px -80% 0px",
+          }
+        );
+
+        // Observe all section headings
+        headings.forEach((heading) => observer.observe(heading));
+
+        // Set initial active section
         setActiveSection(headings[0].id);
-      }
 
-      return () => observer.disconnect();
-    }
+        return () => observer.disconnect();
+      }
+    }, 500); // Give content time to render
+
+    return () => clearTimeout(timer);
   }, [isMobile]);
 
   const scrollToSection = (id: string) => {
@@ -92,11 +104,16 @@ export function TableOfContents({ className = "", onSubsectionClick }: TableOfCo
     }
   };
 
-  if (sections.length === 0) return null;
+  console.log('TableOfContents render: sections.length =', sections.length, 'className =', className);
+
+  if (sections.length === 0) {
+    console.log('TableOfContents: No sections, returning null');
+    return null;
+  }
 
   return (
     <div className={className}>
-      <ul className={`${styles.list} ${sections.length > 0 ? styles.listVisible : ""}`}>
+      <ul className={styles.list}>
         {sections.map((section) => (
           <li key={section.id} className={styles.item}>
             <a
