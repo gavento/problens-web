@@ -39,7 +39,7 @@ export default function Sidebar({ className = "", onLinkClick, style }: SidebarP
       
       <div className={styles.scrollableContent}>
         {/* Render all Parts (always visible) */}
-        {PARTS.map((part, partIndex) => (
+        {PARTS.map((part: any, partIndex: number) => (
           <div key={`part-${partIndex}`}>
             {/* Add separator between parts (but not before the first one) */}
             {partIndex > 0 && (
@@ -47,7 +47,8 @@ export default function Sidebar({ className = "", onLinkClick, style }: SidebarP
             )}
             
             <ul className={styles.list}>
-              {part.chapters.map(([title, path]) => {
+              {part.chapters.map((chapter: string[], index: number) => {
+                const [title, path] = chapter;
                 const href = `/${path}`;
                 const isActive = pathname === href || (path === "" && pathname === "/");
                 const wasActive = prevActive === href || (path === "" && prevActive === "/");
@@ -82,7 +83,8 @@ export default function Sidebar({ className = "", onLinkClick, style }: SidebarP
         {/* Meta pages */}
         <div className="mt-6 pt-4 border-t border-gray-200">
           <ul className={styles.list}>
-            {META_PAGES.map(([title, path]) => {
+            {META_PAGES.map((page: string[], index: number) => {
+              const [title, path] = page;
               const href = `/${path}`;
               const isActive = pathname === href;
               
