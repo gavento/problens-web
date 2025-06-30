@@ -341,7 +341,8 @@ def main():
             print(f"  Average score: {result['avg_optimistic']:.3f} bits")
             print(f"  Median score: {result['median_optimistic']:.3f} bits")
             print(f"  Avg guesses before correct: {result['avg_guesses_before_correct']:.1f}")
-            print(f"  Most common wrong guesses: {', '.join([f\"{g['letter']}({g['count']})\" for g in result['most_common_wrong_guesses'][:5]])}")
+            wrong_guesses_str = ', '.join([f"{g['letter']}({g['count']})" for g in result['most_common_wrong_guesses'][:5]])
+            print(f"  Most common wrong guesses: {wrong_guesses_str}")
     
     # Final summary
     print(f"\n{'='*60}")

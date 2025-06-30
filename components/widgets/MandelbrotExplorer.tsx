@@ -417,7 +417,7 @@ const MandelbrotExplorer = () => {
 
       <div className="space-y-4">
         <div className="bg-gray-50 p-4 rounded-lg border-2 border-gray-200">
-          <div className="font-medium mb-4 text-center text-gray-700">Image Parameters</div>
+          <div className="font-medium mb-4 text-center text-gray-700">↓ Kolmogorov complexity of the picture ↓</div>
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 border border-gray-300 bg-white p-4 rounded-lg">
               <div className="font-medium mb-3 text-center">Mandelbrot Set Formula</div>
@@ -437,12 +437,6 @@ const MandelbrotExplorer = () => {
                 <div>Bottom: {formatCoord(bounds.bottom)}</div>
               </div>
             </div>
-          </div>
-        </div>
-        
-        <div className="text-center mt-4">
-          <div className="text-lg font-medium text-gray-700">
-            ↑ Kolmogorov complexity of the picture ↑
           </div>
         </div>
       </div>

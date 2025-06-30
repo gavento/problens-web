@@ -94,3 +94,4 @@ This ensures the deployment pipeline remains healthy and the static site builds 
 - everything should work both in deployment and on local server.
 - some widgets are connected to HF space called probabilistic-lenses-widgets that is cloned in the home folder.
 - when adding something to the github repo with HF code, add it there and push yourself, instead of asking me to copy the code there.
+- the text should be written in an inviting, non-academic tone
