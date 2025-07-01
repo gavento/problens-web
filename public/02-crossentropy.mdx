@@ -1,9 +1,10 @@
 # KL properties & (cross-)entropy
 
-In this chapter, we'll check out some nice algebraic properties of KL divergence. The most useful one is that we can split it into two pieces called _cross-entropy_ and _entropy_. 
+In this chapter, we'll see how KL divergence can be split into two pieces called _cross-entropy_ and _entropy_. 
 
 <KeyTakeaway>
 ![Formula for KL divergence](02-crossentropy/crossentropy_entropy_formula.png)
+Cross-entropy measures the average surprise of model $q$ on data from $p$. When $p = q$, we call it entropy. 
 </KeyTakeaway>
 
 
@@ -13,46 +14,50 @@ In this chapter, we'll check out some nice algebraic properties of KL divergence
 
 Quick refresher: In the [previous chapter](01-kl_intro), we saw how KL divergence comes from repeatedly using Bayes' theorem with log-space updating:
 
-<BayesSequenceLogWidget />
+<BayesSequenceLogWidget highlightSurprisals={true} />
 
 Each step adds surprisals ($\log 1/p$) to track evidence.
 Last time, we focused on the differences between surprisals to see how much evidence we got for each hypothesis. Our Bayesian detective just keeps adding up these differences.
 
-But we can also read the table column-by-column. The detective could add up the total surprisal for each hypothesis, then convert that to posterior probabilities. This is analogous to writing KL divergence like this:
+But the detective could also add up the total surprisal for each hypothesis (green and orange numbers in the above widget), and then compare overall values. This corresponds to writing KL divergence like this:
 
 <Math id="cross-entropy-decomp" displayMode={true} math='
 \underbrace{\sum_{i = 1}^n p_i \log \frac{p_i}{q_i}}_{D(p,q)}
- =
+ \;\;\;=\;\;\;
 \underbrace{\sum_{i = 1}^n p_i \log \frac{1}{q_i}}_{H(p,q)}
- -
+ \;\;\;-\;\;\;
 \underbrace{\sum_{i = 1}^n p_i \log \frac{1}{p_i}}_{H(p)}
 '/>
 
 These two pieces on the right - $H(p,q)$ is called cross-entropy and $H(p)$ is entropy - are super important. Let's get a feel for what they mean. 
 
-### Cross-entropy: <a id = "cross"></a>
+## Cross-entropy <a id = "cross"></a>
 Think of cross-entropy as _how surprised are you on average when you see data from $p$ and you're modeling it as $q$._ 
 
-Check it out in the widget below. The widget shows what happens when our Bayesian detective from the previous chapter keeps flipping her coin, but now it shows both entropy and cross-entropy, instead of only showing the KL divergence, which is the difference between the two. 
+Check it out in the widget below. The widget shows what happens when our Bayesian detective from the previous chapter keeps flipping her coin. The red dashed line is showing cross-entropy - the expected surprise of the model $q$ as we keep flipping the coin with bias $p$. The orange line shows the entropy - this is the expected surprise when both the model and actual bias are $p$. 
+KL divergence is the difference between cross-entropy and entropy. You can notice that cross-entropy line is always above the entropy line (equivalently, KL divergence is always positive). 
+
+
+
+If you let the widget run, you will also see a blue and a green curve - the actual surprise measured by our detective in the flipping simulation. We could also say that these curve measure cross-entropy - it is the cross-entropy between the _empirical distribution_ $\hat{p}$ (the actual outcomes of the flips) and the model $q$ (blue curve) or $p$ (green curve). The empirical crossentropies are tracking the dashed lines due to the [law of large numbers](https://en.wikipedia.org/wiki/Law_of_large_numbers). 
+
 
 <CrossEntropySimulator />
 
-Analogously to KL divergence, cross-entropy is additive, so it grows linearly with the number of flips we make and we can thus represent it as a (dashed) line below. The red dashed line is telling us the expected surprise of the model $q$ as we keep flipping. The orange line is the expected surprise of $p$ - the best possible model that matches reality. KL divergence being nonnegative is equivalent to the red line _always_ being above the orange one. 
-
-If you let the widget run, you will also see the actual surprise measured by our detective. This curve is also typically called cross-entropy - it is the cross-entropy between the _empirical distribution_ $\hat{p}$ (the actual outcomes of the flips) and the model $q$ (blue curve) or $p$ (green curve). The empirical crossentropies are tracking the dashed lines due to the [law of large numbers](https://en.wikipedia.org/wiki/Law_of_large_numbers). 
 
 
 Bottom line: _better models are less surprised by the data and have smaller cross-entropy. KL divergence is how far our model is from the best one. _
 
-### Entropy: 
+## Entropy
 
 The term $H(p) = H(p, p) = \sum_{i = 1}^n p_i \log 1 / p_i$ is a special case of cross-entropy called just plain _entropy_. It's the best possible cross-entropy you can get for distribution $p$—when you model it perfectly as itself.  
 
-Intuitively, entropy tells you how much surprise or uncertainty is baked into $p$. Like, even if you know you're flipping a fair coin and hence $p = q$, you still don't know which way the coin will land. There's inherent uncertainty in that. This is what entropy measures: The fair coin's entropy is <Math math = "H(\{\textrm{H: }1/2, \textrm{T: }1/2\}) = \frac12\cdot \log2 +  \frac12\cdot \log2 = 1" /> bit. 
+Intuitively, entropy tells you how much surprise or uncertainty is baked into $p$. Like, even if you know you're flipping a fair coin and hence $p = q = \frac12$, you still don't know which way the coin will land. There's inherent uncertainty in that, the outcome of the flip still carries some surprise, even if you know the coin's bias. This is what entropy measures. 
 
-Entropy can get way smaller than 1 bit if say heads are very unlikely, as you can explore in the widget above and below. Makes sense! Sure, if $p(\textrm{heads} = 0.05)$, then seeing them is super surprising ($\log 1/0.05 \approx 4.32$), but it's so rare that the _average_ surprise stays tiny - you can check in the widget below that it's just $0.29$ bits per flip on average. That's because most flips are boringly predictable tails. Entropy hits zero when one outcome has 100% probability. 
+The fair coin's entropy is <Math math = "H(\{\textsf{H: }1/2, \textsf{T: }1/2\}) = \frac12\cdot \log2 +  \frac12\cdot \log2 = 1" /> bit. 
+But entropy can get way smaller than 1 bit. If you flip a biased coin where heads are very unlikely - say $p(\textsf{H} = 0.05)$ - the entropy of the flip gets close to zero. Makes sense! Sure, if you happen to flip heads, that's super surprising ($\log 1/0.05 \approx 4.32$). However, most flips are boringly predictable tails, so the _average_ surprise gets less than 1 bit. You can check in the widget below that $H(\{\textsf{H}: 0.05, \textsf{T}: 0.95\}) \approx 0.29$ bits per flip. Entropy hits zero when one outcome has 100% probability. 
 
-But entropy can also get way bigger than 1 bit. Rolling a die has entropy $\log_2(6) \approx 2.6$ bits. In general, a uniform distribution over $k$ options has entropy $\log_2 k$—and that's the max for any distribution with $k$ options. Makes sense—you're most uncertain when everything's equally likely.  
+Entropy can also get way bigger than 1 bit. Rolling a die has entropy $\log_2(6) \approx 2.6$ bits. In general, a uniform distribution over $k$ options has entropy $\log_2 k$—and that's the maximum entropy for any distribution with $k$ options. Makes sense—you're most surprised on average when the distribution is, in a sense, most uncertain.  
 
 <EntropyWidget numCategories={6} title="Entropy of die-rolling" />
 
@@ -92,29 +97,13 @@ The mutual information is then 1 bit. That's because learning the value of one d
 </Expand>
 
 
-### 🔐 Relative entropy: 
+## 🔐 Relative entropy
 KL divergence can be interpreted as the gap between cross-entropy and entropy. It tells us how far your average surprise (cross-entropy) is from the best possible (entropy). 
 That's why in some communities, people call KL divergence the _relative entropy_ between $p$ and $q$. <Footnote>Way better name than 'KL divergence' if you ask me. But 'KL divergence' is what most people use, so I guess we're stuck with it. </Footnote>
 
-### 🎆 So what's the big deal?
+## 🧩 Cracking riddles
 
-Splitting a sum into two parts isn't exactly rocket science—the real win is that cross-entropy and entropy are super meaningful concepts on their own. <Footnote>Actually, entropy is way more famous than KL divergence. I'm building everything from KL divergence instead of entropy because I'm trying to balance between an excited brain dump about cool math that's hard to find elsewhere, and something resembling a coherent text. </Footnote>
-
-Let's see this in action. 
-
-<Expand headline = "🎵 Anthem battle"><a id="anthems"></a>
-Let's solve our [anthem riddle](00-introduction#anthems). We have two text files, one is purely English text, the other one is a mix of all kinds of languages. 
-
-Before clicking on the button, try to guess which of the two texts has larger entropy and which of the two KL divergences between them is larger. 
-{/*If you want an even harder riddle: One of the two differences $|H(p_1) - H(p_2)|$ and $|D(p_1, p_2)- D(p_2, p_1)|$ is sizable and the other is pretty small. Which is which?*/}
-
-<KLCalculatorWidget />
-
-First, we can see that the mixed file has larger entropy. This makes sense! Every language uses different letters with different frequencies. For example, 'z' is quite uncommon in English, but pretty common in German. If we pool different languages together, the distribution of frequencies is becoming 'smoother', more uniform. Hence, larger entropy. Admittedly, it's only slightly larger, since increasing the probability of 'z' from 0.02 to 0.0003 is not really increasing the entropy that much.
-
-For similar reasons, KL between $p_1$ and $p_2$ is smaller than vice versa. Remember, KL is all about probability _ratios_. If $p('e') = 0.12$ and $q('e') = 0.11$, $q$ is a good model of $p$. But if $p('z') = 0.02$ and $q('z')=0.0003$, $q$ is a crappy model of $p$. We have seen this above in the [asymmetry section](02-crossentropy#asymmetry). 
-
-</Expand>
+Splitting a sum into two parts isn't exactly rocket science—the real win is that cross-entropy and entropy are super meaningful concepts on their own. Let's see this in action. 
 
 <Expand headline = "🔮 How good are your predictions?"> <a id="application-evaluating-predictions"></a>
 
@@ -196,8 +185,9 @@ Try the log-score on our example! Also, you can compare it with other popular sc
 
 ## 🚀 What's next? <a id="next-steps"></a>
 
-We're getting the hang of KL divergence! Quick recap:
+We're getting the hang of KL divergence, cross-entropy, and entropy! Quick recap:
 
 ![Formula for KL divergence](02-crossentropy/crossentropy_entropy_formula.png)
 
-If this really measures how well a model fits the truth, then making it small should give us good models, right? [Let's find out in the next chapter](03-minimizing)!
+In the [next chapter](03-entropy_properties), we will do a recap of what kind of properties these functions have. 
+

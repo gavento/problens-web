@@ -53,7 +53,7 @@ I grabbed some historical data, calculated the daily price changes, normalized t
   feedbackType="all-show"
   explanation={<>This is hard to say, try it below yourself. I fitted the data by two curves - Gaussian distribution (looks like the shape in C), and Laplace distribution (looks like the shape in B). 
   <FinancialDistributionWidget showBTC={false} showSAP={true} />
-  What's happening here? We will discuss this example in the <a href="05-max_entropy">chapter about the max-entropy principle</a>. This principle is extremely useful in situations like ours, when we want to model some kind of data. <br/><br/></>}
+  What's happening here? We will discuss this example in the [chapter about the max-entropy principle](05-max_entropy). This principle is extremely useful in situations like ours, when we want to model some kind of data. <br/><br/></>}
 />
 
 </Expand>
@@ -176,21 +176,11 @@ Where the hell does this come from?? [We'll see](06-machine_learning) how KL div
 
 ## 🚀 What's next? <a id="next-steps"></a>
 
+As we go through the mini-course, we'll revisit each puzzle and understand what's going on. 
+There are three parts to it. 
 
-{/*
-All these puzzles have something in common: you can crack them using KL divergence and related ideas from probability, statistics, and information theory. 
-
-KL divergence is a fundamental measure that quantifies how well one probability distribution is modelled by another. Formal definition: $D(p, q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}$. Here, $p$ represents the "ground-truth" distribution and $q$ represents our model or approximation.
-*/}
-
-As we go through the mini-course, we'll use KL divergence to revisit each puzzle and understand what's going on. 
-
-There are five chapters. Here's what they cover. 
-
-1. We learn what KL divergence stands for and how it's connected to Bayes' rule. 
-2. We meet its friends cross-entropy and entropy. 
-3. We understand how minimizing KL divergence leads to maximum likelihood and maximum entropy principles. 
-4. We cover the max entropy principle and its applications. 
-5. We apply all our tools to machine learning. 
+1. First, we will understand how Bayes' rule leads to the notions of KL divergence, cross-entropy and entropy (first three chapters). 
+2. Next, we will see that minimizing KL divergence is a powerful principle to build good probabilistic models. We will use it to explain where the machine-learning loss function are coming from. (next three chapters)
+3. Finally, we will discuss how entropy and KL divergence are related to coding theory, and what kind of intuition it gives us about large language models. 
 
 See you in [the first chapter](01-kl_intro)!

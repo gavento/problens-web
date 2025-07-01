@@ -96,3 +96,4 @@ This ensures the deployment pipeline remains healthy and the static site builds 
 - when adding something to the github repo with HF code, add it there and push yourself, instead of asking me to copy the code there.
 - the text should be written in an inviting, non-academic tone
 - fn_indexes suck. They are kind of random. If you see that they are e.g. 0,4,7, please do not change it to 0,1,2 because the random numbers are there for a reason
+- When generating static pages, ensure that links are configured to work both in production and locally by properly setting up the `generateStaticParams()` function and using the correct path configuration to resolve page routing errors related to missing parameters

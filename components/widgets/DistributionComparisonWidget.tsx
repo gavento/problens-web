@@ -318,7 +318,7 @@ const DistributionComparisonWidget: React.FC<Props> = ({
             setRedDist([0.1, 0.4, 0.3, 0.15, 0.05]);
             setBlueDist([0.2, 0.2, 0.2, 0.2, 0.2]);
           }}
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
         >
           Reset Distributions
         </button>

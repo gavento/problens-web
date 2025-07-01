@@ -185,7 +185,7 @@ If a test flags your sequence of $n$ flips as nonrandom, it means that some patt
 
 Here's examples of how pseudorandomness helps to think about all kinds of stuff:
 
-- [Mathematicians believe](https://en.wikipedia.org/wiki/Normal_number) that digits of $\pi$ fool all $k$-mer counting tests. But digits of $\pi$ are not a very good pseudorandom generator: an algorithm that 'tests against $\pi$'
+- [Mathematicians believe](https://en.wikipedia.org/wiki/Normal_number) that digits of $\pi$ fool all $k$-mer counting tests. But digits of $\pi$ are not a very good pseudorandom generator: an algorithm that 'tests against $\pi$' is not fooled. 
 - Typical pseudorandom generator fools all kinds of basic statistical tests.<Footnote>See e.g. Chapter 3 in [AoCP](https://en.wikipedia.org/wiki/The_Art_of_Computer_Programming). </Footnote> These sequences thus look random to those tests. But they fail to look random to algorithms that can use exponential amount of time (such algorithms can bruteforce all the seeds). 
 - in cryptography theory, we like to assume that there are cryptographically secure pseudorandom generators that fool all statistical tests running in polynomial time. We don't know whether such an algorithm exists, but we have practical implementations that fool all known reasonably-fast tests. 
 - Classic [overhand shuffle](https://en.wikipedia.org/wiki/Shuffling) sucks and is not used in casinos. But if no player is trying to take advantage of it, the game being played typically looks the same as if the cards were shuffled properly.  

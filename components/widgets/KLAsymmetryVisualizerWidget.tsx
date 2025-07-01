@@ -55,7 +55,7 @@ export default function KLAsymmetryVisualizerWidget() {
     isPeakyTrue?: boolean;
   }) => (
     <div className="bg-white rounded-lg border border-gray-200 p-4 flex-1">
-      <h4 className="text-sm font-medium text-gray-800 mb-3 text-center">
+      <h4 className="text-lg font-semibold text-gray-800 mb-1 text-center">
         <KatexMath math={title} />
       </h4>
       
@@ -184,7 +184,7 @@ export default function KLAsymmetryVisualizerWidget() {
           onClick={() => setShowResults(!showResults)}
           className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
         >
-          {showResults ? 'Hide Results' : 'Reveal which KL is big and which is small'}
+          {showResults ? 'Hide Results' : 'Reveal which KL is big and which is moderate'}
         </button>
       </div>
 
@@ -193,7 +193,7 @@ export default function KLAsymmetryVisualizerWidget() {
           <div className="text-sm text-blue-800">
             <strong>Why?</strong> Two vertical lines show typical samples from <KatexMath math="p_{\text{peaky}}" /> and <KatexMath math="p_{\text{broad}}" />. 
             On the left, <KatexMath math="p_{\text{broad}}" /> doesn&apos;t know where the peak of <KatexMath math="p_{\text{peaky}}" /> is, 
-            but it is spread out and covers the peak with reasonably-sized probability mass. <br/><br/>
+            but it is spread out and covers the peak with reasonably-sized probability mass. The ratio <KatexMath math="p_{\text{peaky}}(x) / p_{\text{broad}}(x)" /> is never too large. <br/><br/>
             On the right, <KatexMath math="p_{\text{peaky}}" /> is concentrated at one place, and it doesn&apos;t try to cover elsewhere. 
             Thus, its surprise on a typical sample from <KatexMath math="p_{\text{broad}}" /> is really big.
           </div>

@@ -284,3 +284,42 @@ th {
     margin: 0 auto;
   }
 }
+
+/* Math equation scrollbar styling */
+/* Hide scrollbar by default, show on hover/scroll */
+.katex-display-wrapper {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.katex-display-wrapper::-webkit-scrollbar {
+  height: 6px;
+  display: none;
+}
+
+/* Show scrollbar on hover or when scrolling */
+.katex-display-wrapper:hover::-webkit-scrollbar,
+.katex-display-wrapper:active::-webkit-scrollbar {
+  display: block;
+}
+
+.katex-display-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.katex-display-wrapper::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.katex-display-wrapper::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* For Firefox - show thin scrollbar on hover */
+@supports (scrollbar-width: thin) {
+  .katex-display-wrapper:hover {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  }
+}

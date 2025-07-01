@@ -1,10 +1,19 @@
 # Entropy properties
 
-In this chapter, we explore the fundamental properties of entropy that make it such a powerful concept in information theory, machine learning, and beyond.
+In this chapter, we'll go over the fundamental properties of KL-divergence, entropy, and cross-entropy. We have already encountered most of the properties before, but it's good to understand them in more depth. 
 
-## 🔍 Properties of KL divergence
+This chapter contains a few exercises - I encourage you to do them to check that you're on board. 
 
-Let's go through some key properties of KL divergence you should know about. Remember, KL divergence is algebraically defined like this:
+<KeyTakeaway>
+KL divergence $D(p,q)$ is always nonnegative. Equivalently, $H(p, q) \ge H(p)$.  
+</KeyTakeaway>
+
+
+
+## 🔍 KL divergence can blow up
+
+
+Remember, KL divergence is algebraically defined like this:
 
 <Math id="kl-definition" displayMode={true} math="D(p,q) = \sum_{i = 1}^n p_i \log \frac{p_i}{q_i}" />
 
@@ -13,46 +22,49 @@ Here's the biggest difference between KL and some more standard, geometrical, wa
 1. $p_i = 0.5, q_i = 0.49$
 2. $p_i = 0.01, q_i = 0.0$
 
-Regular norms ($\ell_1, \ell_2$) think that the errors made by $q$ are about the same size. But KL knows better: The first situation is basically fine, but the second model $q$ is a total disaster! For example, letters "God" typically do not follow with "zilla", but any model of language should understand that this _may_ sometimes happen. If $q(\textrm{'zilla'} \mid \textrm{'God'}) = 0.0$, the model is going to be infinitely surprised once Godzilla arrives! 
+Regular norms ($\ell_1, \ell_2$) think that the errors made by $q$ are about the same size. But KL knows better: The first situation is basically fine, but the second model $q$ is a total disaster! For example, letters "God" typically do not follow with "zilla", but any model of language should understand that this _may_ sometimes happen. If $q(\textrm{'zilla'} \mid \textrm{'God'}) = 0.0$, the model is going to be infinitely surprised once 'Godzilla' comes! 
 
-Heads up: KL divergence can be infinite! Try to make it infinite in the following widget. Next level: Try to make it infinite while keeping $\ell_1$ and $\ell_2$ norm close to zero!
+
+Try to make KL divergence infinite in the following widget. Next level: Try to make it infinite while keeping $\ell_1$ and $\ell_2$ norm close to zero (say $< 0.1$). 
 
 <DistributionComparisonWidget title="KL Divergence Explorer" />
 
 
 
-### Asymmetry<a id = "asymmetry"></a>
+## ⚖️ KL divergence is asymmetrical<a id = "asymmetry"></a>
 
-The KL formula isn't symmetrical—in general, $D(p,q) \neq D(q,p)$. Some people see this as a disadvantage, especially when comparing KL to simple symmetric distance functions like $\ell_1$ or $\ell_2$. But I want to stress that the asymmetry is a feature, not a bug! KL measures how well a distribution $p$ is fitted by a model $q$. That's an asymmetrical thing by nature, so we need an asymmetrical formula—nothing to be embarrassed about.
+The KL formula isn't symmetrical—in general, $D(p,q) \neq D(q,p)$. Sometimes, this is described as a disadvantage, especially when comparing KL to simple symmetric distance functions like $\ell_1$ or $\ell_2$. But I want to stress that the asymmetry is a feature, not a bug! KL measures how well a distribution $p$ is fitted by a model $q$. That's an asymmetrical thing by nature, so we need an asymmetrical formula—nothing to be embarrassed about.
 
-In fact, that's why we call it a [_divergence_](https://en.wikipedia.org/wiki/Bregman_divergence) instead of a distance—it acts kinda like a distance but isn't symmetric.
+In fact, that's why people call it a [_divergence_](https://en.wikipedia.org/wiki/Bregman_divergence) instead of a distance. Divergences are kind of wonky distance measures that are not necessarily symmetric.
 
-<Expand headline = "Example">
-Imagine the true probability $p$ is 50%/50% (fair coin), but your model $q$ says 100%/0%. KL divergence is ... 
+
+
+<Block headline = "Example">
+Imagine the true probability $p$ is 50%/50% (fair coin), but our model $q$ says 100%/0%. KL divergence is ... 
 <Math displayMode={true} math = "\frac12 \cdot \log \frac{1}{1} + \frac12 \cdot \log \frac{1}{0} = \infty"/>
 
-... infinite. Why? Well, you've got a 50% chance of flipping tails, which your model says should never happen. So there's a 50% chance you'll gain infinitely many bits of evidence towards $p$ (your posterior will jump to 100% fair, 0% biased).
+... infinite. That's because there's a 50% chance that we gain infinitely many bits of evidence towards $p$ (our posterior jumps to 100% fair, 0% biased).
 
 Now flip it around: truth is 100%/0%, model is 50%/50%. Then 
 <Math displayMode={true} math = "1 \cdot \log \frac{1}{1/2} + 0 \cdot \log \frac{1}{1/2} = 1"/>
-Every flip gives you heads, so you gain one bit of evidence that the coin is biased. As you keep flipping, your belief in fairness drops exponentially fast, but it never hits zero. You've gotta account for the (exponentially unlikely) possibility that a fair coin just coincidentally came heads in all your past flips.
-</Expand>
+Every flip gives us heads, so we gain one bit of evidence that the coin is biased. As we keep flipping, our belief in fairness drops exponentially fast, but it never hits zero. We've gotta account for the (exponentially unlikely) possibility that a fair coin just coincidentally came heads in all our past flips.
+</Block>
 
-Here's a riddle for you! The following widget contains two distributions - one peaky and one broad. Which KL is larger? <Footnote>KL divergence also works for continuous distributions; just replace sum by integral. </Footnote>
+Here's a riddle for you! The following widget contains two distributions - one peaky and one broad. Which KL is larger? <Footnote>KL divergence also works for continuous distributions; just replace sum by integral. More on that [later](04-minimizing#maximum-entropy-principle). </Footnote>
 
 <KLAsymmetryVisualizerWidget />
 
 
-### Nonnegativity
+## ✅ KL is nonnegative
 
-If you plug the same distribution into KL twice, you get:
+If you plug in the same distribution into KL twice, you get:
 
 <Math displayMode={true} math="D(p, p) = \sum_{i = 1}^n p_i \cdot \log \frac{p_i}{p_i} = 0" />
 
 because $\log 1 = 0$.
 Makes sense—you can't tell the truth apart from the truth. 🤷
 
-Even better, KL divergence is always nonnegative - this fact is sometimes called [Gibbs inequality](https://en.wikipedia.org/wiki/Gibbs%27_inequality). I think we built up a pretty good intuition for this in the last chapter. Just imagine sampling from $p$ but Bayes' rule somehow convinces you more and more that you are sampling from ... some other distribution $q$? That would be really messed up! 
+This is pretty much the only occasion on which KL can be equal to zero. Otherwise, KL divergence is always positive. This fact is sometimes called [Gibbs inequality](https://en.wikipedia.org/wiki/Gibbs%27_inequality). I think we built up a pretty good intuition for this in the last chapter. Just imagine sampling from $p$ but Bayes' rule somehow convinces you more and more that you are sampling from ... some other distribution $q$? That would be really messed up! 
 
 This is not a proof though, just an argument that the world with possibly negative KL is not worth living in. Check out the formal proof if you're curious.
 
@@ -71,15 +83,20 @@ Let's estimate what's inside the sum: $\ln \frac{p_i}{q_i}$. Since we know the i
 
 </Expand>
 
-### Additivity
+Since KL can be written as the difference between cross-entropy and entropy, we can equivalently rewrite $D(p, q) \ge 0$ as
+<Math displayMode = {true} math = "H(p, q) \ge H(p)." />
+That is, the best model that accumulates the surprisal at the least possible rate is ... 🥁 🥁 🥁 ... the actual distribution generating the data. 
 
-Say you've got two distribution pairs $(p, q)$ and $(p', q')$. Then:
+
+### ➕ Additivity
+
+Say you've got two distribution pairs $(p, q)$ and $(p', q')$. Let's use $p \otimes p'$ for the product distribution -- a joint distribution over $p,p'$ where they are independent. We have:
 
 <Math displayMode={true} math="D(p \otimes p', q \otimes q') = D(p, q) + D(p', q')" />
-where $p \otimes p'$ means the product distribution where $p,p'$ are independent.
+<Math displayMode={true} math="H(p \otimes p', q \otimes q') = H(p, q) + H(p', q')" />
+<Math displayMode={true} math="H(p \otimes p') = H(p) + H(p')" />
 
-We actually used this implicitly before—it's just saying that when you're computing KL divergence for many coin flips, you add up the divergences from each flip. 
-
+This is called additivity. Basically, when we keep flipping coins, the total entropy/cross-entropy/relative entropy just keeps adding up. This property is so natural that it's very simple to forget how important it is. We've used this property implicitly in earlier chapters, whenever we talked about repeating the flipping experiment. 
 
 <Expand headline="Chain rule & uniqueness" advanced={true}>
 There's also a slightly fancier version of additivity called the _chain rule_. 
@@ -96,14 +113,11 @@ D(p_{\textrm{overall}}, q_{\textrm{overall}}) = D(p,q) + p_{\textrm{bus}} \cdot 
 "/>
 where <Math math = "p_{\text{bus}}" /> is how often I take the bus according to $p$. 
 
-This is pretty intuitive! First off, telling $p_{overall}$ apart from $q_{overall}$ is easier than just telling $p$ from $q$. 
+This is pretty intuitive! First off, as we refine our distributions, the divergence gets larger. In other words, telling $p_{overall}$ apart from $q_{overall}$ is easier than just telling $p$ from $q$. 
 
-ADD SOME MONOTONICITY
-
-But the formula even tells us how much easier: the bus refinement helps by $D(p', q')$ whenever it comes up, which is <Math math = "p_{\textrm{bus}}" /> of the time. 
+But the formula even tells us very precisely how much: the bus refinement helps by $D(p', q')$ whenever bus comes up. This happens with probability <Math math = "p_{\textrm{bus}}" />. 
 
 Try proving this yourself or see how it gives us additivity! 
-
 
 Here's something cool: any reasonable function with monotonicity and chain rule properties [has to be KL divergence](https://blog.alexalemi.com/kl.html).
 
@@ -114,26 +128,21 @@ That's pretty awesome—it means KL divergence isn't some arbitrary formula some
 
 
 
+## 🎵 Anthem battle
 
 I collected anthems of USA, UK, and Australia, and put them into one file. The other text file are anthems of a bunch of random-ish countries. For both text files, I compute the frequencies of 26 letters 'a' to 'z'. So there are two distributions $p_1$ (English-speaking) and $p_2$ (others). The question is: which one has larger entropy? And which of the two KL divergences between them is larger? 
 
-<MultipleChoiceQuestion
-  options={[ 
-      <><Math math="H(p_1) < H(p_2), \,\,\, D(p_1, p_2) < D(p_2, p_1)" /></>, 
-      <><Math math="H(p_1) < H(p_2), \,\,\, D(p_1, p_2) > D(p_2, p_1)" /></>,
-      <><Math math="H(p_1) > H(p_2), \,\,\, D(p_1, p_2) < D(p_2, p_1)" /></>,
-      <><Math math="H(p_1) > H(p_2), \,\,\, D(p_1, p_2) > D(p_2, p_1)" /></>
-     ]}
-  correctIndices={[0]}
-  explanation={<>
-  Try it out in the widget, we'll discuss why [later](02-crossentropy#anthems). 
-<KLCalculatorWidget />
+Have a guess before clicking on the button. 
 
-</>}
-/> 
+<KLCalculatorWidget /> 
 
 
 
-## Next steps
 
-Understanding these foundational properties prepares us to see how entropy optimization drives many machine learning algorithms, which we'll explore in the next chapter.
+
+
+
+
+## 🚀 Next steps
+
+We now understand pretty well what KL divergence and cross-entropy stand for. In the next part of the mini-course, we will have a lot of fun thinking about what happens if we try to make them small. See you in the [next chapter](03-minimizing)!

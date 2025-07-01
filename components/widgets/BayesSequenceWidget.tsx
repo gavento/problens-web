@@ -5,13 +5,15 @@ import React, { useState, useMemo } from "react";
 type Props = {
   title?: string;
   logSpace?: boolean;
+  highlightSurprisals?: boolean;
 };
 
 type CoinFlip = 'H' | 'T';
 
 const BayesSequenceWidget: React.FC<Props> = ({
   title = "Bayes Sequence Explorer",
-  logSpace = false
+  logSpace = false,
+  highlightSurprisals = false
 }) => {
   const [sequence, setSequence] = useState<CoinFlip[]>(['H', 'T', 'T', 'H', 'T']);
   const [currentStep, setCurrentStep] = useState(0);
@@ -201,7 +203,7 @@ const BayesSequenceWidget: React.FC<Props> = ({
           <div className={`relative flex items-center py-3 px-4 rounded border ${
             logSpace ? 'bg-purple-50 border-purple-200' : 'bg-blue-50 border-blue-200'
           }`}>
-            <div className="w-24 text-sm font-medium text-gray-700">Prior odds</div>
+            <div className="w-24 text-sm font-medium text-gray-700">{logSpace ? "Prior log-odds" : "Prior odds"}</div>
             <div className="flex-1 flex items-center">
               <div className="flex-1 text-right">
                 <span className="font-mono text-sm font-bold">{priorFair}</span>
@@ -226,7 +228,9 @@ const BayesSequenceWidget: React.FC<Props> = ({
                 </div>
                 <div className="flex-1 flex items-center">
                   <div className="flex-1 text-right">
-                    <span className="font-mono text-sm">{step.likelihoodFair?.toFixed(2)}</span>
+                    <span className={`font-mono text-sm ${highlightSurprisals && logSpace ? 'text-green-600 font-bold' : ''}`}>
+                      {step.likelihoodFair?.toFixed(2)}
+                    </span>
                   </div>
                   <div className="w-8 flex justify-center relative">
                     <span className="text-gray-500 font-bold">:</span>
@@ -240,7 +244,9 @@ const BayesSequenceWidget: React.FC<Props> = ({
                     </div>
                   </div>
                   <div className="flex-1 text-left">
-                    <span className="font-mono text-sm">{step.likelihoodBiased?.toFixed(2)}</span>
+                    <span className={`font-mono text-sm ${highlightSurprisals && logSpace ? 'text-orange-600 font-bold' : ''}`}>
+                      {step.likelihoodBiased?.toFixed(2)}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -249,9 +255,31 @@ const BayesSequenceWidget: React.FC<Props> = ({
 
           {/* Posterior section */}
           <div className="mt-6 pt-4 border-t border-gray-300">
+            {/* Cumulative Surprisals - only show when highlightSurprisals is true */}
+            {highlightSurprisals && logSpace && currentStep > 0 && (
+              <div className="flex items-center py-3 px-4 rounded bg-yellow-50 mb-2">
+                <div className="w-24 text-sm font-medium text-gray-700">Total surprisal</div>
+                <div className="flex-1 flex items-center">
+                  <div className="flex-1 text-right">
+                    <span className="font-mono text-sm font-bold text-green-600">
+                      {(-steps[currentStep]?.logOddsFair + 1).toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="w-8 flex justify-center">
+                    <span className="text-gray-500 font-bold">:</span>
+                  </div>
+                  <div className="flex-1 text-left">
+                    <span className="font-mono text-sm font-bold text-orange-600">
+                      {(-steps[currentStep]?.logOddsBiased).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             {logSpace && (
               <div className="flex items-center py-3 px-4 rounded bg-green-50 mb-2">
-                <div className="w-24 text-sm font-medium text-gray-700">Log odds</div>
+                <div className="w-24 text-sm font-medium text-gray-700">Posterior log odds</div>
                 <div className="flex-1 flex items-center">
                   <div className="flex-1 text-right">
                     <span className="font-mono text-sm font-bold text-purple-600">

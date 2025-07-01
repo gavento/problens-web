@@ -1,34 +1,25 @@
-# KL divergence & Bayes rule <a id="quantifying-information"></a>
+# Bayes' rule & KL divergence <a id="quantifying-information"></a>
 
-In this chapter, we'll introduce KL divergence and see how it's tied to Bayes' theorem. Plus, we'll solve some riddles.
+In this chapter, we'll discuss Bayes' rule and use it to introduce KL divergence.
 
 <KeyTakeaway>
 KL divergence measures how well a distribution $p$ is fitted by a model distribution $q$.
 </KeyTakeaway>
 
-## 📝 Definition of KL divergence <a id="definition-of-kl-divergence"></a>
 
-Here's the KL divergence formula <Footnote>KL stands for Kullback and Leibler, two guys who came up with this in the 1950s, right after Claude Shannon dropped his [game-changing paper](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication) about entropy. Here's the first exercise: Try saying "Kullback-Leibler divergence" fast three times in a row. </Footnote> for two discrete distributions $p_1, \dots, p_n$ and $q_1, \dots, q_n$:<Footnote> About notation: Most people write $D_{KL}(p||q)$ instead of $D(p,q)$. The double bars are there to remind you that $D_{KL}(p||q) \not= D_{KL}(q||p)$. We'll keep it simple with $D(p,q)$ since we'll be using this a lot. 🙂 </Footnote>
+## 🕵️ Bayes' rule
 
-$$
-D(p,q) = \sum_{i = 1}^n p_i \log_2 \frac{p_i}{q_i}
-$$
+Let's refresh on Bayes' rule—it's how you update your beliefs when you get new info. Here's a setup that we will try to understand very deeply in the next few chapters:
 
-As a computer scientist, I always use $\log_2$, so from now on I'll drop the subscript and just write $\log$. 
+<Block headline = "Bayesian detective">
+A detective holds a coin that might, or might not be rigged. To keep it simple, let's say there are only two options: it's either fair (50/50 for heads/tails) or it's biased toward tails (25/75 for heads/tails). 
 
-You can think of KL divergence as a wonky distance measure between two distributions. But a better intuition goes like this: When you keep sampling from the true distribution $p$, KL divergence tells you how fast you can figure out you're sampling from $p$ and not some other (model) distribution $q$. Small KL means that $q$ is a pretty good imposter in pretending to be $p$.
+A detective keeps flipping this coin in the hope of getting to know the truth. 
+</Block>
 
-We'll break this down in the rest of the chapter, bit by bit. 🙂
+Let's see how Bayes' rule helps our detective. To use the rule, we need a starting guess - a _prior_ - for the probability of each hypothesis. Let's say that we think there's a 2/3 chance the coin is fair and 1/3 chance it's biased.
 
-## 🎯 Bayes' theorem
-
-Before we dive into KL, let's refresh on Bayes' theorem—it's how you update your beliefs when you get new info. 
-
-Example: You've got a coin that might be rigged. To keep it simple, let's say there are only two options: it's either fair (50/50 for heads/tails) or it's biased toward tails (25/75 for heads/tails).
-
-To use Bayes, you need a starting guess (a _prior_) about which it is. Let's say you think there's a 2/3 chance it's fair and 1/3 chance it's biased.
-
-You flip the coin—Heads! This is evidence for the hypothesis that the coin is fair since heads are more likely with a fair coin. 
+We flip the coin—Heads! This is evidence for the hypothesis that the coin is fair since heads are more likely with a fair coin. 
 
 Bayes' rule calculates the new probability (the _posterior_) that it's fair. The standard way to write the rule goes like this:
 
@@ -36,7 +27,7 @@ Bayes' rule calculates the new probability (the _posterior_) that it's fair. The
 
 This is no rocket science — if you multiply both sides by $P(\textrm{heads})$, both sides express the quantity <Math math = "P(\textrm{fair AND heads})" /> using conditional probabilities.
 
-## 🔀 Divide and conquer
+## ➗ Divide and conquer
 
 I like to think about Bayes' rule a bit differently:
 
@@ -64,11 +55,12 @@ Every flip, she multiplies her odds by a likelihood ratio: $2/1$ for heads, $2/3
 
 In this example, three tails out of five slightly favor the fair-coin hypothesis. After converting back to probabilities, her initial 66.7% belief in fairness increased to about 70%. Gonna need way more flips to know for sure!
 
-## 📊 A bit better summary
+## 0️⃣1️⃣ A bit better summary
 
 Before we see what happens long-term, let's improve our calculator a bit. We'll get a bit more clarity if we take logs of everything. Instead of multiplying odds and likelihood, we will be adding so-called _log-odds_. 
 
-Here's the same step-by-step calculator after taking logarithm. For example, "prior 1:0" in the calculator means that the prior is $2^1 : 2^0$. 
+Here's the same step-by-step calculator after taking logarithm. For example, "prior 1:0" in the calculator means that the prior is $2^1 : 2^0$. <Footnote>As a computer scientist, I always use $\log_2$, so I mostly drop the subscript and just write $\log$. </Footnote> 
+
 
 <BayesSequenceLogWidget />
 
@@ -95,7 +87,7 @@ $$
 0.25 \cdot (-1) + 0.75 \cdot 0.58 \approx 0.19
 $$
 
-bits of evidence toward the truth. This is the KL divergence between the true 25%/75% distribution and the model 50%/50% distribution!
+bits of evidence toward the truth. {/*This is the KL divergence between the true 25%/75% distribution and the model 50%/50% distribution!*/}
 
 What does this mean in practice? After about 5 flips, you get one bit of evidence on average. So if you start thinking 2:1 the coin is fair, after ~5 flips you'll be at 1:1. Another 5 flips gets you to 2:1 it's biased, then 4:1, and so on.
 
@@ -105,13 +97,14 @@ Try it yourself! I recommend checking edge cases like 50% vs 51% (to get  intuit
 
 <EvidenceAccumulationSimulator only_kl_mode={true} />
 
-## 🔄 KL divergence, in general
+## 📝 KL divergence <a id="definition-of-kl-divergence"></a>
 
-KL divergence is just the general formula for expected evidence accumulation. Say you've got two distributions $p$ and $q$, where $p$ is what's really happening, but you only know it's either $p$ or $q$. 
+
+KL divergence<Footnote>KL stands for Kullback and Leibler, two guys who came up with this in the 1950s, right after Claude Shannon dropped his [game-changing paper](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication) about entropy. Here's the first exercise: Try saying "Kullback-Leibler divergence" fast three times in a row. </Footnote> is just the general formula for expected evidence accumulation. Say you've got two distributions $p$ and $q$, where $p$ is what's really happening, but you only know it's either $p$ or $q$. 
 
 You can keep sampling from the unknown distribution and play the Bayesian game: Whenever you sample outcome $i$, compare the likelihoods $p_i$ and $q_i$ and update your beliefs. This means adding $\log 1/p_i$ bits to $p$'s surprise total and $\log 1/q_i$ bits to $q$'s. 
 
-On average, each sample from the true distribution $p$ gives you:
+On average, each sample from the true distribution $p$ gives you:<Footnote> About notation: Most people write $D_{KL}(p||q)$ instead of $D(p,q)$. The double bars are there to remind you that $D_{KL}(p||q) \not= D_{KL}(q||p)$. We'll keep it simple with $D(p,q)$ since we'll be using this a lot. 🙂 </Footnote>
 
 $$
 D(p,q) = \sum_{i = 1}^n p_i \cdot \log \frac{p_i}{q_i}
@@ -119,12 +112,14 @@ $$
 
 bits of evidence toward the truth.
 
-When this number is small (less than 1), you can think of $1/D(p,q)$ as "how many samples until I get one bit of evidence." One bit means the odds for the true hypothesis doubled. <Footnote>This isn't the same as doubling the probability. Going from 1:1 to 2:1 odds means 50% → 66.7% probability. But with lopsided odds like 1:1000, gaining a bit toward the underdog (making it 2:1000) almost doubles its probability. And gaining a bit the other way (1:2000) almost halves the underdog's probability. The truth's probability shoots up exponentially until it's comparable to the alternative, then the alternative's probability tanks exponentially. </Footnote>
+When this number is small (less than 1), the model $q$ is a pretty good imposter of $p$ - if you keep adding up surprise for $q$, it's not much worse than the surprise for $p$. 
+
+You can also think of $1/D(p,q)$ as "how many samples until I get one bit of evidence." One bit of evidence means that the odds for the true hypothesis doubled. <Footnote>This isn't the same as doubling the probability. Going from 1:1 to 2:1 odds means 50% → 66.7% probability. But with lopsided odds like 1:1000, gaining a bit toward the underdog (making it 2:1000) almost doubles its probability. And gaining a bit the other way (1:2000) almost halves the underdog's probability. If you keep getting bits of evidence towards the truth, the truth's probability shoots up exponentially until it's comparable to the alternative, then the alternative's probability tanks exponentially. </Footnote>
 
 Notice KL divergence is about the evidence, not your starting beliefs. It tells you how fast beliefs change, no matter where you start. Sometimes, we like to divide statistics into Bayesian and frequentist; KL is useful for both. 
 
 
-## 🧩 Cracking some riddles
+## 🧩 Cracking riddles
 
 <RiddleSolution riddle="independence" id="information-theory">
 
@@ -165,3 +160,5 @@ This works for any joint distribution $(r, s)$. The KL divergence between $(r, s
 ## 🚀 What's next?
 
 In the [next section](../02-crossentropy), we'll dig deeper into the KL formula and see how it connects to entropy and cross-entropy.
+
+

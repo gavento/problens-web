@@ -61,30 +61,62 @@ const NumberedMath: React.FC<NumberedMathProps> = ({
     }
   }, [math, displayMode, throwOnError, macros, equationNumber]);
 
-  // For numbered equations in display mode, use a flex layout
-  if (id && displayMode && equationNumber !== null) {
-    return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        width: '100%',
-        margin: '1rem 0'
-      }}>
-        <span ref={containerRef} style={{ flex: 1 }} />
-        <span style={{ 
-          fontSize: '1rem', 
-          color: '#666',
-          marginLeft: '2rem',
-          fontFamily: 'inherit'
+  // For display mode equations (numbered or not), add horizontal scrolling
+  if (displayMode) {
+    if (id && equationNumber !== null) {
+      // Numbered equation with scroll
+      return (
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          width: '100%',
+          margin: '1rem 0'
         }}>
-          ({equationNumber})
-        </span>
-      </div>
-    );
+          <div 
+            className="katex-display-wrapper"
+            style={{
+              flex: 1,
+              overflowX: 'auto',
+              overflowY: 'hidden',
+              WebkitOverflowScrolling: 'touch',
+              textAlign: 'center'
+            }}
+          >
+            <span ref={containerRef} style={{ display: 'inline-block' }} />
+          </div>
+          <span style={{ 
+            fontSize: '1rem', 
+            color: '#666',
+            marginLeft: '2rem',
+            fontFamily: 'inherit',
+            flexShrink: 0
+          }}>
+            ({equationNumber})
+          </span>
+        </div>
+      );
+    } else {
+      // Unnumbered display equation with scroll
+      return (
+        <div 
+          className="katex-display-wrapper"
+          style={{
+            overflowX: 'auto',
+            overflowY: 'hidden',
+            WebkitOverflowScrolling: 'touch',
+            width: '100%',
+            margin: '1rem 0',
+            textAlign: 'center'
+          }}
+        >
+          <span ref={containerRef} style={{ display: 'inline-block' }} />
+        </div>
+      );
+    }
   }
 
-  // For regular equations (inline or unnumbered), use the simple version
+  // For inline equations, use the simple version
   return <span ref={containerRef} />;
 };
 
