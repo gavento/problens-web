@@ -262,7 +262,7 @@ const BayesSequenceWidget: React.FC<Props> = ({
                 <div className="flex-1 flex items-center">
                   <div className="flex-1 text-right">
                     <span className="font-mono text-sm font-bold text-green-600">
-                      {(-steps[currentStep]?.logOddsFair + 1).toFixed(2)}
+                      {(-(steps[currentStep]?.logOddsFair ?? 0) + 1).toFixed(2)}
                     </span>
                   </div>
                   <div className="w-8 flex justify-center">
@@ -270,7 +270,7 @@ const BayesSequenceWidget: React.FC<Props> = ({
                   </div>
                   <div className="flex-1 text-left">
                     <span className="font-mono text-sm font-bold text-orange-600">
-                      {(-steps[currentStep]?.logOddsBiased).toFixed(2)}
+                      {(-(steps[currentStep]?.logOddsBiased ?? 0)).toFixed(2)}
                     </span>
                   </div>
                 </div>

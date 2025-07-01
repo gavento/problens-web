@@ -519,7 +519,7 @@ const LetterPredictionWidget: React.FC = () => {
                   let llmGuesses: string[] = [];
                   
                   if (detailedData && lastGame.snapshot) {
-                    const matchingScore = detailedData.find(score => score.snapshot_id === lastGame.snapshot.id);
+                    const matchingScore = detailedData.find(score => score.snapshot_id === lastGame.snapshot!.id);
                     if (matchingScore) {
                       // Use target_position if available, otherwise use length
                       // target_position appears to be 1-based already
@@ -539,7 +539,7 @@ const LetterPredictionWidget: React.FC = () => {
                   
                   const position = Math.min(95, (Math.log(llmAttempts) / Math.log(26)) * 100);
                   const targetPosition = detailedData && lastGame.snapshot ? 
-                    detailedData.find(score => score.snapshot_id === lastGame.snapshot.id)?.target_position : undefined;
+                    detailedData.find(score => score.snapshot_id === lastGame.snapshot!.id)?.target_position : undefined;
                   // Convert from 1-based to 0-based for array indexing
                   const targetIndex = targetPosition !== undefined ? targetPosition - 1 : undefined;
                   
@@ -555,7 +555,7 @@ const LetterPredictionWidget: React.FC = () => {
                 });
                 
                 // Group by similar positions (within 2% tolerance)
-                const groups = [];
+                const groups: typeof allEmojis[] = [];
                 allEmojis.forEach(emoji => {
                   const existingGroup = groups.find(group => 
                     Math.abs(group[0].position - emoji.position) < 2
@@ -570,7 +570,7 @@ const LetterPredictionWidget: React.FC = () => {
                 // Render emojis with vertical offsets for overlapping ones
                 return groups.flatMap(group => {
                   const groupSize = group.length;
-                  return group.map((emoji, index) => {
+                  return group.map((emoji: any, index: number) => {
                     let verticalOffset = 0;
                     if (groupSize === 2) {
                       verticalOffset = index === 0 ? -8 : 8; // ±8px for 2 emojis
@@ -599,7 +599,7 @@ const LetterPredictionWidget: React.FC = () => {
                             <div>{emoji.attempts} guess{emoji.attempts !== 1 ? 'es' : ''}</div>
                             {emoji.guesses.length > 0 && (
                               <div className="text-gray-300 mt-1">
-                                Guesses: {emoji.guesses.map((guess, idx) => {
+                                Guesses: {emoji.guesses.map((guess: string, idx: number) => {
                                   // For AI: highlight based on target_position
                                   // For user: highlight the correct letter
                                   const shouldHighlight = emoji.type === 'ai' 
@@ -610,7 +610,7 @@ const LetterPredictionWidget: React.FC = () => {
                                     return <span key={idx} className="font-bold text-white">{guess}</span>;
                                   }
                                   return <span key={idx}>{guess}</span>;
-                                }).reduce((prev, curr, idx) => {
+                                }).reduce((prev: any, curr: any, idx: number) => {
                                   if (idx === 0) return [curr];
                                   return [...prev, ', ', curr];
                                 }, [])}
