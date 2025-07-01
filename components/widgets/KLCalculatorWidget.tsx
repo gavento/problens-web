@@ -335,10 +335,10 @@ export default function KLCalculatorWidget() {
             <h5 className="text-base font-semibold text-blue-800 mb-3">Understanding the Results</h5>
             <div className="space-y-3 text-sm text-gray-700">
               <p>
-                First, we can see that the mixed file has larger entropy. This makes sense! Every language uses different letters with different frequencies. For example, 'z' is quite uncommon in English, but pretty common in German. If we pool different languages together, the distribution of frequencies is becoming 'smoother', more uniform. Hence, larger entropy. Admittedly, it's only slightly larger, since increasing the probability of 'z' from 0.02 to 0.0003 is not really increasing the entropy that much.
+                First, we can see that the mixed file has larger entropy. This makes sense! Every language uses different letters with different frequencies. For example, &lsquo;z&rsquo; is quite uncommon in English, but pretty common in German. If we pool different languages together, the distribution of frequencies is becoming &lsquo;smoother&rsquo;, more uniform. Hence, larger entropy. Admittedly, it&rsquo;s only slightly larger, since increasing the probability of &lsquo;z&rsquo; from 0.02 to 0.0003 is not really increasing the entropy that much.
               </p>
               <p>
-                For similar reasons, KL between p₁ and p₂ is smaller than vice versa. Remember, KL is all about probability <em>ratios</em>. If p('e') = 0.12 and q('e') = 0.11, q is a good model of p. But if p('z') = 0.02 and q('z')=0.0003, q is a crappy model of p.
+                For similar reasons, KL between p₁ and p₂ is smaller than vice versa. Remember, KL is all about probability <em>ratios</em>. If p(&lsquo;e&rsquo;) = 0.12 and q(&lsquo;e&rsquo;) = 0.11, q is a good model of p. But if p(&lsquo;z&rsquo;) = 0.02 and q(&lsquo;z&rsquo;)=0.0003, q is a crappy model of p.
               </p>
             </div>
           </div>
