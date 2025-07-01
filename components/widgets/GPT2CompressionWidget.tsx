@@ -36,7 +36,6 @@ const GPT2CompressionWidget: React.FC = () => {
   const [inputText, setInputText] = useState(defaultText);
   const [compressionData, setCompressionData] = useState<CompressionResult | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -324,7 +323,6 @@ const GPT2CompressionWidget: React.FC = () => {
     setIsLoading(true);
     setError(null);
     setCurrentStep(0);
-    setIsPlaying(false);
 
     try {
       // Check if input matches the default text (use memoized result)
@@ -365,24 +363,15 @@ const GPT2CompressionWidget: React.FC = () => {
     }
   };
 
-  const togglePlay = () => {
-    setIsPlaying(!isPlaying);
+  const goToBeginning = () => {
+    setCurrentStep(0);
   };
 
-  // Auto-play effect
-  useEffect(() => {
-    if (isPlaying && compressionData) {
-      const timer = setTimeout(() => {
-        if (currentStep < compressionData.steps.length - 1) {
-          setCurrentStep(currentStep + 1);
-        } else {
-          setIsPlaying(false);
-        }
-      }, 2000); // 2 second intervals
-
-      return () => clearTimeout(timer);
+  const goToEnd = () => {
+    if (compressionData) {
+      setCurrentStep(compressionData.steps.length - 1);
     }
-  }, [isPlaying, currentStep, compressionData]);
+  };
 
   const currentStepData = compressionData?.steps[currentStep];
 
@@ -454,6 +443,13 @@ const GPT2CompressionWidget: React.FC = () => {
           {/* Controls */}
           <div className="flex justify-center gap-2">
             <button
+              onClick={goToBeginning}
+              disabled={currentStep === 0}
+              className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              Beginning
+            </button>
+            <button
               onClick={prevStep}
               disabled={currentStep === 0}
               className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
@@ -461,17 +457,18 @@ const GPT2CompressionWidget: React.FC = () => {
               ← Step
             </button>
             <button
-              onClick={togglePlay}
-              className="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-            >
-              {isPlaying ? 'PAUSE' : 'PLAY'}
-            </button>
-            <button
               onClick={nextStep}
               disabled={currentStep === compressionData.steps.length - 1}
               className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               Step →
+            </button>
+            <button
+              onClick={goToEnd}
+              disabled={currentStep === compressionData.steps.length - 1}
+              className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              End
             </button>
           </div>
 
