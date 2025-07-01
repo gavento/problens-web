@@ -17,14 +17,15 @@ export const PARTS = [
     chapters: [
       ["Bayes & KL divergence", "01-kl_intro"],
       ["Crossentropy & Entropy", "02-crossentropy"],
+      ["Entropy properties", "03-entropy_properties"],
     ]
   },
   {
     name: "Part II: Optimization", 
     chapters: [
-      ["Minimizing KL", "03-minimizing"],
-      ["Maximizing entropy", "04-max_entropy"],
-      ["Loss functions", "05-machine_learning"],
+      ["Minimizing KL", "04-minimizing"],
+      ["Maximizing entropy", "05-max_entropy"],
+      ["Loss functions", "06-machine_learning"],
     ]
   },
   {
@@ -33,12 +34,6 @@ export const PARTS = [
       ["Coding theory", "09-coding_theory"],
       ["Kolmogorov complexity", "08-kolmogorov"],
     ]
-  },
-  {
-    name: "Part IV: Topics",
-    chapters: [
-      ["Multiplicative weights", "06-algorithms"],
-    ]
   }
 ];
 
@@ -46,6 +41,7 @@ export const PARTS = [
 export const META_PAGES = [
   ["Resources", "resources"],
   ["About", "about"],
+  ["Bonus", "bonus"],
 ];
 
 // For backward compatibility
@@ -61,7 +57,6 @@ export const MAIN_CHAPTERS = [
 
 export const BONUS_CHAPTERS = [
   ...PARTS[3].chapters,
-  ...PARTS[4].chapters,
 ];
 
 // Combined chapters for compatibility

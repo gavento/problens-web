@@ -1,0 +1,51 @@
+# Bonus
+
+I wrote some additional materials that did not fit with the main story in the end. Here they are. 
+
+## [Multiplicative Weights Update](/07-algorithms)
+
+
+
+
+We explore the Multiplicative Weights Update (MWU) algorithm and its connections to entropy. This is a powerful algorithmic framework that appears in many areas of machine learning, game theory, and optimization.
+
+Here's a motivating riddle: 
+
+<Expand advanced={false} headline="💰 How to get rich"> <a id="get-rich"></a>
+
+Here's a riddle that's behind a ton of recent algorithms in CS and ML. Say you wanna get rich trading stocks. Lucky you—$n$ investors share their tips every day. Each day $t$, they give advice, and afterward you find out how they did. For investor $i$, you get $g_i^{(t)}$ - how many dollars she gained that day.
+
+Your strategy: Start with equal trust in everyone—$p_i^{(0)} = 1/n$ for all investors. Each morning, randomly pick an investor based on your trust distribution and follow their advice. After seeing how everyone did, update your distribution to $p^{(t+1)}$.
+
+How should you update? What's best? <Footnote>The symbol $\propto$ means that the probability is only _proportional_ to this, you have to normalize the numbers so that they sum to one. </Footnote>
+
+<MultipleChoiceQuestion
+  options={[
+    <>Follow the leader: Go with the expert that has the largest gain so far</>,
+    <>Proportional sampling: <Math math="p_i^{(t+1)} \propto \ell_i^{(1)} + \dots + \ell_i^{(t)}" /></>,
+    <>Multiplicative sampling: <Math math="p_i^{(t+1)} \propto e^{\eps \cdot \left( \ell_i^{(1)} + \dots + \ell_i^{(t)} \right) }" /> for some small <Math math="\eps" /></>
+    ]}
+  correctIndices={[0, 2]}
+  explanation={<>The last option is the most robust, though follow-the-leader typically also works well. It's called multiplicative weights update, and it looks weirdly like gradient descent. <a href="07-algorithms">We'll see</a> how KL divergence explains the connection.<br/><br/>Try it yourself with the widget below:<br/><br/><MWUWidget /></>}
+/>
+</Expand>
+
+
+## [Fisher Information](/fisher-info)
+
+We dive into Fisher information and its fundamental role in statistics and information geometry. We derive it as a limit of KL divergence for close distributions. 
+
+Here's a motivating riddle: 
+
+<Expand advanced={false} headline="🗳️ Why polling sucks"><a id="polling"></a>
+
+A typical [US election poll](https://en.wikipedia.org/wiki/Nationwide_opinion_polling_for_the_2024_United_States_presidential_election) asks 1000-2000 random people. Do the math and you'll find such polls are usually within 2-3% of the truth.<Footnote>This assumes you can actually sample random voters, they tell the truth, etc. This is never true but stick with me.</Footnote> Pretty wild—it doesn't even matter how many people live in the country, 1000 random ones get you within a few percent!
+
+But here's the thing: US elections are super close. We already know both parties will get around 50%. So maybe we should poll more people (or combine polls) to get within 0.1%. How many people would that take?
+
+<MultipleChoiceQuestion
+  options={["about 10,000", "about 100,000", "about 1,000,000"]}
+  correctIndices={[2]}
+  explanation={<>It's about 1,000,000! That's a huge chunk of the whole US! The general rule: to get error margin <Math math="\eps" />, you need roughly <Math math="1/\eps^2" /> samples. That square is killer—it's why getting better estimates gets expensive fast! No wonder most polls stick to a few thousand people.<br/><br/>But why <Math math="1/\eps^2" />? Explore the relationship below:<br/><br/><PollingErrorCalculator /></>}
+/>
+</Expand>

@@ -6,6 +6,14 @@ This site contains an introduction to various topics at the intersection of prob
 Check out [this page](about) for logistics. Here, I've got several riddles. I hope that some of them will [nerd-snipe](https://xkcd.com/356/) you! 😉 You will understand all of them at the end of this minicourse. 
 
 
+<Expand headline = "🧠 Intelligence test">
+Test your intelligence with the following widget! You will be given a bunch of text snippets cut from Wikipedia cut at a random place. Your task is to predict the next letter. You can compare your performance with some neural nets! 
+
+<LetterPredictionWidget/>
+
+Why are neural nets so good in this? Why should this game measure intelligence? And why did Claude Shannon - the information theory [GOAT](https://www.merriam-webster.com/dictionary/goat) - make this experiment in 1940's? 
+</Expand>
+
 <Expand headline="🔮 How good are your predictions?"> <a id="predictions"></a>
 
 It'd be awesome to know the future—or at least know someone who does. So you've gathered some experts and came up with five questions (Q1 to Q5). You ask the experts to give you probabilities for all 5 questions.
@@ -28,36 +36,6 @@ Question is: who's the best here?
 </Expand>
 
 
-<Expand headline="🦶 Average foot"> <a id="statistics"></a>
-
-![rod](00-introduction/rod.png "Determining the length of the foot in 1522; taken from https://commons.wikimedia.org/wiki/File:Determination_of_the_rute_and_the_feet_in_Frankfurt.png")
-
-Back in the day, people measured stuff in feet. Sure, we all kinda know how long a foot is, but eventually you need to nail it down precisely. One way (shown above) is to grab 16 random people and average their foot lengths:
-$$\bar X = \frac{1}{16} (X_1 + \dots + X_{16})$$
-
-This gives you a pretty stable number that shouldn't change much if you do it again. To measure how good your estimate is, you'd usually calculate the standard deviation. Remember the formula? Which one's right:
-
-<MultipleChoiceQuestion
-  options={[
-    <Math math="\bar{\sigma}^2 = \frac{1}{15} \sum_{i=1}^{16} (X_i - \bar{X})^2" />,
-    <Math math="\bar{\sigma}^2 = \frac{1}{16} \sum_{i=1}^{16} (X_i - \bar{X})^2" />,
-    <Math math="\bar{\sigma}^2 = \frac{1}{17} \sum_{i=1}^{16} (X_i - \bar{X})^2" />
-  ]}
-  correctIndices={[0, 1, 2]}
-  feedbackType="all-show"
-  explanation={<>In a sense, they're all correct! Well, more like they're all defensible options from the viewpoint of frequentist statistics. Using <Math math="1/(n-1)" /> gives you the <a href="https://en.wikipedia.org/wiki/Bias_of_an_estimator">unbiased estimate</a>, <Math math="1/n" /> gives the <a href="https://en.wikipedia.org/wiki/Maximum_likelihood_estimation">maximum likelihood estimate</a>, and <Math math="1/(n+1)" /> minimizes <a href="https://en.wikipedia.org/wiki/Mean_squared_error">the mean squared error</a> between your guess and the truth.<br/><br/>But here's the thing: out of all these ways to estimate stuff, only maximum likelihood became the rockstar of machine learning. Using KL divergence, <a href="03-minimizing#mle">we'll see</a> why maximum likelihood is so special and what makes it tick.</>}
-/>
-</Expand>
-
-<Expand headline = "🧠 Intelligence test">
-Test your intelligence with the following widget! You will be given a bunch of text snippets cut from Wikipedia.<Footnote>It's taken from the first 1GB of big articles - so be prepared for a lot of Abraham Lincoln, Anarchy, Achilles, and spoilers from Atlas Shrugged. </Footnote> They consist of two consecutive sentences, second one being cut at random place. Your task is to predict the next letter. You can compare your performance with some leading neural nets! 
-
-<LetterPredictionWidget/>
-
-Why are neural nets so good in this? Why should it measure intelligence? And why did Claude Shannon - the information theory GOAT - make this experiment in 1940's? 
-
-</Expand>
-
 
 <Expand headline="📈 S&P shape"> <a id="financial-mathematics"></a>
 
@@ -75,10 +53,48 @@ I grabbed some historical data, calculated the daily price changes, normalized t
   feedbackType="all-show"
   explanation={<>This is hard to say, try it below yourself. I fitted the data by two curves - Gaussian distribution (looks like the shape in C), and Laplace distribution (looks like the shape in B). 
   <FinancialDistributionWidget showBTC={false} showSAP={true} />
-  What's happening here? We will discuss this example in the <a href="04-max_entropy">chapter about the max-entropy principle</a>. This principle is extremely useful in situations like ours, when we want to model some kind of data. <br/><br/></>}
+  What's happening here? We will discuss this example in the <a href="05-max_entropy">chapter about the max-entropy principle</a>. This principle is extremely useful in situations like ours, when we want to model some kind of data. <br/><br/></>}
 />
 
 </Expand>
+
+
+
+
+
+<Expand advanced={false} headline="🌐 How large is Wikipedia?"><a id="wikipedia"></a>
+Marcus Hutter, an AI researcher, started <a href="http://prize.hutter1.net/">this challenge</a>: Take a 1GB file of Wikipedia text. How small can you compress it? <a href="https://en.wikipedia.org/wiki/ZIP_(file_format)">Zipping it</a> gets you about 300MB. But we can do way better. What's the current record? 
+
+<MultipleChoiceQuestion
+  options={["around 1MB", "around 10MB", "around 100MB"]}
+  correctIndices={[2]}
+  explanation={<>It's around 100MB. But wait—why does an <em>AI</em> researcher care about compression? We'll see the connection with <a href="02-crossentropy/coding">entropy</a>, <a href = "02-crossentropy/hutter">next token prediction</a>, and <a href="#">Kolmogorov complexity</a>. In the meantime, you can try to guess how well can various other texts be compressed by various algorithms. 
+  <CompressionWidget />
+</>}
+/> 
+</Expand>
+
+<Expand headline="🦶 Average foot"> <a id="statistics"></a>
+
+![rod](00-introduction/rod.png "Determining the length of the foot in 1522; taken from https://commons.wikimedia.org/wiki/File:Determination_of_the_rute_and_the_feet_in_Frankfurt.png")
+
+Back in the day, people measured stuff in feet. Sure, we all kinda know how long a foot is, but eventually you need to nail it down precisely. One way (shown above) is to grab 16 random people and average their foot lengths:
+$$\bar X = \frac{1}{16} (X_1 + \dots + X_{16})$$
+
+This gives you a pretty stable number that shouldn't change much if you do it again. To measure how good your estimate is, you'd usually calculate the standard deviation. Remember the formula? Which one's right:
+
+<MultipleChoiceQuestion
+  options={[
+    <Math math="\bar{\sigma}^2 = \frac{1}{15} \sum_{i=1}^{16} (X_i - \bar{X})^2" />,
+    <Math math="\bar{\sigma}^2 = \frac{1}{16} \sum_{i=1}^{16} (X_i - \bar{X})^2" />,
+    <Math math="\bar{\sigma}^2 = \frac{1}{17} \sum_{i=1}^{16} (X_i - \bar{X})^2" />
+  ]}
+  correctIndices={[0, 1, 2]}
+  feedbackType="all-show"
+  explanation={<>In a sense, they're all correct! Well, more like they're all defensible options from the viewpoint of frequentist statistics. Using <Math math="1/(n-1)" /> gives you the <a href="https://en.wikipedia.org/wiki/Bias_of_an_estimator">unbiased estimate</a>, <Math math="1/n" /> gives the <a href="https://en.wikipedia.org/wiki/Maximum_likelihood_estimation">maximum likelihood estimate</a>, and <Math math="1/(n+1)" /> minimizes <a href="https://en.wikipedia.org/wiki/Mean_squared_error">the mean squared error</a> between your guess and the truth.<br/><br/>But here's the thing: out of all these ways to estimate stuff, only maximum likelihood became the rockstar of machine learning. Using KL divergence, <a href="04-minimizing#mle">we'll see</a> why maximum likelihood is so special and what makes it tick.</>}
+/>
+</Expand>
+
 
 {/*
 <Expand headline="🧠 LLM training"> <a id="deep-learning"></a>
@@ -148,81 +164,14 @@ When you first dive into machine learning, it looks like total chaos—just a bu
 
 <Math displayMode={true} math = "\frac{1}{N} \sum_{i = 1}^N \left( \sum_y p'(y | x) \frac{\| X_i - \textrm{Dec}(y)\|^2}{2d} \,+\, \left( \frac12 \sum_{j = 1}^d \textrm{Enc}_{\mu, j}(X_i)^2 + \textrm{Enc}_{\sigma^2, j}(X_i) - \log \textrm{Enc}_{\sigma^2, j}(X_i) \right)\right)"/>
 
-Where the hell does this come from?? [We'll see](05-machine_learning) how KL divergence makes sense of this mess—and tons of other standard ML algorithms too. 
+Where the hell does this come from?? [We'll see](06-machine_learning) how KL divergence makes sense of this mess—and tons of other standard ML algorithms too. 
 
-![Examples](05-machine_learning/table.png)
+![Examples](06-machine_learning/table.png)
 
 </Expand>
 
 
-<Expand headline="🎵 Anthem battle"> <a id = "anthems"></a>
 
-This question is for those of you who already who already encountered KL divergence and entropy. 
-
-I collected anthems of USA, UK, and Australia, and put them into one file. The other text file are anthems of a bunch of random-ish countries. For both text files, I compute the frequencies of 26 letters 'a' to 'z'. So there are two distributions $p_1$ (English-speaking) and $p_2$ (others). The question is: which one has larger entropy? And which of the two KL divergences between them is larger? 
-
-<MultipleChoiceQuestion
-  options={[ 
-      <><Math math="H(p_1) < H(p_2), \,\,\, D(p_1, p_2) < D(p_2, p_1)" /></>, 
-      <><Math math="H(p_1) < H(p_2), \,\,\, D(p_1, p_2) > D(p_2, p_1)" /></>,
-      <><Math math="H(p_1) > H(p_2), \,\,\, D(p_1, p_2) < D(p_2, p_1)" /></>,
-      <><Math math="H(p_1) > H(p_2), \,\,\, D(p_1, p_2) > D(p_2, p_1)" /></>
-     ]}
-  correctIndices={[0]}
-  explanation={<>
-  Try it out in the widget, we'll discuss why [later](02-crossentropy#anthems). 
-<KLCalculatorWidget />
-
-</>}
-/> 
-</Expand>
-
-
-{/*
-<Expand advanced={false} headline="🗳️ Why polling sucks"><a id="polling"></a>
-
-A typical [US election poll](https://en.wikipedia.org/wiki/Nationwide_opinion_polling_for_the_2024_United_States_presidential_election) asks 1000-2000 random people. Do the math and you'll find such polls are usually within 2-3% of the truth.<Footnote>This assumes you can actually sample random voters, they tell the truth, etc. This is never true but stick with me.</Footnote> Pretty wild—it doesn't even matter how many people live in the country, 1000 random ones get you within a few percent!
-
-But here's the thing: US elections are super close. We already know both parties will get around 50%. So maybe we should poll more people (or combine polls) to get within 0.1%. How many people would that take?
-
-<MultipleChoiceQuestion
-  options={["about 10,000", "about 100,000", "about 1,000,000"]}
-  correctIndices={[2]}
-  explanation={<>It's about 1,000,000! That's a huge chunk of the whole US! The general rule: to get error margin <Math math="\eps" />, you need roughly <Math math="1/\eps^2" /> samples. That square is killer—it's why getting better estimates gets expensive fast! No wonder most polls stick to a few thousand people.<br/><br/>But why <Math math="1/\eps^2" />? Explore the relationship below:<br/><br/><PollingErrorCalculator /></>}
-/>
-</Expand>
-*/}
-
-<Expand advanced={false} headline="💰 How to get rich"> <a id="get-rich"></a>
-
-Here's a riddle that's behind a ton of recent algorithms in CS and ML. Say you wanna get rich trading stocks. Lucky you—$n$ investors share their tips every day. Each day $t$, they give advice, and afterward you find out how they did. For investor $i$, you get $g_i^{(t)}$ - how many dollars she gained that day.
-
-Your strategy: Start with equal trust in everyone—$p_i^{(0)} = 1/n$ for all investors. Each morning, randomly pick an investor based on your trust distribution and follow their advice. After seeing how everyone did, update your distribution to $p^{(t+1)}$.
-
-How should you update? What's best? <Footnote>The symbol $\propto$ means that the probability is only _proportional_ to this, you have to normalize the numbers so that they sum to one. </Footnote>
-
-<MultipleChoiceQuestion
-  options={[
-    <>Follow the leader: Go with the expert that has the largest gain so far</>,
-    <>Proportional sampling: <Math math="p_i^{(t+1)} \propto \ell_i^{(1)} + \dots + \ell_i^{(t)}" /></>,
-    <>Multiplicative sampling: <Math math="p_i^{(t+1)} \propto e^{\eps \cdot \left( \ell_i^{(1)} + \dots + \ell_i^{(t)} \right) }" /> for some small <Math math="\eps" /></>
-    ]}
-  correctIndices={[0, 2]}
-  explanation={<>The last option is the most robust, though follow-the-leader typically also works well. It's called multiplicative weights update, and it looks weirdly like gradient descent. <a href="06-algorithms">We'll see</a> how KL divergence explains the connection.<br/><br/>Try it yourself with the widget below:<br/><br/><MWUWidget /></>}
-/>
-</Expand>
-
-<Expand advanced={false} headline="🌐 How large is Wikipedia?"><a id="wikipedia"></a>
-Marcus Hutter, an AI researcher, started <a href="http://prize.hutter1.net/">this challenge</a>: Take a 1GB file of Wikipedia text. How small can you compress it? <a href="https://en.wikipedia.org/wiki/ZIP_(file_format)">Zipping it</a> gets you about 300MB. But we can do way better. What's the current record? 
-
-<MultipleChoiceQuestion
-  options={["around 1MB", "around 10MB", "around 100MB"]}
-  correctIndices={[2]}
-  explanation={<>It's around 100MB. But wait—why does an <em>AI</em> researcher care about compression? We'll see the connection with <a href="02-crossentropy/coding">entropy</a>, <a href = "02-crossentropy/hutter">next token prediction</a>, and <a href="#">Kolmogorov complexity</a>. In the meantime, you can try to guess how well can various other texts be compressed by various algorithms. 
-  <CompressionWidget />
-</>}
-/> 
-</Expand>
 
 
 ## 🚀 What's next? <a id="next-steps"></a>

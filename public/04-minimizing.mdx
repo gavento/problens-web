@@ -193,11 +193,11 @@ It took some time before people got to know better and realized that this is all
 Here's an example of how the maximum entropy principle can be applied. Let's say we want to model some real-valued data that is known to have a certain mean $E_p[X] = \mu$ and variance $E_p[(X-\mu)^2] = \sigma^2$.
 If we want to select a distribution that models this data in the absence of any other information, the maximum entropy principle suggests we should define the set $P$ as all distributions with mean $\mu$ and variance $\sigma^2$, and then choose the maximum entropy distribution $p$ from this set $P$.
 
-As we'll discuss [later](05-machine_learning), this particular distribution $p$ turns out to be the Gaussian with mean $\mu$ and variance $\sigma^2$. So, the maximum entropy principle tells us that, without additional evidence, we should model such data as Gaussian, assuming the given mean and variance.
+As we'll discuss [later](06-machine_learning), this particular distribution $p$ turns out to be the Gaussian with mean $\mu$ and variance $\sigma^2$. So, the maximum entropy principle tells us that, without additional evidence, we should model such data as Gaussian, assuming the given mean and variance.
 
 It's often helpful to think about this principle more abstractly. Imagine we don't even know the precise values of $\mu$ and $\sigma^2$; we just believe that the mean and variance are important parameters. In this scenario, the maximum entropy principle informs us that we should model the data using *some* Gaussian distribution. In other words, we conclude that the family of Gaussians is the *appropriate* family to represent numerical data when our primary concerns are their mean and variance. This is a very powerful insight!
 
-![potato](03-minimizing/potato_maxent.png)
+![potato](04-minimizing/potato_maxent.png)
 
 
 {/*
