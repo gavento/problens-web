@@ -4,7 +4,7 @@ Fisher information is one of the most fundamental concepts in statistics, provid
 
 ## Definition
 
-For a probability distribution $p(x|\theta)$ parameterized by $\theta$, the **Fisher information** is defined as:
+For a probability distribution <Math math="p(x|\theta)" /> parameterized by <Math math="\theta" />, the **Fisher information** is defined as:
 
 <Math displayMode={true} math="I(\theta) = E_{x \sim p(x|\theta)} \left[ \left( \frac{\partial}{\partial \theta} \log p(x|\theta) \right)^2 \right]" />
 
@@ -16,7 +16,7 @@ This can be equivalently written as:
 
 One of the most beautiful results in information theory is that Fisher information emerges naturally as the second-order term in the Taylor expansion of KL divergence.
 
-Consider two distributions with parameters $\theta$ and $\theta + \epsilon$. For small $\epsilon$:
+Consider two distributions with parameters <Math math="\theta" /> and <Math math="\theta + \epsilon" />. For small <Math math="\epsilon" />:
 
 <Math displayMode={true} math="D_{KL}(p(x|\theta) || p(x|\theta + \epsilon)) = \frac{\epsilon^2}{2} I(\theta) + O(\epsilon^3)" />
 
@@ -24,27 +24,27 @@ This shows that Fisher information measures the "curvature" of the KL divergence
 
 ## The Cramér-Rao Bound
 
-Fisher information provides a fundamental limit on how well we can estimate parameters. The **Cramér-Rao bound** states that for any unbiased estimator $\hat{\theta}$ of parameter $\theta$:
+Fisher information provides a fundamental limit on how well we can estimate parameters. The **Cramér-Rao bound** states that for any unbiased estimator <Math math="\hat{\theta}" /> of parameter <Math math="\theta" />:
 
 <Math displayMode={true} math="\text{Var}(\hat{\theta}) \geq \frac{1}{n \cdot I(\theta)}" />
 
-where $n$ is the sample size. This tells us:
+where <Math math="n" /> is the sample size. This tells us:
 - Higher Fisher information → lower variance bound → better estimation possible
-- The bound scales with $1/n$, explaining why more data helps
+- The bound scales with <Math math="1/n" />, explaining why more data helps
 
 ## Examples
 
 ### Gaussian Distribution
-For a Gaussian with unknown mean $\mu$ and known variance $\sigma^2$:
+For a Gaussian with unknown mean <Math math="\mu" /> and known variance <Math math="\sigma^2" />:
 <Math displayMode={true} math="I(\mu) = \frac{1}{\sigma^2}" />
 
 This makes intuitive sense: smaller variance means more information about the mean.
 
 ### Bernoulli Distribution
-For a Bernoulli distribution with parameter $p$:
+For a Bernoulli distribution with parameter <Math math="p" />:
 <Math displayMode={true} math="I(p) = \frac{1}{p(1-p)}" />
 
-Information is maximized when $p = 0.5$ (maximum uncertainty).
+Information is maximized when <Math math="p = 0.5" /> (maximum uncertainty).
 
 ## Information Geometry
 
