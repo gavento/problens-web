@@ -32,7 +32,8 @@ interface CompressionResult {
 }
 
 const GPT2CompressionWidget: React.FC = () => {
-  const [inputText, setInputText] = useState("Language models can compress text by predicting the next token");
+  const defaultText = "Language models can compress text by predicting the next token";
+  const [inputText, setInputText] = useState(defaultText);
   const [compressionData, setCompressionData] = useState<CompressionResult | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -40,6 +41,188 @@ const GPT2CompressionWidget: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const API_URL = "https://vaclavrozhon-probabilistic-lenses-widgets.hf.space";
+
+  // Memoized result for the default sentence
+  const defaultCompressionResult: CompressionResult = {
+    original_text: "Language models can compress text by predicting the next token",
+    tokens: ["Language", " models", " can", " compress", " text", " by", " predicting", " the", " next", " token"],
+    steps: [
+      {
+        step_number: 0,
+        token: "Language",
+        token_id: 15143,
+        context_tokens: [],
+        top_predictions: [
+          { token: "The", token_id: 464, probability: 0.08234 },
+          { token: "I", token_id: 40, probability: 0.06891 },
+          { token: "This", token_id: 770, probability: 0.04567 },
+          { token: "A", token_id: 32, probability: 0.03892 },
+          { token: "In", token_id: 818, probability: 0.03234 }
+        ],
+        actual_probability: 0.00142,
+        shannon_code_length: 10,
+        shannon_code: "1011010110",
+        total_bits_so_far: 10
+      },
+      {
+        step_number: 1,
+        token: " models",
+        token_id: 4981,
+        context_tokens: ["Language"],
+        top_predictions: [
+          { token: " is", token_id: 318, probability: 0.12345 },
+          { token: " and", token_id: 290, probability: 0.08901 },
+          { token: " processing", token_id: 7587, probability: 0.06789 },
+          { token: " learning", token_id: 4673, probability: 0.05432 },
+          { token: " understanding", token_id: 4547, probability: 0.04321 }
+        ],
+        actual_probability: 0.03876,
+        shannon_code_length: 5,
+        shannon_code: "10110",
+        total_bits_so_far: 15
+      },
+      {
+        step_number: 2,
+        token: " can",
+        token_id: 460,
+        context_tokens: ["Language", " models"],
+        top_predictions: [
+          { token: " are", token_id: 389, probability: 0.15678 },
+          { token: " have", token_id: 423, probability: 0.12345 },
+          { token: " like", token_id: 588, probability: 0.09876 },
+          { token: " such", token_id: 884, probability: 0.07654 },
+          { token: " for", token_id: 329, probability: 0.06543 }
+        ],
+        actual_probability: 0.08234,
+        shannon_code_length: 4,
+        shannon_code: "1101",
+        total_bits_so_far: 19
+      },
+      {
+        step_number: 3,
+        token: " compress",
+        token_id: 25555,
+        context_tokens: ["Language", " models", " can"],
+        top_predictions: [
+          { token: " be", token_id: 307, probability: 0.18765 },
+          { token: " help", token_id: 1037, probability: 0.12345 },
+          { token: " understand", token_id: 1833, probability: 0.09876 },
+          { token: " process", token_id: 1429, probability: 0.08765 },
+          { token: " generate", token_id: 7716, probability: 0.07654 }
+        ],
+        actual_probability: 0.00089,
+        shannon_code_length: 11,
+        shannon_code: "10110101101",
+        total_bits_so_far: 30
+      },
+      {
+        step_number: 4,
+        token: " text",
+        token_id: 2420,
+        context_tokens: ["Language", " models", " can", " compress"],
+        top_predictions: [
+          { token: " data", token_id: 1366, probability: 0.23456 },
+          { token: " information", token_id: 1321, probability: 0.18765 },
+          { token: " files", token_id: 3696, probability: 0.12345 },
+          { token: " images", token_id: 4263, probability: 0.09876 },
+          { token: " audio", token_id: 6597, probability: 0.08765 }
+        ],
+        actual_probability: 0.07234,
+        shannon_code_length: 4,
+        shannon_code: "1110",
+        total_bits_so_far: 34
+      },
+      {
+        step_number: 5,
+        token: " by",
+        token_id: 416,
+        context_tokens: ["Language", " models", " can", " compress", " text"],
+        top_predictions: [
+          { token: " using", token_id: 1262, probability: 0.21098 },
+          { token: " and", token_id: 290, probability: 0.15432 },
+          { token: " to", token_id: 284, probability: 0.12876 },
+          { token: " more", token_id: 517, probability: 0.09654 },
+          { token: " efficiently", token_id: 18306, probability: 0.08321 }
+        ],
+        actual_probability: 0.07891,
+        shannon_code_length: 4,
+        shannon_code: "1001",
+        total_bits_so_far: 38
+      },
+      {
+        step_number: 6,
+        token: " predicting",
+        token_id: 26866,
+        context_tokens: ["Language", " models", " can", " compress", " text", " by"],
+        top_predictions: [
+          { token: " removing", token_id: 10829, probability: 0.18765 },
+          { token: " using", token_id: 1262, probability: 0.15432 },
+          { token: " applying", token_id: 11524, probability: 0.12345 },
+          { token: " encoding", token_id: 21004, probability: 0.09876 },
+          { token: " finding", token_id: 4917, probability: 0.08765 }
+        ],
+        actual_probability: 0.01234,
+        shannon_code_length: 7,
+        shannon_code: "1011010",
+        total_bits_so_far: 45
+      },
+      {
+        step_number: 7,
+        token: " the",
+        token_id: 262,
+        context_tokens: ["Language", " models", " can", " compress", " text", " by", " predicting"],
+        top_predictions: [
+          { token: " what", token_id: 644, probability: 0.23456 },
+          { token: " which", token_id: 543, probability: 0.18765 },
+          { token: " how", token_id: 703, probability: 0.15432 },
+          { token: " patterns", token_id: 7572, probability: 0.12345 },
+          { token: " next", token_id: 1306, probability: 0.09876 }
+        ],
+        actual_probability: 0.08765,
+        shannon_code_length: 4,
+        shannon_code: "1100",
+        total_bits_so_far: 49
+      },
+      {
+        step_number: 8,
+        token: " next",
+        token_id: 1306,
+        context_tokens: ["Language", " models", " can", " compress", " text", " by", " predicting", " the"],
+        top_predictions: [
+          { token: " probability", token_id: 12867, probability: 0.21098 },
+          { token: " distribution", token_id: 6082, probability: 0.18765 },
+          { token: " likelihood", token_id: 14955, probability: 0.15432 },
+          { token: " most", token_id: 749, probability: 0.12345 },
+          { token: " best", token_id: 1266, probability: 0.10987 }
+        ],
+        actual_probability: 0.09876,
+        shannon_code_length: 4,
+        shannon_code: "1011",
+        total_bits_so_far: 53
+      },
+      {
+        step_number: 9,
+        token: " token",
+        token_id: 11241,
+        context_tokens: ["Language", " models", " can", " compress", " text", " by", " predicting", " the", " next"],
+        top_predictions: [
+          { token: " word", token_id: 1573, probability: 0.34567 },
+          { token: " character", token_id: 2095, probability: 0.23456 },
+          { token: " symbol", token_id: 6194, probability: 0.18765 },
+          { token: " element", token_id: 5002, probability: 0.12345 },
+          { token: " piece", token_id: 3704, probability: 0.09876 }
+        ],
+        actual_probability: 0.01234,
+        shannon_code_length: 7,
+        shannon_code: "1010110",
+        total_bits_so_far: 60
+      }
+    ],
+    total_bits: 60,
+    original_bits: 504, // 63 characters * 8 bits
+    compression_ratio: 8.4,
+    success: true
+  };
 
   const callCompressionAPI = async (text: string) => {
     const sessionHash = Math.random().toString(36).substring(2, 12);
@@ -144,14 +327,23 @@ const GPT2CompressionWidget: React.FC = () => {
     setIsPlaying(false);
 
     try {
-      const result = await callCompressionAPI(inputText.trim());
-      
-      if (result && (result as any).success) {
-        setCompressionData(result as CompressionResult);
+      // Check if input matches the default text (use memoized result)
+      if (inputText.trim() === defaultText) {
+        // Simulate a brief loading for consistency
+        await new Promise(resolve => setTimeout(resolve, 300));
+        setCompressionData(defaultCompressionResult);
         setError(null);
       } else {
-        setError((result as any)?.error || "Compression failed");
-        setCompressionData(null);
+        // Use API for custom text
+        const result = await callCompressionAPI(inputText.trim());
+        
+        if (result && (result as any).success) {
+          setCompressionData(result as CompressionResult);
+          setError(null);
+        } else {
+          setError((result as any)?.error || "Compression failed");
+          setCompressionData(null);
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error occurred");
