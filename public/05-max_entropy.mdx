@@ -29,7 +29,7 @@ Try building your own maximum entropy distribution on the interval $[0,1]$ by se
 
 <DistributionConstraintBuilder />
 
-### Why? <a id = "intuition"></a>
+### 🧐 Why? <a id = "intuition"></a>
 
 Let's build some intuition for this. Remember from [the previous chapter](03-minimizing) that the max-entropy principle is essentially about finding a distribution that is as close to uniform as possible, in the sense of minimizing KL divergence.
 
@@ -181,7 +181,7 @@ In the early days of deep learning, the logistic function was used as an [activa
 Unfortunately, this function doesn't seem to perform too well in practice. As the field evolved, researchers realized it's better to use the [ReLU](https://en.wikipedia.org/wiki/Rectifier_(neural_networks)) activation function (or [something similar](https://en.wikipedia.org/wiki/Activation_function#Comparison_of_activation_functions)) instead of sigmoids. That activation function corresponds to neurons that not only contemplate *whether* to send any signal or none, but also send out a stronger output signal if they receive strong input.
 </Expand>
 
-### Fixing $E[X]$ (Softmax) <a id = "softmax"></a>
+### 🌡️ Fixing $E[X]$ (Softmax) <a id = "softmax"></a>
 
 Let's stick with the max-entropy distribution for $E[X]$, but now consider the more general case where our distribution is supported on a set of numbers $\{a_1, \dots, a_k\}$—these distributions are often called [categorical distributions](https://en.wikipedia.org/wiki/Categorical_distribution). In this scenario, the max entropy distribution is what's known as a *softmax* (or _softmin_) distribution—each number $a_i$ is chosen with probability:
 
@@ -239,7 +239,7 @@ This discussion is mostly meant to show what I love on the max entropy principle
 
 There's still an elephant in the room, though—the exponential distribution can't be normalized if the domain are _unbounded_ real numbers (i.e., both positive and negative).
 
-### Fixing both $E[X]$ & $E[X^2]$ (Normal Distribution) <a id = "normal"></a>
+### 🔔 Fixing both $E[X]$ & $E[X^2]$ (Normal Distribution) <a id = "normal"></a>
 
 If we believe that both the mean and the variance are interesting, the max entropy principle suggests that we should choose the function that has a quadratic function of $x$ in the exponent. This means it has the shape:
 <Math displayMode={true} id = "gaussian" math = "p(x) \propto e^{-\lambda_1 x^2 - \lambda_2 x}"/>

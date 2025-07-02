@@ -133,7 +133,7 @@ export default function CommentSection({ pageId }: CommentSectionProps) {
     <div className="mt-12 border-t pt-8">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold">
-          Comments {comments.length > 0 && (
+          💬 Comments {comments.length > 0 && (
             <span className="text-lg text-gray-500">({comments.length})</span>
           )}
         </h2>

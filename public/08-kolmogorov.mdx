@@ -1,9 +1,9 @@
 # Kolmogorov Complexity
 
-This chapter loosely follows the chapter about [coding theory](09-coding_theory). In that chapter, we saw what entropy tells us about compressing strings, if we treat letters independently. But whenever we use the language of entropy, there has to be some probabilistic model behind - We have to be talking about a whole distribution of strings, and model our string as being picked from it. 
-This works well for encoding single letters, but gets awkward pretty quickly. What kind of distribution was this website sampled from? 
+In the [previous chapter](09-coding_theory), we saw what entropy tells us about compressing strings, if we treat letters independently. But that's just an assumption that good compression algorithms can't make. 
 
-Kolmogorov complexity is the ultimate answer to the problem of compression, it helps us to talk about complexities of single objects. Its immense power is balanced by the fact that we can't really compute it. My favorite applications of Kolmogorov complexity are not practical applications, but a clean conceptual framework for discussing these ideas. 
+Kolmogorov complexity is the answer to the conundrum. It is the ultimate limit on how much a file can be compressed. Its immense power is balanced by the fact that we can't really compute it. 
+{/*My favorite applications of Kolmogorov complexity are not practical ones, but a clean conceptual framework for discussing these ideas.*/} 
 
 <KeyTakeaway>
 Kolmogorov complexity of an object is the length of its shortest specification. This is the ultimate limit of compression. 

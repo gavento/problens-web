@@ -31,7 +31,7 @@ But the detective could also add up the total surprisal for each hypothesis (gre
 
 These two pieces on the right - $H(p,q)$ is called cross-entropy and $H(p)$ is entropy - are super important. Let's get a feel for what they mean. 
 
-## Cross-entropy <a id = "cross"></a>
+##  ❌ Cross-entropy <a id = "cross"></a>
 Think of cross-entropy as _how surprised are you on average when you see data from $p$ and you're modeling it as $q$._ 
 
 Check it out in the widget below. The widget shows what happens when our Bayesian detective from the previous chapter keeps flipping her coin. The red dashed line is showing cross-entropy - the expected surprise of the model $q$ as we keep flipping the coin with bias $p$. The orange line shows the entropy - this is the expected surprise when both the model and actual bias are $p$. 
@@ -48,7 +48,7 @@ If you let the widget run, you will also see a blue and a green curve - the actu
 
 Bottom line: _better models are less surprised by the data and have smaller cross-entropy. KL divergence is how far our model is from the best one. _
 
-## Entropy
+## 🎲 Entropy
 
 The term $H(p) = H(p, p) = \sum_{i = 1}^n p_i \log 1 / p_i$ is a special case of cross-entropy called just plain _entropy_. It's the best possible cross-entropy you can get for distribution $p$—when you model it perfectly as itself.  
 
