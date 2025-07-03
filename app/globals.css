@@ -323,3 +323,12 @@ th {
     scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
   }
 }
+
+/* Reusable class for large math display blocks */
+.math-display-large {
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.4;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}

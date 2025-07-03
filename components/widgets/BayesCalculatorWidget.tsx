@@ -2,104 +2,122 @@
 
 import React, { useState, useMemo } from "react";
 
-type Props = {
-  title?: string;
+// Define the labels for each hypothesis in both modes
+const LABELS_2 = ["Fair", "Biased"];
+const LABELS_3 = ["Fair", "Biased heads", "Biased tails"];
+
+// Default prior odds and likelihood of heads for each mode
+const DEFAULTS_2 = {
+  priors: [2, 1],
+  likelihoods: [0.5, 0.25],
+};
+const DEFAULTS_3 = {
+  priors: [3, 2, 1],
+  likelihoods: [0.5, 0.75, 0.25],
 };
 
-const BayesCalculatorWidget: React.FC<Props> = ({
-  title = "Bayes Calculator"
-}) => {
-  const [priorFair, setPriorFair] = useState(2);
-  const [priorBiased, setPriorBiased] = useState(1);
-  const [likelihoodFair, setLikelihoodFair] = useState(0.5);
-  const [likelihoodBiased, setLikelihoodBiased] = useState(0.25);
+const BayesCalculatorWidget: React.FC<{ title?: string }> = ({ title = "Bayes Calculator" }) => {
+  const [mode, setMode] = useState<2 | 3>(2);
+  const [priors, setPriors] = useState<number[]>([...DEFAULTS_2.priors]);
+  const [likelihoods, setLikelihoods] = useState<number[]>([...DEFAULTS_2.likelihoods]);
+
+  // Helper to switch between 2- and 3-hypothesis modes
+  const toggleMode = () => {
+    if (mode === 2) {
+      setMode(3);
+      setPriors([...DEFAULTS_3.priors]);
+      setLikelihoods([...DEFAULTS_3.likelihoods]);
+    } else {
+      setMode(2);
+      setPriors([...DEFAULTS_2.priors]);
+      setLikelihoods([...DEFAULTS_2.likelihoods]);
+    }
+  };
+
+  // New helper: directly set desired mode and reset defaults
+  const setModeWithDefaults = (m: 2 | 3) => {
+    if (m === 2) {
+      setMode(2);
+      setPriors([...DEFAULTS_2.priors]);
+      setLikelihoods([...DEFAULTS_2.likelihoods]);
+    } else {
+      setMode(3);
+      setPriors([...DEFAULTS_3.priors]);
+      setLikelihoods([...DEFAULTS_3.likelihoods]);
+    }
+  };
+
+  // Update a single prior value
+  const updatePrior = (idx: number, value: number) => {
+    const next = [...priors];
+    next[idx] = value;
+    setPriors(next);
+  };
+
+  // Update a single likelihood value
+  const updateLikelihood = (idx: number, value: number) => {
+    const next = [...likelihoods];
+    next[idx] = value;
+    setLikelihoods(next);
+  };
 
   const calculations = useMemo(() => {
-    // Posterior odds = Prior odds × Likelihood ratio
-    const posteriorFair = priorFair * likelihoodFair;
-    const posteriorBiased = priorBiased * likelihoodBiased;
-    
-    // Convert to probabilities
-    const total = posteriorFair + posteriorBiased;
-    const probFair = total > 0 ? (posteriorFair / total) * 100 : 50;
-    const probBiased = total > 0 ? (posteriorBiased / total) * 100 : 50;
-    
-    return {
-      posteriorFair,
-      posteriorBiased,
-      probFair,
-      probBiased
-    };
-  }, [priorFair, priorBiased, likelihoodFair, likelihoodBiased]);
+    const posterior = priors.map((p, i) => p * likelihoods[i]);
+    const total = posterior.reduce((acc, x) => acc + x, 0);
+    const probabilities = posterior.map((p) => (total > 0 ? (p / total) * 100 : 0));
+    return { posterior, probabilities };
+  }, [priors, likelihoods]);
+
+  const labels = mode === 2 ? LABELS_2 : LABELS_3;
 
   return (
     <div className="p-4 sm:p-6 bg-gray-50 rounded-lg space-y-4 max-w-3xl mx-auto">
-      {title && (
-        <h3 className="text-lg font-semibold text-center text-gray-800">
-          {title}
-        </h3>
-      )}
+      {title && <h3 className="text-lg font-semibold text-center text-gray-800">{title}</h3>}
 
       <div className="bg-white rounded-lg p-4 sm:p-6 space-y-4">
         {/* Prior odds input */}
         <div className="flex items-center">
           <span className="text-sm font-medium text-gray-700 w-32 text-right">Prior odds:</span>
-          <div className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded bg-blue-50 ml-4">
-            <span className="text-xs text-gray-500 w-12 text-right">Fair</span>
-            <input
-              type="number"
-              value={priorFair}
-              onChange={(e) => setPriorFair(parseFloat(e.target.value) || 0)}
-              className="font-mono text-sm font-bold w-20 text-center border border-gray-300 rounded px-2 py-1"
-              step="0.1"
-              min="0"
-            />
-            <span className="text-gray-500 text-lg">:</span>
-            <input
-              type="number"
-              value={priorBiased}
-              onChange={(e) => setPriorBiased(parseFloat(e.target.value) || 0)}
-              className="font-mono text-sm font-bold w-20 text-center border border-gray-300 rounded px-2 py-1"
-              step="0.1"
-              min="0"
-            />
-            <span className="text-xs text-gray-500 w-12">Biased</span>
+          <div className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded bg-blue-50 ml-4 overflow-x-auto">
+            {priors.map((val, idx) => (
+              <React.Fragment key={`prior-${idx}`}>
+                {idx !== 0 && <span className="text-gray-500 text-lg">:</span>}
+                <div className="flex flex-col items-center space-y-1">
+                  <input
+                    type="number"
+                    value={val}
+                    onChange={(e) => updatePrior(idx, parseFloat(e.target.value) || 0)}
+                    className="font-mono text-sm font-bold w-20 text-center border border-gray-300 rounded px-2 py-1"
+                    step="0.1"
+                    min="0"
+                  />
+                  <span className="text-xs text-gray-500 whitespace-nowrap">{labels[idx]}</span>
+                </div>
+              </React.Fragment>
+            ))}
           </div>
         </div>
 
         {/* Likelihood input */}
         <div className="flex items-center">
           <span className="text-sm font-medium text-gray-700 w-32 text-right">Likelihood of heads:</span>
-          <div className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded bg-orange-50 ml-4">
-            <span className="text-xs text-gray-500 w-12 text-right">Fair</span>
-            <input
-              type="number"
-              value={likelihoodFair}
-              onChange={(e) => setLikelihoodFair(parseFloat(e.target.value) || 0)}
-              className="font-mono text-sm font-bold w-20 text-center border border-gray-300 rounded px-2 py-1"
-              step="0.01"
-              min="0"
-              max="1"
-            />
-            <div className="w-8 flex justify-center relative">
-              <span className="text-gray-500 text-lg">:</span>
-              {/* Overlapping operator positioned perfectly between boxes */}
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -mt-7 z-10">
-                <div className="bg-white border-2 border-gray-300 rounded-full w-8 h-8 flex items-center justify-center shadow-sm">
-                  <span className="text-blue-600 text-lg font-bold">×</span>
+          <div className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded bg-orange-50 ml-4 overflow-x-auto">
+            {likelihoods.map((val, idx) => (
+              <React.Fragment key={`like-${idx}`}>
+                {idx !== 0 && <span className="text-gray-500 text-lg">:</span>}
+                <div className="flex flex-col items-center">
+                  <input
+                    type="number"
+                    value={val}
+                    onChange={(e) => updateLikelihood(idx, parseFloat(e.target.value) || 0)}
+                    className="font-mono text-sm font-bold w-20 text-center border border-gray-300 rounded px-2 py-1"
+                    step="0.01"
+                    min="0"
+                    max="1"
+                  />
                 </div>
-              </div>
-            </div>
-            <input
-              type="number"
-              value={likelihoodBiased}
-              onChange={(e) => setLikelihoodBiased(parseFloat(e.target.value) || 0)}
-              className="font-mono text-sm font-bold w-20 text-center border border-gray-300 rounded px-2 py-1"
-              step="0.01"
-              min="0"
-              max="1"
-            />
-            <span className="text-xs text-gray-500 w-12">Biased</span>
+              </React.Fragment>
+            ))}
           </div>
         </div>
 
@@ -111,34 +129,50 @@ const BayesCalculatorWidget: React.FC<Props> = ({
           {/* Posterior odds */}
           <div className="flex items-center">
             <span className="text-sm font-medium text-gray-700 w-32 text-right">Posterior odds:</span>
-            <div className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded bg-gray-50 ml-4">
-              <span className="text-xs text-gray-500 w-12 text-right"></span>
-              <span className="font-mono text-sm font-bold w-20 text-center">
-                {calculations.posteriorFair.toFixed(2)}
-              </span>
-              <span className="text-gray-500 text-lg">:</span>
-              <span className="font-mono text-sm font-bold w-20 text-center">
-                {calculations.posteriorBiased.toFixed(2)}
-              </span>
-              <span className="text-xs text-gray-500 w-12"></span>
+            <div className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded bg-gray-50 ml-4 overflow-x-auto">
+              {calculations.posterior.map((val, idx) => (
+                <React.Fragment key={`post-${idx}`}>
+                  {idx !== 0 && <span className="text-gray-500 text-lg">:</span>}
+                  <span className="font-mono text-sm font-bold w-20 text-center">{val.toFixed(2)}</span>
+                </React.Fragment>
+              ))}
             </div>
           </div>
 
           {/* Posterior probabilities */}
           <div className="flex items-center">
             <span className="text-sm font-medium text-gray-700 w-32 text-right">Probabilities:</span>
-            <div className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded bg-green-50 ml-4">
-              <span className="text-xs text-gray-500 w-12 text-right"></span>
-              <span className="font-mono text-sm font-bold text-blue-600 w-20 text-center">
-                {calculations.probFair.toFixed(1)}%
-              </span>
-              <span className="text-gray-500 text-lg">:</span>
-              <span className="font-mono text-sm font-bold text-blue-600 w-20 text-center">
-                {calculations.probBiased.toFixed(1)}%
-              </span>
-              <span className="text-xs text-gray-500 w-12"></span>
+            <div className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded bg-green-50 ml-4 overflow-x-auto">
+              {calculations.probabilities.map((val, idx) => (
+                <React.Fragment key={`prob-${idx}`}>
+                  {idx !== 0 && <span className="text-gray-500 text-lg">:</span>}
+                  <span className="font-mono text-sm font-bold text-blue-600 w-20 text-center">{val.toFixed(1)}%</span>
+                </React.Fragment>
+              ))}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Mode selector styled like the Max Entropy widget */}
+      <div className="flex justify-center mt-4">
+        <div className="inline-flex rounded-lg border border-gray-200 bg-gray-100 p-1">
+          <button
+            onClick={() => setModeWithDefaults(2)}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              mode === 2 ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            2 hypotheses
+          </button>
+          <button
+            onClick={() => setModeWithDefaults(3)}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              mode === 3 ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            3 hypotheses
+          </button>
         </div>
       </div>
     </div>

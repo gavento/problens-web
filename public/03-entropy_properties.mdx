@@ -127,6 +127,72 @@ That's pretty awesome—it means KL divergence isn't some arbitrary formula some
 </Expand>
 
 
+<Expand headline = "Conditional entropy and mutual information" advanced={true}>
+
+I want to tell you about mutual information - a pretty important quantity that ties together our intuitions behind KL divergence and entropy. We won't need it in the future, so feel free to skip this one. 
+
+First, a quick refresher: Let's say you've got two distributions $p_1$ and $p_2$. Maybe $p_1$ is about weather (☀️ or ☁️) and $p_2$ is how I get to work (🚶‍♀️, 🚲, or 🚌). A joint distribution is a table showing the probability of each combo. Here are three possible joint distributions for three different people:
+
+![Which table is the "most" independent?](00-introduction/independence.png)
+
+All three have the same _marginals_: 70% good weather, and 20%/30%/50% for walk/bike/bus.
+
+Two distributions are independent if their joint distribution equals the product of the marginals. Here's what independence looks like:
+
+![Independent distributions](00-introduction/independence2.png)
+
+Here comes the riddle: Which of our three tables is "closest" to being independent? Try to think about it before going on. 
+
+
+.
+
+
+SPOILER ALERT:
+
+.
+
+
+To answer this question properly, we need a precise measure for how different each table is from the ideal independent one. There are more ways to do this<Footnote>For example, people often use [correlation](https://en.wikipedia.org/wiki/Correlation), but that has problems. First, correlation only works for numbers, not general stuff like \{☀️, ☁️\}. Also, zero correlation doesn't mean independence. </Footnote>, but using KL divergence is a very principled way to do this. We've got two distributions: the "truth" (one of our tables) and the "model" (the ideal independent table). The KL between them tells us how well the model matches reality—basically, how long until a Bayesian detective figures out the data isn't coming from the independent model.
+
+The KL divergences for our tables:
+
+$$
+D(p_1, q) \approx 0.40
+$$
+$$
+D(p_2, q) \approx 0.04
+$$
+$$
+D(p_3, q) \approx 0.21
+$$
+
+So table 2 is "closest" to independence, as formalized by KL divergence. 
+
+This works for any joint distribution $(r, s)$. The KL divergence between $(r, s)$ and the independent version $r \otimes s$ is called [mutual information](http://en.wikipedia.org/wiki/Mutual_information) between $r$ and $s$—it's a super-important quantity in information theory.
+
+You can try to play with it in the widget below. 
+
+<MutualInformationWidget /> 
+
+There is a second intuition for mutual information. Intuitively, it tells us how many bits we learn about $X$ when we find out the value of $Y$ (or vice versa—it's symmetric). This can be formalized using entropy. 
+
+First, recall the entropy formula $H(X) = \sum_{x} P(X = x) \log \frac{1}{P(X = x)}$. This formula still works if we condition on knowing that $Y$ takes a certain value $y$. We can write
+<Math displayMode={true} math="H(X | Y = y) = \sum_{x} P(X = x | Y = y) \log \frac{1}{P(X = x | Y = y)}" />
+The conditional entropy $H(X|Y)$ is defined as the entropy of $X$ after I sample $Y$ and learn its value, i.e.:
+<Math displayMode={true} math="H(X|Y) = \sum_{y} P(Y = y) H(X | Y =y)" />
+
+Now here's a cool fact: If you write down the definition of mutual information, you get:
+
+
+<Math displayMode={true} math="I(X;Y) = H(X) - H(X|Y)" />
+
+So in particular, $H(X|Y) \le H(X)$. That is, learning the value of $Y$ is on average only decreasing the uncertainty about $X$ (and the difference is exactly the mutual information).
+
+It is a good exercise to write down all the definitions to check that this is true. To get some intuition about this, guess what happens if we make $P$(☀️ AND 🚶‍♀️$) = P$(☁️ AND 🚲$) = \frac{1}{2}$ in the above widget. The mutual information is then 1 bit. That's because learning the value of one distribution, say transport, makes the entropy of weather smaller by 1 bit - the weather distribution changes from a coin flip ($H(\textrm{weather}) = 1$) to either determined ☀️ or determined ☁️ ($H(\textrm{weather} | \textrm{transport}) = 0$). 
+
+</Expand>
+
+
 
 ## 🎵 Anthem battle
 

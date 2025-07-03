@@ -72,30 +72,6 @@ The following comic wisely teaches us that this many possibilities make it a pre
 </a>
 </Expand>
 
-<Expand headline = "Conditional entropy" advanced={true}>
-
-Let's go back to the mutual information that we [encountered in the first chapter](01-kl_intro/information-theory). This is a formula that we can apply to a joint distribution $(X,Y)$:
-
-<Math displayMode={true} math="I(X;Y) = D((X,Y), X \otimes Y)" />
-
-Intuitively, mutual information tells us how many bits we learn about $X$ when we find out the value of $Y$ (or vice versa—it's symmetric). This can be formalized using entropy. 
-
-First, recall the entropy formula $H(X) = \sum_{x} P(X = x) \log \frac{1}{P(X = x)}$. This formula still works if we condition on knowing that $Y$ takes a certain value $y$. We can write
-<Math displayMode={true} math="H(X | Y = y) = \sum_{x} P(X = x | Y = y) \log \frac{1}{P(X = x | Y = y)}" />
-The conditional entropy $H(X|Y)$ is defined as the entropy of $X$ after I sample $Y$ and learn its value, i.e.:
-<Math displayMode={true} math="H(X|Y) = \sum_{y} P(Y = y) H(X | Y =y)" />
-
-Conditional entropy has some nice properties. One of them is that $H(X|Y) \le H(X)$. That is, learning the value of $Y$ is on average only decreasing the uncertainty about $X$. In fact, the difference between the two is exactly the mutual information!
-
-<Math displayMode={true} math="I(X;Y) = H(X) - H(X|Y)" />
-It is a good exercise to write down all the definitions to check that this is true. To get some intuition about this, guess what happens if we make $P$(☀️ AND 🚶‍♀️$) = P$(☁️ AND 🚲$) = \frac{1}{2}$ in the widget below.  
-
-<MutualInformationWidget />
-
-The mutual information is then 1 bit. That's because learning the value of one distribution, say transport, makes the entropy of weather smaller by 1 bit - the weather distribution changes from a coin flip ($H(\textrm{weather}) = 1$) to either determined ☀️ or determined ☁️ ($H(\textrm{weather} | \textrm{transport}) = 0$). 
-
-</Expand>
-
 
 ## 🔐 Relative entropy
 KL divergence can be interpreted as the gap between cross-entropy and entropy. It tells us how far your average surprise (cross-entropy) is from the best possible (entropy). 
