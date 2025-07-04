@@ -128,23 +128,23 @@ const solveLogistic = (pts: LabeledPoint2D[], steps = 1000, lr = 0.1) => {
 
 const content = {
   meanVariance: {
-    model: `p(x\_1,\dots,x\_n|\mu,\sigma^2) = \n    \prod\_{i=1}^n \frac{1}{\sqrt{2\pi\sigma^2}}\,e^{-\frac{(x\_i-\mu)^2}{2\sigma^2}}`,
-    loss: `\hat\mu = \arg\min\_{\mu}\,\sum\_{i=1}^n (x\_i-\mu)^2`,
+    model: `p(x_1,\dots,x_n\mid \mu,\sigma^2) = \prod_{i=1}^n \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x_i-\mu)^2}{2\sigma^2}}`,
+    loss: `\hat\mu = \arg\min_{\mu} \sum_{i=1}^n (x_i-\mu)^2`,
     explanation: `> **From the chapter:**\nFirst, we transform the general idea that mean and variance are important into a concrete probabilistic model. The maximum entropy principle suggests modeling the data as independent samples drawn from the Gaussian distribution. ...`,
   },
   linearRegression: {
-    model: `p((x\_1,y\_1),\dots|(a,b,\sigma^2)) = \n    \prod\_{i=1}^n \frac{1}{\sqrt{2\pi\sigma^2}}\,e^{-\frac{(ax\_i+b-y\_i)^2}{2\sigma^2}}`,
-    loss: `\hat a,\hat b = \arg\min\_{a,b}\,\sum\_{i=1}^n (ax\_i + b - y\_i)^2`,
+    model: `p((x_1,y_1),\dots\mid a,b,\sigma^2) = \prod_{i=1}^n \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(ax_i + b - y_i)^2}{2\sigma^2}}`,
+    loss: `\hat a,\hat b = \arg\min_{a,b} \sum_{i=1}^n (ax_i + b - y_i)^2`,
     explanation: `> **From the chapter:**\nOnce we have a model, we apply the maximum likelihood principle ... (verbatim text omitted for brevity).`,
   },
   kMeans: {
-    model: `p(x) = \frac{1}{k} \sum\_{j=1}^k \mathcal N(x\mid \mu\_j,\sigma^2 I)`,
-    loss: `\arg\min\_{\mu\_1,\dots,\mu\_k}\sum\_{i=1}^n \min\_{j} \|x\_i-\mu\_j\|^2`,
+    model: `p(x) = \frac{1}{k} \sum_{j=1}^k \mathcal N(x\mid \mu_j,\sigma^2 I)`,
+    loss: `\arg\min_{\mu_1,\dots,\mu_k} \sum_{i=1}^n \min_j \|x_i-\mu_j\|^2`,
     explanation: `> **From the chapter:**\nWe factorize the joint distribution with cluster centers ...`,
   },
   logisticRegression: {
     model: `p(\text{red}|(x,y)) = \sigma(\lambda(\theta\cdot(x,y)+\delta))`,
-    loss: `\arg\min\_{\theta,\delta,\lambda}\sum\_{i} \ell\_i\log p\_i + (1-\ell\_i)\log(1-p\_i)`,
+    loss: `\arg\min_{\theta,\delta,\lambda} \sum_i \ell_i \log p_i + (1-\ell_i) \log(1-p_i)`,
     explanation: `> **From the chapter:**\nWe model the probability of class with the logistic function ...`,
   },
 } as const;
@@ -160,6 +160,7 @@ export default function MLProblemExplorer() {
   const [kmeansPts, setKmeansPts] = useState<Point2D[]>(defaultKMeans);
   const [logPts, setLogPts] = useState<LabeledPoint2D[]>(defaultLogReg);
   const [k, setK] = useState(3);
+  const [logAddLabel, setLogAddLabel] = useState<0 | 1>(0);
 
   // Solutions -------------------------------------------------
   const meanVarSolution = useMemo(() => {
@@ -200,7 +201,7 @@ export default function MLProblemExplorer() {
       setKmeansPts([...kmeansPts, p]);
     } else if (mode === "logisticRegression") {
       const p = fromCanvas(cx, cy);
-      setLogPts([...logPts, { ...p, label: 0 }]);
+      setLogPts([...logPts, { ...p, label: logAddLabel }]);
     }
   };
 
@@ -316,7 +317,8 @@ export default function MLProblemExplorer() {
       </svg>
 
       {/* Solve button */}
-      <div className="text-center">
+      <div className="flex justify-center space-x-2">
+        {/* Solve */}
         <button
           onClick={() => {
             // trigger re-render by resetting state (solutions are memoized on points)
@@ -329,6 +331,29 @@ export default function MLProblemExplorer() {
         >
           Solve
         </button>
+
+        {/* Reset */}
+        <button
+          onClick={() => {
+            if (mode === "meanVariance") setPoints1D([]);
+            else if (mode === "linearRegression") setPoints2D([]);
+            else if (mode === "kMeans") setKmeansPts([]);
+            else if (mode === "logisticRegression") setLogPts([]);
+          }}
+          className="mt-2 px-4 py-1 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+        >
+          Reset
+        </button>
+
+        {/* Color toggle for logistic regression */}
+        {mode === "logisticRegression" && (
+          <button
+            onClick={() => setLogAddLabel(logAddLabel === 0 ? 1 : 0)}
+            className={`mt-2 px-4 py-1 rounded text-white ${logAddLabel === 0 ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700"}`}
+          >
+            Add {logAddLabel === 0 ? "Red" : "Blue"}
+          </button>
+        )}
       </div>
 
       {/* Formulas */}
