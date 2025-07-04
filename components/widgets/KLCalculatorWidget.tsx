@@ -8,8 +8,8 @@ interface LetterFrequency {
 }
 
 export default function KLCalculatorWidget() {
-  const [text1, setText1] = useState('');
-  const [text2, setText2] = useState('');
+  const [text1, setText1] = useState("");
+  const [text2, setText2] = useState("");
   const [result, setResult] = useState<{
     kl12: number;
     kl21: number;
@@ -24,24 +24,26 @@ export default function KLCalculatorWidget() {
   useEffect(() => {
     const loadDefaultTexts = async () => {
       try {
-        const basePath = process.env.NODE_ENV === 'production' ? '/problens-web' : '';
-        
+        const basePath = process.env.NODE_ENV === "production" ? "/problens-web" : "";
+
         const [anthemsEnResponse, anthemsResponse] = await Promise.all([
           fetch(`${basePath}/compression_experiments/texts/anthems-en.txt`),
-          fetch(`${basePath}/compression_experiments/texts/anthems.txt`)
+          fetch(`${basePath}/compression_experiments/texts/anthems.txt`),
         ]);
 
         if (anthemsEnResponse.ok && anthemsResponse.ok) {
           const anthemsEnText = await anthemsEnResponse.text();
           const anthemsText = await anthemsResponse.text();
-          
+
           setText1(anthemsEnText.trim());
           setText2(anthemsText.trim());
         }
       } catch (error) {
-        console.error('Failed to load default texts:', error);
+        console.error("Failed to load default texts:", error);
         // Set fallback texts
-        setText1("O say can you see, by the dawn's early light, What so proudly we hailed at the twilight's last gleaming...");
+        setText1(
+          "O say can you see, by the dawn's early light, What so proudly we hailed at the twilight's last gleaming...",
+        );
         setText2("Allons, enfants de la Patrie, Le jour de gloire est arrive...");
       } finally {
         setLoadingTexts(false);
@@ -53,8 +55,8 @@ export default function KLCalculatorWidget() {
 
   const calculateLetterFrequencies = (text: string): LetterFrequency => {
     const frequencies: LetterFrequency = {};
-    const normalizedText = text.toLowerCase().replace(/[^a-z]/g, '');
-    
+    const normalizedText = text.toLowerCase().replace(/[^a-z]/g, "");
+
     if (normalizedText.length === 0) return {};
 
     for (const char of normalizedText) {
@@ -108,8 +110,8 @@ export default function KLCalculatorWidget() {
       }
     }
     if (missingLetters.length > 0) {
-      const letterList = missingLetters.map(l => `'${l}'`).join(', ');
-      return `because ${pName} contains ${letterList} but ${qName} misses ${missingLetters.length === 1 ? 'it' : 'them'} entirely`;
+      const letterList = missingLetters.map((l) => `'${l}'`).join(", ");
+      return `because ${pName} contains ${letterList} but ${qName} misses ${missingLetters.length === 1 ? "it" : "them"} entirely`;
     }
     return null;
   };
@@ -118,7 +120,7 @@ export default function KLCalculatorWidget() {
     if (!text1.trim() || !text2.trim()) return;
 
     setLoading(true);
-    
+
     // Use setTimeout to allow UI to update
     setTimeout(() => {
       const freq1 = calculateLetterFrequencies(text1);
@@ -150,20 +152,16 @@ export default function KLCalculatorWidget() {
 
   return (
     <div className="p-4 sm:p-6 bg-gray-50 rounded-lg space-y-4 sm:space-y-6 max-w-4xl mx-auto">
-      <h3 className="text-xl font-semibold text-center text-gray-800">
-        KL Divergence Calculator
-      </h3>
-      
+      <h3 className="text-xl font-semibold text-center text-gray-800">KL & Entropy Calculator</h3>
+
       <div className="text-sm text-gray-600 text-center">
-        KL divergence between letter frequencies (case insensitive, letters only)
+        Computes KL and entropy for the letter frequency distributions (case insensitive, English letters only)
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Text 1 */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Text 1 (distribution p₁)
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Text 1 (distribution p₁)</label>
           <textarea
             value={text1}
             onChange={(e) => setText1(e.target.value)}
@@ -171,15 +169,13 @@ export default function KLCalculatorWidget() {
             placeholder="Enter first text..."
           />
           <div className="text-xs text-gray-500">
-            Characters: {text1.length} | Letters: {text1.toLowerCase().replace(/[^a-z]/g, '').length}
+            Characters: {text1.length} | Letters: {text1.toLowerCase().replace(/[^a-z]/g, "").length}
           </div>
         </div>
 
         {/* Text 2 */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Text 2 (distribution p₂)
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Text 2 (distribution p₂)</label>
           <textarea
             value={text2}
             onChange={(e) => setText2(e.target.value)}
@@ -187,7 +183,7 @@ export default function KLCalculatorWidget() {
             placeholder="Enter second text..."
           />
           <div className="text-xs text-gray-500">
-            Characters: {text2.length} | Letters: {text2.toLowerCase().replace(/[^a-z]/g, '').length}
+            Characters: {text2.length} | Letters: {text2.toLowerCase().replace(/[^a-z]/g, "").length}
           </div>
         </div>
       </div>
@@ -199,7 +195,7 @@ export default function KLCalculatorWidget() {
           disabled={loading || !text1.trim() || !text2.trim()}
           className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
-          {loading ? 'Computing...' : 'Compute KL Divergence'}
+          {loading ? "Computing..." : "Compute KL Divergence"}
         </button>
       </div>
 
@@ -207,7 +203,7 @@ export default function KLCalculatorWidget() {
       {result && (
         <div className="bg-white rounded-lg p-4 space-y-4">
           <h4 className="text-lg font-semibold text-gray-800">Results</h4>
-          
+
           <div className="space-y-4">
             {/* KL Divergences */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -216,34 +212,36 @@ export default function KLCalculatorWidget() {
                   <KatexMath math="D(p_1, p_2)" />
                 </div>
                 <div className="text-lg font-bold text-blue-900">
-                  {isFinite(result.kl12) ? `${result.kl12.toFixed(4)} bits` : 'infinite'}
+                  {isFinite(result.kl12) ? `${result.kl12.toFixed(4)} bits` : "infinite"}
                 </div>
                 <div className="text-xs text-blue-700">
                   KL divergence from Text 1 to Text 2
-                  {!isFinite(result.kl12) && (() => {
-                    const freq1 = calculateLetterFrequencies(text1);
-                    const freq2 = calculateLetterFrequencies(text2);
-                    const reason = findInfiniteReason(freq1, freq2, 'p₁', 'p₂');
-                    return reason ? <div className="mt-1 italic">{reason}</div> : null;
-                  })()}
+                  {!isFinite(result.kl12) &&
+                    (() => {
+                      const freq1 = calculateLetterFrequencies(text1);
+                      const freq2 = calculateLetterFrequencies(text2);
+                      const reason = findInfiniteReason(freq1, freq2, "p₁", "p₂");
+                      return reason ? <div className="mt-1 italic">{reason}</div> : null;
+                    })()}
                 </div>
               </div>
-              
+
               <div className="p-3 bg-green-50 rounded-lg border border-green-200">
                 <div className="text-sm font-medium text-green-800 mb-1">
                   <KatexMath math="D(p_2, p_1)" />
                 </div>
                 <div className="text-lg font-bold text-green-900">
-                  {isFinite(result.kl21) ? `${result.kl21.toFixed(4)} bits` : 'infinite'}
+                  {isFinite(result.kl21) ? `${result.kl21.toFixed(4)} bits` : "infinite"}
                 </div>
                 <div className="text-xs text-green-700">
                   KL divergence from Text 2 to Text 1
-                  {!isFinite(result.kl21) && (() => {
-                    const freq1 = calculateLetterFrequencies(text1);
-                    const freq2 = calculateLetterFrequencies(text2);
-                    const reason = findInfiniteReason(freq2, freq1, 'p₂', 'p₁');
-                    return reason ? <div className="mt-1 italic">{reason}</div> : null;
-                  })()}
+                  {!isFinite(result.kl21) &&
+                    (() => {
+                      const freq1 = calculateLetterFrequencies(text1);
+                      const freq2 = calculateLetterFrequencies(text2);
+                      const reason = findInfiniteReason(freq2, freq1, "p₂", "p₁");
+                      return reason ? <div className="mt-1 italic">{reason}</div> : null;
+                    })()}
                 </div>
               </div>
             </div>
@@ -254,37 +252,29 @@ export default function KLCalculatorWidget() {
                 <div className="text-sm font-medium text-gray-800 mb-1">
                   <KatexMath math="H(p_1)" />
                 </div>
-                <div className="text-lg font-bold text-gray-900">
-                  {result.entropy1.toFixed(4)} bits
-                </div>
-                <div className="text-xs text-gray-700">
-                  Entropy of Text 1
-                </div>
+                <div className="text-lg font-bold text-gray-900">{result.entropy1.toFixed(4)} bits</div>
+                <div className="text-xs text-gray-700">Entropy of Text 1</div>
               </div>
-              
+
               <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
                 <div className="text-sm font-medium text-gray-800 mb-1">
                   <KatexMath math="H(p_2)" />
                 </div>
-                <div className="text-lg font-bold text-gray-900">
-                  {result.entropy2.toFixed(4)} bits
-                </div>
-                <div className="text-xs text-gray-700">
-                  Entropy of Text 2
-                </div>
+                <div className="text-lg font-bold text-gray-900">{result.entropy2.toFixed(4)} bits</div>
+                <div className="text-xs text-gray-700">Entropy of Text 2</div>
               </div>
             </div>
           </div>
 
           {/* Debug: Show Letter Frequency Distributions */}
           <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-            <button 
+            <button
               onClick={() => setShowDistributions(!showDistributions)}
               className="text-sm font-medium text-blue-600 hover:text-blue-800 underline cursor-pointer"
             >
               📊 Letter Frequency Distributions
             </button>
-            
+
             {showDistributions && (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mt-3">
@@ -295,7 +285,7 @@ export default function KLCalculatorWidget() {
                         {(() => {
                           const freq1 = calculateLetterFrequencies(text1);
                           return Object.entries(freq1)
-                            .sort(([,a], [,b]) => b - a)
+                            .sort(([, a], [, b]) => b - a)
                             .map(([letter, prob]) => (
                               <div key={letter} className="flex justify-between">
                                 <span>{letter}:</span>
@@ -306,7 +296,7 @@ export default function KLCalculatorWidget() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div>
                     <div className="font-medium text-gray-700 mb-2">Text 2 Distribution (p₂)</div>
                     <div className="bg-white p-2 rounded border max-h-32 overflow-y-auto">
@@ -314,7 +304,7 @@ export default function KLCalculatorWidget() {
                         {(() => {
                           const freq2 = calculateLetterFrequencies(text2);
                           return Object.entries(freq2)
-                            .sort(([,a], [,b]) => b - a)
+                            .sort(([, a], [, b]) => b - a)
                             .map(([letter, prob]) => (
                               <div key={letter} className="flex justify-between">
                                 <span>{letter}:</span>
@@ -335,10 +325,17 @@ export default function KLCalculatorWidget() {
             <h5 className="text-base font-semibold text-blue-800 mb-3">Understanding the Results</h5>
             <div className="space-y-3 text-sm text-gray-700">
               <p>
-                First, we can see that the mixed file has larger entropy. This makes sense! Every language uses different letters with different frequencies. For example, &lsquo;z&rsquo; is quite uncommon in English, but pretty common in German. If we pool different languages together, the distribution of frequencies is becoming &lsquo;smoother&rsquo;, more uniform. Hence, larger entropy. Admittedly, it&rsquo;s only slightly larger, since increasing the probability of &lsquo;z&rsquo; from 0.02 to 0.0003 is not really increasing the entropy that much.
+                First, we can see that the mixed file has larger entropy. This makes sense! Every language uses
+                different letters with different frequencies. For example, &lsquo;z&rsquo; is quite uncommon in English,
+                but pretty common in German. If we pool different languages together, the distribution of frequencies is
+                becoming &lsquo;smoother&rsquo;, more uniform. Hence, larger entropy. Admittedly, it&rsquo;s only
+                slightly larger, since increasing the probability of &lsquo;z&rsquo; from 0.02 to 0.0003 is not really
+                increasing the entropy that much.
               </p>
               <p>
-                For similar reasons, KL between p₁ and p₂ is smaller than vice versa. Remember, KL is all about probability <em>ratios</em>. If p(&lsquo;e&rsquo;) = 0.12 and q(&lsquo;e&rsquo;) = 0.11, q is a good model of p. But if p(&lsquo;z&rsquo;) = 0.02 and q(&lsquo;z&rsquo;)=0.0003, q is a crappy model of p.
+                For similar reasons, KL between p₁ and p₂ is smaller than vice versa. Remember, KL is all about
+                probability <em>ratios</em>. If p(&lsquo;e&rsquo;) = 0.12 and q(&lsquo;e&rsquo;) = 0.11, q is a good
+                model of p. But if p(&lsquo;z&rsquo;) = 0.02 and q(&lsquo;z&rsquo;)=0.0003, q is a crappy model of p.
               </p>
             </div>
           </div>

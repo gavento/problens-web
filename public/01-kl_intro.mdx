@@ -109,7 +109,7 @@ We started with one bit favoring the $\textsf{fair}$ hypothesis, so we end up wi
 Let's say the coin actually is biased. How fast will our Bayesian detective figure this out? We can calculate the average number of bits that she learns per flip. Heads give -1 bit (negative because it points the wrong way), tails give +0.58 bits. On average, each flip gives:
 
 <div className="math-display-large">
-<Math displayMode={true} math='\underbrace{0.25}_{P(\textsf{H})} \cdot \underbrace{-1 \textrm{ bit}}_{\textrm{evidence when \textsf{H}}} + \underbrace{0.75}_{P(\textsf{T})} \cdot \underbrace{0.58 \textrm{ bits}}_{\textrm{evidence when \textsf{T}}} \approx \underbrace{0.19 \textrm{ bits}}_{\textrm{expected evidence per flip}}' />
+<Math displayMode={true} math='\underbrace{0.25}_{P(\textsf{H} | \textsf{biased})} \cdot \underbrace{-1 \textrm{ bit}}_{\textrm{evidence when \textsf{H}}} + \underbrace{0.75}_{P(\textsf{T} | \textsf{biased})} \cdot \underbrace{0.58 \textrm{ bits}}_{\textrm{evidence when \textsf{T}}} \approx \underbrace{0.19 \textrm{ bits}}_{\textrm{expected evidence per flip}}' />
 </div>
 
 bits of evidence toward the truth. {/*This is the KL divergence between the true 25%/75% distribution and the model 50%/50% distribution!*/}

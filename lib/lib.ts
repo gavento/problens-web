@@ -68,6 +68,7 @@ import KeyTakeaway from "@/components/content/KeyTakeaway";
 import RiddleSolution from "@/components/content/RiddleSolution";
 import ImageGallery from "@/components/content/ImageGallery";
 import Quote from "@/components/content/Quote";
+import MLProblemExplorer from "@/components/widgets/MLProblemExplorer";
 
 // Force color support for CI/build environments
 chalk.level = 3;
@@ -219,6 +220,7 @@ export async function getMdxContent(path: string) {
       ThreeCategoriesWidget: ThreeCategoriesWidget,
       GPT2CompressionWidget: GPT2CompressionWidget,
       LetterPredictionWidget: LetterPredictionWidget,
+      MLProblemExplorer: MLProblemExplorer,
       Math: NumberedMath,
       EqRef: EquationRef,
       Block: Block,
