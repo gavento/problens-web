@@ -41,7 +41,7 @@ export const PARTS = [
 export const META_PAGES = [
   ["Resources", "resources"],
   ["About", "about"],
-  ["Bonus", "bonus"],
+  ["Graveyard", "bonus"],
 ];
 
 // For backward compatibility

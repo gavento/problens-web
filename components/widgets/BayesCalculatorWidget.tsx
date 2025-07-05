@@ -74,38 +74,48 @@ const BayesCalculatorWidget: React.FC<{ title?: string }> = ({ title = "Bayes Ca
     <div className="p-4 sm:p-6 bg-gray-50 rounded-lg space-y-4 max-w-3xl mx-auto">
       {title && <h3 className="text-lg font-semibold text-center text-gray-800">{title}</h3>}
 
-      <div className="bg-white rounded-lg p-4 sm:p-6 space-y-4">
+      <div className="bg-white rounded-lg p-4 sm:p-6 space-y-4 relative">
         {/* Prior odds input */}
         <div className="flex items-center">
-          <span className="text-sm font-medium text-gray-700 w-32 text-right">Prior odds:</span>
-          <div className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded bg-blue-50 ml-4 overflow-x-auto">
-            {priors.map((val, idx) => (
-              <React.Fragment key={`prior-${idx}`}>
-                {idx !== 0 && <span className="text-gray-500 text-lg">:</span>}
-                <div className="flex flex-col items-center space-y-1">
-                  <input
-                    type="number"
-                    value={val}
-                    onChange={(e) => updatePrior(idx, parseFloat(e.target.value) || 0)}
-                    className="font-mono text-sm font-bold w-20 text-center border border-gray-300 rounded px-2 py-1"
-                    step="0.1"
-                    min="0"
-                  />
+          <span className="text-sm font-medium text-gray-700 w-40 text-right">Prior odds:</span>
+          <div className="flex-1 flex flex-col py-2 px-3 rounded bg-blue-50 ml-4 overflow-x-auto">
+            {/* Labels row */}
+            <div className="flex items-center justify-center space-x-2 mb-1">
+              {priors.map((val, idx) => (
+                <div key={`label-${idx}`} className="w-20 text-center">
                   <span className="text-xs text-gray-500 whitespace-nowrap">{labels[idx]}</span>
                 </div>
-              </React.Fragment>
-            ))}
+              ))}
+            </div>
+            {/* Input fields row with colons */}
+            <div className="flex items-center justify-center space-x-2">
+              {priors.map((val, idx) => (
+                <React.Fragment key={`prior-${idx}`}>
+                  {idx !== 0 && <span className="text-gray-500 text-lg">:</span>}
+                  <div className="relative">
+                    <input
+                      type="number"
+                      value={val}
+                      onChange={(e) => updatePrior(idx, parseFloat(e.target.value) || 0)}
+                      className="font-mono text-sm font-bold w-20 text-center border border-gray-300 rounded px-2 py-1"
+                      step="0.1"
+                      min="0"
+                    />
+                  </div>
+                </React.Fragment>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Likelihood input */}
         <div className="flex items-center">
-          <span className="text-sm font-medium text-gray-700 w-32 text-right">Likelihood of heads:</span>
-          <div className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded bg-orange-50 ml-4 overflow-x-auto">
+          <span className="text-sm font-medium text-gray-700 w-40 text-right">Likelihood of heads:</span>
+          <div className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded bg-orange-50 ml-4 overflow-visible relative">
             {likelihoods.map((val, idx) => (
               <React.Fragment key={`like-${idx}`}>
                 {idx !== 0 && <span className="text-gray-500 text-lg">:</span>}
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center relative">
                   <input
                     type="number"
                     value={val}
@@ -115,6 +125,12 @@ const BayesCalculatorWidget: React.FC<{ title?: string }> = ({ title = "Bayes Ca
                     min="0"
                     max="1"
                   />
+                  {/* Multiplication symbol positioned between prior and likelihood rows */}
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -mt-8 z-50 pointer-events-none">
+                    <div className="bg-white border-2 border-gray-300 rounded-full w-8 h-8 flex items-center justify-center shadow-sm">
+                      <span className="text-blue-600 text-lg font-bold">×</span>
+                    </div>
+                  </div>
                 </div>
               </React.Fragment>
             ))}
@@ -122,18 +138,18 @@ const BayesCalculatorWidget: React.FC<{ title?: string }> = ({ title = "Bayes Ca
         </div>
 
         {/* Horizontal line */}
-        <div className="border-t border-gray-300 ml-32"></div>
+        <div className="border-t border-gray-300 ml-40"></div>
 
         {/* Posterior results */}
         <div className="mt-4 space-y-3">
           {/* Posterior odds */}
           <div className="flex items-center">
-            <span className="text-sm font-medium text-gray-700 w-32 text-right">Posterior odds:</span>
-            <div className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded bg-gray-50 ml-4 overflow-x-auto">
+            <span className="text-sm font-medium text-gray-700 w-40 text-right">Posterior odds:</span>
+            <div className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded bg-green-50 ml-4 overflow-x-auto">
               {calculations.posterior.map((val, idx) => (
                 <React.Fragment key={`post-${idx}`}>
                   {idx !== 0 && <span className="text-gray-500 text-lg">:</span>}
-                  <span className="font-mono text-sm font-bold w-20 text-center">{val.toFixed(2)}</span>
+                  <span className="font-mono text-sm font-bold text-blue-600 w-20 text-center">{val.toFixed(2)}</span>
                 </React.Fragment>
               ))}
             </div>
@@ -141,11 +157,11 @@ const BayesCalculatorWidget: React.FC<{ title?: string }> = ({ title = "Bayes Ca
 
           {/* Posterior probabilities */}
           <div className="flex items-center">
-            <span className="text-sm font-medium text-gray-700 w-32 text-right">Probabilities:</span>
+            <span className="text-sm font-medium text-gray-700 w-40 text-right">Posterior probability:</span>
             <div className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded bg-green-50 ml-4 overflow-x-auto">
               {calculations.probabilities.map((val, idx) => (
                 <React.Fragment key={`prob-${idx}`}>
-                  {idx !== 0 && <span className="text-gray-500 text-lg">:</span>}
+                  {idx !== 0 && idx !== calculations.probabilities.length - 1 && <span className="text-gray-500 text-lg">:</span>}
                   <span className="font-mono text-sm font-bold text-blue-600 w-20 text-center">{val.toFixed(1)}%</span>
                 </React.Fragment>
               ))}

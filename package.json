@@ -4,7 +4,7 @@
   "private": true,
   "author": "Tomas Gavenciak <gavento@gmail.com>",
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "build:turbo": "next build --experimental-turbo",
     "start": "next build && serve out -n",

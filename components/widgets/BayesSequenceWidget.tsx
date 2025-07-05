@@ -11,7 +11,7 @@ type Props = {
 type CoinFlip = "H" | "T";
 
 const BayesSequenceWidget: React.FC<Props> = ({
-  title = "Bayes Sequence Explorer",
+  title = "Bayes sequence calculator",
   logSpace = false,
   highlightSurprisals = false,
 }) => {
@@ -193,18 +193,16 @@ const BayesSequenceWidget: React.FC<Props> = ({
         {/* Prior and flip rows */}
         <div className="bg-white rounded-lg p-4 relative">
           {/* Prior row */}
-          <div
-            className={`relative flex items-center py-3 px-4 rounded border ${
-              logSpace ? "bg-purple-50 border-purple-200" : "bg-blue-50 border-blue-200"
-            }`}
-          >
-            <div className="w-24 text-sm font-medium text-gray-700">{logSpace ? "Prior log-odds" : "Prior odds"}</div>
+          <div className={`relative flex items-center py-3 pl-4 pr-4 ml-44 rounded bg-blue-50 border-blue-200`}>
+            <div className="absolute -left-44 w-40 text-right text-sm font-medium text-gray-700">
+              {logSpace ? "Prior log-odds" : "Prior odds"}
+            </div>
             <div className="flex-1 flex items-center">
               <div className="flex-1 text-right">
                 <span className="font-mono text-sm font-bold">{priorFair}</span>
               </div>
               <div className="w-8 flex justify-center">
-                <span className="text-gray-500 font-bold">:</span>
+                <span className="text-gray-500 font-bold">{logSpace ? <span className="text-xs font-normal text-gray-400">vs</span> : ":"}</span>
               </div>
               <div className="flex-1 text-left">
                 <span className="font-mono text-sm font-bold">{priorBiased}</span>
@@ -215,9 +213,10 @@ const BayesSequenceWidget: React.FC<Props> = ({
           {/* Flip rows */}
           {steps.slice(1, currentStep + 1).map((step, index) => (
             <div key={index} className="relative">
-              <div className="flex items-center py-3 px-4 rounded bg-gray-50 mt-2">
-                <div className="w-24 flex justify-center">
-                  <span className="font-mono font-bold text-lg">{step.flip}</span>
+              <div className={`relative flex items-center py-3 pl-4 pr-4 ml-44 rounded bg-orange-50 mt-2`}>
+                {/* H/T label outside the colored row */}
+                <div className="absolute -left-44 top-1/2 transform -translate-y-1/2 w-40 text-right font-mono font-bold text-lg">
+                  {step.flip}
                 </div>
                 <div className="flex-1 flex items-center">
                   <div className="flex-1 text-right">
@@ -228,7 +227,7 @@ const BayesSequenceWidget: React.FC<Props> = ({
                     </span>
                   </div>
                   <div className="w-8 flex justify-center relative">
-                    <span className="text-gray-500 font-bold">:</span>
+                    <span className="text-gray-500 font-bold">{logSpace ? <span className="text-xs font-normal text-gray-400">vs</span> : ":"}</span>
                     {/* Overlapping operator positioned perfectly between boxes */}
                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -mt-7 z-10">
                       <div className="bg-white border-2 border-gray-300 rounded-full w-8 h-8 flex items-center justify-center shadow-sm">
@@ -252,8 +251,10 @@ const BayesSequenceWidget: React.FC<Props> = ({
           <div className="mt-6 pt-4 border-t border-gray-300">
             {/* Cumulative Surprisals - only show when highlightSurprisals is true */}
             {highlightSurprisals && logSpace && currentStep > 0 && (
-              <div className="flex items-center py-3 px-4 rounded bg-yellow-50 mb-2">
-                <div className="w-24 text-sm font-medium text-gray-700">Total surprisal</div>
+              <div className={`relative flex items-center py-3 pl-4 pr-4 ml-44 rounded bg-orange-50 mb-2`}>
+                <div className="absolute -left-44 w-40 text-right text-sm font-medium text-gray-700">
+                  Total surprisal
+                </div>
                 <div className="flex-1 flex items-center">
                   <div className="flex-1 text-right">
                     <span className="font-mono text-sm font-bold text-green-600">
@@ -261,7 +262,7 @@ const BayesSequenceWidget: React.FC<Props> = ({
                     </span>
                   </div>
                   <div className="w-8 flex justify-center">
-                    <span className="text-gray-500 font-bold">:</span>
+                    <span className="text-gray-500 font-bold">{logSpace ? <span className="text-xs font-normal text-gray-400">vs</span> : ":"}</span>
                   </div>
                   <div className="flex-1 text-left">
                     <span className="font-mono text-sm font-bold text-orange-600">
@@ -273,19 +274,21 @@ const BayesSequenceWidget: React.FC<Props> = ({
             )}
 
             {logSpace && (
-              <div className="flex items-center py-3 px-4 rounded bg-green-50 mb-2">
-                <div className="w-24 text-sm font-medium text-gray-700">Posterior log odds</div>
+              <div className={`relative flex items-center py-3 pl-4 pr-4 ml-44 rounded bg-green-50 mb-2`}>
+                <div className="absolute -left-44 w-40 text-right text-sm font-medium text-gray-700">
+                  Posterior log odds
+                </div>
                 <div className="flex-1 flex items-center">
                   <div className="flex-1 text-right">
-                    <span className="font-mono text-sm font-bold text-purple-600">
+                    <span className="font-mono text-sm font-bold text-blue-600">
                       {steps[currentStep]?.logOddsFair?.toFixed(2)}
                     </span>
                   </div>
                   <div className="w-8 flex justify-center">
-                    <span className="text-gray-500 font-bold">:</span>
+                    <span className="text-gray-500 font-bold">{logSpace ? <span className="text-xs font-normal text-gray-400">vs</span> : ":"}</span>
                   </div>
                   <div className="flex-1 text-left">
-                    <span className="font-mono text-sm font-bold text-purple-600">
+                    <span className="font-mono text-sm font-bold text-blue-600">
                       {steps[currentStep]?.logOddsBiased?.toFixed(2)}
                     </span>
                   </div>
@@ -294,8 +297,8 @@ const BayesSequenceWidget: React.FC<Props> = ({
             )}
 
             {/* Posterior odds */}
-            <div className="flex items-center py-3 px-4 rounded bg-green-50 mb-2">
-              <div className="w-24 text-sm font-medium text-gray-700">Posterior odds</div>
+            <div className={`relative flex items-center py-3 pl-4 pr-4 ml-44 rounded bg-green-50 mb-2`}>
+              <div className="absolute -left-44 w-40 text-right text-sm font-medium text-gray-700">Posterior odds</div>
               <div className="flex-1 flex items-center">
                 <div className="flex-1 text-right">
                   <span className="font-mono text-sm font-bold text-blue-600">
@@ -314,8 +317,10 @@ const BayesSequenceWidget: React.FC<Props> = ({
             </div>
 
             {/* Probabilities */}
-            <div className="flex items-center py-3 px-4 rounded bg-green-50">
-              <div className="w-24 text-sm font-medium text-gray-700">Probability</div>
+            <div className={`relative flex items-center py-3 pl-4 pr-4 ml-44 rounded bg-green-50`}>
+              <div className="absolute -left-44 w-40 text-right text-sm font-medium text-gray-700">
+                Posterior probability
+              </div>
               <div className="flex-1 flex items-center">
                 <div className="flex-1 text-right">
                   <span className="font-mono text-sm font-bold text-blue-600">
@@ -323,7 +328,7 @@ const BayesSequenceWidget: React.FC<Props> = ({
                   </span>
                 </div>
                 <div className="w-8 flex justify-center">
-                  <span className="text-gray-500 font-bold">:</span>
+                  {/* No separator between final probabilities */}
                 </div>
                 <div className="flex-1 text-left">
                   <span className="font-mono text-sm font-bold text-blue-600">

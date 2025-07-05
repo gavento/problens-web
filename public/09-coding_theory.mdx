@@ -115,9 +115,9 @@ For example, if we are flipping a fair coin and want to keep the results, there 
 
 But if we are flipping a biased coin where heads have only $0.01$ probability, there are better ways to store the results! For example, we could split the outcomes into batches of 10, and give a code-name to each of the $2^{10}$ possibilities in a batch. If we use short code-names for very probably outcomes - e.g., $\mathsf{TTTTTTTTTT} \rightarrow \textsf{0}$, we can spare a lot of disk space! <Footnote>This goes back to our discussion of how to improve the slack of one bit in Shannon's code. </Footnote>
 
-The entropy of the coin flip is the rate of the best code, it's the speed of how much 'relevant information' we are generating with our flips.  
+The entropy of the coin flip is the rate of the best code, it's the rate at which we generate 'relevant information' with our flips.  
 
-With coding theory intuitions, cross-entropy also becomes also very natural: it's how many bits you need when data comes from $p$ but you are using the code that's optimized for a different distribution $q$. For example, in the top widget, you can construct the best code for $\mathsf{AACATACG}$, but then run it on $\mathsf{AAAAAAAA}$. 
+With coding theory intuitions, cross-entropy also becomes very natural: it's how many bits you need when data comes from $p$ but you are using the code that's optimized for a different distribution $q$. For example, in the top widget, you can construct the best code for $\mathsf{AACATACG}$, but then run it on $\mathsf{AAAAAAAA}$. 
 
 Finally, KL divergence (relative entropy) is how much worse your mismatched code is compared to the optimal one. 
 
@@ -125,7 +125,7 @@ We will now see more examples of how entropy and compression clicks.
 
 ## 📦 Predictive coding and LLMs
 
-So far, all our discussion was encoding the text letter-by-letter. This is not too hard. The real fun starts when we want to compress a given text _without the assumption that letters are independent_. We now want to use the fact that $\textsf{th}$ usually follows by $\textsf{e}$ to achieve as good compression as possible. 
+So far, all our discussion was encoding the text letter-by-letter. This is not too hard. The real fun starts when we want to compress a given text _without the assumption that letters are independent_. We now want to use the fact that $\textsf{th}$ usually follows by $\textsf{e}$ to achieve the best compression possible. 
 
 Here is a generic approach of how most compressions algorithm work, called [predictive coding](). A generic predictive-coding algorithm goes through the text letter by letter and tries to build some kind of understanding of it. For each letter, it tries to predict it using the past text. As we know, once you have a distribution over the next letter, we can convert it to a code, e.g. Shannon's code. This way, we can encode the whole text.  
 
@@ -153,7 +153,9 @@ These two examples of predictive coding algorithms go back to our discussion of 
 Hence, whenever there is a good prediction, there's a good compression, and vice versa. This is really super important and we will return to it in the [Kolmogorov complexity chapter](08-kolmogorov). 
 
 
-## 🌐 How large is Wikipedia? <a id = "compression"></a>
+## 🧩 Cracking riddles <a id = "compression"></a>
+
+<RiddleExplanation id="wikipedia">
 We can now revisit [our Wikipedia riddle](00-introduction#wikipedia) about Hutter's compression challenge. Remember, the question is about how much can we compress a single 1GB file of English Wikipedia. Hutter is an AI researcher and he started his challenge because he understands very well the topic of this chapter - if you can compress text, you can also predict it, and that implies you have to have some kind of knowledge/intelligence.  
 
 The honest answer is that we don't know (see the [Kolmogorov complexity](08-kolmogorov) chapter), but w
@@ -162,13 +164,13 @@ We broadly understand how well different algorithms compress English text.
 
 There are more approaches to compress text files. Let's go through them and you can see in the next widget how they fare for various types of data. 
 
-- _Baseline_: The stadard way to store text files is UTF-8. Lying a bit, this format store each letter using 8 bits. <Footnote>Why is it lying? [UTF-8](https://en.wikipedia.org/wiki/UTF-8) itself is a beautiful example of good engineering inspired by coding theory. There are around 100 characters (English letters, digits) that are stored using 8 bits, fancier letters from reasonable alphabets are stored using 16 bits, and emojis like 😀 or hieroglyphs like 𓀀 take 32 bits. Classic coding theory—rare stuff gets longer codes. But English Wiki is mostly standard English letters, so 8 bits per character it is. </Footnote>
+- _Baseline_: The stadard way to store text files is UTF-8. Simplifying a bit, this format store each letter using 8 bits. <Footnote>Why is it lying? [UTF-8](https://en.wikipedia.org/wiki/UTF-8) itself is a beautiful example of good engineering inspired by coding theory. There are around 100 characters (English letters, digits) that are stored using 8 bits, fancier letters from reasonable alphabets are stored using 16 bits, and emojis like 😀 or hieroglyphs like 𓀀 take 32 bits. Classic coding theory—rare stuff gets longer codes. But English Wiki is mostly standard English letters, so 8 bits per character it is. </Footnote>
 
 - _Optimal code_: Treat letters as independent, we can encode them using $H(p)$ bits per letter on average, where $p$ is the distribution of English letter frequencies. [In the Shannon's coding widget above](../02-crossentropy#construction), we saw that the entropy is around 4.2 bits. So, we can shrink the file by almost __2x__ just by using that different letters have different frequencies. 
 
 - _Zipping_: Standard compression algorithms like those used in ZIP implement dictionaries to catch patterns that are often reused in the text. They can compress English text up to a factor around __3x__.  
 
-- _LLMs_: Large Language Models are trained to predict text, hence they compress it. If we disregard the fact that technically speaking, LLM size should count towards the size of the compressed text, they compress English text around __7x__ for old LLMs like GPT-2 and up to perhaps __10x__ for state-of-the-art networks. 
+- _LLMs_: Large Language Models are trained to predict text, hence they compress it. If we disregard the fact that technically speaking, LLM size should count toward the size of the compressed text, they compress English text around __7x__ for old LLMs like GPT-2 and up to perhaps __10x__ for state-of-the-art networks. 
 
 I encourage you to play with the following widget, especially making GPT-2 compress your texts. 🙂
 
@@ -177,3 +179,4 @@ I encourage you to play with the following widget, especially making GPT-2 compr
 The best algorithms in Hutter's competition have compress by a factor of about 9x. But unfortunately, while the challenge is backed by a very deep understanding of the nature of intelligence, the precise parameters of the challenge make it hard to relate to the winning algorithms. Since the file size is 'only' 1GB, the compression-by-LLM approach doesn't easily work. You have to append the LLM to the compressed text and it becomes huge.<Footnote>Or you have to train it 'inside' the compression/decompression algorithm, and for that the file is too small. </Footnote> The winning algorithms are thus used on more 'combinatorial' approaches, like those used in ZIP or stuff like [multiplicative weights](07-algorithms). 
 
 Finally, let me tell you about one of the coolest experiments I know of. Claude Shannon, the GOAT who invented information theory in the late 40s, did the following a few years after his invention. He measured the prediction ability of people: he showed them partial sentences and asked them to guess the next letter. This way, he figured that people can compress English to about 0.5 - 1 bits per letter, roughly on par with the performance of GPT2-4. <Footnote>TODO crunch the numbers more precisely. </Footnote> As far as I can say, this is the first experiment about next-token prediction; Claude Shannon was so based he did it 60+ years before it became cool!
+</RiddleExplanation>

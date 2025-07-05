@@ -6,23 +6,33 @@ import styles from "./Expand.module.css";
 
 interface ExpandProps {
   children: React.ReactNode;
-  headline: string;
+  headline: React.ReactNode;
   img?: string;
-  color?: string;
+  color?: string; // background color for content
+  headerColor?: string; // override header color only
   startOpen?: boolean;
   advanced?: boolean;
   id?: string;
 }
 
-export default function Expand({ children, headline, img, color = "#f5f5f5", startOpen = false, advanced = false, id }: ExpandProps) {
+export default function Expand({
+  children,
+  headline,
+  img,
+  color = "#f5f5f5",
+  headerColor,
+  startOpen = false,
+  advanced = false,
+  id,
+}: ExpandProps) {
   const [isOpen, setIsOpen] = useState(startOpen);
 
   // Use subtle red background for advanced sections header
-  const headerColor = advanced ? "#fff5f5" : color;
+  const headerClr = headerColor ?? (advanced ? "#fff5f5" : color);
 
   return (
     <div className={styles.expand} id={id}>
-      <div className={styles.header} style={{ backgroundColor: headerColor }} onClick={() => setIsOpen(!isOpen)}>
+      <div className={styles.header} style={{ backgroundColor: headerClr }} onClick={() => setIsOpen(!isOpen)}>
         {advanced && (
           <div className={styles.advancedIcon} title="This is an advanced section">
             ⚠️
@@ -46,7 +56,11 @@ export default function Expand({ children, headline, img, color = "#f5f5f5", sta
           </svg>
         </div>
       </div>
-      {isOpen && <div className={styles.content} style={{ backgroundColor: color }}>{children}</div>}
+      {isOpen && (
+        <div className={styles.content} style={{ backgroundColor: color }}>
+          {children}
+        </div>
+      )}
     </div>
   );
 }

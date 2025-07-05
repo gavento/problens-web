@@ -22,15 +22,17 @@ export default function ImageGallery({ images, caption, height = DEFAULT_HEIGHT,
     const image = images[0];
     return (
       <div className="my-6">
-        <div className="w-full rounded shadow-sm overflow-hidden bg-white">
-          <ExpandableImage 
-            src={image.src} 
-            alt={image.alt} 
-            className="w-full h-auto object-contain block" 
-          />
+        <div className="w-full flex justify-center">
+          <div className="rounded shadow-sm overflow-hidden bg-white" style={{ maxWidth: "100%" }}>
+            <ExpandableImage 
+              src={image.src} 
+              alt={image.alt} 
+              className="max-w-full h-auto object-contain block" 
+            />
+          </div>
         </div>
         {/* Markdown caption below */}
-        <div className="text-center text-sm text-gray-600 max-w-2xl mx-auto min-h-[1.5em] mt-4 px-6 py-2">
+        <div className="text-center text-sm text-gray-600 max-w-2xl mx-auto min-h-[1.5em] mt-1 px-6 py-1">
           {typeof caption === "string" ? <ReactMarkdown>{caption}</ReactMarkdown> : caption || null}
         </div>
       </div>
@@ -65,7 +67,7 @@ export default function ImageGallery({ images, caption, height = DEFAULT_HEIGHT,
         </div>
       </div>
       {/* Markdown caption below (always rendered) */}
-      <div className="text-center text-sm text-gray-600 max-w-2xl mx-auto min-h-[1.5em] px-6 py-2">
+      <div className="text-center text-sm text-gray-600 max-w-2xl mx-auto min-h-[1.5em] px-6 py-1">
         {typeof caption === "string" ? <ReactMarkdown>{caption}</ReactMarkdown> : caption || null}
       </div>
     </div>

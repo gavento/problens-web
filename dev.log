@@ -1,422 +1,568 @@
 
 > generic-academic-website@0.1.0 dev /home/vasek/problens-web
-> next dev --turbopack
+> next dev
 
-   ▲ Next.js 15.2.4 (Turbopack)
+   ▲ Next.js 15.2.4
    - Local:        http://localhost:3000
-   - Network:      http://10.7.24.147:3000
+   - Network:      http://10.10.10.163:3000
    - Environments: .env
 
  ✓ Starting...
- ✓ Ready in 1285ms
+ ✓ Ready in 2s
  ○ Compiling / ...
- ✓ Compiled / in 8.3s
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
- GET / 200 in 10000ms
+ ✓ Compiled / in 13.5s (5050 modules)
+ GET / 200 in 16987ms
+ ✓ Compiled in 737ms (2143 modules)
+ ✓ Compiled in 656ms (2143 modules)
+ ✓ Compiled in 707ms (2143 modules)
  ○ Compiling /[...path] ...
- ✓ Compiled /[...path] in 3s
- GET /04-max_entropy/ 200 in 7935ms
- ○ Compiling /favicon.ico ...
- ✓ Compiled /favicon.ico in 634ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 696ms
- GET /01-kl_intro/ 200 in 627ms
+ ✓ Compiled /[...path] in 1281ms (4980 modules)
+ GET /06-machine_learning/ 200 in 5140ms
+ GET /08-kolmogorov/ 200 in 1135ms
+ ✓ Compiled in 488ms (2143 modules)
+ GET /08-kolmogorov/ 200 in 1181ms
+ GET /06-machine_learning/ 200 in 732ms
+ GET /00-introduction/ 200 in 320ms
+ ✓ Compiled in 1466ms (5058 modules)
+ GET /00-introduction/ 200 in 1002ms
+ ✓ Compiled in 788ms (5058 modules)
+ GET /00-introduction/ 200 in 578ms
+ ✓ Compiled in 600ms (2143 modules)
+ GET /00-introduction/ 200 in 225ms
+ ✓ Compiled in 446ms (2143 modules)
+ GET /00-introduction/ 200 in 204ms
+ ✓ Compiled in 1220ms (5058 modules)
+ GET /00-introduction/ 200 in 699ms
+ ✓ Compiled in 1437ms (5058 modules)
+ GET /00-introduction/ 200 in 1025ms
+ ✓ Compiled in 441ms (2143 modules)
+ GET /00-introduction/ 200 in 205ms
+ ✓ Compiled in 539ms (2143 modules)
+
+[1m[31mError parsing MDX file: 00-introduction.mdx[39m[22m
+[1m[31m[39m[22m[33mUnexpected character `/` (U+002F) before local attribute name, expected a character that can start an attribute name, such as a letter, `$`, or `_`; `=` to initialize a value; or the end of the tag at line 79, column 150[39m
+[33m[39m
+[33m[39m[90m77|[39m <Expand headline="🦶 Average foot"> <a id="statistics"></a>
+[90m78|[39m 
+[90m79|[39m [31m<ImageGallery images={[{src: "00-introduction/rod.png", alt: "rod"}]} fullWidth={true} caption="Determining the length of the foot in <a href="https://commons.wikimedia.org/wiki/File:Determination_of_the_rute_and_the_feet_in_Frankfurt.png">1522 Franfurt</a>." />[39m
+[90m  |[39m                                                                                                                                                      [1m[31m^[39m[22m
+[90m80|[39m 
+[90m81|[39m Back in the day, people measured stuff in feet. Sure, we all kinda know how long a foot is, but eventually you need to nail it down precisely. One way (shown above, from 16th century Frankfurt) is to grab 16 random people and average their foot lengths:
+
+[36mHint: Unlike plain MD, MDX uses {...} for JSX expressions. To get literal curly braces, use \{ and \}[39m
+
+ ⨯ Error: Failed to compile MDX: Unexpected character `/` (U+002F) before local attribute name, expected a character that can start an attribute name, such as a letter, `$`, or `_`; `=` to initialize a value; or the end of the tag
+    at getMdxContent (lib/lib.ts:169:10)
+    at async singlePage (components/Page.tsx:39:18)
+  167 |     console.error(errorOutput + "\n");
+  168 |
+> 169 |     throw new Error(`Failed to compile MDX: ${reason}`);
+      |          ^
+  170 |   }
+  171 |
+  172 |   const { content } = await compileMDX({ {
+  digest: '1532757131'
+}
+ GET /00-introduction/ 200 in 200ms
+ ✓ Compiled in 466ms (2143 modules)
+
+[1m[31mError parsing MDX file: 00-introduction.mdx[39m[22m
+[1m[31m[39m[22m[33mUnexpected character `/` (U+002F) before local attribute name, expected a character that can start an attribute name, such as a letter, `$`, or `_`; `=` to initialize a value; or the end of the tag at line 79, column 150[39m
+[33m[39m
+[33m[39m[90m77|[39m <Expand headline="🦶 Average foot"> <a id="statistics"></a>
+[90m78|[39m 
+[90m79|[39m [31m<ImageGallery images={[{src: "00-introduction/rod.png", alt: "rod"}]} fullWidth={true} caption="Determining the length of the foot in <a href="https://commons.wikimedia.org/wiki/File:Determination_of_the_rute_and_the_feet_in_Frankfurt.png">1522 Franfurt</a>." />[39m
+[90m  |[39m                                                                                                                                                      [1m[31m^[39m[22m
+[90m80|[39m 
+[90m81|[39m Back in the day, people measured stuff in feet. Sure, we all kinda know how long a foot is, but eventually you need to nail it down precisely. One way is to grab 16 random people and average their foot lengths:
+
+[36mHint: Unlike plain MD, MDX uses {...} for JSX expressions. To get literal curly braces, use \{ and \}[39m
+
+ ⨯ Error: Failed to compile MDX: Unexpected character `/` (U+002F) before local attribute name, expected a character that can start an attribute name, such as a letter, `$`, or `_`; `=` to initialize a value; or the end of the tag
+    at getMdxContent (lib/lib.ts:169:10)
+    at async singlePage (components/Page.tsx:39:18)
+  167 |     console.error(errorOutput + "\n");
+  168 |
+> 169 |     throw new Error(`Failed to compile MDX: ${reason}`);
+      |          ^
+  170 |   }
+  171 |
+  172 |   const { content } = await compileMDX({ {
+  digest: '1532757131'
+}
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /00-introduction/ 500 in 216ms
+ ✓ Compiled in 708ms (2143 modules)
+ ✓ Compiled in 633ms (2143 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /00-introduction/ 200 in 1407ms
+ ✓ Compiled in 415ms (2143 modules)
+ GET /00-introduction/ 200 in 226ms
+ ✓ Compiled in 1482ms (5058 modules)
+ GET /00-introduction/ 200 in 1088ms
+ ✓ Compiled in 786ms (5058 modules)
+ GET /00-introduction/ 200 in 849ms
+ ✓ Compiled in 758ms (5058 modules)
+ GET /00-introduction/ 200 in 460ms
+ ✓ Compiled in 654ms (5058 modules)
+ GET /00-introduction/ 200 in 557ms
+ ✓ Compiled in 623ms (2143 modules)
+ GET /00-introduction/ 200 in 269ms
+ GET /00-introduction/ 200 in 1114ms
+ ✓ Compiled in 707ms (2143 modules)
+ GET /00-introduction/ 200 in 231ms
+ ✓ Compiled in 4s (5058 modules)
+ GET /00-introduction/ 200 in 781ms
+ ✓ Compiled in 1532ms (5058 modules)
+ GET /00-introduction/ 200 in 825ms
+ ✓ Compiled in 1547ms (5058 modules)
+ GET /00-introduction/ 200 in 637ms
+ ✓ Compiled in 858ms (5058 modules)
+ GET /00-introduction/ 200 in 645ms
+ ✓ Compiled in 1357ms (5058 modules)
+ GET /00-introduction/ 200 in 383ms
+ ✓ Compiled in 1409ms (5058 modules)
+ GET /00-introduction/ 200 in 620ms
+ ✓ Compiled in 905ms (5058 modules)
+ GET /00-introduction/ 200 in 628ms
+ ✓ Compiled in 1448ms (5058 modules)
+ GET /00-introduction/ 200 in 711ms
+ GET /01-kl_intro/ 200 in 442ms
+ ✓ Compiled in 726ms (2143 modules)
+ GET /01-kl_intro/ 200 in 332ms
+ ✓ Compiled in 435ms (2143 modules)
+ GET /01-kl_intro/ 200 in 505ms
+ ✓ Compiled in 750ms (2143 modules)
+ GET /01-kl_intro/ 200 in 407ms
+ ✓ Compiled in 478ms (2143 modules)
+ GET /01-kl_intro/ 200 in 613ms
+ ✓ Compiled in 497ms (2143 modules)
+ GET /01-kl_intro/ 200 in 251ms
+ ✓ Compiled in 606ms (2143 modules)
+ GET /01-kl_intro/ 200 in 517ms
+ ✓ Compiled in 553ms (2143 modules)
+ GET /01-kl_intro/ 200 in 268ms
+ ✓ Compiled in 455ms (2143 modules)
+ GET /01-kl_intro/ 200 in 275ms
+ ✓ Compiled in 514ms (2143 modules)
+ GET /01-kl_intro/ 200 in 450ms
+ GET /01-kl_intro/ 200 in 1236ms
+ ✓ Compiled in 720ms (2143 modules)
+ GET /01-kl_intro/ 200 in 391ms
+ ✓ Compiled in 1662ms (5058 modules)
+ GET /01-kl_intro/ 200 in 1044ms
+ ✓ Compiled in 456ms (2143 modules)
+ GET /01-kl_intro/ 200 in 271ms
+ ✓ Compiled in 393ms (2143 modules)
+ GET /01-kl_intro/ 200 in 275ms
+ ✓ Compiled in 3.4s (5058 modules)
+ GET /01-kl_intro/ 200 in 918ms
+ ✓ Compiled in 918ms (5058 modules)
+ GET /01-kl_intro/ 200 in 973ms
+ ✓ Compiled in 908ms (5058 modules)
+ GET /01-kl_intro/ 200 in 737ms
+ ✓ Compiled in 2.1s (5058 modules)
+ GET /01-kl_intro/ 200 in 1544ms
+ ✓ Compiled in 3.4s (5058 modules)
+ GET /01-kl_intro/ 200 in 2970ms
+ ✓ Compiled in 2.2s (5058 modules)
+ ✓ Compiled in 1918ms (5058 modules)
+ ✓ Compiled in 1140ms (5058 modules)
+ ✓ Compiled in 1214ms (5058 modules)
+ ✓ Compiled in 1306ms (5058 modules)
+ ✓ Compiled in 1770ms (5058 modules)
+ ✓ Compiled in 1290ms (5058 modules)
+ ✓ Compiled in 1277ms (5058 modules)
+ ✓ Compiled in 1641ms (5058 modules)
+ ✓ Compiled in 1615ms (5058 modules)
+ ✓ Compiled in 1228ms (5058 modules)
+ ✓ Compiled in 1291ms (5058 modules)
+ ✓ Compiled in 1517ms (5058 modules)
+ ✓ Compiled in 1297ms (5058 modules)
+ ✓ Compiled in 1627ms (5058 modules)
+ ✓ Compiled in 1495ms (5058 modules)
+ ✓ Compiled in 1319ms (5058 modules)
+ ✓ Compiled in 1329ms (5058 modules)
+ ✓ Compiled in 1439ms (5058 modules)
+ ✓ Compiled in 1313ms (5058 modules)
+ ✓ Compiled in 3.3s (5058 modules)
+ ✓ Compiled in 8.3s (5058 modules)
+ ✓ Compiled in 3.9s (5058 modules)
+ ✓ Compiled in 2.3s (5058 modules)
+ GET /01-kl_intro/ 200 in 3239ms
+ ✓ Compiled in 3.2s (5058 modules)
+ GET /01-kl_intro/ 200 in 2375ms
+ ✓ Compiled in 3.1s (5058 modules)
+ GET /01-kl_intro/ 200 in 1967ms
+ ✓ Compiled in 1682ms (5058 modules)
+ GET /01-kl_intro/ 200 in 2492ms
+ ✓ Compiled in 4.1s (5058 modules)
+ GET /01-kl_intro/ 200 in 1917ms
+ ✓ Compiled in 2.9s (5058 modules)
+ GET /01-kl_intro/ 200 in 1372ms
+ ✓ Compiled in 1232ms (5058 modules)
+ GET /01-kl_intro/ 200 in 1793ms
+ ✓ Compiled in 3.7s (5058 modules)
+ GET /01-kl_intro/ 200 in 2236ms
+ ✓ Compiled in 3.5s (5058 modules)
+ GET /01-kl_intro/ 200 in 1646ms
+ ✓ Compiled in 3.1s (5058 modules)
+ GET /01-kl_intro/ 200 in 1819ms
+ ✓ Compiled in 1636ms (5058 modules)
+ GET /01-kl_intro/ 200 in 1830ms
+ ✓ Compiled in 1364ms (2143 modules)
+ GET /01-kl_intro/ 200 in 833ms
+ ✓ Compiled in 510ms (2143 modules)
+ GET /01-kl_intro/ 200 in 486ms
+ ✓ Compiled in 504ms (2143 modules)
+ GET /01-kl_intro/ 200 in 388ms
+ ✓ Compiled in 468ms (2143 modules)
+ GET /01-kl_intro/ 200 in 1205ms
+ ✓ Compiled in 489ms (2143 modules)
+ GET /01-kl_intro/ 200 in 392ms
+ ✓ Compiled in 1117ms (2143 modules)
+ GET /01-kl_intro/ 200 in 439ms
+ GET /02-crossentropy/ 200 in 1482ms
+ GET /04-minimizing/ 200 in 651ms
+ GET /01-kl_intro/ 200 in 591ms
+ ✓ Compiled in 1124ms (2143 modules)
+ GET /01-kl_intro/ 200 in 830ms
+ GET /02-crossentropy/ 200 in 363ms
+ GET /01-kl_intro/ 200 in 479ms
+ ✓ Compiled in 2.8s (5058 modules)
+ GET /02-crossentropy/ 200 in 1649ms
+ GET /01-kl_intro/ 200 in 1644ms
+ ✓ Compiled in 2.4s (5058 modules)
+ GET /02-crossentropy/ 200 in 1285ms
+ GET /01-kl_intro/ 200 in 302ms
+ ✓ Compiled in 2.6s (5058 modules)
+ GET /01-kl_intro/ 200 in 1900ms
+ GET /02-crossentropy/ 200 in 1949ms
+ ✓ Compiled in 2.6s (5058 modules)
+ GET /02-crossentropy/ 200 in 1368ms
+ GET /01-kl_intro/ 200 in 306ms
+ ✓ Compiled in 1187ms (5058 modules)
+ GET /01-kl_intro/ 200 in 1122ms
+ GET /02-crossentropy/ 200 in 1144ms
+ ✓ Compiled in 1130ms (5058 modules)
+ GET /01-kl_intro/ 200 in 1294ms
+ GET /02-crossentropy/ 200 in 1485ms
+ ✓ Compiled in 1148ms (5058 modules)
+ GET /01-kl_intro/ 200 in 1410ms
+ GET /02-crossentropy/ 200 in 1432ms
+ ✓ Compiled in 1069ms (5058 modules)
+ GET /01-kl_intro/ 200 in 1448ms
+ GET /02-crossentropy/ 200 in 1604ms
+ ✓ Compiled in 1113ms (5058 modules)
+ GET /01-kl_intro/ 200 in 1468ms
+ GET /02-crossentropy/ 200 in 1483ms
+ ✓ Compiled in 1177ms (5058 modules)
+ GET /01-kl_intro/ 200 in 1501ms
+ GET /02-crossentropy/ 200 in 1566ms
+ ✓ Compiled in 1450ms (2143 modules)
+ GET /02-crossentropy/ 200 in 1127ms
+ GET /01-kl_intro/ 200 in 317ms
+ ✓ Compiled in 1119ms (2143 modules)
+ GET /02-crossentropy/ 200 in 939ms
+ GET /01-kl_intro/ 200 in 301ms
+ GET /01-kl_intro/ 200 in 1422ms
+ ✓ Compiled in 784ms (2143 modules)
+ GET /02-crossentropy/ 200 in 755ms
+ GET /01-kl_intro/ 200 in 294ms
+ ✓ Compiled in 1725ms (2143 modules)
+ GET /02-crossentropy/ 200 in 868ms
+ GET /01-kl_intro/ 200 in 299ms
+ ✓ Compiled in 475ms (2143 modules)
+ GET /02-crossentropy/ 200 in 727ms
+ GET /01-kl_intro/ 200 in 347ms
+ ✓ Compiled in 401ms (2143 modules)
+ GET /02-crossentropy/ 200 in 896ms
+ GET /01-kl_intro/ 200 in 453ms
+ ✓ Compiled in 1173ms (2143 modules)
+ GET /02-crossentropy/ 200 in 848ms
+ GET /01-kl_intro/ 200 in 299ms
+ ✓ Compiled in 1314ms (2143 modules)
+ GET /02-crossentropy/ 200 in 1165ms
+ GET /01-kl_intro/ 200 in 1109ms
+ GET /01-kl_intro/ 200 in 637ms
+ ✓ Compiled in 453ms (2143 modules)
+ GET /02-crossentropy/ 200 in 706ms
+ GET /01-kl_intro/ 200 in 274ms
+ ✓ Compiled in 651ms (2143 modules)
+ GET /02-crossentropy/ 200 in 1427ms
+ GET /01-kl_intro/ 200 in 1333ms
+ ✓ Compiled in 526ms (2143 modules)
+ GET /02-crossentropy/ 200 in 817ms
+ GET /01-kl_intro/ 200 in 401ms
+ ✓ Compiled in 536ms (2143 modules)
+ GET /02-crossentropy/ 200 in 1514ms
+ GET /01-kl_intro/ 200 in 605ms
+ ✓ Compiled in 555ms (2143 modules)
+ GET /02-crossentropy/ 200 in 667ms
+ GET /01-kl_intro/ 200 in 264ms
+ GET /01-kl_intro/ 200 in 633ms
+ ✓ Compiled in 1150ms (2143 modules)
+ GET /02-crossentropy/ 200 in 826ms
+ GET /01-kl_intro/ 200 in 325ms
+ GET /02-crossentropy/ 200 in 386ms
+ ✓ Compiled in 1190ms (2143 modules)
+ GET /02-crossentropy/ 200 in 764ms
+ ✓ Compiled in 1257ms (2143 modules)
+ GET /02-crossentropy/ 200 in 634ms
+ ✓ Compiled in 412ms (2143 modules)
+ GET /02-crossentropy/ 200 in 322ms
+ ✓ Compiled in 367ms (2143 modules)
+ GET /02-crossentropy/ 200 in 567ms
+ ✓ Compiled in 422ms (2143 modules)
+ GET /02-crossentropy/ 200 in 978ms
+ ✓ Compiled in 443ms (2143 modules)
+ GET /02-crossentropy/ 200 in 419ms
+ GET /00-introduction/ 200 in 350ms
+ ✓ Compiled in 5.8s (5058 modules)
+ GET /00-introduction/ 200 in 1279ms
+ ✓ Compiled in 569ms (2143 modules)
+ GET /00-introduction/ 200 in 353ms
+ ✓ Compiled in 564ms (2143 modules)
+ GET /00-introduction/ 200 in 400ms
+ ✓ Compiled in 692ms (2143 modules)
+ GET /00-introduction/ 200 in 952ms
+ ✓ Compiled in 790ms (2143 modules)
+ GET /00-introduction/ 200 in 183ms
+ ✓ Compiled in 1981ms (2915 modules)
+ GET /00-introduction/ 200 in 807ms
+ ✓ Compiled in 6.8s (4987 modules)
+ GET /00-introduction/ 200 in 1095ms
+ ✓ Compiled in 1399ms (2146 modules)
+ GET /00-introduction/ 200 in 890ms
+ ✓ Compiled in 1201ms (2146 modules)
+ GET /00-introduction/ 200 in 524ms
+ GET /00-introduction/ 200 in 281ms
+ ✓ Compiled in 1368ms (2146 modules)
+ GET /00-introduction/ 200 in 489ms
+ ✓ Compiled in 2.4s (2146 modules)
+
+[1m[31mError parsing MDX file: 00-introduction.mdx[39m[22m
+[1m[31m[39m[22m[33mExpected a closing tag for `<RiddleStatement>` (9:44-9:111) before the end of `paragraph` at line 9, column 1[39m
+[33m[39m
+[33m[39m[90m 7|[39m 
+[90m 8|[39m 
+[90m 9|[39m [31m<Expand headline = "🧠 Intelligence test">|<RiddleStatement id="intelligence" headline="🧠 Intelligence test">[39m
+[90m  |[39m [1m[31m^[39m[22m
+[90m10|[39m Test your intelligence with the following widget! You will be given a bunch of text snippets cut from Wikipedia at a random place. Your task is to predict the next letter. You can compare your performance with some neural nets! 
+[90m11|[39m 
+
+ ⨯ Error: Failed to compile MDX: Expected a closing tag for `<RiddleStatement>` (9:44-9:111) before the end of `paragraph`
+    at getMdxContent (lib/lib.ts:171:10)
+    at async singlePage (components/Page.tsx:39:18)
+  169 |     console.error(errorOutput + "\n");
+  170 |
+> 171 |     throw new Error(`Failed to compile MDX: ${reason}`);
+      |          ^
+  172 |   }
+  173 |
+  174 |   const { content } = await compileMDX({ {
+  digest: '3931090959'
+}
+ GET /00-introduction/ 200 in 417ms
+ ✓ Compiled in 469ms (2146 modules)
+
+[1m[31mError parsing MDX file: 00-introduction.mdx[39m[22m
+[1m[31m[39m[22m[33mExpected a closing tag for `<RiddleStatement>` (9:44-9:111) before the end of `paragraph` at line 9, column 1[39m
+[33m[39m
+[33m[39m[90m 7|[39m 
+[90m 8|[39m 
+[90m 9|[39m [31m<Expand headline = "🧠 Intelligence test">|<RiddleStatement id="intelligence" headline="🧠 Intelligence test">[39m
+[90m  |[39m [1m[31m^[39m[22m
+[90m10|[39m Test your intelligence with the following widget! You will be given a bunch of text snippets cut from Wikipedia at a random place. Your task is to predict the next letter. You can compare your performance with some neural nets! 
+[90m11|[39m 
+
+ ⨯ Error: Failed to compile MDX: Expected a closing tag for `<RiddleStatement>` (9:44-9:111) before the end of `paragraph`
+    at getMdxContent (lib/lib.ts:171:10)
+    at async singlePage (components/Page.tsx:39:18)
+  169 |     console.error(errorOutput + "\n");
+  170 |
+> 171 |     throw new Error(`Failed to compile MDX: ${reason}`);
+      |          ^
+  172 |   }
+  173 |
+  174 |   const { content } = await compileMDX({ {
+  digest: '3931090959'
+}
+ GET /00-introduction/ 500 in 373ms
+ ✓ Compiled in 3s (2146 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /00-introduction/ 200 in 1557ms
+ ✓ Compiled in 2.3s (2146 modules)
+ ✓ Compiled in 7.4s (5065 modules)
+ GET /00-introduction/ 200 in 1632ms
+ ✓ Compiled in 1402ms (5065 modules)
+ ✓ Compiled in 3s (5065 modules)
+ ✓ Compiled in 477ms (2146 modules)
+ GET /08-kolmogorov/ 200 in 1234ms
+ GET /08-kolmogorov/ 200 in 663ms
+ GET /08-kolmogorov/ 200 in 1733ms
+ GET /08-kolmogorov/ 200 in 907ms
+ GET /08-kolmogorov/ 200 in 626ms
+ GET /00-introduction/ 200 in 297ms
+ GET /02-crossentropy/ 200 in 591ms
+ ✓ Compiled in 2.6s (5065 modules)
+ GET /02-crossentropy/ 200 in 1020ms
+ ✓ Compiled in 2.2s (5065 modules)
+ GET /02-crossentropy/ 200 in 1213ms
+ ✓ Compiled in 630ms (2146 modules)
+ GET /02-crossentropy/ 200 in 2967ms
+ GET /02-crossentropy/ 200 in 1374ms
+ ✓ Compiled in 3.5s (5065 modules)
+ GET /02-crossentropy/ 200 in 1422ms
+ ✓ Compiled in 11.6s (5065 modules)
+ GET /02-crossentropy/ 200 in 1566ms
+ ✓ Compiled in 1122ms (5065 modules)
+ GET /02-crossentropy/ 200 in 1450ms
+ ✓ Compiled in 1396ms (2146 modules)
+ GET /02-crossentropy/ 200 in 570ms
+ ✓ Compiled in 1240ms (2146 modules)
+ GET /02-crossentropy/ 200 in 693ms
+ ✓ Compiled in 583ms (2146 modules)
+ GET /02-crossentropy/ 200 in 564ms
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
- GET /00-introduction/ 200 in 321ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 36ms
- ✓ Compiled in 531ms
- ✓ Compiled /[...path] in 42ms
- GET /06-algorithms/ 200 in 925ms
- GET /09-coding_theory/ 200 in 310ms
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
- GET /00-introduction/ 200 in 433ms
- GET /08-kolmogorov/ 200 in 131ms
- GET /08-kolmogorov/ 200 in 1257ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 51ms
- ✓ Compiled in 113ms
- ✓ Compiled in 121ms
- GET /08-kolmogorov/ 200 in 1259ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 72ms
- ✓ Compiled in 241ms
- ✓ Compiled /[...path] in 22ms
- GET /08-kolmogorov/ 200 in 606ms
- GET /08-kolmogorov/ 200 in 135ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 42ms
- ✓ Compiled in 127ms
- ✓ Compiled in 198ms
- ✓ Compiled in 116ms
- ✓ Compiled in 142ms
- ✓ Compiled /[...path] in 14ms
- GET /08-kolmogorov/ 200 in 612ms
- GET /08-kolmogorov/ 200 in 126ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 53ms
- ✓ Compiled in 120ms
- ✓ Compiled in 350ms
- ✓ Compiled in 145ms
- ✓ Compiled in 163ms
- ✓ Compiled in 383ms
- ✓ Compiled in 125ms
- ✓ Compiled in 101ms
- ✓ Compiled in 158ms
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
- GET /00-introduction/ 200 in 844ms
- ✓ Compiled / in 9ms
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
- GET / 200 in 759ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 33ms
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
- GET / 200 in 908ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 75ms
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
- GET / 200 in 397ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 30ms
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
- GET / 200 in 304ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 43ms
- GET /09-coding_theory/ 200 in 376ms
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
- GET / 200 in 233ms
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
- GET / 200 in 331ms
- GET /04-max_entropy/ 200 in 1382ms
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
- GET / 200 in 363ms
- GET /01-kl_intro/ 200 in 647ms
- ⨯ [Error: Page "/[...path]/page" is missing param "/01-kl_intro/00-introduction/independence2.png" in "generateStaticParams()", which is required with "output: export" config.] {
-  page: '/01-kl_intro/00-introduction/independence2.png'
+ GET /bonus/ 200 in 315ms
+ GET /fisher-info/ 200 in 1740ms
+ ⨯ [Error: Page "/[...path]/page" is missing param "/03-minimizing/fit.png" in "generateStaticParams()", which is required with "output: export" config.] {
+  page: '/03-minimizing/fit.png'
 }
  ○ Compiling /_error ...
- ✓ Compiled /_error in 1644ms
- GET /01-kl_intro/00-introduction/independence2.png 500 in 2017ms
- GET /04-max_entropy/ 200 in 3056ms
- GET /09-coding_theory/ 200 in 774ms
- ⚠ Fast Refresh had to perform a full reload when ./components/providers/DangerModeProvider.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
- ✓ Compiled in 213ms
- GET /09-coding_theory/ 200 in 2240ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 157ms
- ⚠ Fast Refresh had to perform a full reload when ./components/providers/DangerModeProvider.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
- ✓ Compiled in 184ms
- GET /09-coding_theory/ 200 in 1961ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 152ms
- ⚠ Fast Refresh had to perform a full reload when ./components/providers/DangerModeProvider.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
- ✓ Compiled in 160ms
- GET /09-coding_theory/ 200 in 2126ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 51ms
- ✓ Compiled in 227ms
- ✓ Compiled in 259ms
- ✓ Compiled in 193ms
- ✓ Compiled in 297ms
- ✓ Compiled /[...path] in 296ms
- ⚠ Fast Refresh had to perform a full reload when [turbopack]/browser/dev/hmr-client/hmr-client.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
- GET /09-coding_theory/ 200 in 176ms
- ✓ Compiled in 1306ms
- GET /09-coding_theory/ 200 in 2510ms
- GET /09-coding_theory/ 200 in 731ms
- GET /09-coding_theory/ 200 in 1188ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 35ms
- ✓ Compiled in 172ms
- ⚠ Fast Refresh had to perform a full reload when [turbopack]/browser/dev/hmr-client/hmr-client.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
- ✓ Compiled in 762ms
- GET /09-coding_theory/ 200 in 2373ms
- ✓ Compiled in 181ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 74ms
- ⚠ Fast Refresh had to perform a full reload when [turbopack]/browser/dev/hmr-client/hmr-client.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
- ✓ Compiled in 853ms
- GET /09-coding_theory/ 200 in 2517ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 146ms
- ✓ Compiled in 218ms
- ✓ Compiled in 631ms
- GET /09-coding_theory/ 200 in 1935ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 88ms
- GET /09-coding_theory/ 200 in 768ms
- GET /09-coding_theory/ 200 in 901ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 47ms
- ✓ Compiled in 258ms
- ✓ Compiled in 221ms
- ✓ Compiled in 232ms
- ✓ Compiled in 367ms
- GET /09-coding_theory/ 200 in 1832ms
- ✓ Compiled in 216ms
- ⚠ Fast Refresh had to perform a full reload due to a runtime error.
- ✓ Compiled in 303ms
- ⨯ ReferenceError: resetCode is not defined
-    at BuildYourOwnCodeWidget (components/widgets/BuildYourOwnCodeWidget.tsx:314:17)
-  312 |       <ZoomButton 
-  313 |         type="reset" 
-> 314 |         onClick={resetCode}
-      |                 ^
-  315 |       />
-  316 |       
-  317 |       <div className="mb-6"> {
-  digest: '575451590'
-}
- GET /09-coding_theory/ 500 in 2039ms
- GET /favicon.ico 200 in 56ms
- ⚠ Fast Refresh had to perform a full reload due to a runtime error.
- ✓ Compiled in 211ms
- ⨯ ReferenceError: resetCode is not defined
-    at BuildYourOwnCodeWidget (components/widgets/BuildYourOwnCodeWidget.tsx:324:17)
-  322 |       <ZoomButton 
-  323 |         type="reset" 
-> 324 |         onClick={resetCode}
-      |                 ^
-  325 |       />
-  326 |       
-  327 |       <div className="mb-6"> {
-  digest: '575451590'
-}
- GET /09-coding_theory/ 500 in 1978ms
- GET /favicon.ico 200 in 125ms
- ⚠ Fast Refresh had to perform a full reload due to a runtime error.
- ✓ Compiled in 199ms
- GET /09-coding_theory/ 200 in 1714ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 49ms
- ✓ Compiled in 360ms
- ✓ Compiled in 232ms
- ✓ Compiled in 210ms
- ✓ Compiled in 279ms
- ✓ Compiled in 359ms
- GET /09-coding_theory/ 200 in 1828ms
- ✓ Compiled in 327ms
- ✓ Compiled in 196ms
- ✓ Compiled in 214ms
- GET /09-coding_theory/ 200 in 1859ms
- ✓ Compiled in 240ms
- ✓ Compiled in 231ms
- GET /09-coding_theory/ 200 in 2206ms
- GET /09-coding_theory/ 200 in 941ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 120ms
- GET /09-coding_theory/ 200 in 746ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 91ms
- GET /09-coding_theory/ 200 in 737ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 53ms
- GET /09-coding_theory/ 200 in 735ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 67ms
- ✓ Compiled in 674ms
- ✓ Compiled in 234ms
- ✓ Compiled in 193ms
- ✓ Compiled in 255ms
- GET /09-coding_theory/ 200 in 2288ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 63ms
- GET /09-coding_theory/ 200 in 1009ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 54ms
- GET /09-coding_theory/ 200 in 804ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 62ms
- GET /09-coding_theory/ 200 in 743ms
- ✓ Compiled in 209ms
- ✓ Compiled in 190ms
- ✓ Compiled in 219ms
- ✓ Compiled in 230ms
- ✓ Compiled in 200ms
- ✓ Compiled in 276ms
- ✓ Compiled in 261ms
- ✓ Compiled in 350ms
- ✓ Compiled in 214ms
- ✓ Compiled in 213ms
- GET /09-coding_theory/ 200 in 1769ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 40ms
- ✓ Compiled in 222ms
- ✓ Compiled in 338ms
- ✓ Compiled in 260ms
- GET /09-coding_theory/ 200 in 1953ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 56ms
- ✓ Compiled in 330ms
- ✓ Compiled in 195ms
- ✓ Compiled in 219ms
- GET /09-coding_theory/ 200 in 1893ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 59ms
- ✓ Compiled in 243ms
- ✓ Compiled in 224ms
- ✓ Compiled in 218ms
- ✓ Compiled in 207ms
- GET /09-coding_theory/ 200 in 1444ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 45ms
- GET /about/ 200 in 230ms
- ⨯ [Error: Page "/[...path]/page" is missing param "/09-coding_theory/fig/claude.png" in "generateStaticParams()", which is required with "output: export" config.] {
-  page: '/09-coding_theory/fig/claude.png'
-}
- ⨯ [Error: Page "/[...path]/page" is missing param "/09-coding_theory/fig/gavento.jpg" in "generateStaticParams()", which is required with "output: export" config.] {
-  page: '/09-coding_theory/fig/gavento.jpg'
-}
- ⨯ [Error: Page "/[...path]/page" is missing param "/09-coding_theory/fig/vasek.jpg" in "generateStaticParams()", which is required with "output: export" config.] {
-  page: '/09-coding_theory/fig/vasek.jpg'
-}
- GET /09-coding_theory/fig/claude.png 500 in 288ms
- GET /09-coding_theory/fig/gavento.jpg 500 in 306ms
- GET /09-coding_theory/fig/vasek.jpg 500 in 305ms
- ⨯ [Error: Page "/[...path]/page" is missing param "/about/fig/claude.png" in "generateStaticParams()", which is required with "output: export" config.] {
-  page: '/about/fig/claude.png'
-}
- ⨯ [Error: Page "/[...path]/page" is missing param "/about/fig/vasek.jpg" in "generateStaticParams()", which is required with "output: export" config.] {
-  page: '/about/fig/vasek.jpg'
-}
- ⨯ [Error: Page "/[...path]/page" is missing param "/about/fig/gavento.jpg" in "generateStaticParams()", which is required with "output: export" config.] {
-  page: '/about/fig/gavento.jpg'
-}
- GET /about/fig/claude.png 500 in 243ms
- GET /about/fig/vasek.jpg 500 in 263ms
- GET /about/fig/gavento.jpg 500 in 265ms
- ✓ Compiled in 233ms
+ ✓ Compiled /_error in 6.8s (5315 modules)
+ GET /03-minimizing/fit.png 500 in 7553ms
+ ✓ Compiled in 1487ms (2386 modules)
+ GET /fisher-info/ 200 in 1650ms
+ GET /00-introduction/ 200 in 231ms
+ GET /02-crossentropy/ 200 in 674ms
+ GET /05-max_entropy/ 200 in 2556ms
+ GET /02-crossentropy/ 200 in 516ms
+ ✓ Compiled in 1629ms (2386 modules)
+ ✓ Compiled in 510ms (2386 modules)
+ ✓ Compiled in 2.9s (5350 modules)
+ GET /02-crossentropy/ 200 in 2085ms
+ GET /03-entropy_properties/ 200 in 764ms
+ GET /04-minimizing/ 200 in 763ms
+ GET /05-max_entropy/ 200 in 1198ms
+ ✓ Compiled in 1649ms (2386 modules)
+ GET /05-max_entropy/ 200 in 2760ms
+ GET /09-coding_theory/ 200 in 603ms
+ ✓ Compiled in 1975ms (2386 modules)
+ GET /09-coding_theory/ 200 in 611ms
+ ✓ Compiled in 707ms (2386 modules)
+ GET /09-coding_theory/ 200 in 439ms
+ ✓ Compiled in 590ms (2386 modules)
+ GET /09-coding_theory/ 200 in 388ms
+ ✓ Compiled in 682ms (2386 modules)
+ GET /09-coding_theory/ 200 in 1147ms
+ ✓ Compiled in 617ms (2386 modules)
+ GET /09-coding_theory/ 200 in 526ms
+ ✓ Compiled in 3.1s (5350 modules)
+ GET /09-coding_theory/ 200 in 1006ms
+ ✓ Compiled in 1397ms (5350 modules)
+ GET /09-coding_theory/ 200 in 1454ms
+ ✓ Compiled in 673ms (2386 modules)
+ GET /09-coding_theory/ 200 in 381ms
+ ✓ Compiled in 664ms (2386 modules)
+ GET /09-coding_theory/ 200 in 437ms
+ ✓ Compiled in 1904ms (5350 modules)
+ GET /09-coding_theory/ 200 in 798ms
+ ✓ Compiled in 1050ms (5350 modules)
+ GET /09-coding_theory/ 200 in 749ms
+ ✓ Compiled in 554ms (2386 modules)
+ GET /09-coding_theory/ 200 in 1103ms
+ ✓ Compiled in 659ms (2386 modules)
+ GET /09-coding_theory/ 200 in 443ms
+ ✓ Compiled in 709ms (2386 modules)
+ GET /09-coding_theory/ 200 in 572ms
+ ○ Compiling / ...
+ ✓ Compiled / in 4.7s (5273 modules)
+ GET / 200 in 5561ms
+ GET / 200 in 1800ms
+ GET / 200 in 1648ms
+ GET /09-coding_theory/ 200 in 1666ms
+ GET / 200 in 174ms
+ GET /04-minimizing/ 200 in 944ms
+ GET /05-max_entropy/ 200 in 1222ms
+ GET /05-max_entropy/ 200 in 1247ms
+ GET /05-max_entropy/ 200 in 1050ms
+ GET /05-max_entropy/ 200 in 1186ms
+ GET /02-crossentropy/ 200 in 745ms
+ GET /05-max_entropy/ 200 in 2482ms
+ ✓ Compiled in 1623ms (2385 modules)
+ GET /05-max_entropy/ 200 in 1421ms
+ GET /00-introduction/ 200 in 201ms
+ GET /00-introduction/ 200 in 297ms
+ GET /03-entropy_properties/ 200 in 519ms
+ ✓ Compiled in 1840ms (2385 modules)
+ ✓ Compiled in 1596ms (2385 modules)
+ ✓ Compiled in 1452ms (2385 modules)
+ ✓ Compiled in 632ms (2385 modules)
+ ✓ Compiled in 592ms (2385 modules)
+ ✓ Compiled in 566ms (2385 modules)
+ ✓ Compiled in 696ms (2385 modules)
+ ✓ Compiled in 449ms (2385 modules)
+ ✓ Compiled in 464ms (2385 modules)
+ ✓ Compiled in 1029ms (2385 modules)
+ ✓ Compiled in 731ms (2385 modules)
+ ✓ Compiled in 481ms (2385 modules)
+ ✓ Compiled in 581ms (2385 modules)
+ ✓ Compiled in 449ms (2385 modules)
+ ✓ Compiled in 571ms (2385 modules)
+ ✓ Compiled in 1631ms (2385 modules)
+ ✓ Compiled in 674ms (2385 modules)
+ GET /03-entropy_properties/ 200 in 874ms
+ ✓ Compiled in 2.1s (2385 modules)
+ GET /03-entropy_properties/ 200 in 605ms
+ ✓ Compiled in 1661ms (2385 modules)
+ GET /03-entropy_properties/ 200 in 655ms
+ ✓ Compiled in 624ms (2385 modules)
+ GET /03-entropy_properties/ 200 in 368ms
+ ✓ Compiled in 1367ms (2385 modules)
+ GET /03-entropy_properties/ 200 in 578ms
+ ✓ Compiled in 536ms (2385 modules)
+ GET /03-entropy_properties/ 200 in 453ms
+ ✓ Compiled in 2.1s (2385 modules)
+ GET /03-entropy_properties/ 200 in 574ms
+ GET /03-entropy_properties/ 200 in 576ms
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET /bonus/ 200 in 305ms
+ ✓ Compiled in 1536ms (2385 modules)
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
- GET /00-introduction/ 200 in 825ms
- GET /01-kl_intro/ 200 in 755ms
+ GET /bonus/ 200 in 354ms
+ ✓ Compiled in 1524ms (2385 modules)
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET /bonus/ 200 in 573ms
+ ✓ Compiled in 565ms (2385 modules)
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
- GET /00-introduction/ 200 in 404ms
- GET /08-kolmogorov/ 200 in 186ms
- GET /09-coding_theory/ 200 in 481ms
- ✓ Compiled in 185ms
- ✓ Compiled in 141ms
- ✓ Compiled in 147ms
- ✓ Compiled in 155ms
- ✓ Compiled in 140ms
- ✓ Compiled in 132ms
- ✓ Compiled in 163ms
- ✓ Compiled in 243ms
- ✓ Compiled in 132ms
- GET /resources/ 200 in 580ms
- GET /03-minimizing/ 200 in 1105ms
- GET /01-kl_intro/ 200 in 595ms
- GET /02-crossentropy/ 200 in 542ms
+ GET /bonus/ 200 in 397ms
+ ✓ Compiled in 2.6s (2385 modules)
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+ GET /bonus/ 200 in 875ms
+ GET /03-entropy_properties/ 200 in 665ms
+ GET /03-entropy_properties/ 200 in 404ms
+ ✓ Compiled in 7.9s (5273 modules)
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
- GET /00-introduction/ 200 in 262ms
- GET /resources/ 200 in 116ms
- GET /08-kolmogorov/ 200 in 390ms
- GET /01-kl_intro/ 200 in 1467ms
- GET /01-kl_intro/ 200 in 826ms
- GET /02-crossentropy/ 200 in 2220ms
- ⨯ [Error: Page "/[...path]/page" is missing param "/02-crossentropy/03-minimizing" in "generateStaticParams()", which is required with "output: export" config.] {
-  page: '/02-crossentropy/03-minimizing'
-}
- GET /02-crossentropy/03-minimizing/ 500 in 238ms
- GET /favicon.ico 200 in 105ms
- GET /03-minimizing/ 200 in 1186ms
- ⨯ [Error: Page "/[...path]/page" is missing param "/03-minimizing/04-max_entropy" in "generateStaticParams()", which is required with "output: export" config.] {
-  page: '/03-minimizing/04-max_entropy'
-}
- GET /03-minimizing/04-max_entropy/ 500 in 216ms
- GET /03-minimizing/ 200 in 1651ms
- GET /04-max_entropy/ 200 in 2339ms
- ⨯ [Error: Page "/[...path]/page" is missing param "/04-max_entropy/00-introduction" in "generateStaticParams()", which is required with "output: export" config.] {
-  page: '/04-max_entropy/00-introduction'
-}
- GET /04-max_entropy/00-introduction/ 500 in 246ms
+ GET /bonus/ 200 in 2632ms
+ ✓ Compiled in 1046ms (2385 modules)
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
 Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
- GET /00-introduction/ 200 in 738ms
- ⨯ [Error: Page "/[...path]/page" is missing param "/00-introduction/00-introduction/countdown.png" in "generateStaticParams()", which is required with "output: export" config.] {
-  page: '/00-introduction/00-introduction/countdown.png'
-}
- GET /00-introduction/00-introduction/countdown.png 500 in 123ms
- ✓ Compiled in 1056ms
- ✓ Compiled in 156ms
- ✓ Compiled in 216ms
- ✓ Compiled in 192ms
- ⚠ Fast Refresh had to perform a full reload due to a runtime error.
- ✓ Compiled in 201ms
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
- GET /00-introduction/ 200 in 2202ms
- GET /favicon.ico?favicon.35dd0f14.ico 200 in 65ms
- ✓ Compiled in 347ms
- ✓ Compiled in 304ms
- ✓ Compiled in 317ms
- ✓ Compiled in 264ms
- ✓ Compiled in 341ms
- ✓ Compiled in 258ms
- ✓ Compiled in 225ms
- ✓ Compiled in 433ms
- ✓ Compiled in 401ms
- ⚠ Fast Refresh had to perform a full reload when [turbopack]/browser/dev/hmr-client/hmr-client.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
- ⚠ Fast Refresh had to perform a full reload when [turbopack]/browser/dev/hmr-client/hmr-client.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
- ✓ Compiled in 1375ms
- ✓ Compiled /[...path] in 87ms
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
-Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
- GET /00-introduction/ 200 in 32582ms
+ GET /bonus/ 200 in 615ms
+ GET /04-minimizing/ 200 in 1270ms

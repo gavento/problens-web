@@ -346,11 +346,10 @@ In some abstract theories (like [Solomonoff induction](https://en.wikipedia.org/
 
 ---
 
-## 🔧 Applications
-
+## 🧩 Cracking riddles
 Let's look at some applications of this to our riddles.
 
-<Expand headline ="🤓 Understanding XKCD jokes">
+<RiddleExplanation id="xkcd">
 
 After four chapters developing the theory of KL divergence, we're finally ready to [dissect](https://www.goodreads.com/quotes/440683-explaining-a-joke-is-like-dissecting-a-frog-you-understand) the XKCD joke from [the list of riddles](00-introduction#xkcd).
 
@@ -381,9 +380,9 @@ But also notice is that the posterior distribution still looks uniform for numbe
 */}
 
 The point is that the max-entropy principle gives us a language to talk about different priors and what they stand for. If a very natural log-uniform prior says we are not fine with probability $> 0.999$, maybe it's time to move the picture away. 
-</Expand>
+</RiddleExplanation>
 
-<Expand headline="📈 S&P shape"> <a id="application-understanding-financial-data"></a>
+<RiddleExplanation id="financial-mathematics">
 
 Let's revisit our financial mathematics riddle [from the intro](00-introduction/financial-mathematics). In that riddle, we look at daily changes in S&P index (normalized as a so-called log-return $\log S_{i+1}/S_{i}$ for all consecutive daily values $S_i, S_{i+1}$) and plot them in a histogram in the following widget
 
@@ -424,7 +423,7 @@ Exponential is not a great fit. As far as I know, practitioners use distribution
 That is, the Student-t distribution takes our model a bit further and adds uncertainty about the _scale_ of the volatility. For example, maybe if you look far enough into the past, you start seeing some extreme events like world wars/the Great Depression/industrial revolution, so perhaps we should be open to power-law fits instead of exponential ones.</Footnote>*/}
 
 At this point, I should confess that I know nearly nothing about financial mathematics. This discussion is just based on me playing with Claude/GPT and trying some stuff. But this is exactly the point - max-entropy is so powerful because it gives you the right language to talk about data fitting. It enables you to explore, build more and more complicated models of data, and still keep track of what your models stand for, where their weaknesses are, and how to improve them.  
-</Expand>
+</RiddleExplanation>
 
 ## 🚀 What's next? <a id="next-steps"></a>
 

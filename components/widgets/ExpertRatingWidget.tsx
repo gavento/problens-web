@@ -125,7 +125,7 @@ const ExpertRatingWidget: React.FC<Props> = ({
                   Q{i + 1}
                 </th>
               ))}
-              <th className="border-l-4 border-blue-500 border-t border-r border-b border-gray-300 p-2 text-center font-semibold text-blue-700">
+              <th className="border-l-4 border-blue-500 border-t border-r border-b border-gray-300 p-2 text-center font-semibold text-blue-700" style={{ minWidth: '120px' }}>
                 Log Score<br/>(Cross-entropy)
               </th>
               {showBrierScore && (

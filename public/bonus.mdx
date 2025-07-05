@@ -1,12 +1,13 @@
-# Bonus
+# Graveyard
 
-I wrote some additional materials that did not fit with the main story in the end. 
-If eight chapters about KL divergence and entropy don't add enough excitement to your life, check them out! 
+I wrote some additional text that did not fit with the main story in the end that much, or that would make it too fractal to follow. I can't really find the courage to delete it, hence this bonus content. 
+If eight chapters about KL divergence and entropy don't add enough excitement to your life, check it out!
 
-## ⚖️ [Multiplicative Weights Update](/07-algorithms)
+## Bonus chapters
 
+I wrote two chapters that show some nice stuff connected to KL divergence. 
 
-
+### ⚖️ [Multiplicative Weights Update](/07-algorithms)
 
 We explore the Multiplicative Weights Update (MWU) algorithm and its connections to entropy. This is a powerful algorithmic framework that appears in many areas of machine learning, game theory, and optimization.
 
@@ -32,7 +33,7 @@ How should you update? What's best? <Footnote>The symbol $\propto$ means that th
 </Expand>
 
 
-## 🎣 [Fisher Information](/fisher-info)
+### 🎣 [Fisher Information](/fisher-info)
 
 We dive into Fisher information and its fundamental role in statistics and information geometry. We derive it as a limit of KL divergence for close distributions. 
 
@@ -49,4 +50,103 @@ But here's the thing: US elections are super close. We already know both parties
   correctIndices={[2]}
   explanation={<>It's about 1,000,000! That's a huge chunk of the whole US! The general rule: to get error margin <Math math="\eps" />, you need roughly <Math math="1/\eps^2" /> samples. That square is killer—it's why getting better estimates gets expensive fast! No wonder most polls stick to a few thousand people.<br/><br/>But why <Math math="1/\eps^2" />? Explore the relationship below:<br/><br/><PollingErrorCalculator /></>}
 />
+</Expand>
+
+
+## Bonus random content 
+
+More on entropy and KL divergence applications; cut from [the third chapter](03_entropy-properties). 
+
+<Expand headline="Chain rule & uniqueness" advanced={true}>
+There's also a slightly fancier version of additivity called the _chain rule_. 
+
+
+Say I've got distributions $p,q$ for how I get to work (\{🚶‍♀️, 🚲, 🚌\}). But when I take the bus, I also track which line (\{①, ②, ③\}), with conditional distributions $p', q'$. Combining $p$ and $p'$ gives me an overall distribution <Math math = "p_{\textrm{overall}}" /> over \{🚶‍♀️, 🚲, ①, ②, ③\}. 
+
+For example, if $p=$\{🚶‍♀️: 0.3, 🚲: 0.3, 🚌: 0.4\} and $p'=$\{①: 0.5, ②: 0.25, ③: 0.25\}, then <Math math = "p_{\textrm{overall}}=" />\{🚶‍♀️: 0.3, 🚲: 0.3, ①: 0.2, ②: 0.1, ③: 0.1\}. 
+
+The chain rule says:
+
+<Math displayMode={true} math="
+D(p_{\textrm{overall}}, q_{\textrm{overall}}) = D(p,q) + p_{\textrm{bus}} \cdot D(p',q')
+"/>
+where <Math math = "p_{\text{bus}}" /> is how often I take the bus according to $p$. 
+
+This is pretty intuitive! First off, as we refine our distributions, the divergence gets larger. In other words, telling $p_{overall}$ apart from $q_{overall}$ is easier than just telling $p$ from $q$. 
+
+But the formula even tells us very precisely how much: the bus refinement helps by $D(p', q')$ whenever bus comes up. This happens with probability <Math math = "p_{\textrm{bus}}" />. 
+
+Try proving this yourself or see how it gives us additivity! 
+
+Here's something cool: any reasonable function with monotonicity and chain rule properties [has to be KL divergence](https://blog.alexalemi.com/kl.html).
+
+That's pretty awesome—it means KL divergence isn't some arbitrary formula someone cooked up. There's literally only one measure with these natural properties, and it's KL divergence.
+
+
+</Expand>
+
+
+<Expand headline = "Conditional entropy and mutual information" advanced={true}>
+
+I want to tell you about mutual information - a pretty important quantity that ties together our intuitions behind KL divergence and entropy. We won't need it in the future, so feel free to skip this one. 
+
+First, a quick refresher: Let's say you've got two distributions $p_1$ and $p_2$. Maybe $p_1$ is about weather (☀️ or ☁️) and $p_2$ is how I get to work (🚶‍♀️, 🚲, or 🚌). A joint distribution is a table showing the probability of each combo. Here are three possible joint distributions for three different people:
+
+![Which table is the "most" independent?](00-introduction/independence.png)
+
+All three have the same _marginals_: 70% good weather, and 20%/30%/50% for walk/bike/bus.
+
+Two distributions are independent if their joint distribution equals the product of the marginals. Here's what independence looks like:
+
+![Independent distributions](00-introduction/independence2.png)
+
+Here comes the riddle: Which of our three tables is "closest" to being independent? Try to think about it before going on. 
+
+
+.
+
+
+SPOILER ALERT:
+
+.
+
+
+To answer this question properly, we need a precise measure for how different each table is from the ideal independent one. There are more ways to do this<Footnote>For example, people often use [correlation](https://en.wikipedia.org/wiki/Correlation), but that has problems. First, correlation only works for numbers, not general stuff like \{☀️, ☁️\}. Also, zero correlation doesn't mean independence. </Footnote>, but using KL divergence is a very principled way to do this. We've got two distributions: the "truth" (one of our tables) and the "model" (the ideal independent table). The KL between them tells us how well the model matches reality—basically, how long until a Bayesian detective figures out the data isn't coming from the independent model.
+
+The KL divergences for our tables:
+
+$$
+D(p_1, q) \approx 0.40
+$$
+$$
+D(p_2, q) \approx 0.04
+$$
+$$
+D(p_3, q) \approx 0.21
+$$
+
+So table 2 is "closest" to independence, as formalized by KL divergence. 
+
+This works for any joint distribution $(r, s)$. The KL divergence between $(r, s)$ and the independent version $r \otimes s$ is called [mutual information](http://en.wikipedia.org/wiki/Mutual_information) between $r$ and $s$—it's a super-important quantity in information theory.
+
+You can try to play with it in the widget below. 
+
+<MutualInformationWidget /> 
+
+There is a second intuition for mutual information. Intuitively, it tells us how many bits we learn about $X$ when we find out the value of $Y$ (or vice versa—it's symmetric). This can be formalized using entropy. 
+
+First, recall the entropy formula $H(X) = \sum_{x} P(X = x) \log \frac{1}{P(X = x)}$. This formula still works if we condition on knowing that $Y$ takes a certain value $y$. We can write
+<Math displayMode={true} math="H(X | Y = y) = \sum_{x} P(X = x | Y = y) \log \frac{1}{P(X = x | Y = y)}" />
+The conditional entropy $H(X|Y)$ is defined as the entropy of $X$ after I sample $Y$ and learn its value, i.e.:
+<Math displayMode={true} math="H(X|Y) = \sum_{y} P(Y = y) H(X | Y =y)" />
+
+Now here's a cool fact: If you write down the definition of mutual information, you get:
+
+
+<Math displayMode={true} math="I(X;Y) = H(X) - H(X|Y)" />
+
+So in particular, $H(X|Y) \le H(X)$. That is, learning the value of $Y$ can only decrease the uncertainty on average about $X$ (and the difference is exactly the mutual information).
+
+It is a good exercise to write down all the definitions to check that this is true. To get some intuition about this, guess what happens if we make $P$(☀️ AND 🚶‍♀️$) = P$(☁️ AND 🚲$) = \frac{1}{2}$ in the above widget. The mutual information is then 1 bit. That's because learning the value of one distribution, say transport, makes the entropy of weather smaller by 1 bit - the weather distribution changes from a coin flip ($H(\textrm{weather}) = 1$) to either determined ☀️ or determined ☁️ ($H(\textrm{weather} | \textrm{transport}) = 0$). 
+
 </Expand>

@@ -68,7 +68,10 @@ import KeyTakeaway from "@/components/content/KeyTakeaway";
 import RiddleSolution from "@/components/content/RiddleSolution";
 import ImageGallery from "@/components/content/ImageGallery";
 import Quote from "@/components/content/Quote";
+import RiddleStatement from "@/components/content/RiddleStatement";
+import RiddleExplanation from "@/components/content/RiddleExplanation";
 import MLProblemExplorer from "@/components/widgets/MLProblemExplorer";
+import MLProblemExplorerSimple from "@/components/widgets/MLProblemExplorerSimple";
 
 // Force color support for CI/build environments
 chalk.level = 3;
@@ -221,6 +224,7 @@ export async function getMdxContent(path: string) {
       GPT2CompressionWidget: GPT2CompressionWidget,
       LetterPredictionWidget: LetterPredictionWidget,
       MLProblemExplorer: MLProblemExplorer,
+      MLProblemExplorerSimple: MLProblemExplorerSimple,
       Math: NumberedMath,
       EqRef: EquationRef,
       Block: Block,
@@ -231,6 +235,8 @@ export async function getMdxContent(path: string) {
       ImageGallery: ImageGallery,
       Quote: Quote,
       img: ExpandableImage,
+      RiddleStatement: RiddleStatement,
+      RiddleExplanation: RiddleExplanation,
     },
     options: {
       parseFrontmatter: true,

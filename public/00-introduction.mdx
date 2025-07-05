@@ -1,27 +1,27 @@
 # All those riddles <a id="introduction"></a>
 
-This site contains an introduction to various topics at the intersection of probability, information theory, and machine learning. 
+This site introduces various topics at the intersection of probability, information theory, and machine learning. 
 {/*Our tour guide through this corner of the world is a formula called _Kullback-Leibler (KL) divergence_. */}
 
-Check out [this page](about) for logistics. Here, I've got several riddles. I hope that some of them will [nerd-snipe](https://xkcd.com/356/) you! 😉 You will understand all of them at the end of this minicourse. 
+Check out [this page](about) for logistics. Here, I've got several riddles. I hope some of them [nerd-snipe](https://xkcd.com/356/) you! 😉 You will understand all of them at the end of this minicourse. 
 
 
-<Expand headline = "🧠 Intelligence test">
-Test your intelligence with the following widget! You will be given a bunch of text snippets cut from Wikipedia cut at a random place. Your task is to predict the next letter. You can compare your performance with some neural nets! 
+<RiddleStatement id="intelligence">
+Test your intelligence with the following widget! You will be given a bunch of text snippets cut from Wikipedia at a random place. Your job: predict the next letter. You can compare your performance with some neural nets! 
 
 <LetterPredictionWidget/>
 
-Don't feel bad if a machine beats you; they've been studying for this test their entire lives! But why? And why did Claude Shannon - the information theory [GOAT](https://www.merriam-webster.com/dictionary/goat) - make this experiment in 1940's? 
-</Expand>
+Don't feel bad if a machine beats you; they've been studying for this test their entire lives! But why? And why did Claude Shannon - the information theory [GOAT](https://www.merriam-webster.com/dictionary/goat) - make this experiment in the 1940s? 
+</RiddleStatement>
 
-<Expand headline="🔮 How good are your predictions?"> <a id="predictions"></a>
+<RiddleStatement id="predictions">
 
-It'd be awesome to know the future—or at least know someone who does. So you've gathered some experts and came up with five questions (Q1 to Q5). You ask the experts to give you probabilities for all 5 questions.
-A year later, you know what actually happened and are ready to find the best expert.  
+It'd be awesome to know the future—or at least know someone who does. So you've gathered some experts and come up with five questions (Q1 to Q5). You ask the experts to give you probabilities for all 5 questions.
+A year later, you know what actually happened. Time to find the best expert!  
 
-![questions](00-introduction/questions.png)
+<ImageGallery images={[{src: "00-introduction/questions.png", alt: "questions"}]} fullWidth={true} />
 
-Question is: who's the best here?
+The question is: who's the best here?
 
 <MultipleChoiceQuestion
   options={["🧑 Expert 1", "👵🏿 Expert 2", "👶 Expert 3"]}
@@ -33,19 +33,19 @@ Question is: who's the best here?
     showBrierScore={false}
   />  </> }
   />
-</Expand>
+</RiddleStatement>
 
 
 
-<Expand headline="📈 S&P shape"> <a id="financial-mathematics"></a>
+<RiddleStatement id="financial-mathematics">
 
 {/* ![Financial Data Distribution](00-introduction/sap_graph.png) */}
 
 Every day, the S&P index price jumps around a bit. <Footnote>If you don't know what the S&P is, just think Bitcoin, Apple stock, or how many euros you can buy with a dollar</Footnote>
 
-I grabbed some historical data, calculated the daily price changes, normalized them <Footnote>I.e., I am plotting the so-called log-return <Math math = "\ln P_t/P_{t-1} \approx 1 + \frac{P_t - P_{t-1}}{P_{t-1}}" /> for each consecutive daily prices $P_{t-1}, P_t$. </Footnote> and threw them in a histogram. The x-axis shows how big the change was (positive about half the time, negative the other half) anad the y-axis shows how often that size change happens. Before I show you the plot, take a guess—what's it gonna look like? 
+I grabbed some historical data, calculated the daily price changes, and normalized them <Footnote>I.e., I am plotting the so-called log-return <Math math = "\ln P_t/P_{t-1} \approx 1 + \frac{P_t - P_{t-1}}{P_{t-1}}" /> for each consecutive daily prices $P_{t-1}, P_t$. </Footnote> and threw them in a histogram. The x-axis shows how big the change was (positive about half the time, negative the other half) and the y-axis shows how often that size change happens. Before I show you the plot, take a guess—what's it gonna look like? 
 
-![shapes](00-introduction/shapes.png)
+<ImageGallery images={[{src: "00-introduction/shapes.png", alt: "shapes"}]} fullWidth={true} />
 
 <MultipleChoiceQuestion
   options={["A", "B", "C"]}
@@ -56,13 +56,13 @@ I grabbed some historical data, calculated the daily price changes, normalized t
   What's happening here? We will discuss this example in the [chapter about the max-entropy principle](05-max_entropy). This principle is extremely useful in situations like ours, when we want to model some kind of data. <br/><br/></>}
 />
 
-</Expand>
+</RiddleStatement>
 
 
 
 
 
-<Expand advanced={false} headline="🌐 How large is Wikipedia?"><a id="wikipedia"></a>
+<RiddleStatement id="wikipedia">
 Marcus Hutter, an AI researcher, started <a href="http://prize.hutter1.net/">this challenge</a>: Take a 1GB file of Wikipedia text. How small can you compress it? <a href="https://en.wikipedia.org/wiki/ZIP_(file_format)">Zipping it</a> gets you about 300MB. But we can do way better. What's the current record? 
 
 <MultipleChoiceQuestion
@@ -72,28 +72,28 @@ Marcus Hutter, an AI researcher, started <a href="http://prize.hutter1.net/">thi
   <CompressionWidget />
 </>}
 /> 
-</Expand>
+</RiddleStatement>
 
-<Expand headline="🦶 Average foot"> <a id="statistics"></a>
+<RiddleStatement id="statistics">
 
-![rod](00-introduction/rod.png "Determining the length of the foot in 1522; taken from https://commons.wikimedia.org/wiki/File:Determination_of_the_rute_and_the_feet_in_Frankfurt.png")
+<ImageGallery images={[{src: "00-introduction/rod.png", alt: "rod"}]} fullWidth={true} caption="Determining the length of the foot in [1522 Frankfurt](https://commons.wikimedia.org/wiki/File:Determination_of_the_rute_and_the_feet_in_Frankfurt.png)." />
 
-Back in the day, people measured stuff in feet. Sure, we all kinda know how long a foot is, but eventually you need to nail it down precisely. One way (shown above) is to grab 16 random people and average their foot lengths:
-<Math displayMode={true} math="\bar X = \frac{1}{16} (X_1 + \dots + X_{16})" />
+Back in the day, people measured stuff in feet. Sure, we all kinda know how long a foot is, but eventually you need to nail it down precisely. One way is to grab 16 random people and average their foot lengths:
+<Math displayMode={true} math="\hat{\mu} = \frac{1}{16} (X_1 + \dots + X_{16})" />
 
 This gives you a pretty stable number that shouldn't change much if you do it again. To measure how good your estimate is, you'd usually calculate the standard deviation. Remember the formula? Which one's right:
 
 <MultipleChoiceQuestion
   options={[
-    <Math math="\bar{\sigma}^2 = \frac{1}{15} \sum_{i=1}^{16} (X_i - \bar{X})^2" />,
-    <Math math="\bar{\sigma}^2 = \frac{1}{16} \sum_{i=1}^{16} (X_i - \bar{X})^2" />,
-    <Math math="\bar{\sigma}^2 = \frac{1}{17} \sum_{i=1}^{16} (X_i - \bar{X})^2" />
+    <Math math="\hat{\sigma}^2 = \frac{1}{15} \sum_{i=1}^{16} (X_i - \hat{\mu})^2" />,
+    <Math math="\hat{\sigma}^2 = \frac{1}{16} \sum_{i=1}^{16} (X_i - \hat{\mu})^2" />,
+    <Math math="\hat{\sigma}^2 = \frac{1}{17} \sum_{i=1}^{16} (X_i - \hat{\mu})^2" />
   ]}
   correctIndices={[0, 1, 2]}
   feedbackType="all-show"
   explanation={<>In a sense, they're all correct! Well, more like they're all defensible options from the viewpoint of frequentist statistics. Using <Math math="1/(n-1)" /> gives you the <a href="https://en.wikipedia.org/wiki/Bias_of_an_estimator">unbiased estimate</a>, <Math math="1/n" /> gives the <a href="https://en.wikipedia.org/wiki/Maximum_likelihood_estimation">maximum likelihood estimate</a>, and <Math math="1/(n+1)" /> minimizes <a href="https://en.wikipedia.org/wiki/Mean_squared_error">the mean squared error</a> between your guess and the truth.<br/><br/>But here's the thing: out of all these ways to estimate stuff, only maximum likelihood became the rockstar of machine learning. Using KL divergence, <a href="04-minimizing#mle">we'll see</a> why maximum likelihood is so special and what makes it tick.</>}
 />
-</Expand>
+</RiddleStatement>
 
 
 {/*
@@ -118,31 +118,11 @@ Your LLM tries to guess this distribution with its own guess $q$. We need to mea
 </Expand>
 */}
 
-<Expand headline="🔗 Distance from independence"> <a id="information-theory"></a>
 
-Independence is huge in probability. Quick refresher: you've got two distributions $p_1$ and $p_2$. Maybe $p_1$ is about weather (☀️ or ☁️) and $p_2$ is how I get to work (🚶‍♀️, 🚲, or 🚌). A joint distribution is a table showing the probability of each combo. Here are three possible joint distributions for three different people:
+<RiddleStatement id="xkcd">
 
-![Which table is the "most" independent?](00-introduction/independence.png)
-
-All three have the same _marginals_: 70% good weather, and 20%/30%/50% for walk/bike/bus.
-
-Two distributions are independent if their joint distribution equals the product of the marginals. Here's what independence looks like:
-
-![Independent distributions](00-introduction/independence2.png)
-
-Which of our three tables is "closest" to being independent?
-
-<MultipleChoiceQuestion
-  options={["Table 1", "Table 2", "Table 3"]}
-  correctIndices={[1]}
-  explanation={<><a href="01-kl_intro#information-theory">We'll see</a> this is measured by something called mutual information, which is super important in information theory and—surprise!—it's just KL divergence in disguise.<br/><br/>Try it yourself with the interactive widget below:<br/><br/><MutualInformationWidget /></>}
-/>
-</Expand>
-
-<Expand headline="🤓 Understanding XKCD jokes"> <a id = "xkcd"></a>
-
-<a href="https://xkcd.com/1159/" target="_blank" rel="noopener noreferrer">
-  <img src="00-introduction/countdown.png" alt="Are the odds in our favor?" style={{cursor: 'pointer'}} />
+<a href="https://www.explainxkcd.com/wiki/index.php/1159:_Countdown" target="_blank" rel="noopener noreferrer">
+  <ImageGallery images={[{src: "00-introduction/countdown.png", alt: "Are the odds in our favor?"}]} fullWidth={true} />
 </a>
 
 So... are the odds in our favor?
@@ -155,20 +135,22 @@ So... are the odds in our favor?
 
   More about that later, we will test it out with the calculator below. <br/><br/><XKCDCountdownWidget /></>}
 /> 
-</Expand>
+</RiddleStatement>
 
 
-<Expand headline="🤯 Machine Learning mess"> <a id="machine-learning"></a>
+<RiddleStatement id="machine-learning">
 
-When you first dive into machine learning, it looks like total chaos—just a bunch of random tricks and optimization problems. Like, say you wanna understand how DALLE or Midjourney work. The standard setup for image generation is called a variational autoencoder. You train it by optimizing this absolute monster: 
+When you first dive into machine learning, it looks like total chaos. There's linear regression, and logistic regression, and $k$-means. All of those  look like a bunch of random tricks and optimization problems. 
+
+Then, there are neural networks. Very impressive, but still pretty daunting. Take the standard architecture for image generation called a variational autoencoder. You train it by optimizing this absolute monster of a function: 
 
 <Math displayMode={true} math = "\frac{1}{N} \sum_{i = 1}^N \left( \sum_y p'(y | x) \frac{\| X_i - \textrm{Dec}(y)\|^2}{2d} \,+\, \left( \frac12 \sum_{j = 1}^d \textrm{Enc}_{\mu, j}(X_i)^2 + \textrm{Enc}_{\sigma^2, j}(X_i) - \log \textrm{Enc}_{\sigma^2, j}(X_i) \right)\right)"/>
 
-Where the hell does this come from?? [We'll see](06-machine_learning) how KL divergence makes sense of this mess—and tons of other standard ML algorithms too. 
+Where the hell are all these, so-called "loss functions", coming from?? [We'll see](06-machine_learning) how KL divergence and entropy make sense of this mess—and tons of other standard ML algorithms too, like those in the widget below. 
 
-![Examples](06-machine_learning/table.png)
+<MLProblemExplorerSimple />
 
-</Expand>
+</RiddleStatement>
 
 
 
@@ -180,7 +162,7 @@ As we go through the mini-course, we'll revisit each puzzle and understand what'
 There are three parts to it. 
 
 1. First, we will understand how Bayes' rule leads to the notions of KL divergence, cross-entropy and entropy (first three chapters). 
-2. Next, we will see that minimizing KL divergence is a powerful principle to build good probabilistic models. We will use it to explain where the machine-learning loss function are coming from. (next three chapters)
-3. Finally, we will discuss how entropy and KL divergence are related to coding theory, and what kind of intuition it gives us about large language models. 
+2. Next, we will see that minimizing KL divergence is a powerful principle to build good probabilistic models. We will use it to explain where the machine-learning loss function are coming from (next three chapters).
+3. Finally, we will discuss how entropy and KL divergence are related to coding theory, and what kind of intuition it gives us about large language models (final two chapters). 
 
 See you in [the first chapter](01-kl_intro)!

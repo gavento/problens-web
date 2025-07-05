@@ -108,7 +108,13 @@ The problem with this approach is that [it gets exponentially harder](https://ar
 This is of course very different for current AIs. As we now understand, they are literally trained to _predict_ human conversations and writings. Or, equivalently, they are trying to _compress_ them. This compression is the crucial difference from the earlier Turing-test-fakers. The architects of current AI like Ilya Sutskever understand this difference extremely well and it was the reason why they were optimistic about the overall approach of training general intelligence by modelling text. They understood that being good on the "simplistic" task of predicting the next token does not only force you to learn English words (GPT-1) or the basic grammar of a couple of languages (GPT-2). To get really good at predicting the next token, you have to [understand the underlying reality that led to the creation of that token](https://www.dwarkesh.com/p/ilya-sutskever). Understanding reality partially consists of learning facts, but more importantly, it requires intelligence to combine them. <Footnote>For some reason, people actually often use the Chinese room experiment to conclude that even the current AIs don't really understand the world, they are just '[stochastic parrots](https://en.wikipedia.org/wiki/Stochastic_parrot)'. I find it quite confusing since I think of the experiment as a great argument for why current AI _does_ understand the world. </Footnote>
 
 
-## 🧠 Solomonoff prior & induction
+
+
+## 🔧 More Kolmogorov Applications
+
+Kolmogorov complexity is incredibly helpful for understanding all kinds of fundamental questions. 
+
+<Expand advanced = {true} headline = "🧠 Solomonoff prior & induction" >
 
 What's the most natural distribution over all (finite) binary strings, if what we care about is their Kolmogorov complexity? The [maximum entropy principle](04-max_entropy) says we should consider the distribution <Math math = "p(x) \propto e^{- \lambda K(x)}" />, for some $\lambda$. In a minute, we will see that the right $\lambda$ is such that $p(x) \propto 2^{-K(x)}$ <Footnote>A quick intuition: Larger $\lambda$ makes the weight of long algorithms negligible, and smaller $\lambda$ will likely not even be normalizable. </Footnote> This distribution is called _Solomonoff prior_. <Footnote>todo maybe mention universal probability. </Footnote>
 
@@ -157,11 +163,7 @@ You can test both rules on the following widget that fits input points with a po
 <PolynomialRegressionWidget />
 
 </Expand>
-
-
-## 🔧 More Kolmogorov Applications
-
-Kolmogorov complexity is incredibly helpful for understanding all kinds of fundamental questions. 
+</Expand>
 
 <Expand advanced={true} headline = "What the hell is randomness?"> 
 
