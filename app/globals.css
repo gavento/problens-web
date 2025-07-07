@@ -332,3 +332,10 @@ th {
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
+
+.truthP {
+  color: #2563eb;
+}
+.modelQ {
+  color: #dc2626;
+}

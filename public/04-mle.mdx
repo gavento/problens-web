@@ -1,0 +1,103 @@
+# Minimizing KL divergence <a id="updating-beliefs"></a>
+
+In this chapter, we'll explore what happens when we minimize the KL divergence between two distributions. Specifically, we'll look at the following problem that often arises in statistics:
+
+<Block>
+We begin with a distribution $p$ that captures our best guess of the "truth". We want to find a simpler model for it from a family of distributions $Q$. 
+</Block>
+
+We will solve this problem by minimizing $D(p, q)$ over all $q \in Q$. If you remember the previous chapters, this should make a plenty of sense! We will also see how a special case of this approach is equivalent to the _maximum likelihood principle_ (MLE) in statistics.
+
+Let's dive into the details!
+
+<KeyTakeaway>
+Maximum likelihood principle is about finding the best model by minimizing KL divergence. 
+</KeyTakeaway>
+
+## 🥔 Simpler models by minimizing KL <a id="mle"></a>
+
+Imagine we have some data—for instance, the 16 foot length measurements $X_1, \dots, X_{16}$ from [our statistics riddle](00-riddles#statistics). Assuming the order of the data doesn't matter, it's convenient to represent these data as an empirical distribution $p$, where each outcome is assigned a probability of $1/16$. This is what we call an _empirical distribution_. In some sense, this empirical distribution is the "best fit" for our data; it's the most precise distribution matching what we have observed. 
+
+However, this is a terrible predictive model—it assigns zero probability to outcomes not present in the data! If we were to measure the 17th person's foot, the model is going to be "infinitely surprised" by this since it assigns zero probability to this outcome.<Footnote>Remember, we have discussed in [the first chapter](01-kl_intro) how we can measure the surprisal of seeing the outcome $x$ as $\log \frac{1}{p(x)}$.</Footnote> We need something better.
+
+
+One common approach is to first identify a family of distributions $Q$ that we believe would be a good model for the data. For example, we might suspect that foot lengths follow a Gaussian distribution.<Footnote>Why Gaussians? We'll see soon in the next few chapters.</Footnote> In this case, $Q$ would be the set of all Gaussian distributions with varying means and variances. 
+
+Now, how do we pinpoint the optimal parameters $\mu$ and $\sigma^2$ to best match the empirical distribution? KL divergence offers a natural solution: Choose $\mu$ and $\sigma$ to minimize $D(p, N(\mu,\sigma^2))$<Footnote> $N(\mu, \sigma^2)$ denotes the Gaussian distributionwith mean $\mu$ and variance $\sigma^2$. </Footnote>. More broadly, if we have a collection of candidate distributions $Q$ (like all Gaussians), we select the new model <Math math ="q_{\textrm{new}}\in Q" /> like this:
+
+<Math id="kl_new_model" displayMode={true} math = "q_{\textrm{new}} = \argmin_{q\in Q} D(p, q)" />
+
+Why does this make sense? Recall that KL divergence is designed to measure how well a model $q$ approximates the true distribution $p$. More specifically, it is the rate of how quickly a Bayesian detective learns that the true distribution is $p$, not $q$. So, minimizing KL simply means selecting the best "imposter" that it takes the longest to separate from the truth. That's pretty reasonable!
+
+
+Visually, I like to think of it like this. First, imagine a "potato" of all possible distributions. The empirical distribution $p$ is a single lonely point within it. Then, there's a subset of distributions $Q$ that we believe would be a good model for the data -- I drew it as a kind of a "half-plane" in the picture below since it's parameterized by two values: $\mu$ and $\sigma^2$. Although KL divergence is not, technically speaking, a distance between distributions, because it's asymetric, it's close enough to think of it as a distance. Minimizing KL is then like finding the closest point in $Q$ to $p$; or, if you want, it's like projecting $p$ onto $Q$.
+
+
+![KL divergence potato](04-mle/potato_mle.png)
+
+
+## Cross-entropy loss <a id="cross_entropy"></a>
+
+Let's write down our minimization formula again, in its full glory: 
+<Math id="kl_new_model_close" displayMode={true} math = "q_{\textrm{new}} = \argmin_{q\in Q} D(p, q) = \argmin_{q\in Q} \sum_x p(x) \cdot \log \frac{p(x)}{q(x)}" />
+
+Here, $x$ ranges over all possible values in the distribution. 
+
+We can simplify this equation a good bit. Let's remember that we can split the KL divergence into cross-entropy and entropy: 
+
+<Math displayMode={true} math="D(p,q) = \underbrace{\sum_x p(x) \cdot \log \frac{1}{q(x)}}_{\textrm{Cross-entropy}} - \underbrace{\sum_x p(x) \cdot \log \frac{1}{p(x)}}_{\textrm{Entropy}}. " />
+
+
+<GaussianFitWidget />
+
+You may notice that the cross-entropy is sometimes negative, although from the definition it's clear it should always be positive. That's because we are using probability densities (for $q$) even though we defined everything only for discrete distributions. Let's not worry about this too much, there's an [advanced block](05-max_entropy#continuous) later on if you are eager for details. 
+
+### 🔍 Maximum likelihood principle <a id="mle"></a>
+
+Let's examine our approach of minimizing $D(p, q)$ more closely. We'll focus on the most common scenario where $p$ is an empirical distribution derived from data points $X_1, \dots, X_n$. To keep the notation tidy, let's assume all $X_i$ are distinct, which means that $p$ is uniform distribution<Footnote>In the general case, $p$ is not necessarily uniform and the probability of each value $x$ is proportional to the count of $x$ in the data. The general case does not change much in the argument we are about to make. </Footnote>. In this situation, we can express the KL divergence we're minimizing as:
+
+<Math displayMode={true} math="D(p,q) = \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1/n}{q(X_i)}. " />
+
+Splitting this into entropy and cross-entropy terms:
+
+<Math displayMode={true} math="D(p,q) = \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1}{q(X_i)} - \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1}{n}. " />
+
+Notice that the entropy term (the second sum) remains constant with respect to $q$. <Footnote> In this specific case, where $p$ is a uniform distribution, we even have $\sum \frac{1}{n}\log n = \log n$, but the key point is that it's a constant independent of $q$. </Footnote> Therefore, minimizing KL divergence is equivalent to minimizing the cross-entropy:
+
+<Math displayMode={true} math="\argmin_{q\in Q} D(p, q) = \argmin_{q \in Q} \sum_{X_i\in\mathcal{X}} \frac{1}{n}\log\frac{1}{q(X_i)}" />
+
+
+
+Here, $q(X_i)$ represents the probability (or probability density) that the model assigns to the data point $X_i$. If we drop the constant factor $1/n$ and use the identity $\log(1/x)=-\log x$, this minimization becomes equivalent to maximizing the following product:
+
+<Math displayMode={true} math="\argmin_{q\in Q} D(p, q) =  \argmax_{q \in Q} \prod_{X_i} q(X_i)" />
+
+The right-hand side expression has a very clear interpretation: it's the conditional probability of observing the data $X_i$, assuming they were sampled independently from the model distribution $q$. This type of conditional probability is also known as the "likelihood of $X$ under $q$".
+
+So, what's the big takeaway? Minimizing KL divergence for empirical distributions is equivalent to maximizing the likelihood of the data under the model $q$. The latter is actually a very common technique in statistics, known as the maximum likelihood estimation (MLE) principle. We've just derived it from the perspective of KL divergence!
+
+<Expand headline = "Example: Maximum likelihood for Normal Distribution">
+<a id = "mle_for_mean_sigma"></a>
+
+Suppose we are given data $X_1, \dots, X_N$ (which we represent by its empirical distribution $p$) and want to find the best-fitting Gaussian $N(\mu, \sigma^2)$. How should we choose $\hat\mu$ and $\hat\sigma^2$?
+
+The Maximum Likelihood Principle suggests that we should maximize the likelihood, or, more conveniently, maximize the log-likelihood (which is equivalent to minimizing the cross-entropy):
+
+<Math displayMode={true} math="\hat\mu, \hat\sigma^2 = \argmax_{\mu, \sigma^2} \sum_{i = 1}^N \log\left( \frac{1}{2\pi\sigma^2} e^{-\frac{(X_i-\mu)^2}{2\sigma^2}} \right) 
+= \argmin_{\mu, \sigma^2} 2N \cdot \log \sigma + \sum_{i = 1}^N \frac{(X_i-\mu)^2}{2\sigma^2}"/>
+
+There are several ways to solve this optimization problem. Differentiation is likely the cleanest: If we define $\mathcal{L}$ to be the expression above, then:
+<Math displayMode={true} math = "\frac{\partial \mathcal{L}}{\partial \mu} = \frac{1}{\sigma^2} \sum_{i = 1}^N 2(X_i - \mu) "/>
+
+Setting <Math displayMode={false} math="\frac{\partial \mathcal{L}}{\partial \mu} = 0"/> leads to $\hat\mu = \frac{1}{N} \sum_{i = 1}^N X_i$.
+
+Similarly,
+<Math displayMode={true} math="\frac{\partial \mathcal{L}}{\partial \sigma} = 2N/\sigma -2  \sum_{i = 1}^N \frac{(X_i-\mu)^2}{\sigma^3}"/>
+
+Setting <Math displayMode={false} math="\frac{\partial \mathcal{L}}{\partial \sigma} = 0"/> then leads to <Math displayMode={false} math="\hat\sigma^2 = \frac{1}{N} \sum_{i = 1}^N (X_i - \mu)^2. "/>
+</Expand>
+
+
+## 🚀 What's next? <a id="next-steps"></a>
+
+In the [next chapter](04-max_entropy), we'll explore more concrete modeling applications of the max entropy principle. We'll see how they apply to various fields like machine learning, statistical modeling, and elsewhere. 

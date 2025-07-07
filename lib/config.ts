@@ -8,33 +8,32 @@ export const TITLE_ABBR = "BBB";
 export const PARTS = [
   {
     name: "Intro",
-    chapters: [
-      ["Riddles", "00-introduction"],
-    ]
+    chapters: [["Riddles", "00-riddles"]],
   },
   {
     name: "Part I: Foundations",
     chapters: [
       ["Bayes & KL divergence", "01-kl_intro"],
       ["Crossentropy & Entropy", "02-crossentropy"],
-      ["Entropy properties", "03-entropy_properties"],
-    ]
+      ["KL & Entropy properties", "03-entropy_properties"],
+    ],
   },
   {
-    name: "Part II: Optimization", 
+    name: "Part II: Optimization",
     chapters: [
-      ["Minimizing KL", "04-minimizing"],
-      ["Maximizing entropy", "05-max_entropy"],
-      ["Loss functions", "06-machine_learning"],
-    ]
+      ["Maximum likelihood", "04-mle"],
+      ["Maximum entropy", "05-max_entropy"],
+      ["Max-entropy distributions", "06-distributions"],
+      ["Loss functions", "07-machine_learning"],
+    ],
   },
   {
     name: "Part III: Compression",
     chapters: [
-      ["Coding theory", "09-coding_theory"],
-      ["Kolmogorov complexity", "08-kolmogorov"],
-    ]
-  }
+      ["Coding theory", "08-coding_theory"],
+      ["Kolmogorov complexity", "09-kolmogorov"],
+    ],
+  },
 ];
 
 // Meta pages (always visible)
@@ -55,9 +54,7 @@ export const MAIN_CHAPTERS = [
   ...META_PAGES,
 ];
 
-export const BONUS_CHAPTERS = [
-  ...PARTS[3].chapters,
-];
+export const BONUS_CHAPTERS = [...PARTS[3].chapters];
 
 // Combined chapters for compatibility
 export const CHAPTERS = [
@@ -65,7 +62,7 @@ export const CHAPTERS = [
   ["", ""], // Gap
   ...BONUS_CHAPTERS,
 ];
-export const rootSlug = "00-introduction";
+export const rootSlug = "00-riddles";
 export const contentDirectory = join(process.cwd(), "public");
 export const GTM_ID = undefined;
 export const referencesPath = join(contentDirectory, "references.bib");

@@ -60,20 +60,20 @@ export default function KLAsymmetryVisualizerWidget() {
       </h4>
       
       <svg width="300" height="180" viewBox="0 0 300 180" className="w-full">
-        {/* Uniform distribution - always red */}
+        {/* Uniform distribution (broad) */}
         <path
           d={createPath(uniformPoints)}
           fill="none"
-          stroke="#dc2626"
+          stroke={isPeakyTrue ? "#dc2626" : "#2563eb"}
           strokeWidth="3"
           strokeLinecap="round"
         />
         
-        {/* Gaussian distribution - always blue */}
+        {/* Gaussian distribution (peaky) */}
         <path
           d={createPath(gaussianPoints)}
           fill="none"
-          stroke="#2563eb"
+          stroke={isPeakyTrue ? "#2563eb" : "#dc2626"}
           strokeWidth="3"
           strokeLinecap="round"
         />
@@ -150,7 +150,7 @@ export default function KLAsymmetryVisualizerWidget() {
       </h3>
       
       <div className="text-sm text-gray-600 text-center">
-        KL divergence between a broad and a peaky distribution
+        KL divergence between a broad and a peaky distribution. The blue distribution is the "truth", the red one the "model".
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -167,8 +167,8 @@ export default function KLAsymmetryVisualizerWidget() {
         />
         
         <DistributionChart
-          pColor="#dc2626" // red
-          qColor="#2563eb" // blue
+          pColor="#2563eb" // blue
+          qColor="#dc2626" // red
           pLabel="p"
           qLabel="q"
           title="D(p_{\text{broad}}, p_{\text{peaky}})"

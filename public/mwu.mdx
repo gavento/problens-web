@@ -1,6 +1,6 @@
 # Multiplicative weights update <a id="multiplicative-weights"></a>
 
-In the [chapter about machine learning](06-machine_learning), we've seen how KL divergence guides us all the way from having a rough guess about our data to a well-defined optimization problem with a concrete loss function. This is where KL divergence really shines and shows us the way.
+In the [chapter about machine learning](07-machine_learning), we've seen how KL divergence guides us all the way from having a rough guess about our data to a well-defined optimization problem with a concrete loss function. This is where KL divergence really shines and shows us the way.
 
 But there's one more step missing -- how do we actually solve that final optimization problem? This is where understanding KL isn't necessarily the most important thing. In a few lucky cases (like estimating mean/variance or linear regression), we have explicit formulas for the solution and can just plug numbers into those formulas.
 
@@ -72,7 +72,7 @@ But look -- this is exactly what the multiplicative weights algorithm is doing. 
 
 ### 📐 Geometric intuition
 
-As we've seen in the [preceding chapter](06-machine_learning), it's really nice to think in terms of optimization problems that optimize loss functions. In fact, one step of gradient descent or multiplicative weights can be seen as optimizing a certain loss function. Let's see how.
+As we've seen in the [preceding chapter](07-machine_learning), it's really nice to think in terms of optimization problems that optimize loss functions. In fact, one step of gradient descent or multiplicative weights can be seen as optimizing a certain loss function. Let's see how.
 
 In our optimization problem, we start with this data: the current distribution $p^{(t)}$ and loss function $-g^{(t)}$ (loss functions are to be minimized, hence the negative sign). Notice how we try to balance two things:
 

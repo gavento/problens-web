@@ -1,6 +1,6 @@
 # Kolmogorov Complexity
 
-In the [previous chapter](09-coding_theory), we saw what entropy tells us about compressing strings, if we treat letters independently. But that's just an assumption that good compression algorithms can't make. 
+In the [previous chapter](08-coding_theory), we saw what entropy tells us about compressing strings, if we treat letters independently. But that's just an assumption that good compression algorithms can't make. 
 
 Kolmogorov complexity is the answer to the conundrum. It is the ultimate limit on how much a file can be compressed. Its immense power is balanced by the fact that we can't really compute it. 
 {/*My favorite applications of Kolmogorov complexity are not practical ones, but a clean conceptual framework for discussing these ideas.*/} 
@@ -24,7 +24,7 @@ Here are a few more examples.
 - Although digits of $\pi$ have many random-like properties, the Kolmogorov complexity of its first million digits is extremely small. That's because there are some [extremely short](https://cs.uwaterloo.ca/~alopez-o/math-faq/mathtext/node12.html) programs printing it. 
 - Larger numbers (written down in binary) typically have larger Kolmogorov complexity. But there are huge numbers like <Math math = "3^{3^{3^{3^3}}}" /> with very small Kolmogorov complexity.  
 - Whenever you can ZIP a file to a size of 100MB, you can say that "Kolmogorov complexity of the file is at most 100MB"
-- The Hutter's challenge from [coding theory chapter](09-coding_theory) is about estimating the Kolmogorov complexity of 1GB of Wikipedia
+- The Hutter's challenge from [coding theory chapter](08-coding_theory) is about estimating the Kolmogorov complexity of 1GB of Wikipedia
 - If you keep flipping a coin $n$ times, the resulting sequence is likely to have Kolmogorov complexity of about $n$. There's no good way of compressing it.  
 
 
@@ -127,7 +127,7 @@ A partial answer to the question is Bayes' rule from [the first chapter](01-kl_i
 
 But what prior should we start with? Solomonoff offers his. This way, if the model $q$ has Kolmogorov $K(q)$ and the log-likelihood of our observations under that hypothesis is $L(q)$, Bayes' rule says that in the posterior, the hypothesis probability will be proportional to $2^{- K(q) + L(q)}$. That is, more complicated hypotheses are charged for their complexity by the prior. If you now want to select the most likely hypothesis, it should not be the one maximizing the log-likelihood (which is the suggestion of the [maximum likelihood principle](03-minimizing)), we should additionally regularize by Kolmogorov complexity. 
 
-Here is a coding-theory intuition for why this makes sense. The hypothesis that is the most likely under Solomonoff prior is exactly the hypothesis that compresses the observed data the best. Remember, negative log-likelihood is just crossentropy. More concretely, if we use $p$ for the true distributions over the $n$ observations we see, we have $L(q) = -n \cdot H(p,q)$. So, maximizing $-K(q) + L(q)$ is really the same as minimizing $K(q) + n \cdot H(p, q)$. But this formula has very clear meaning - it is the number of bits needed to compress the observations by $q$. Indeed, we first have to store $q$ and then use coding theory to compress the observations with $H(p,q)$ bits per letter. <Footnote>Example: in our [coding theory chapter](09-coding_theory), we discussed the Hutter's challenge. State-of-the-art LLMs have top-notch $H(p,q)$ on Wikipedia, but humongous $K(q)$. On the other hand, using optimal code has so negligible $K(q)$ for texts of nontrivial length that we did not even discuss it in the [compression widget](09-coding-theory#compression) at that page. </Footnote>
+Here is a coding-theory intuition for why this makes sense. The hypothesis that is the most likely under Solomonoff prior is exactly the hypothesis that compresses the observed data the best. Remember, negative log-likelihood is just crossentropy. More concretely, if we use $p$ for the true distributions over the $n$ observations we see, we have $L(q) = -n \cdot H(p,q)$. So, maximizing $-K(q) + L(q)$ is really the same as minimizing $K(q) + n \cdot H(p, q)$. But this formula has very clear meaning - it is the number of bits needed to compress the observations by $q$. Indeed, we first have to store $q$ and then use coding theory to compress the observations with $H(p,q)$ bits per letter. <Footnote>Example: in our [coding theory chapter](08-coding_theory), we discussed the Hutter's challenge. State-of-the-art LLMs have top-notch $H(p,q)$ on Wikipedia, but humongous $K(q)$. On the other hand, using optimal code has so negligible $K(q)$ for texts of nontrivial length that we did not even discuss it in the [compression widget](09-coding-theory#compression) at that page. </Footnote>
 </Expand>
 
 <Expand advanced={true} headline = "Solving epistemology">

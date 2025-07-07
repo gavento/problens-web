@@ -72,6 +72,7 @@ import RiddleStatement from "@/components/content/RiddleStatement";
 import RiddleExplanation from "@/components/content/RiddleExplanation";
 import MLProblemExplorer from "@/components/widgets/MLProblemExplorer";
 import MLProblemExplorerSimple from "@/components/widgets/MLProblemExplorerSimple";
+import MDLink from "@/components/content/MDLink";
 
 // Force color support for CI/build environments
 chalk.level = 3;
@@ -225,6 +226,7 @@ export async function getMdxContent(path: string) {
       LetterPredictionWidget: LetterPredictionWidget,
       MLProblemExplorer: MLProblemExplorer,
       MLProblemExplorerSimple: MLProblemExplorerSimple,
+      GaussianFitWidget: (await import("@/components/widgets/GaussianFitWidget")).default,
       Math: NumberedMath,
       EqRef: EquationRef,
       Block: Block,
@@ -237,6 +239,7 @@ export async function getMdxContent(path: string) {
       img: ExpandableImage,
       RiddleStatement: RiddleStatement,
       RiddleExplanation: RiddleExplanation,
+      a: MDLink,
     },
     options: {
       parseFrontmatter: true,

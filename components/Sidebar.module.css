@@ -18,6 +18,7 @@
   /* Custom scrollbar styling for better appearance */
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+  overscroll-behavior: contain;
 }
 
 .scrollableContent::-webkit-scrollbar {
@@ -73,7 +74,9 @@
 
 .subsections {
   overflow: hidden;
-  transition: opacity 0.2s ease-in-out, max-height 0.4s ease-in-out;
+  transition:
+    opacity 0.2s ease-in-out,
+    max-height 0.4s ease-in-out;
   opacity: 0;
   max-height: 0;
   position: relative;
