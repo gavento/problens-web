@@ -5,13 +5,13 @@ import Expand from "./Expand";
 
 // Static registry of riddle headlines
 const RIDDLE_HEADLINES: Record<string, string> = {
-  "intelligence": "🧠 Intelligence test",
-  "predictions": "🔮 Who's less wrong?",
+  intelligence: "🧠 Intelligence test",
+  predictions: "🔮 Who's less wrong?",
   "financial-mathematics": "📈 Modelling returns",
-  "wikipedia": "🌐 How large is Wikipedia?",
-  "statistics": "🦶 Average foot",
-  "xkcd": "🤓 Explaining XKCD jokes",
-  "machine-learning": "🤯 At a loss"
+  wikipedia: "🌐 How large is Wikipedia?",
+  statistics: "🦶 Average foot",
+  xkcd: "🤓 Explaining XKCD jokes",
+  "machine-learning": "🤯 At a loss",
 };
 
 interface Props {
@@ -30,13 +30,13 @@ export default function RiddleExplanation({ id, headline, children, startOpen = 
       setResolvedHeadline(headline);
       return;
     }
-    
+
     // First check static registry
     if (RIDDLE_HEADLINES[id]) {
       setResolvedHeadline(RIDDLE_HEADLINES[id]);
       return;
     }
-    
+
     // Fallback to global registry (for dynamic riddles)
     if (typeof window !== "undefined") {
       // @ts-ignore
@@ -56,7 +56,16 @@ export default function RiddleExplanation({ id, headline, children, startOpen = 
         // attempt to open
         const header = el.querySelector('[class*="header"]') as HTMLElement | null;
         if (header) header.click();
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
+
+        // Scroll to 75% from top (25% from viewport top) like the Expand component
+        const rect = el.getBoundingClientRect();
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const targetY = scrollTop + rect.top - window.innerHeight * 0.25;
+
+        window.scrollTo({
+          top: targetY,
+          behavior: "smooth",
+        });
       }
     },
     [id],
