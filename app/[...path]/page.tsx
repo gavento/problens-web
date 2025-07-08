@@ -44,12 +44,18 @@ export async function generateStaticParams() {
 export default async function ChapterPage({ params }: PageProps) {
   const path = (await params).path.join("/");
 
-  // Check if the path looks like an image file and return 404
-  const imageExtensions = [".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".ico"];
-  const hasImageExtension = imageExtensions.some((ext) => path.toLowerCase().endsWith(ext));
+  // Check if the path looks like a static file and return 404
+  const staticFileExtensions = [".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".ico", ".js", ".css", ".map"];
+  const hasStaticExtension = staticFileExtensions.some((ext) => path.toLowerCase().endsWith(ext));
+  
+  // Also check for common static file paths
+  const isStaticPath = path === "favicon.ico" || 
+                      path.startsWith("_next/") || 
+                      path.includes("/static/") ||
+                      hasStaticExtension;
 
-  if (hasImageExtension) {
-    // This is an image file request, return not found to let static assets handle it
+  if (isStaticPath) {
+    // This is a static file request, return not found to let static assets handle it
     notFound();
   }
 

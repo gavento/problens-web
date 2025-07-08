@@ -23,7 +23,6 @@ export const PARTS = [
     chapters: [
       ["Maximum likelihood", "04-mle"],
       ["Maximum entropy", "05-max_entropy"],
-      ["Max-entropy distributions", "06-distributions"],
       ["Loss functions", "07-machine_learning"],
     ],
   },

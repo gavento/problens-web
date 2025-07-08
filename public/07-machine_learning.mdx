@@ -148,3 +148,12 @@ Similarly,
 
 Setting <Math displayMode={false} math="\frac{\partial \mathcal{L}}{\partial \sigma} = 0"/> then leads to <Math displayMode={false} math="\hat\sigma^2 = \frac{1}{n} \sum_{i = 1}^n (X_i - \mu)^2. "/>
 </Expand>
+
+
+<Expand headline = "Application: Measuring Feet">
+One of the running examples we used was [measuring of feet](00-riddles#statistics). Why should we model the data using the normal distribution? One way to reason about this is that the length of a foot is a random variable that can probably be modeled as a sum of many small and relatively independent random variables. Thus, using the central limit theorem, the normal distribution is a good fit.
+
+We could also try to approach this modeling problem purely from the max-entropy perspective. Since the data is positive, the simplest model for it is the exponential distribution. But that seems to predict, for example, that we'll see many people with foot lengths twice the average, which doesn't seem to match reality.
+
+The next better model takes into account that the typical deviation of the distribution from the mean is probably quite a bit smaller than the mean. The max entropy distribution if we now consider both the mean and the variance (which represents the scale) is going to be the normal distribution. <Footnote>More precisely, since the domain is _positive_ real numbers, the max entropy distribution is a Gaussian that is clipped to zero for negative numbers and rescaled to sum up to 1.</Footnote>
+</Expand>
