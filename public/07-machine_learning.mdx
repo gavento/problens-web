@@ -123,3 +123,28 @@ Inspired by Shannon's original experiment, you can now test your own next-letter
 
 <LetterPredictionWidget />
 
+
+
+
+
+
+<Expand headline = "Example: Maximum likelihood for Normal Distribution">
+<a id = "mle_for_mean_sigma"></a>
+
+Suppose we are given data $X_1, \dots, X_n$ (which we represent by its empirical distribution $p$) and want to find the best-fitting Gaussian $N(\mu, \sigma^2)$. How should we choose $\hat\mu$ and $\hat\sigma^2$?
+
+The Maximum Likelihood Principle suggests that we should maximize the likelihood, or, more conveniently, maximize the log-likelihood (which is equivalent to minimizing the cross-entropy):
+
+<Math displayMode={true} math="\hat\mu, \hat\sigma^2 = \argmax_{\mu, \sigma^2} \sum_{i = 1}^n \log\left( \frac{1}{2\pi\sigma^2} e^{-\frac{(X_i-\mu)^2}{2\sigma^2}} \right) 
+= \argmin_{\mu, \sigma^2} 2n \cdot \log \sigma + \sum_{i = 1}^n \frac{(X_i-\mu)^2}{2\sigma^2}"/>
+
+There are several ways to solve this optimization problem. Differentiation is likely the cleanest: If we define $\mathcal{L}$ to be the expression above, then:
+<Math displayMode={true} math = "\frac{\partial \mathcal{L}}{\partial \mu} = \frac{1}{\sigma^2} \sum_{i = 1}^n 2(X_i - \mu) "/>
+
+Setting <Math displayMode={false} math="\frac{\partial \mathcal{L}}{\partial \mu} = 0"/> leads to $\hat\mu = \frac{1}{n} \sum_{i = 1}^n X_i$.
+
+Similarly,
+<Math displayMode={true} math="\frac{\partial \mathcal{L}}{\partial \sigma} = 2n/\sigma -2  \sum_{i = 1}^n \frac{(X_i-\mu)^2}{\sigma^3}"/>
+
+Setting <Math displayMode={false} math="\frac{\partial \mathcal{L}}{\partial \sigma} = 0"/> then leads to <Math displayMode={false} math="\hat\sigma^2 = \frac{1}{n} \sum_{i = 1}^n (X_i - \mu)^2. "/>
+</Expand>

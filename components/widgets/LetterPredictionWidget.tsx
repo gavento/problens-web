@@ -135,8 +135,8 @@ const LetterPredictionWidget: React.FC = () => {
   const startNewGame = () => {
     if (snapshots.length === 0) return;
     
-    // Hotfix: Exclude snapshots with IDs 506, 422, 476, 280, 487, 838, 835, 720, 546, 827, 789, 308, 153, 163, 399, 590, 875, 856, 79, 218, 201
-    const excludedIds = [506, 422, 476, 280, 487, 838, 835, 720, 546, 827, 789, 308, 153, 163, 399, 590, 875, 856, 79, 218, 201];
+    // Hotfix: Exclude snapshots with IDs 506, 422, 476, 280, 487, 838, 835, 720, 546, 827, 789, 308, 153, 163, 399, 590, 875, 856, 79, 218, 201, 57, 112, 274, 576, 602, 615, 676, 8
+    const excludedIds = [506, 422, 476, 280, 487, 838, 835, 720, 546, 827, 789, 308, 153, 163, 399, 590, 875, 856, 79, 218, 201, 57, 112, 274, 576, 602, 615, 676, 8];
     const validSnapshots = snapshots.filter(s => 
       !excludedIds.includes(s.id) && !usedSnapshotIds.has(s.id)
     );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import styles from "./Expand.module.css";
 
@@ -26,12 +26,29 @@ export default function Expand({
   id,
 }: ExpandProps) {
   const [isOpen, setIsOpen] = useState(startOpen);
+  const expandRef = useRef<HTMLDivElement>(null);
 
   // Use subtle red background for advanced sections header
   const headerClr = headerColor ?? (advanced ? "#fff5f5" : color);
 
+  const handleHide = () => {
+    setIsOpen(false);
+
+    // Scroll to the top of the expand box (at 25% from top of viewport)
+    if (expandRef.current) {
+      const rect = expandRef.current.getBoundingClientRect();
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const targetY = scrollTop + rect.top - window.innerHeight * 0.25;
+
+      window.scrollTo({
+        top: targetY,
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
-    <div className={styles.expand} id={id}>
+    <div className={styles.expand} id={id} ref={expandRef}>
       <div className={styles.header} style={{ backgroundColor: headerClr }} onClick={() => setIsOpen(!isOpen)}>
         {advanced && (
           <div className={styles.advancedIcon} title="This is an advanced section">
@@ -59,6 +76,9 @@ export default function Expand({
       {isOpen && (
         <div className={styles.content} style={{ backgroundColor: color }}>
           {children}
+          <div className={styles.hide} onClick={handleHide}>
+            Hide ▲
+          </div>
         </div>
       )}
     </div>

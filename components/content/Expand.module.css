@@ -54,3 +54,12 @@
   font-size: 1rem;
   line-height: 1.6;
 }
+
+.hide {
+  margin-top: 0.5rem;
+  text-align: right;
+  font-size: 0.85rem;
+  color: var(--neutral-600);
+  cursor: pointer;
+  user-select: none;
+}

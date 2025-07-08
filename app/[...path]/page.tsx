@@ -1,7 +1,7 @@
 import "katex/dist/katex.min.css";
 import { singlePage } from "@/components/Page";
 import { getAllMdxPaths } from "@/lib/lib";
-import { rootSlug } from "@/lib/config";
+import { rootSlug, PARTS, META_PAGES } from "@/lib/config";
 import { redirect, notFound } from "next/navigation";
 
 interface PageProps {
@@ -11,10 +11,34 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  const paths = getAllMdxPaths();
-  return paths.map((path) => ({
-    path: [path],
-  }));
+  const paths: string[][] = [];
+  
+  // Add all chapter paths from PARTS
+  PARTS.forEach(part => {
+    part.chapters.forEach(([_, slug]) => {
+      if (slug && slug !== "") {
+        paths.push([slug]);
+      }
+    });
+  });
+  
+  // Add all meta pages
+  META_PAGES.forEach(([_, slug]) => {
+    if (slug && slug !== "") {
+      paths.push([slug]);
+    }
+  });
+  
+  // Add any other MDX files that might not be in config
+  const allMdxFiles = getAllMdxPaths();
+  allMdxFiles.forEach(file => {
+    // Only add if not already included
+    if (!paths.some(p => p[0] === file)) {
+      paths.push([file]);
+    }
+  });
+  
+  return paths.map(path => ({ path }));
 }
 
 export default async function ChapterPage({ params }: PageProps) {

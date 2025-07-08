@@ -1,4 +1,5 @@
 import { join } from "path";
+import "lodash";
 import { contentDirectory } from "./config";
 import { readFileSync, readdirSync } from "fs";
 import { compileMDX } from "next-mdx-remote/rsc";
@@ -73,6 +74,7 @@ import RiddleExplanation from "@/components/content/RiddleExplanation";
 import MLProblemExplorer from "@/components/widgets/MLProblemExplorer";
 import MLProblemExplorerSimple from "@/components/widgets/MLProblemExplorerSimple";
 import MDLink from "@/components/content/MDLink";
+import SnippetDistributionTableWidget from "@/components/widgets/SnippetDistributionTableWidget";
 
 // Force color support for CI/build environments
 chalk.level = 3;
@@ -224,6 +226,7 @@ export async function getMdxContent(path: string) {
       ThreeCategoriesWidget: ThreeCategoriesWidget,
       GPT2CompressionWidget: GPT2CompressionWidget,
       LetterPredictionWidget: LetterPredictionWidget,
+      SnippetDistributionTableWidget: SnippetDistributionTableWidget,
       MLProblemExplorer: MLProblemExplorer,
       MLProblemExplorerSimple: MLProblemExplorerSimple,
       GaussianFitWidget: (await import("@/components/widgets/GaussianFitWidget")).default,

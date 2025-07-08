@@ -38,6 +38,7 @@
     "react-dom": "^19.1.0",
     "react-katex": "^3.0.1",
     "react-markdown": "^10.1.0",
+    "lodash": "^4.17.21",
     "recharts": "^2.15.2",
     "rehype-highlight": "^7.0.2",
     "rehype-katex": "^7.0.1",

@@ -12,23 +12,28 @@ interface ImageGalleryProps {
   caption?: string;
   height?: number;
   fullWidth?: boolean;
+  // Optional custom width (e.g., "75%" or "500px") for single-image galleries.
+  width?: string | number;
 }
 
 const DEFAULT_HEIGHT = 160;
 
-export default function ImageGallery({ images, caption, height = DEFAULT_HEIGHT, fullWidth = false }: ImageGalleryProps) {
+export default function ImageGallery({
+  images,
+  caption,
+  height = DEFAULT_HEIGHT,
+  fullWidth = false,
+  width,
+}: ImageGalleryProps) {
   // Special handling for single image with fullWidth
-  if (fullWidth && images.length === 1) {
+  // Also allow custom width for single-image case
+  if (images.length === 1 && (fullWidth || width)) {
     const image = images[0];
     return (
       <div className="my-6">
         <div className="w-full flex justify-center">
-          <div className="rounded shadow-sm overflow-hidden bg-white" style={{ maxWidth: "100%" }}>
-            <ExpandableImage 
-              src={image.src} 
-              alt={image.alt} 
-              className="max-w-full h-auto object-contain block" 
-            />
+          <div className="rounded shadow-sm overflow-hidden bg-white" style={width ? { width } : { maxWidth: "100%" }}>
+            <ExpandableImage src={image.src} alt={image.alt} className="max-w-full h-auto object-contain block" />
           </div>
         </div>
         {/* Markdown caption below */}
