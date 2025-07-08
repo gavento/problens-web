@@ -446,11 +446,11 @@ const MaxEntropyVisualization: React.FC<MaxEntropyVisualizationProps> = () => {
             
             
             {/* Color bar */}
-            <div className="mt-4">
-              <div className="text-sm font-medium mb-2">Density Scale:</div>
-              <div className="flex items-center space-x-2">
+            <div className="mt-8 max-w-sm mx-auto">
+              <div className="flex items-center space-x-3">
+                <div className="text-sm font-medium">Density scale</div>
                 <span className="text-xs font-medium">Low</span>
-                <div className="flex-1 h-8 rounded-lg" style={{
+                <div className="flex-1 h-6 rounded-lg" style={{
                   background: 'linear-gradient(to right, rgb(68,1,84), rgb(49,54,149), rgb(42,150,92), rgb(175,215,85), rgb(253,231,36))'
                 }} />
                 <span className="text-xs font-medium">High</span>
@@ -577,10 +577,10 @@ const MaxEntropyVisualization: React.FC<MaxEntropyVisualizationProps> = () => {
             
             {/* Color bar for 3D */}
             <div className="mt-6 max-w-md mx-auto">
-              <div className="text-sm font-medium mb-2 text-center">Density Scale:</div>
               <div className="flex items-center space-x-3">
+                <div className="text-sm font-medium">Density scale</div>
                 <span className="text-xs font-medium">Low</span>
-                <div className="flex-1 h-8 rounded-lg" style={{
+                <div className="flex-1 h-6 rounded-lg" style={{
                   background: 'linear-gradient(to right, rgb(68,1,84), rgb(49,54,149), rgb(42,150,92), rgb(175,215,85), rgb(253,231,36))'
                 }} />
                 <span className="text-xs font-medium">High</span>

@@ -159,9 +159,9 @@ The answer is that both options have the same probability density. That's becaus
 
 You can test it in the following widget. 
 
-<MaxEntropyVisualization />
-
 This property isn't exclusive to the exponential distribution; it holds for all max-entropy distributions that fit the form given by our formula <EqRef id="max-entropy-form" />. If you dare, the widget above also visualizes that if you sample $x_1, x_2, x_3$ from a Gaussian and fix the values of $x_1 + x_2 + x_3$ and $x_1^2 + x_2^2 + x_3^2$, the curve this defines (a circle) has constant density. 
+
+<MaxEntropyVisualization />
 
 In general, consider a distribution of the shape <Math math = "p(x) \propto e^{\lambda_1 f_1(x) + \dots + \lambda_m f_m(x)}" />. Now, imagine independently sampling a few points $x_1, \dots, x_k$ from that distribution. If you then tell me the values of the averages $a_1 = \frac{1}{k} \sum_{i = 1}^k f_1(x_i), \dots, a_m = \frac{1}{k} \sum_{i = 1}^k f_m(x_i)$, and I condition on this information, the conditional distribution over $x_1, \dots, x_k$ is actually uniform! This is because the probability density of any such tuple under our distribution $p$ is the same, equal to 
 <Math displayMode={true} math = "p(x_1, \dots, x_k) \propto e^{\lambda_1 f_1(x_1) \,+\, \ldots \,+\, \lambda_m f_m(x_1)} \cdot \dots \cdot e^{\lambda_1 f_1(x_k) + \dots + \lambda_m f_m(x_k)} = e^{k(\lambda_1 a_1 + \dots + \lambda_m a_m)}. " /> 
@@ -253,6 +253,8 @@ In the absence of any constraints, we have $p(x) \propto e^{0}$, which means the
 
 One painful fact to keep in mind is that the uniform distribution doesn't always exist. Concretely, there's no uniform distribution over all real numbers.
 </Expand>
+
+### 📈 Logits, softmax, exponentials
 
 If we believe the mean is an important parameter of a distribution (which is very typical), the max entropy principle states that the right family of distributions to work with are those with the shape:
 
@@ -367,6 +369,9 @@ This discussion is mostly meant to show what I love on the max entropy principle
 There's still an elephant in the room, though—the exponential distribution can't be normalized if the domain are _unbounded_ real numbers (i.e., both positive and negative).
 </Expand>
 
+
+### 🔔 Gaussians
+
 If we fix both mean and variance, the max-entropy distribution is Gaussian. 
 
 <Expand headline="Gaussian Distribution">
@@ -396,121 +401,12 @@ The connection between the two is deeper. In fact, [one of the proofs](https://e
 
 </Expand>
 
-### 🔢 Other Examples
 
-Here are a few more examples you might have encountered.
-
-<Expand headline ="Assuming Independence">
-An important property of entropy is that if you have a joint distribution $(p,q)$, then $H((p,q)) \le H(p) + H(q)$, with equality if and only if $p$ and $q$ are independent. <Footnote>This is called [subadditivity of entropy](https://math.stackexchange.com/questions/3326158/proof-of-sub-additivity-for-shannon-entropy). Why is it subadditive? If you still remember [our discussion of mutual information](01-kl_intro#information-theory), mutual information is defined as $D((p,q), p \otimes q)$. You can rewrite this expression as $H(p) + H(q) - H((p,q))$ (try it!), so subadditivity of entropy is equivalent to mutual information being non-negative.</Footnote>
-
-The implication for the max-entropy principle is this: Imagine you're working with a joint distribution and you know its two marginals $p,q$. Then, the maximum entropy principle tells us that the joint distribution with these two marginals that maximizes entropy is the one where they are independent.
-
-Whenever people model things using probability distributions, they often assume that certain distributions are independent if they don't know what the dependence between them looks like (i.e., they make this assumption all the time). We can think of this as a special case of using the maximum entropy principle.
-
-![independence](04-max_entropy/independence.png)
-
-</Expand>
-<Expand headline ="Power Law Distributions">
-Sometimes we care about random variables that span a large range of values. For example, the median US city has a population of about 2,400, but there are many cities with more than a million inhabitants (see the picture).
-
-![US cities](04-max_entropy/cities.png)
-
-These situations are typically modeled by *power-law distributions*, where $p(x) \propto 1/x^C$ for some constant $C$. In the picture above, such a distribution would correspond to a straight line, so it would fit city populations quite well. From the perspective of maximum entropy, these distributions are simply max-entropy distributions when we fix $E[\log X]$.
-
-That is, whenever you use a power-law distribution, you're implicitly saying, "__The important thing to look at is not $X$, but $\log X$.__" In the case of cities, for example, it feels more sensible to classify them on a log-scale ($10^4$ – small, $10^5$ – medium, $10^6$ – large, $10^7$ – megacity) instead of a normal scale ($10^5$ – small, $2 \cdot 10^5$ – medium, ...). A power-law distribution is then just the exponential into which we plug in $\log X$ instead of $X$.
-
-</Expand>
-<Expand advanced={true} headline ="Beta Distribution">
-Our coin-flipping riddle from the [intro](01-kl_intro) was a bit silly - we somehow assumed that our coin was either fair, or 40/60 biased, but nothing else was possible. In reality, any bias $p$ is plausible, so Bayesian statistician would work with a distribution over $[0,1]$ and update the whole distribution after each flip. 
-
-What distribution over $[0,1]$ should we choose? If we start with the uniform distribution (max-entropy without any constraints), then the family of the distributions that the Bayesian can see after a few flips is called the [Beta distributions](https://en.wikipedia.org/wiki/Beta_distribution). 
-
-Here's another reason for why this family is natural: We could argue that given some $X \in [0,1]$ the more relevant quantity to work with is the logit - $\log X / \log (1-X)$. So, shouldn't the _right_ distribution to work with be the max-entropy distribution for $f(X) = \log X / \log (1-X)$? Unfortunately, max-entropy distribution for this does not exist (it blows up on one end of $[0,1]$), but the max-entropy family for $f_1(X) = \log X$ and $f_2(X) = \log (1-X)$ normalize in the relevant scenarios and it's exactly the family of beta distributions. 
-</Expand>
-<Expand advanced={true} headline ="Exponential Family">
-
-In the case of discrete distributions over, say, $\{1, \dots, K\}$, literally any distribution is a maximum entropy distribution for certain $K$ constraints. For example, for your favorite distribution $p = (p_1, \dots, p_K)$, choose the $j$-th constraint to be $E[\mathbb{1}_j(i)] = p_j$ where $\mathbb{1}_j$ returns 1 for $i=j$ and 0 otherwise; the max entropy distribution for these $K$ constraints is exactly $p$.
-
-However, for distributions over real numbers and finitely many reasonable functions $f_1, \dots, f_m$, only a small proportion of distributions are max-entropy for some family of functions.
-
-The **exponential family** is the elite group of distributions that are maximum entropy distributions for some functions $f_1, \dots, f_m$. <Footnote> More precisely, it's the family of distributions that are "min KL distributions" for some $q$: A distribution from that family minimizes $D(p,q)$ from some not necessarily uniform distribution $q$, given some constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$. As an example, take the domain $\{0, 1, \dots, n\}$ and consider the constraint $f(X) = X$. We have already seen that this leads to the exponential distribution, given we start with uniform $q$. Now, consider $q$ with <Math math = "q_i = {n \choose i} / 2^n"/> instead. The new solution is the distribution $p$ with <Math math = "p_i \propto {n \choose i} \cdot e^{\lambda i}"/>. After we substitute $\lambda = \log p/(1-p)$, we get the formula for the binomial distribution. Thus, binomial distribution belongs to the exponential family using $f(X) = X$, even though it's not a max-entropy distribution for that $f$.</Footnote>
-So, any distribution with a finite domain is in the exponential family. Any distribution we've discussed so far (exponential, geometric, normal, power-law, beta) is in the exponential family. [Wikipedia](https://en.wikipedia.org/wiki/Exponential_family) contains a long list of distributions in that family, many of which I've never heard of.
-
-The importance of this family is that its distributions have a bunch of nice and intuitive properties.
-<Expand advanced={true} headline="A theoretically nice property of exponential-family distributions">
-Here's one of the nice properties that's relevant for the next chapter but perhaps too obscure to fully appreciate on a first read.
-
-Suppose you have some data with mean $\mu$ and variance $\sigma^2$ and you want to fit it with a distribution. There are two ways to approach this:
-
-1.  Use the maximum entropy principle to deduce that you should model it with a normal distribution. Then use maximum likelihood to find the best parameters <Math math = "\hat{\mu}, \hat{\sigma^2}" /> for this general model—it turns out that <Math math = "\hat\mu_{MLE} = \mu, \hat\sigma^2_{MLE} = \sigma^2"/>.
-
-2.  Use the maximum entropy principle directly—the max entropy distribution with mean $\mu$ and variance $\sigma^2$ is $N(\mu, \sigma^2)$.
-
-Both approaches yield the same answer, but it's not clear a priori that this should be the case! Perhaps MLE could have determined that $N(\mu, \frac{n-1}{n} \sigma^2)$ is a better fit for the data.
-
-Fortunately, distributions in the exponential family have the nice property that both approaches give the same answer. That is, if you determine the parameters of the distribution using MLE, they turn out to be what they "should" be. Formally, if your distribution is defined by constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$, then <Math math = "\hat\alpha_{1, MLE} = \alpha_1, \dots, \hat\alpha_{m,MLE} = \alpha_m" />.
-</Expand>
-
-</Expand>
-<Expand advanced={true} headline ="Boltzmann Distribution">
-
-Imagine many particles in a box, each particle $i$ having some energy $E_i$. What's the distribution of these energies? The maximum entropy principle suggests that the energies will be distributed according to the formula <Math math = "p_i \propto e^{-\lambda E_i}" />.
-
-This is indeed a good guess. Here's (roughly) why. When you have many particles in a box, every now and then two particles fly close to each other and exchange energies. Basically, the particles first have energies $E_1, E_2$, then some interesting physics happens, and then they have energies $E_1', E_2'$. What's important is that $E_1 + E_2 = E_1' + E_2'$; that's the conservation of energy.
-
-So, the conditional distribution of energies of two random particles with total energy $E$ should, intuitively, be uniform. But remember [our intuition](04-max_entropy/intuition) about max-entropy distributions: this is exactly the property of a max-entropy distribution.
-</Expand>
-
-<Expand advanced={true} headline ="Solomonoff Prior">
-
-Given an algorithm, the most basic measure of its complexity is its length. Given a mathematical object $x$, the most basic measure of its complexity is the length of the shortest algorithm that describes that object. This is called **Kolmogorov complexity** $K(x)$.
-
-For example, even though $\pi$ has infinitely many digits, its Kolmogorov complexity is small because there's [a short algorithm](https://www.quora.com/Whats-an-easy-algorithm-to-generate-digits-of-%CF%80) that keeps printing its digits.
-
-In some abstract theories (like [Solomonoff's theory of inductive inference](https://en.wikipedia.org/wiki/Solomonoff%27s_theory_of_inductive_inference) or [Tegmark's multiverse](https://en.wikipedia.org/wiki/Multiverse)), we want a distribution over all mathematical objects (whatever that means). We then choose the max-entropy distribution, i.e., <Math math = "p(x) \propto e^{-\lambda K(x)}" />. This is called the **Solomonoff prior**.
-</Expand>
-
----
-
-## 🧩 Cracking riddles
-Let's look at some applications of this to our riddles.
-
-<RiddleExplanation id="xkcd">
-
-After four chapters developing the theory of KL divergence, we're finally ready to [dissect](https://www.goodreads.com/quotes/440683-explaining-a-joke-is-like-dissecting-a-frog-you-understand) the XKCD joke from [the list of riddles](00-riddles#xkcd).
-
-![Are the odds in our favor?](00-riddles/countdown.png)
-
-It's all about how to choose a prior for the number on the wall. The first natural choice is simply the uniform one; that is, before looking at the wall, we think the number is a uniform random number with 14 decimal digits. After observing the right 8 digits, the first 6 are still uniformly random <Footnote>We actually also see a small piece of the leftmost digit in the comic, but let's forget this for simplicity.</Footnote>. So, for that prior, the probability that all 6 digits are zero is $1/10^6$—we are probably fine.
-
-Uniform prior over $[0, 10^{14}]$ kind of sucks, though. Why should the prior probability stay constant and then suddenly drop to zero? Isn't the fact that the countdown is in seconds an evidence that the number may be small? Also, if you look at various catastrophes, the average time until the next one is all over the place -- $\sim 10^{15}$ seconds for $10km$-sized asteroids, $\sim 10^{10}$ for 9+ Richter-scale supervolcano eruption, and up to $\sim 10^{8}$ for AI doom. <Footnote>See [Precipice](https://books.ms/main/0F4823107289367C7A16C0AB1CF0F71D) by Toby Ord for estimations of these numbers. </Footnote>
-
-Given all this, I'd argue for choosing the distribution $p(x) \propto 1/x$ which corresponds to a uniform distribution over the _scales_. <Footnote>By this, I mean that this distribution satisfies <Math math = "\int_{10^1}^{10^2} \frac{1}{x} dx = \int_{10^2}^{10^3} \frac{1}{x} dx = \int_{10^3}^{10^4} \frac{1}{x} dx = \dots " />.  </Footnote> This is also called the [log-uniform distribution](https://en.wikipedia.org/wiki/Reciprocal_distribution). This is a pretty useful distribution with some very nice usecases like [the Benford's law](https://en.wikipedia.org/wiki/Benford%27s_law). 
-
-Both uniform and log-uniform distributions are special cases of power-law (<Math math = "\textrm{uniform = }e^{0\cdot \log X}, \textrm{log-uniform = }e^{1\cdot \ln X}" />). The usual problem with $p(x) \propto 1/x$ is that we can't normalize this distribution if the domain is all real numbers, similarly to why we can't normalize the uniform distribution there. In our case, we can restrict the domain to integers between $0$ and $10^{14}$, so it's fine.
-
-See the posterior probability for $X = 2382$ in the widget below. 
-
-<XKCDCountdownWidget />
-
-{/*
-<Expand advance = {true} headline = "More plots for log-uniform prior">
-The plot below shows the whole posterior distribution if we start with the log-uniform prior (on the left) and condition on the last digits of $x$ being "00002382". We grouped $x$-values into bins between $10^1, 10^{1.5}, 10^2, \dots$
-
-![xkcd posterior](04-max_entropy/xkcd.png)
-
-As in the widget, almost all the probability is now concentrated on a single outcome—$x_0 = 2382$. That makes sense: in the prior, it had probability $p(x_0) \propto 1/x_0 \approx 5 \cdot 10^{-4}$, while the next most likely outcome—$x_1 = 100002382$ had probability $p(x_1) \propto 1/x_1 \approx 10^{-8}$. That is, the probability of $x_1$ was $10^{-4}$ times smaller in the prior.
-
-But also notice is that the posterior distribution still looks uniform for numbers $>10^9$. This also makes sense—for large numbers, their last few digits are like a coin flip, so learning them doesn't significantly change things, and thus the posterior remains uniform there.
-</Expand>
-*/}
-
-The point is that the max-entropy principle gives us a language to talk about different priors and what they stand for. If a very natural log-uniform prior says we are not fine with probability $> 0.999$, maybe it's time to move the picture away. 
-</RiddleExplanation>
+We can now revisit our financial mathematics riddle [from the intro](00-riddles/financial-mathematics). 
 
 <RiddleExplanation id="financial-mathematics">
 
-Let's revisit our financial mathematics riddle [from the intro](00-riddles/financial-mathematics). In that riddle, we look at daily changes in S&P index (normalized as a so-called log-return $\log S_{i+1}/S_{i}$ for all consecutive daily values $S_i, S_{i+1}$) and plot them in a histogram in the following widget
+In that riddle, we look at daily changes in S&P index (normalized as a so-called log-return $\log S_{i+1}/S_{i}$ for all consecutive daily values $S_i, S_{i+1}$) and plot them in a histogram in the following widget
 
 <FinancialDistributionWidget showBTC={true} showSAP={true} />
 
@@ -550,6 +446,117 @@ That is, the Student-t distribution takes our model a bit further and adds uncer
 
 At this point, I should confess that I know nearly nothing about financial mathematics. This discussion is just based on me playing with Claude/GPT and trying some stuff. But this is exactly the point - max-entropy is so powerful because it gives you the right language to talk about data fitting. It enables you to explore, build more and more complicated models of data, and still keep track of what your models stand for, where their weaknesses are, and how to improve them.  
 </RiddleExplanation>
+
+
+### ⚖️ Power-law
+
+If you care about the _scale_ of a random variable, maximum entropy leads to so-called power-law distributions. 
+
+<Expand headline ="Power Law Distributions">
+Sometimes we care about random variables that span a large range of values. For example, the median US city has a population of about 2,400, but there are many cities with more than a million inhabitants (see the picture).
+
+![US cities](05-max_entropy/cities.png)
+
+These situations are typically modeled by *power-law distributions*, where $p(x) \propto 1/x^C$ for some constant $C$. In the picture above, such a distribution would correspond to a straight line, so it would fit city populations quite well. From the perspective of maximum entropy, these distributions are simply max-entropy distributions when we fix $E[\log X]$.
+
+That is, whenever you use a power-law distribution, you're implicitly saying, "__The important thing to look at is not $X$, but $\log X$.__" In the case of cities, for example, it feels more sensible to classify them on a log-scale ($10^4$ – small, $10^5$ – medium, $10^6$ – large, $10^7$ – megacity) instead of a normal scale ($10^5$ – small, $2 \cdot 10^5$ – medium, ...). A power-law distribution is then just the exponential into which we plug in $\log X$ instead of $X$.
+
+</Expand>
+
+And here's an application to our [XKCD riddle](00-riddles#xkcd):
+
+<RiddleExplanation id="xkcd">
+
+After four chapters developing the theory of KL divergence, we're finally ready to [dissect](https://www.goodreads.com/quotes/440683-explaining-a-joke-is-like-dissecting-a-frog-you-understand) the XKCD joke from [the list of riddles](00-riddles#xkcd).
+
+![Are the odds in our favor?](00-riddles/countdown.png)
+
+It's all about how to choose a prior for the number on the wall. The first natural choice is simply the uniform one; that is, before looking at the wall, we think the number is a uniform random number with 14 decimal digits. After observing the right 8 digits, the first 6 are still uniformly random <Footnote>We actually also see a small piece of the leftmost digit in the comic, but let's forget this for simplicity.</Footnote>. So, for that prior, the probability that all 6 digits are zero is $1/10^6$—we are probably fine.
+
+Uniform prior over $[0, 10^{14}]$ kind of sucks, though. Why should the prior probability stay constant and then suddenly drop to zero? Isn't the fact that the countdown is in seconds an evidence that the number may be small? Also, if you look at various catastrophes, the average time until the next one is all over the place -- $\sim 10^{15}$ seconds for $10km$-sized asteroids, $\sim 10^{10}$ for 9+ Richter-scale supervolcano eruption, and up to $\sim 10^{8}$ for AI doom. <Footnote>See [Precipice](https://books.ms/main/0F4823107289367C7A16C0AB1CF0F71D) by Toby Ord for estimations of these numbers. </Footnote>
+
+Given all this, I'd argue for choosing the distribution $p(x) \propto 1/x$ which corresponds to a uniform distribution over the _scales_. <Footnote>By this, I mean that this distribution satisfies <Math math = "\int_{10^1}^{10^2} \frac{1}{x} dx = \int_{10^2}^{10^3} \frac{1}{x} dx = \int_{10^3}^{10^4} \frac{1}{x} dx = \dots " />.  </Footnote> This is also called the [log-uniform distribution](https://en.wikipedia.org/wiki/Reciprocal_distribution). This is a pretty useful distribution with some very nice usecases like [the Benford's law](https://en.wikipedia.org/wiki/Benford%27s_law). 
+
+Both uniform and log-uniform distributions are special cases of power-law (<Math math = "\textrm{uniform = }e^{0\cdot \log X}, \textrm{log-uniform = }e^{1\cdot \ln X}" />). The usual problem with $p(x) \propto 1/x$ is that we can't normalize this distribution if the domain is all real numbers, similarly to why we can't normalize the uniform distribution there. In our case, we can restrict the domain to integers between $0$ and $10^{14}$, so it's fine.
+
+See the posterior probability for $X = 2382$ in the widget below. 
+
+<XKCDCountdownWidget />
+
+{/*
+<Expand advance = {true} headline = "More plots for log-uniform prior">
+The plot below shows the whole posterior distribution if we start with the log-uniform prior (on the left) and condition on the last digits of $x$ being "00002382". We grouped $x$-values into bins between $10^1, 10^{1.5}, 10^2, \dots$
+
+![xkcd posterior](04-max_entropy/xkcd.png)
+
+As in the widget, almost all the probability is now concentrated on a single outcome—$x_0 = 2382$. That makes sense: in the prior, it had probability $p(x_0) \propto 1/x_0 \approx 5 \cdot 10^{-4}$, while the next most likely outcome—$x_1 = 100002382$ had probability $p(x_1) \propto 1/x_1 \approx 10^{-8}$. That is, the probability of $x_1$ was $10^{-4}$ times smaller in the prior.
+
+But also notice is that the posterior distribution still looks uniform for numbers $>10^9$. This also makes sense—for large numbers, their last few digits are like a coin flip, so learning them doesn't significantly change things, and thus the posterior remains uniform there.
+</Expand>
+*/}
+
+The point is that the max-entropy principle gives us a language to talk about different priors and what they stand for. If a very natural log-uniform prior says we are not fine with probability $> 0.999$, maybe it's time to move the picture away. 
+</RiddleExplanation>
+
+
+### 🔢 Other Examples
+
+Here are a few more examples.
+
+<Expand advanced = {true} headline ="Assuming Independence">
+An important property of entropy is that if you have a joint distribution $(p,q)$, then $H((p,q)) \le H(p) + H(q)$, with equality if and only if $p$ and $q$ are independent. <Footnote>This is called [subadditivity of entropy](https://math.stackexchange.com/questions/3326158/proof-of-sub-additivity-for-shannon-entropy). Why is it subadditive? If you still remember [our discussion of mutual information](01-kl_intro#information-theory), mutual information is defined as $D((p,q), p \otimes q)$. You can rewrite this expression as $H(p) + H(q) - H((p,q))$ (try it!), so subadditivity of entropy is equivalent to mutual information being non-negative.</Footnote>
+
+The implication for the max-entropy principle is this: Imagine you're working with a joint distribution and you know its two marginals $p,q$. Then, the maximum entropy principle tells us that the joint distribution with these two marginals that maximizes entropy is the one where they are independent.
+
+Whenever people model things using probability distributions, they often assume that certain distributions are independent if they don't know what the dependence between them looks like (i.e., they make this assumption all the time). We can think of this as a special case of using the maximum entropy principle.
+
+![independence](04-max_entropy/independence.png)
+
+</Expand>
+
+<Expand advanced={true} headline ="Beta Distribution">
+Our coin-flipping riddle from the [intro](01-kl_intro) was a bit silly - we somehow assumed that our coin was either fair, or 40/60 biased, but nothing else was possible. In reality, any bias $p$ is plausible, so Bayesian statistician would work with a distribution over $[0,1]$ and update the whole distribution after each flip. 
+
+What distribution over $[0,1]$ should we choose? If we start with the uniform distribution (max-entropy without any constraints), then the family of the distributions that the Bayesian can see after a few flips is called the [Beta distributions](https://en.wikipedia.org/wiki/Beta_distribution). 
+
+Here's another reason for why this family is natural: We could argue that given some $X \in [0,1]$ the more relevant quantity to work with is the logit - $\log X / \log (1-X)$. So, shouldn't the _right_ distribution to work with be the max-entropy distribution for $f(X) = \log X / \log (1-X)$? Unfortunately, max-entropy distribution for this does not exist (it blows up on one end of $[0,1]$), but the max-entropy family for $f_1(X) = \log X$ and $f_2(X) = \log (1-X)$ normalize in the relevant scenarios and it's exactly the family of beta distributions. 
+</Expand>
+<Expand advanced={true} headline ="Exponential Family">
+
+In the case of discrete distributions over, say, $\{1, \dots, K\}$, literally any distribution is a maximum entropy distribution for certain $K$ constraints. For example, for your favorite distribution $p = (p_1, \dots, p_K)$, choose the $j$-th constraint to be $E[\mathbb{1}_j(i)] = p_j$ where $\mathbb{1}_j$ returns 1 for $i=j$ and 0 otherwise; the max entropy distribution for these $K$ constraints is exactly $p$.
+
+However, for distributions over real numbers and finitely many reasonable functions $f_1, \dots, f_m$, only a small proportion of distributions are max-entropy for some family of functions.
+
+The **exponential family** is the elite group of distributions that are maximum entropy distributions for some functions $f_1, \dots, f_m$. <Footnote> More precisely, it's the family of distributions that are "min KL distributions" for some $q$: A distribution from that family minimizes $D(p,q)$ from some not necessarily uniform distribution $q$, given some constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$. As an example, take the domain $\{0, 1, \dots, n\}$ and consider the constraint $f(X) = X$. We have already seen that this leads to the exponential distribution, given we start with uniform $q$. Now, consider $q$ with <Math math = "q_i = {n \choose i} / 2^n"/> instead. The new solution is the distribution $p$ with <Math math = "p_i \propto {n \choose i} \cdot e^{\lambda i}"/>. After we substitute $\lambda = \log p/(1-p)$, we get the formula for the binomial distribution. Thus, binomial distribution belongs to the exponential family using $f(X) = X$, even though it's not a max-entropy distribution for that $f$.</Footnote>
+So, any distribution with a finite domain is in the exponential family. Any distribution we've discussed so far (exponential, geometric, normal, power-law, beta) is in the exponential family. [Wikipedia](https://en.wikipedia.org/wiki/Exponential_family) contains a long list of distributions in that family, many of which I've never heard of.
+
+The importance of this family is that its distributions have a bunch of nice and intuitive properties.
+<Expand advanced={true} headline="A theoretically nice property of exponential-family distributions">
+Here's one of the nice properties that's relevant for the next chapter but perhaps too obscure to fully appreciate on a first read.
+
+Suppose you have some data with mean $\mu$ and variance $\sigma^2$ and you want to fit it with a distribution. There are two ways to approach this:
+
+1.  Use the maximum entropy principle to deduce that you should model it with a normal distribution. Then use maximum likelihood to find the best parameters <Math math = "\hat{\mu}, \hat{\sigma^2}" /> for this general model—it turns out that <Math math = "\hat\mu_{MLE} = \mu, \hat\sigma^2_{MLE} = \sigma^2"/>.
+
+2.  Use the maximum entropy principle directly—the max entropy distribution with mean $\mu$ and variance $\sigma^2$ is $N(\mu, \sigma^2)$.
+
+Both approaches yield the same answer, but it's not clear a priori that this should be the case! Perhaps MLE could have determined that $N(\mu, \frac{n-1}{n} \sigma^2)$ is a better fit for the data.
+
+Fortunately, distributions in the exponential family have the nice property that both approaches give the same answer. That is, if you determine the parameters of the distribution using MLE, they turn out to be what they "should" be. Formally, if your distribution is defined by constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$, then <Math math = "\hat\alpha_{1, MLE} = \alpha_1, \dots, \hat\alpha_{m,MLE} = \alpha_m" />.
+</Expand>
+
+</Expand>
+
+<Expand advanced={true} headline ="Boltzmann Distribution">
+
+Imagine many particles in a box, each particle $i$ having some energy $E_i$. What's the distribution of these energies? The maximum entropy principle suggests that the energies will be distributed according to the formula <Math math = "p_i \propto e^{-\lambda E_i}" />.
+
+This is indeed a good guess. Here's (roughly) why. When you have many particles in a box, every now and then two particles fly close to each other and exchange energies. Basically, the particles first have energies $E_1, E_2$, then some interesting physics happens, and then they have energies $E_1', E_2'$. What's important is that $E_1 + E_2 = E_1' + E_2'$; that's the conservation of energy.
+
+So, the conditional distribution of energies of two random particles with total energy $E$ should, intuitively, be uniform. But remember [our intuition](04-max_entropy/intuition) about max-entropy distributions: this is exactly the property of a max-entropy distribution.
+</Expand>
+
+
 
 ## 🚀 What's next? <a id="next-steps"></a>
 
