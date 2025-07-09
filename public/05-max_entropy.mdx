@@ -1,8 +1,8 @@
-# Max entropy distributions <a id="max-entropy-distributions"></a>
+# Minimum KL $\rightarrow$ Maximum entropy <a id="max-entropy-distributions"></a>
 
-In the [previous chapter](04-mle), we saw how minimizing $q$ in the KL divergence $D(p, q)$ helps us to find the best model of the truth $p$. 
+In the [previous chapter](04-mle), we saw what happens when we minimize $q$ in the KL divergence $D(p, q)$. We used this to find the best model of data $p$. 
 
-In this chapter, we also the second question - what happens if we minimize $p$ in $D(p, q)? This way, we will build the so-called _maximum entropy principle_ that guides us when we want to choose a good model distribuiton. 
+In this chapter, we will ponder the second question - what happens if we minimize $p$ in $D(p, q)$? This way, we will build the so-called _maximum entropy principle_ that guides us whenever we want to choose a good model distribuiton. 
 
 <KeyTakeaway>
 Max-entropy principle constructs the most generic distributions satifying some constraints. Most useful distributions are max-entropy for some parameter. 
@@ -31,10 +31,10 @@ In the example, <Math math = "p_{\textrm{new}}" /> happens to look like exponent
 
 ![max-ent](05-max_entropy/max_ent_example.png)
 
-This is sometimes called [the minimum relative entropy principle](resources#intermediate-resources). Why does this make sense? Intuitively, I want to find a distribution <Math math="p \in P" /> such that <Math math="q" /> remains as good a model of it as possible. This is precisely what we achieve by minimizing KL divergence.
+This is sometimes called [the minimum relative entropy principle](resources#intermediate-resources). Why does this make sense? Intuitively, I want to find a distribution <Math math="p \in P" /> that would serve as the new best guess for what the truth is, while the old model distribution <Math math="q" /> remains as good a model of $p$ as possible. This is what we achieve by minimizing KL divergence $D(p, q)$.
 
 
-Admittedly, this intuition may feel a bit shaky, as we typically prefer $p$ to represent the "true" distribution when using KL divergence, whereas here it's simply a new, improved, model. There's a more technical argument called [Wallis derivation](https://en.wikipedia.org/wiki/Principle_of_maximum_entropy#The_Wallis_derivation) that explains why we can derive minimum relative entropy as "conditioning on steroids" from the first principles. It gets technical, skip the following box unless you really know what you're doing. 
+Admittedly, this intuition may feel a bit shaky, as we typically prefer $p$ to represent the "true" distribution when using KL divergence, whereas here it's simply a new, improved, model. There's a more technical argument called [Wallis derivation](https://en.wikipedia.org/wiki/Principle_of_maximum_entropy#The_Wallis_derivation) that explains why we can derive minimum relative entropy as "conditioning on steroids" from the first principles.
 
 <Expand headline="Detailed discussion of Wallis derivaiton" advanced={true}>
 The following argument is a version of the so-called [Wallis derivation](https://en.wikipedia.org/wiki/Principle_of_maximum_entropy#The_Wallis_derivation). 
@@ -91,7 +91,7 @@ I am a one-trick pony, whenever I see KL divergence, I split it into cross-entro
 
 <Math displayMode={true} math="D(p,q_\text{uniform}) = \underbrace{\sum_{i = 1}^k p_i\log \frac{1}{1/k}}_{\textrm{cross-entropy}} - \underbrace{\sum_{i = 1}^k p_i\log \frac{1}{p_i}}_{\textrm{entropy}}" />
 
-In the previous chapter, it was the second term that was constant, now it's the first term: $\sum_{i = 1}^k p_i\log \frac{1}{1/k} = \log(k)$ does not depend on $p$, so minimizing KL divergence is, for uniform distribution, equivalent to minimizing $-H(p)$. So, we get:
+In the previous chapter, it was the second term that was constant, now it's the first term: $\sum_{i = 1}^k p_i\log \frac{1}{1/k} = \log(k)$ does not depend on $p$, so minimizing KL divergence is equivalent to minimizing $-H(p)$. We get:
 
 <Math displayMode={true} math="p_{\textrm{new}} = \argmin_{p \in P} D(p, q_{\textrm{uniform}}) = \argmax_{p\in P} H(p)" />
 
@@ -258,13 +258,13 @@ One painful fact to keep in mind is that the uniform distribution doesn't always
 
 If we believe the mean is an important parameter of a distribution (which is very typical), the max entropy principle states that the right family of distributions to work with are those with the shape:
 
-<Math displayMode={true} math = "p(x) \propto e^{\lambda x}"/>
+<Math displayMode={true} id = "exponential" math = "p(x) \propto e^{\lambda x}"/>
 
 This kind of distribution is known by many names, depending on its domain. Let's go through some instances!
 
 <Expand headline = "Logits & Logistic function">
 
-Let's first understand the simplest possible case: when our distribution is supported on only two outcomes, $a_1, a_2$. Then, the max-entropy distribution takes the form:
+Let's first understand the simplest possible case of <EqRef id = "exponential"/>: when our distribution is supported on only two outcomes, $a_1, a_2$. Then, the max-entropy distribution takes the form:
 
 <Math displayMode={true} math = "p(a_1) = \frac{e^{ \lambda a_1}}{e^{ \lambda a_1} + e^{ \lambda a_2}},\;\;\; p(a_2) = \frac{e^{\lambda a_2}}{e^{\lambda a_1} + e^{ \lambda a_2}}"/>
 
@@ -288,35 +288,24 @@ The parameter $\lambda$ in the formula corresponds to the choice of units in whi
 />
 
 <Expand headline = "Example: Elo System">
-The Elo system is used to assign ratings to players. Its fundamental idea is that when you have two players with Elos $E_1$ and $E_2$, you can estimate the probability that the first one wins from their difference $D = E_1 - E_2$. As we just discussed, the logistic function is the right way to convert the difference $E_1 - E_2$ to probability. 
+The Elo system is used to assign ratings to players. Its fundamental idea is that when you have two players with Elos $a_1$ and $a_2$, you can estimate the probability that the first one wins from their difference $a_1 - a_2$. As we just discussed, the logistic function is the right way to convert the difference $a_1 - a_2$ to probability. 
 
-Indeed, this is how Elo was designed: The interpretation of a chess Elo number is that the probability that the first player wins should be <Math math = "\frac{1}{1 + 10^{D / 400}}" />. <Footnote>It's more precisely the expected score of the first player due to the existence of draws.</Footnote> This is the logistic function with $\lambda = \frac{1}{400} \cdot \ln 10$.
+Indeed, this is how Elo was designed: The interpretation of a chess Elo number is that the probability that the first player wins should be <Math math = "\frac{1}{1 + 10^{d / 400}}" />. <Footnote>It's more precisely the expected score of the first player due to the existence of draws.</Footnote> This is the logistic function with $\lambda = \frac{1}{400} \cdot \ln 10$.
 
-Notice that without knowing the value of $\lambda$, the statement "the Elo difference between these two players is 200" is meaningless—we don't know how Elo is scaled. Yet, even without knowing $\lambda$, we understand the system pretty well: if the chance of an upset (i.e., the lower-rated player wins) is $p$ for $D = 200$, then for $D=400$ it's roughly $p^2$, for $D=600$ it's roughly $p^3$, and so on.
+Notice that without knowing the value of $\lambda$, the statement "the Elo difference between these two players is 200" is meaningless—we don't know how Elo is scaled. Yet, even without knowing $\lambda$, we understand the system pretty well: if the chance of an upset (i.e., the lower-rated player wins) is $p$ for $d = 200$, then for $d=400$ it's roughly $p^2$, for $d=600$ it's roughly $p^3$, and so on.
 </Expand>
 
-<Expand headline = "Example: Probabilities vs. Logits">
-When we analyzed the Bayesian hero from the [first chapter](01-kl_intro), it was easier to work with logarithms of odds rather than the odds themselves. Since in our example there were just two hypotheses, we subtracted the two relevant surprisals and worked with "log-odds." 
-
-We could also say that we were working "in the logit space" or "with logits".  
-</Expand>
-
-<Expand headline="Example: Logistic activation function">
-In the early days of deep learning, the logistic function was used as an [activation function](https://en.wikipedia.org/wiki/Activation_function)—it converted aggregated inputs to a neuron's output. We can now provide a probabilistic rationale for this: this way of handling neurons corresponds to modeling them as devices where "each neuron aggregates its inputs and then decides _whether_ to fire or not."
-
-Unfortunately, this function doesn't seem to perform too well in practice. As the field evolved, researchers realized it's better to use the [ReLU](https://en.wikipedia.org/wiki/Rectifier_(neural_networks)) activation function (or [something similar](https://en.wikipedia.org/wiki/Activation_function#Comparison_of_activation_functions)) instead of sigmoids. That activation function corresponds to neurons that not only contemplate *whether* to send any signal or none, but also send out a stronger output signal if they receive strong input.
-</Expand>
 </Expand>
 
 <Expand headline = "Softmax"> <a id = "softmax"></a>
 
-Let's stick with the max-entropy distribution for $E[X]$, but now consider the more general case where our distribution is supported on a set of numbers $\{a_1, \dots, a_k\}$—these distributions are often called [categorical distributions](https://en.wikipedia.org/wiki/Categorical_distribution). In this scenario, the max entropy distribution is what's known as a *softmax* (or _softmin_) distribution—each number $a_i$ is chosen with probability:
+Let's stick with the max-entropy distribution for $E[X]$, i.e., the formula <EqRef id = "exponential"/>. However, now consider the more general case where our distribution is supported on a set of numbers $\{a_1, \dots, a_k\}$—these distributions are often called [categorical distributions](https://en.wikipedia.org/wiki/Categorical_distribution). In this scenario, the max entropy distribution is what's known as a *softmax* (or _softmin_) distribution—each number $a_i$ is chosen with probability:
 
 <Math displayMode={true} math = "p_i \propto e^{\lambda a_i}. "/>
 
 You can think of the softmax function (or softmin if $\lambda < 0$) as the generalization of the logistic function we just discussed—it's **the right way** to convert a bunch of numbers into probabilities. The numbers $a_i$ are still referred to as logits.
 
-The parameter $1/|\lambda|$ is frequently called "temperature" because it behaves that way: at low temperatures, softmax is very orderly and acts much like the `max` function, whereas for high temperatures, the distribution becomes more chaotic, ultimately approaching the uniform distribution. The chaos can be measured by entropy - you can see in the widget below how it decreases if you increase $|\lambda|$. 
+The parameter $1/|\lambda|$ is frequently called "temperature" because it behaves that way: at low temperatures, softmax is very orderly and acts much like the `max` function, whereas for high temperatures, the distribution becomes more chaotic, ultimately approaching the uniform distribution. <Footnote>The analogy with physics goes further. [Boltzmann distribution](https://en.wikipedia.org/wiki/Boltzmann_distribution) is essentially the softmax for energy, $1/\lambda$ in that distribution is the literal temperature. </Footnote> The chaos can be measured by entropy - you can see in the widget below how it decreases if you increase $|\lambda|$. 
 
 
 <SoftmaxWidget values={[1, 3, 2, 5, 4]} title="Softmax Distribution Example" />
@@ -326,9 +315,9 @@ The parameter $1/|\lambda|$ is frequently called "temperature" because it behave
 Typical neural networks output probabilities. For example, a common neural network classifying images will output an entire probability distribution indicating whether a given picture is a dog/cat/horse/... instead of just a single prediction.
 The issue with this is that often, most of these probabilities are extremely small, perhaps on the order of $10^{-10}$. That's because, given a picture of a dog, the neural network is usually quite certain it's not an octopus.
 
-This makes it awkward to work directly with probabilities inside the network—it leads to all sorts of numerical and stability issues while running it (float precision) and even more while training it (vanishing gradients). So, neural networks instead try to predict **logits**, and the conversion to probabilities is simply the final layer of the network.
+This makes it awkward to work directly with probabilities inside the network—it leads to all sorts of numerical and stability issues while running it (float precision) and even more while training it (vanishing gradients). So, neural networks instead try to predict logits, and the conversion to probabilities is simply the final layer of the network.
 
-A nice bonus is that if you train the network using softmax with $\lambda = 1$, you can change the $\lambda$ parameter *after* training. For instance, setting $\lambda$ to infinity (temperature goes to zero) is equivalent to simply choosing the most probable option—this makes the model's output deterministic, which is often useful during deployment.
+A nice bonus is that if you train the network using softmax with $\lambda = 1$, you can change the $\lambda$ parameter *after* training. For instance, setting $\lambda$ to infinity (temperature goes to zero) is equivalent to simply choosing the most probable option—this makes the model's output deterministic, which may be useful during deployment.
 
 {/*There are also application for higher temperatures. For example, if you want to use LLM to solve a hard math problem, you might want to run it a million times to increase the probability the net solving it. But then you should probably run it at higher temperatures to make sure you want get the same thought process a million times in a row.
 
@@ -353,9 +342,10 @@ However, it's worth noting that one popular interpretation of softmax in behavio
 <Expand headline = "Exponential/Geometric Distribution">
  <a id = "exponential"></a>
 
-If the domain of the probability distribution is non-negative integers or reals, then we get the so-called [geometric](https://en.wikipedia.org/wiki/Geometric_distribution) / [exponential](https://en.wikipedia.org/wiki/Exponential_distribution) distribution—another very basic and useful distribution. You should think of this as **the most natural** distribution on the domain of positive numbers (whether integers or reals).
+If the domain of the probability distribution from <EqRef id = "exponential"/> is non-negative integers or nonnegative reals, we get the so-called [geometric](https://en.wikipedia.org/wiki/Geometric_distribution) / [exponential](https://en.wikipedia.org/wiki/Exponential_distribution) distribution—another very basic and useful distribution. You should think of this as **the most natural** distribution on the domain of positive numbers (whether integers or reals).
 
-In the [previous chapter](03-minimizing), we discussed the example of modeling how long I take for lunch. The expected length is a natural parameter, so modeling it with the exponential distribution is a natural choice.
+Example: At the beginning of this chapter, we discussed how to model the distribution for how long I take my lunch. 
+We started with the uniform distribution and then "conditioned" on the value of $E[X]$. This is exactly the same as using the max-entropy principle, thus the distribution we get this way is the exponential distribution.
 
 {/*
 <Footnote>
@@ -366,7 +356,7 @@ How should I sample $\mu$ in the first step? Applying max-entropy principle agai
 This discussion is mostly meant to show what I love on the max entropy principle -- it enables us to rapidly operationalize and concretize our thought processes. Modelling real life is hard, but now we have a powerful tool that automatically builds concrete probabilistic models from vague thoughts like "there's two types of randomness, first in the average lunch time, and second in the variation around that average".
 </Footnote>*/}
 
-There's still an elephant in the room, though—the exponential distribution can't be normalized if the domain are _unbounded_ real numbers (i.e., both positive and negative).
+There's still an elephant in the room — the exponential distribution can't be normalized if the domain are _unbounded_ real numbers (i.e., both positive and negative). For that, we will need to use the Gaussian distribution. 
 </Expand>
 
 
@@ -389,16 +379,6 @@ I think this provides a good (partial) explanation for "why is there $x^2$ in Ga
 
 Often, I like to think about the Gaussian as the simplest possible distribution on real numbers. Neither the uniform distribution nor the exponential distribution can be normalized over the entire real line, so we salvage this by fixing the first two moments.
 
-<Expand advanced={true} headline = "Maximum Entropy & Central Limit Theorem">
-
-The normal distribution has two important properties. First, it's the maximum entropy distribution for a given mean and variance. Second, it's the distribution from the [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem). Roughly speaking: If you keep adding some random variables $X_1, \dots, X_N$, each with mean $\mu$ and variance $\sigma^2$, then the value of <Math math = "\frac{X_1 + \dots + X_N - N\mu}{\sqrt{N\sigma^2}}"/> will be distributed like $N(0,1)$.
-
-Here's how the max entropy principle can help you think about this theorem: For the theorem, the mean and variance are clearly important parameters. Thus, the max entropy principle suggests that if there's a single distribution to which sums are converging, the Gaussian is a natural candidate.
-
-The connection between the two is deeper. In fact, [one of the proofs](https://en.wikipedia.org/wiki/Entropy_power_inequality) of the central limit theorem works roughly like this: The operation of adding random variables - [convolution](https://en.wikipedia.org/wiki/Convolution) - has ["smearing-out" properties](https://en.wikipedia.org/wiki/Kernel_(image_processing)) that increase the entropy of the sum (there are [inequalities](https://en.wikipedia.org/wiki/Entropy_power_inequality) that can measure this increase). After a bit of math, this implies that the distribution of the sum of random variables with normalized variance must look closer and closer to the distribution of the appropriate maximum entropy distribution, i.e., the Gaussian.
-</Expand>
-
-
 </Expand>
 
 
@@ -410,28 +390,26 @@ In that riddle, we look at daily changes in S&P index (normalized as a so-called
 
 <FinancialDistributionWidget showBTC={true} showSAP={true} />
 
-You can observe that the Laplace distribution seems to fit the data better than the normal distribution, as measured by KL between the data and the model distribution. 
+You can observe that the Laplace distribution seems to fit the data better than the normal distribution, as measured by KL between the data and the model distribution, though it's pretty close at the beginning. 
 
 ### Laplace distribution
 
-The Laplace distribution has the shape <Math math = "p(x) \propto e^{-\lambda |x-\mu|}" />. What's the meaning of this formula? We could think of it as the max entropy distribution for fixing the value $E[|X-\mu|]$, but there's a more illuminating way to understand it. The Laplace distribution with parameter $\lambda$ can be viewed as the result of the following process:<Footnote>Let me know if you know a simple proof of this fact!</Footnote>
+The Laplace distribution has the shape <Math math = "p(x) \propto e^{-\lambda |x-\mu|}" />. What's the meaning of this formula? We could think of it as the max-entropy distribution for $E[|X-\mu|]$, but there's a more illuminating way to understand it. The Laplace distribution with parameter $\lambda$ can be viewed as the result of the following process:
 
-1.  Sample a variance $\sigma^2$ from the exponential distribution. <Footnote>If we want Laplace distribution <Math math = "p(x) \propto e^{-\lambda |x-\mu|}" />, we should sample $\sigma^2$ from exponential distribution <Math math = "p'(t) \propto e^{-2/\lambda^2 \cdot t}"/>. </Footnote>
-2.  Output a sample from $N(\mu, \sigma^2)$.
+1.  Sample a variance $\sigma^2$ from the exponential distribution. 
+2.  Output a sample from $N(\mu, \sigma^2)$.<Footnote>More precisely, if we want Laplace distribution <Math math = "p(x) \propto e^{-\lambda |x-\mu|}" />, we should sample $\sigma^2$ from exponential distribution <Math math = "p'(t) \propto e^{-(\lambda^2/2) \cdot t}"/>. Let me know if you know a simple proof of [this fact](https://math.stackexchange.com/questions/1175076/how-to-prove-laplace-distribution-is-scale-mixture-of-gaussians)!</Footnote>
 
 ### S&P stories
 
 To understand how this helps explain our financial data, consider the following two stories for price fluctuations:
 
-* For the S&P index, which represents an average of many large companies, there's some variance in the daily change mostly because many (somewhat independent) trades happen that day, each making the value of the index slightly higher or lower. This is the setup for the central limit theorem, which predicts that the data will look approximately Gaussian.
+* For the S&P index, which represents an average of many large companies, there's some variance in the daily returns mostly because many (somewhat independent) trades happen that day, each making the value of the index slightly higher or lower. This is the setup for the central limit theorem, which predicts that the data will look approximately Gaussian.
 
 * But now think about the index over a longer time period. Then the simplified model above might be too basic. There are definitely periods where not much happens, but also periods with large volatility. <Footnote> For example: US elections, financial crisis, pandemic hits, war starts, etc.</Footnote>
 
-Perhaps we should try a more advanced two-layered model to predict the shape of our data: Maybe each month, we sample $\sigma^2$—the volatility for that month. Let's sample it from the max-entropy distribution, i.e., exponential. Next, for the rest of the month, we sample from a Gaussian with that variance. As we mentioned, this two-layered process actually samples from the Laplace distribution.
+Perhaps we should try a more advanced two-layered model to predict the shape of our data: Maybe each month, we sample $\sigma^2$—the volatility for that month. Let's sample it from the max-entropy distribution for the expected volatility, i.e., exponential. Next, for the rest of the month, we sample from a Gaussian with that variance. As we just discussed, this two-layered process samples precisely from the Laplace distribution.
 
-Put differently, while a Gaussian fit implies "I'm pretty sure about today's volatility and unsure about the fluctuation around the mean," Laplace is saying, "I'm uncertain both about the volatility and the actual fluctuation of the day." This explains why Gaussian fits near-term data (volatility of the time period stays roughly the same), while more long-term data starts looking more like Laplace. 
-
-Our Laplace story suggests that the data should look more like Gaussian at the beginning and then look more and more like Laplace, which really seems to be happening. 
+Put differently, while a Gaussian fit implicitly says "I'm pretty sure about each day's volatility and unsure about the fluctuation around the mean," Laplace is saying, "I'm uncertain both about the volatility and the actual fluctuation of the day." This explains why Gaussian fits near-term data reasonably well (volatility of the time period stays roughly the same), while more long-term data starts looking more and more like Laplace. 
 
 ## 🤔 Is Laplace a good model?
 
@@ -439,12 +417,12 @@ Not really. We now understand that by fitting Laplace, we are claiming that dail
 
 <VolatilityDistributionWidget />
 
-Exponential is not a great fit. As far as I know, practitioners use distributions such as log-normal, gamma, or inverse-gamma to fit this kind of data (or they train a network to fit it). These distributions are more complicated and correspond to more complicated stories about how the data behaves. Most importantly, they are basically power-law fits that are less surprised by stock crashes / world wars / etc. 
+Exponential is a good fit most of the time, but struggles to predict extreme events. As far as I know, in the pre-deep-learning practice, people used distributions such as log-normal, or inverse-gamma to fit this kind of data.<Footnote> I am not sure if this is still relevant - nowadays they may just train a network to predict it. </Footnote> These distributions are more complicated and using max-entropy principle, we could map them to more complicated stories about how the data behaves. Most importantly, they are basically power-law fits that are less surprised by stock crashes / world wars / etc. 
 
 {/*<Footnote>As far as I know, one standard way of modeling financial data is the Student-t distribution. I won't bore you with its formula, but I'll tell you it's the distribution you get from a similar process to how we arrived at Laplace; but instead of sampling $\sigma^2$ from the exponential distribution, you sample it from the so-called inverse gamma distribution. The Gamma distribution is itself a max-entropy distribution for fixing $E[X]$ and $E[\log X]$ (and inverse gamma distribution means we measure volatility by $1/\sigma^2$ instead of $\sigma^2$).
 That is, the Student-t distribution takes our model a bit further and adds uncertainty about the _scale_ of the volatility. For example, maybe if you look far enough into the past, you start seeing some extreme events like world wars/the Great Depression/industrial revolution, so perhaps we should be open to power-law fits instead of exponential ones.</Footnote>*/}
 
-At this point, I should confess that I know nearly nothing about financial mathematics. This discussion is just based on me playing with Claude/GPT and trying some stuff. But this is exactly the point - max-entropy is so powerful because it gives you the right language to talk about data fitting. It enables you to explore, build more and more complicated models of data, and still keep track of what your models stand for, where their weaknesses are, and how to improve them.  
+The point of this riddle is not really to come up with the best model for the data, though. The point is to showcase how maximum entropy gives us a great language to talk about data fitting. It enables us to explore, build more and more complicated models of data, and still keep track of what our models stand for, where their weaknesses are, and how to improve them.  
 </RiddleExplanation>
 
 

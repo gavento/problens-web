@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import ZoomButton from "./ZoomButton";
 
 interface VolatilityData {
   histogram: {
@@ -38,7 +39,7 @@ interface VolatilityData {
 
 const VolatilityDistributionWidget: React.FC = () => {
   const [data, setData] = useState<VolatilityData | null>(null);
-  const [isLogScale, setIsLogScale] = useState(false);
+  const [isLogScale, setIsLogScale] = useState(true);
   const [showFits, setShowFits] = useState({
     exponential: true,
     logNormal: true,
@@ -46,14 +47,22 @@ const VolatilityDistributionWidget: React.FC = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showStats, setShowStats] = useState(false);
+  const [isZoomed, setIsZoomed] = useState(false); // Fullscreen zoom
+  const [rangeZoomed, setRangeZoomed] = useState(true); // Data range zoom to 0.005
 
   useEffect(() => {
     const loadData = async () => {
       try {
         const basePath = process.env.NODE_ENV === 'production' ? '/problens-web' : '';
-        const response = await fetch(`${basePath}/volatility_data.json`);
+        // Try to load full data first, fall back to truncated
+        let response = await fetch(`${basePath}/volatility_data_full.json`);
         if (!response.ok) {
-          throw new Error(`Failed to load data: ${response.status}`);
+          // Fallback to truncated data
+          response = await fetch(`${basePath}/volatility_data.json`);
+          if (!response.ok) {
+            throw new Error(`Failed to load data: ${response.status}`);
+          }
         }
         const volatilityData = await response.json();
         setData(volatilityData);
@@ -102,22 +111,29 @@ const VolatilityDistributionWidget: React.FC = () => {
   const plotHeight = chartHeight - margin.top - margin.bottom;
 
   // Find max values for scaling
-  const maxX = 0.005; // Fixed to match original plot
-  const maxDensity = Math.max(...data.histogram.density);
-  const maxFitY = Math.max(
-    ...Object.values(data.fits).flatMap(fit => fit.curve.map(point => point.y))
+  const dataMaxX = Math.max(...data.histogram.binCenters, ...Object.values(data.fits).flatMap(fit => fit.curve.map(point => point.x)));
+  const maxX = rangeZoomed ? 0.002 : dataMaxX;
+  
+  // Filter data for current view
+  const visibleIndices = data.histogram.binCenters.map((x, i) => x <= maxX ? i : -1).filter(i => i >= 0);
+  const visibleDensities = visibleIndices.map(i => data.histogram.density[i]);
+  const visibleFitY = Object.values(data.fits).flatMap(fit => 
+    fit.curve.filter(point => point.x <= maxX).map(point => point.y)
   );
+  
+  const maxDensity = Math.max(...visibleDensities);
+  const maxFitY = Math.max(...visibleFitY);
   const maxY = Math.max(maxDensity, maxFitY);
 
   const scaleY = isLogScale ? 
-    (y: number) => y <= 0 ? plotHeight : plotHeight - (Math.log10(y + 1) / Math.log10(maxY + 1)) * plotHeight :
+    (y: number) => y <= 0.1 ? plotHeight : plotHeight - (Math.log10(y) / Math.log10(maxY)) * plotHeight :
     (y: number) => plotHeight - (y / maxY) * plotHeight;
 
   const scaleX = (x: number) => (x / maxX) * plotWidth;
 
   // Generate Y-axis ticks
   const yTicks = isLogScale ? 
-    [0.1, 1, 10, 100, 1000, 10000].filter(v => v <= maxY) :
+    [0.1, 1, 10, 100, 1000, 10000].filter(v => v >= 0.1 && v <= maxY) :
     Array.from({ length: 6 }, (_, i) => (i / 5) * maxY);
 
   return (
@@ -128,7 +144,7 @@ const VolatilityDistributionWidget: React.FC = () => {
       
       {/* Controls */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center sm:justify-between">
-        {/* Scale Toggle */}
+        {/* Scale and Zoom Controls */}
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-gray-700">Y-axis:</span>
           <button
@@ -140,6 +156,16 @@ const VolatilityDistributionWidget: React.FC = () => {
             }`}
           >
             {isLogScale ? 'Log Scale' : 'Linear Scale'}
+          </button>
+          <button
+            onClick={() => setRangeZoomed(!rangeZoomed)}
+            className={`px-4 py-2 text-sm rounded-md border transition-colors min-h-[44px] ${
+              rangeZoomed
+                ? 'bg-orange-500 text-white border-orange-500'
+                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+            }`}
+          >
+            {rangeZoomed ? 'Show Full Range' : 'Show Main Range'}
           </button>
         </div>
 
@@ -166,8 +192,15 @@ const VolatilityDistributionWidget: React.FC = () => {
       </div>
 
       {/* Chart */}
-      <div className="bg-white p-4 rounded-lg border">
-        <svg width="100%" height={chartHeight} viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="border border-gray-200 rounded">
+      <div className={isZoomed ? 'fixed inset-0 z-50 bg-white p-8' : 'bg-white p-4 rounded-lg border relative'}>
+        <div className={`${isZoomed ? 'h-full' : ''} relative`}>
+          <ZoomButton 
+            type="zoom-toggle"
+            isZoomed={isZoomed}
+            onClick={() => setIsZoomed(!isZoomed)}
+            className="absolute top-2 right-2 z-10"
+          />
+          <svg width="100%" height={isZoomed ? "100%" : chartHeight} viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="border border-gray-200 rounded">
           <g transform={`translate(${margin.left}, ${margin.top})`}>
             
             {/* Y-axis */}
@@ -211,35 +244,39 @@ const VolatilityDistributionWidget: React.FC = () => {
             })}
             
             {/* X-axis labels */}
-            {[0, 0.001, 0.002, 0.003, 0.004, 0.005].map((tick, i) => {
-              const x = scaleX(tick);
-              return (
-                <g key={i}>
-                  <line 
-                    x1={x} 
-                    y1={plotHeight} 
-                    x2={x} 
-                    y2={plotHeight + 5} 
-                    stroke="#6b7280" 
-                    strokeWidth="1" 
-                  />
-                  <text 
-                    x={x} 
-                    y={plotHeight + 18} 
-                    textAnchor="middle" 
-                    fontSize="10" 
-                    fill="#6b7280"
-                  >
-                    {tick.toFixed(3)}
-                  </text>
-                </g>
-              );
-            })}
+            {(() => {
+              const numTicks = 6;
+              const ticks = Array.from({ length: numTicks }, (_, i) => (i / (numTicks - 1)) * maxX);
+              return ticks.map((tick, i) => {
+                const x = scaleX(tick);
+                return (
+                  <g key={i}>
+                    <line 
+                      x1={x} 
+                      y1={plotHeight} 
+                      x2={x} 
+                      y2={plotHeight + 5} 
+                      stroke="#6b7280" 
+                      strokeWidth="1" 
+                    />
+                    <text 
+                      x={x} 
+                      y={plotHeight + 18} 
+                      textAnchor="middle" 
+                      fontSize="10" 
+                      fill="#6b7280"
+                    >
+                      {tick.toFixed(4)}
+                    </text>
+                  </g>
+                );
+              });
+            })()}
             
             {/* Histogram bars */}
             {data.histogram.binCenters.map((binCenter, i) => {
               const density = data.histogram.density[i];
-              if (density <= 0 || binCenter > maxX) return null;
+              if (density <= 0 || binCenter > maxX || (isLogScale && density < 0.1)) return null;
               
               const x = scaleX(binCenter);
               const y = scaleY(density);
@@ -270,46 +307,49 @@ const VolatilityDistributionWidget: React.FC = () => {
             {showFits.exponential && (
               <path
                 d={data.fits.exponential.curve
-                  .filter(point => point.x <= maxX && point.y > 0)
+                  .filter(point => point.x <= maxX && (isLogScale ? point.y >= 0.1 : point.y > 0))
                   .map((point, i) => 
                     `${i === 0 ? 'M' : 'L'} ${scaleX(point.x)} ${scaleY(point.y)}`
                   ).join(' ')}
                 fill="none"
                 stroke="#ef4444"
                 strokeWidth="2"
+                strokeDasharray={isLogScale ? "8 4" : "none"}
               />
             )}
             
             {showFits.logNormal && (
               <path
                 d={data.fits.logNormal.curve
-                  .filter(point => point.x <= maxX && point.y > 0)
+                  .filter(point => point.x <= maxX && (isLogScale ? point.y >= 0.1 : point.y > 0))
                   .map((point, i) => 
                     `${i === 0 ? 'M' : 'L'} ${scaleX(point.x)} ${scaleY(point.y)}`
                   ).join(' ')}
                 fill="none"
                 stroke="#3b82f6"
                 strokeWidth="2"
+                strokeDasharray={isLogScale ? "8 4" : "none"}
               />
             )}
             
             {showFits.inverseGamma && (
               <path
                 d={data.fits.inverseGamma.curve
-                  .filter(point => point.x <= maxX && point.y > 0)
+                  .filter(point => point.x <= maxX && (isLogScale ? point.y >= 0.1 : point.y > 0))
                   .map((point, i) => 
                     `${i === 0 ? 'M' : 'L'} ${scaleX(point.x)} ${scaleY(point.y)}`
                   ).join(' ')}
                 fill="none"
                 stroke="#10b981"
                 strokeWidth="2"
+                strokeDasharray={isLogScale ? "8 4" : "none"}
               />
             )}
           </g>
           
           {/* Chart title */}
           <text x={chartWidth / 2} y={15} textAnchor="middle" fontSize="12" fill="#374151" fontWeight="bold">
-            Daily Variance Distribution (30-day rolling window)
+            Daily Variance Distribution (30-day rolling window){rangeZoomed ? ' - Showing 0 to 0.002' : ''}
           </text>
           
           {/* X-axis label */}
@@ -321,7 +361,8 @@ const VolatilityDistributionWidget: React.FC = () => {
           <text x={15} y={chartHeight / 2} textAnchor="middle" fontSize="11" fill="#6b7280" transform={`rotate(-90, 15, ${chartHeight / 2})`}>
             Probability Density
           </text>
-        </svg>
+          </svg>
+        </div>
       </div>
 
       {/* Legend */}
@@ -329,40 +370,47 @@ const VolatilityDistributionWidget: React.FC = () => {
         <div className="flex flex-wrap gap-4 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-4 h-3 bg-blue-300 border border-blue-500 rounded"></div>
-            <span>Variance distribution</span>
+            <span>Empirical variance</span>
           </div>
           {showFits.exponential && (
             <div className="flex items-center gap-2">
               <div className="w-4 h-0.5 bg-red-500"></div>
-              <span>{data.fits.exponential.label}</span>
+              <span>Exponential</span>
             </div>
           )}
           {showFits.logNormal && (
             <div className="flex items-center gap-2">
               <div className="w-4 h-0.5 bg-blue-500"></div>
-              <span>{data.fits.logNormal.label}</span>
+              <span>Log-normal</span>
             </div>
           )}
           {showFits.inverseGamma && (
             <div className="flex items-center gap-2">
               <div className="w-4 h-0.5 bg-green-500"></div>
-              <span>{data.fits.inverseGamma.label}</span>
+              <span>Inverse-Gamma</span>
             </div>
           )}
         </div>
       </div>
       
       {/* Statistics */}
-      <div className="bg-white p-4 rounded-lg border text-sm">
-        <h4 className="text-base font-semibold text-gray-800 mb-3">Distribution Statistics</h4>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          <div className="p-2 bg-gray-50 rounded"><strong>Count:</strong> {data.stats.count.toLocaleString()}</div>
-          <div className="p-2 bg-gray-50 rounded"><strong>Mean:</strong> {data.stats.mean.toFixed(6)}</div>
-          <div className="p-2 bg-gray-50 rounded"><strong>Median:</strong> {data.stats.median.toFixed(6)}</div>
-          <div className="p-2 bg-gray-50 rounded"><strong>Std Dev:</strong> {data.stats.std.toFixed(6)}</div>
-          <div className="p-2 bg-gray-50 rounded"><strong>Min:</strong> {data.stats.min.toFixed(6)}</div>
-          <div className="p-2 bg-gray-50 rounded"><strong>Max:</strong> {data.stats.max.toFixed(6)}</div>
-        </div>
+      <div className="bg-white p-2 rounded-lg border text-xs">
+        <h4 
+          className="text-sm font-normal text-gray-700 cursor-pointer hover:text-blue-600 transition-colors"
+          onClick={() => setShowStats(!showStats)}
+        >
+          Distribution Statistics {showStats ? '▼' : '▶'}
+        </h4>
+        {showStats && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-2">
+            <div className="p-1.5 bg-gray-50 rounded"><strong>Count:</strong> {data.stats.count.toLocaleString()}</div>
+            <div className="p-1.5 bg-gray-50 rounded"><strong>Mean:</strong> {data.stats.mean.toFixed(6)}</div>
+            <div className="p-1.5 bg-gray-50 rounded"><strong>Median:</strong> {data.stats.median.toFixed(6)}</div>
+            <div className="p-1.5 bg-gray-50 rounded"><strong>Std Dev:</strong> {data.stats.std.toFixed(6)}</div>
+            <div className="p-1.5 bg-gray-50 rounded"><strong>Min:</strong> {data.stats.min.toFixed(6)}</div>
+            <div className="p-1.5 bg-gray-50 rounded"><strong>Max:</strong> {data.stats.max.toFixed(6)}</div>
+          </div>
+        )}
       </div>
     </div>
   );
