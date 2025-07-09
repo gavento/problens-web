@@ -61,6 +61,9 @@ export default function GaussianFitWidget() {
     return muSig;
   }, [mode, linePositions, muSig]);
 
+  // Helper function for log base 2
+  const log2 = (x: number) => Math.log(x) / Math.log(2);
+
   // cross-entropy calculation
   const crossEntropy = useMemo(() => {
     // Empirical distribution: uniform over the 16 observations
@@ -71,12 +74,20 @@ export default function GaussianFitWidget() {
     for (const pos of linePositions) {
       const q = gaussian(pos, mu, sigma);
       if (q > 0) {
-        crossEnt -= p * Math.log(q);
+        crossEnt -= p * log2(q);
       }
     }
     
     return crossEnt;
   }, [linePositions, mu, sigma]);
+
+  // KL divergence calculation
+  const klDivergence = useMemo(() => {
+    // KL(p||q) = H(p,q) - H(p)
+    // H(p) for uniform distribution over N points = log2(N)
+    const entropyP = log2(N);
+    return crossEntropy - entropyP;
+  }, [crossEntropy]);
 
   // drag handlers
   const onLineDrag = (idx: number, e: React.MouseEvent<SVGElement> | React.TouchEvent<SVGElement>) => {
@@ -282,10 +293,17 @@ export default function GaussianFitWidget() {
         </div>
       </div>
       
+      {/* KL divergence display */}
+      <div className="text-center">
+        <span className="text-lg font-semibold">
+          KL divergence: <InlineMath math={`D(p_{\\text{empirical}}, q_{\\text{Gaussian}}) = ${klDivergence.toFixed(3)}`} />
+        </span>
+      </div>
+      
       {/* Cross-entropy display */}
       <div className="text-center">
         <span className="text-lg font-semibold">
-          Cross-entropy score: <InlineMath math={`H(p_{\\text{empirical}}, q_{\\text{Gaussian}}) = ${crossEntropy.toFixed(3)}`} />
+          Cross-entropy: <InlineMath math={`H(p_{\\text{empirical}}, q_{\\text{Gaussian}}) = ${crossEntropy.toFixed(3)}`} />
         </span>
       </div>
       
