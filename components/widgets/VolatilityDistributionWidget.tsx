@@ -49,19 +49,23 @@ const VolatilityDistributionWidget: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showStats, setShowStats] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false); // Fullscreen zoom
-  const [rangeZoomed, setRangeZoomed] = useState(true); // Data range zoom to 0.005
+  const [rangeZoomed, setRangeZoomed] = useState(false); // Data range zoom to 0.005
 
   useEffect(() => {
     const loadData = async () => {
       try {
         const basePath = process.env.NODE_ENV === 'production' ? '/problens-web' : '';
-        // Try to load full data first, fall back to truncated
-        let response = await fetch(`${basePath}/volatility_data_full.json`);
+        // Try to load 15-day data first, then fall back to full data, then truncated
+        let response = await fetch(`${basePath}/volatility_data_15day.json`);
         if (!response.ok) {
-          // Fallback to truncated data
-          response = await fetch(`${basePath}/volatility_data.json`);
+          // Fallback to full data
+          response = await fetch(`${basePath}/volatility_data_full.json`);
           if (!response.ok) {
-            throw new Error(`Failed to load data: ${response.status}`);
+            // Final fallback to truncated data
+            response = await fetch(`${basePath}/volatility_data.json`);
+            if (!response.ok) {
+              throw new Error(`Failed to load data: ${response.status}`);
+            }
           }
         }
         const volatilityData = await response.json();
@@ -349,7 +353,7 @@ const VolatilityDistributionWidget: React.FC = () => {
           
           {/* Chart title */}
           <text x={chartWidth / 2} y={15} textAnchor="middle" fontSize="12" fill="#374151" fontWeight="bold">
-            Daily Variance Distribution (30-day rolling window){rangeZoomed ? ' - Showing 0 to 0.002' : ''}
+            Daily Variance Distribution (15-day rolling window){rangeZoomed ? ' - Showing 0 to 0.002' : ''}
           </text>
           
           {/* X-axis label */}

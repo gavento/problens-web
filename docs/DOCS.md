@@ -78,4 +78,16 @@ This document summarizes the motivation, proposed direction, and final agreed-up
 - **Main Content Font:** **Lora** (Google Font), chosen for its balance of readability, book-like character, elegance, and suitability for the "serious deep curiosity" vibe while pairing well with math. Configured via `next/font` with CSS variable `--font-lora`.
 - **Monospace Font:** **Fira Code** (Google Font), chosen for code blocks. Configured via `next/font` with CSS variable `--font-fira-code`.
 
+### JSX & LaTeX escaping guideline 2025-07-10
+
+When writing TeX inside JSX string literals (e.g. `InlineMath`), write **exactly one backslash per TeX command**.  
+Since backslash isn’t an escape character in normal JS strings (except before special escapes like `\n`, `\t`), a single `\` is what you want.
+
+```tsx
+<InlineMath math="p(x) \propto x^{-\lambda}" />   // ✅ renders p(x) ∝ x^{-λ}
+<InlineMath math="p(x) \\propto x^{-\\lambda}" /> // ❌ renders p(x) ∝ x^{-\lambda}
+```
+
+Avoid accidentally double-escaping.
+
 This summary reflects the current state and decisions made on 2025-04-06 for proceeding with the website development.

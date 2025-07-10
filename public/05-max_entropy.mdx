@@ -435,10 +435,9 @@ Sometimes we care about random variables that span a large range of values. For 
 
 ![US cities](05-max_entropy/cities.png)
 
-These situations are typically modeled by *power-law distributions*, where $p(x) \propto 1/x^C$ for some constant $C$. In the picture above, such a distribution would correspond to a straight line, so it would fit city populations quite well. From the perspective of maximum entropy, these distributions are simply max-entropy distributions when we fix $E[\log X]$.
+These situations are typically modeled by *power-law distributions*, where $p(x) \propto 1/x^C$ for some constant $C$. In the picture above, such a distribution would correspond to a straight line, so it would fit city populations quite well. From the perspective of maximum entropy, these distributions are simply max-entropy distributions when we fix $E[\log X]$. I.e., a power-law distribution is an exponential distribution into which we plug $\log X$ instead of $X$.
 
-That is, whenever you use a power-law distribution, you're implicitly saying, "__The important thing to look at is not $X$, but $\log X$.__" In the case of cities, for example, it feels more sensible to classify them on a log-scale ($10^4$ – small, $10^5$ – medium, $10^6$ – large, $10^7$ – megacity) instead of a normal scale ($10^5$ – small, $2 \cdot 10^5$ – medium, ...). A power-law distribution is then just the exponential into which we plug in $\log X$ instead of $X$.
-
+Whenever you use a power-law distribution, you're implicitly saying, "__The important thing to look at is not $X$, but $\log X$.__" In the case of cities, for example, it feels more sensible to classify them on a log-scale ($10^4$ – small, $10^5$ – medium, $10^6$ – large, $10^7$ – huge) instead of a normal scale ($10^5$ – small, $2 \cdot 10^5$ – medium, $3 \cdot 10^5$ – large, $4 \cdot 10^5$ – huge). 
 </Expand>
 
 And here's an application to our [XKCD riddle](00-riddles#xkcd):
@@ -447,17 +446,15 @@ And here's an application to our [XKCD riddle](00-riddles#xkcd):
 
 After four chapters developing the theory of KL divergence, we're finally ready to [dissect](https://www.goodreads.com/quotes/440683-explaining-a-joke-is-like-dissecting-a-frog-you-understand) the XKCD joke from [the list of riddles](00-riddles#xkcd).
 
-![Are the odds in our favor?](00-introduction/countdown.png)
+[![Are the odds in our favor?](00-introduction/countdown.png)](https://xkcd.com/1159/)
 
-It's all about how to choose a prior for the number on the wall. The first natural choice is simply the uniform one; that is, before looking at the wall, we think the number is a uniform random number with 14 decimal digits. After observing the right 8 digits, the first 6 are still uniformly random <Footnote>We actually also see a small piece of the leftmost digit in the comic, but let's forget this for simplicity.</Footnote>. So, for that prior, the probability that all 6 digits are zero is $1/10^6$—we are probably fine.
+It's all about how to choose a prior for the number on the wall. The first natural choice is simply the uniform one; that is, before looking at the wall, we think the number is a uniform random number with 14 decimal digits. A nice property of the uniform distribution is that each even after observing the right 8 digits,<Footnote>We actually also see a small piece of the leftmost digit in the comic, but let's forget this for simplicity.</Footnote> the distribution of the first 6 digits remain uniformly random. So, for that prior, the probability of all 6 hidden digits being zero is $1/10^6$—we are probably fine.
 
-Uniform prior over $[0, 10^{14}]$ kind of sucks, though. Why should the prior probability stay constant and then suddenly drop to zero? Isn't the fact that the countdown is in seconds an evidence that the number may be small? Also, if you look at various catastrophes, the average time until the next one is all over the place -- $\sim 10^{15}$ seconds for $10km$-sized asteroids, $\sim 10^{10}$ for 9+ Richter-scale supervolcano eruption, and up to $\sim 10^{8}$ for AI doom. <Footnote>See [Precipice](https://books.ms/main/0F4823107289367C7A16C0AB1CF0F71D) by Toby Ord for estimations of these numbers. </Footnote>
+Uniform prior over $[0, 10^{14}]$ kind of sucks, though. If you look at various catastrophes, the average rate of how often they occur is all over the place -- $\sim 10^{15}$ seconds for $10\textrm{km}$-sized asteroids hitting Earth, $\sim 10^{10}$ for 9+ Richter-scale supervolcano eruption, and up to $\sim 10^{8}$ for AI doom. <Footnote>See [Precipice](https://books.ms/main/0F4823107289367C7A16C0AB1CF0F71D) by Toby Ord for estimations of these numbers. </Footnote> 
 
-Given all this, I'd argue for choosing the distribution $p(x) \propto 1/x$ which corresponds to a uniform distribution over the _scales_. <Footnote>By this, I mean that this distribution satisfies <Math math = "\int_{10^1}^{10^2} \frac{1}{x} dx = \int_{10^2}^{10^3} \frac{1}{x} dx = \int_{10^3}^{10^4} \frac{1}{x} dx = \dots " />.  </Footnote> This is also called the [log-uniform distribution](https://en.wikipedia.org/wiki/Reciprocal_distribution). This is a pretty useful distribution with some very nice usecases like [the Benford's law](https://en.wikipedia.org/wiki/Benford%27s_law). 
+Given all this, I'd argue for choosing the power-law distribution $p(x) \propto 1/x^\lambda$. In fact, I think that $p(x) \propto 1/x$ makes the most sense - that distribution corresponds to a uniform distribution over the _scales_. <Footnote>By this, I mean that this distribution satisfies <Math math = "\int_{10^1}^{10^2} \frac{1}{x} dx = \int_{10^2}^{10^3} \frac{1}{x} dx = \int_{10^3}^{10^4} \frac{1}{x} dx = \dots " />. You may know this kind of distriution from [the Benford's law](https://en.wikipedia.org/wiki/Benford%27s_law). </Footnote> This is also called the [log-uniform distribution](https://en.wikipedia.org/wiki/Reciprocal_distribution). The problem with $p(x) \propto 1/x$ is that we can't normalize this distribution if the domain is all real numbers, similarly to why we can't normalize the uniform distribution there. In our case, we can restrict the domain to integers between $0$ and $10^{14}$, so it's fine.
 
-Both uniform and log-uniform distributions are special cases of power-law (<Math math = "\textrm{uniform = }e^{0\cdot \log X}, \textrm{log-uniform = }e^{1\cdot \ln X}" />). The usual problem with $p(x) \propto 1/x$ is that we can't normalize this distribution if the domain is all real numbers, similarly to why we can't normalize the uniform distribution there. In our case, we can restrict the domain to integers between $0$ and $10^{14}$, so it's fine.
-
-See the posterior probability for $X = 2382$ in the widget below. 
+See the posterior probability for $X = 2382$ in the widget below, starting with the power-law prior $p(x) \propto 1/x^\lambda$ with $\lambda$ ranging from $0$ to $2$ ($\lambda=0$ is uniform, $\lambda=1$ is log-uniform).
 
 <XKCDCountdownWidget />
 
@@ -473,8 +470,9 @@ But also notice is that the posterior distribution still looks uniform for numbe
 </Expand>
 */}
 
-The point is that the max-entropy principle gives us a language to talk about different priors and what they stand for. If a very natural log-uniform prior says we are not fine with probability $> 0.999$, maybe it's time to move the picture away. 
+The point is that the max-entropy principle gives us a language to talk about different priors and what they stand for. If the very natural log-uniform prior says we are screwed with probability $> 0.999$, it's time to look behind the picture. 
 </RiddleExplanation>
+
 
 
 ### 🔢 Other Examples
@@ -523,15 +521,6 @@ Both approaches yield the same answer, but it's not clear a priori that this sho
 Fortunately, distributions in the exponential family have the nice property that both approaches give the same answer. That is, if you determine the parameters of the distribution using MLE, they turn out to be what they "should" be. Formally, if your distribution is defined by constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$, then <Math math = "\hat\alpha_{1, MLE} = \alpha_1, \dots, \hat\alpha_{m,MLE} = \alpha_m" />.
 </Expand>
 
-</Expand>
-
-<Expand advanced={true} headline ="Boltzmann Distribution">
-
-Imagine many particles in a box, each particle $i$ having some energy $E_i$. What's the distribution of these energies? The maximum entropy principle suggests that the energies will be distributed according to the formula <Math math = "p_i \propto e^{-\lambda E_i}" />.
-
-This is indeed a good guess. Here's (roughly) why. When you have many particles in a box, every now and then two particles fly close to each other and exchange energies. Basically, the particles first have energies $E_1, E_2$, then some interesting physics happens, and then they have energies $E_1', E_2'$. What's important is that $E_1 + E_2 = E_1' + E_2'$; that's the conservation of energy.
-
-So, the conditional distribution of energies of two random particles with total energy $E$ should, intuitively, be uniform. But remember [our intuition](04-max_entropy/intuition) about max-entropy distributions: this is exactly the property of a max-entropy distribution.
 </Expand>
 
 
