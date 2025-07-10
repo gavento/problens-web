@@ -251,7 +251,7 @@ const PolynomialRegressionWidget: React.FC = () => {
           {isRunning ? 'Running...' : 'Run'}
         </button>
         {isCreatingData && (
-          <div className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="widget-explanation">
             Click on the plot to add data points
           </div>
         )}
@@ -508,7 +508,7 @@ const PolynomialRegressionWidget: React.FC = () => {
                   onMouseDown={handleSliderDrag}
                 />
               </svg>
-              <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
+              <p className="widget-explanation mt-2">
                 Drag to adjust the penalty constant between AIC (more permissive) and BIC (more conservative)
               </p>
             </div>

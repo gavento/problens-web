@@ -227,7 +227,7 @@ const BICModelSelectionWidget: React.FC = () => {
           {isRunning ? 'Running...' : 'Run'}
         </button>
         {isCreatingData && modelResults.length === 0 && (
-          <div className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="widget-explanation">
             Drag bars up/down to adjust the distribution
           </div>
         )}

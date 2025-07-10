@@ -273,7 +273,7 @@ const EntropyWidget: React.FC<Props> = ({
       </div>
       
       {/* Instructions */}
-      <div className="text-center text-sm text-gray-600">
+      <div className="widget-explanation">
         Drag any bar up or down to adjust probabilities. Other bars adjust automatically.
       </div>
       

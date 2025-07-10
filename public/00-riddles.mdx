@@ -131,9 +131,12 @@ So... are the odds in our favor?
   options={["Yes", "No", "depends"]}
   correctIndices={[1, 2]}
   explanation={<>
-  The guy in the hat seems to be confident that at least one digit behind the picture is not zero. If those digits are uniformly random and independent, it's a safe assumption. However, we will develop the maximum entropy principle that will explain our gut feeling: Given all the zeros we can see, it's actually very likely that all other hidden digits are zeros too. 
+  The guy in the hat seems to be confident that at least one digit behind the picture is not zero. If those digits are uniformly random, it's a safe assumption. However, we will use the maximum entropy principle and confirm our gut feeling: Given all the zeros we can see, it's actually very plausible that all other hidden digits are zeros too.
 
-  More about that later, we will test it out with the calculator below. <br/><br/><XKCDCountdownWidget /></>}
+  More on that <a href="05-max_entropy#xkcd">later</a>; in the widget below, you can confirm that there's actually a huge difference between revealing digits "00002382" and just "2382".
+
+  <XKCDCountdownWidget />
+  </>}
 /> 
 </RiddleStatement>
 

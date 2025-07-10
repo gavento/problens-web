@@ -576,7 +576,7 @@ export default function CrossEntropyWidget({
         </div>
         
         {/* Explanation text */}
-        <div className="mt-3 text-sm text-gray-600 text-center">
+        <div className="widget-explanation">
           {entropy 
             ? (
               <>

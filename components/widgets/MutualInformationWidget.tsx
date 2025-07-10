@@ -178,7 +178,7 @@ const MutualInformationWidget: React.FC<Props> = ({
 
       {/* Instructions */}
       <div className="bg-blue-50 rounded-lg p-4 text-center">
-        <p className="text-sm text-blue-700">
+        <p className="widget-explanation text-blue-700">
           Drag bars to adjust probabilities
         </p>
       </div>

@@ -269,7 +269,7 @@ const DistributionComparisonWidget: React.FC<Props> = ({ title = "Distribution C
       </div>
 
       {/* Instructions */}
-      <div className="text-center text-sm text-gray-600">Drag bars to adjust probabilities</div>
+      <p className="widget-explanation">Drag bars to adjust probabilities</p>
 
       {/* Distance Metrics */}
       <div className="grid grid-cols-3 gap-4 text-sm">

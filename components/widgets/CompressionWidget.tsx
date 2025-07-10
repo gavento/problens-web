@@ -1052,10 +1052,10 @@ export default function CompressionWidget() {
           )}
 
           <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-            <div className="text-sm text-gray-700">
+            <p className="widget-explanation">
               <strong>Enter your text above</strong> and click &quot;Run Compression&quot; to see how different algorithms perform. 
               GPT-2 processing may take 1-2 minutes for longer texts.
-            </div>
+            </p>
           </div>
         </div>
       )}

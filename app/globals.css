@@ -339,3 +339,19 @@ th {
 .modelQ {
   color: #dc2626;
 }
+
+/* Widget explanation text styling */
+.widget-explanation {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0 !important;
+  font-size: 0.875rem !important;
+  color: rgb(75 85 99) !important;
+  text-align: center !important;
+}
+
+/* Make div.widget-explanation behave like p */
+div.widget-explanation {
+  font-weight: 300 !important;
+  line-height: 1.6 !important;
+  font-family: var(--content-font) !important;
+}

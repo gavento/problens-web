@@ -899,9 +899,9 @@ const LetterPredictionWidget: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex justify-between text-sm text-gray-600">
+          <div className="flex justify-between widget-explanation">
             <span>Games played: {gameStates.length}</span>
-            <span className="italic">Hover over emojis for details</span>
+            <span>Hover over emojis for details</span>
           </div>
         </div>
       )}
