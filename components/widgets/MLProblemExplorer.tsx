@@ -300,7 +300,7 @@ const content = {
           <Tooltip tooltip="![Multivariate Gaussian](07-machine_learning/Multivariate_Gaussian.png)">
             a beautiful hill
           </Tooltip>
-          .
+          . We have
         </p>
 
         <div className="my-4 text-center">
@@ -310,8 +310,8 @@ const content = {
         <p>
           The notation <NumberedMath math="p(x | \mu_j)" /> signifies that this is our model for points originating from
           the <NumberedMath math="j" />
-          -th cluster. However, we desire a complete probabilistic model <NumberedMath math="p(x)" />. We can achieve
-          this by assigning a prior probability to how likely each cluster is. The maximum entropy prior is the uniform
+          -th cluster. However, we want a complete probabilistic model <NumberedMath math="p(x)" />. We can achieve this
+          by assigning a prior probability to how likely each cluster is. The maximum entropy prior is the uniform
           distribution, so we will choose:
         </p>
 
@@ -328,7 +328,10 @@ const content = {
         </p>
 
         <div className="my-4 text-center">
-          <NumberedMath math="\argmax_{\substack{\mu_1, \dots, \mu_k \\ \sigma^2}} -n \log \left( k\sqrt{2\pi\sigma^2}\right) + \sum_{i = 1}^n  \log \sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{2\sigma^2}}" />
+          <NumberedMath
+            displayMode={true}
+            math="\argmax_{\substack{\mu_1, \dots, \mu_k \\ \sigma^2}}\,\,\, -n \log \left( k\sqrt{2\pi\sigma^2}\right) + \sum_{i = 1}^n  \log \sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{2\sigma^2}}"
+          />
         </div>
 
         <p>
@@ -377,7 +380,7 @@ const content = {
         <p>
           This time, we&apos;re presented with red and blue points on a plane, and our goal is to find the optimal line
           that separates them. Ideally, all red points would be on one side and all blue points on the other, but this
-          isn&apos;t always achievable. In such cases, how do we determine the "best" separating line?
+          isn&apos;t always achievable. In such cases, how do we determine the &quot;best&quot; separating line?
         </p>
 
         <p>
