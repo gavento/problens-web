@@ -3,6 +3,7 @@ import React, { useState, useMemo } from "react";
 import { InlineMath } from "react-katex";
 import ReactMarkdown from "react-markdown";
 import NumberedMath from "@/components/content/NumberedMath";
+import { Tooltip } from "@/components/content/Tooltip";
 
 // Types -------------------------------------------------------
 
@@ -285,7 +286,13 @@ const content = {
 
         <p>
           As before, we can employ the maximum entropy distribution to construct a concrete model. Since the exponential
-          function doesn't normalize, we will use the Normal distribution:
+          function doesn&apos;t normalize, we will use the Gaussian. This time, we need to use the{" "}
+          <a href="https://en.wikipedia.org/wiki/Multivariate_normal_distribution">Multivariate Gaussian</a> but don&apos;t worry, 
+          the 2D Gaussian with mean <NumberedMath math="\mu" /> and covariance matrix <NumberedMath math="\Sigma" /> is still 
+          the max-entropy distribution with that mean and that covariance. We will use{" "}
+          <NumberedMath displayMode={true} math="\Sigma = \begin{pmatrix} \sigma^2 & 0 \\ 0 & \sigma^2 \end{pmatrix}" /> so this 
+          is a rotationally symmetric distribution that looks like{" "}
+          <Tooltip tooltip="![Multivariate Gaussian](07-machine_learning/Multivariate_Gaussian.png)">a nice hill</Tooltip>.
         </p>
 
         <div className="my-4 text-center">
@@ -514,18 +521,22 @@ export default function MLProblemExplorer({ showExplanations = true }: MLProblem
         <>
           {/* mean marker */}
           <line x1={cx} y1={axisY - 6} x2={cx} y2={axisY + 6} stroke="#f59e0b" strokeWidth={3} />
-          <text x={cx + 4} y={axisY - 8} fontSize="12" fill="#f59e0b">
-            {`μ=${m.toFixed(2)}`}
-          </text>
+          <foreignObject x={cx + 4} y={axisY - 20} width="60" height="20">
+            <div className="text-xs text-amber-600">
+              <InlineMath math={`\mu = ${m.toFixed(2)}`} />
+            </div>
+          </foreignObject>
 
           {/* sigma indicator */}
           <line x1={startX} y1={arrowY} x2={endX} y2={arrowY} stroke="#f59e0b" strokeWidth={2} />
           {/* endpoints */}
           <line x1={startX} y1={arrowY - 4} x2={startX} y2={arrowY + 4} stroke="#f59e0b" strokeWidth={2} />
           <line x1={endX} y1={arrowY - 4} x2={endX} y2={arrowY + 4} stroke="#f59e0b" strokeWidth={2} />
-          <text x={(startX + endX) / 2} y={arrowY - 4} fontSize="12" textAnchor="middle" fill="#f59e0b">
-            {`σ=${sd.toFixed(2)}`}
-          </text>
+          <foreignObject x={(startX + endX) / 2 - 30} y={arrowY - 16} width="60" height="20">
+            <div className="text-xs text-amber-600 text-center">
+              <InlineMath math={`\sigma = ${sd.toFixed(2)}`} />
+            </div>
+          </foreignObject>
         </>
       );
     }
@@ -545,9 +556,11 @@ export default function MLProblemExplorer({ showExplanations = true }: MLProblem
             stroke="#10b981"
             strokeWidth={2}
           />
-          <text x={5} y={15} fontSize="12" fill="#10b981">
-            {`y = ${a.toFixed(2)} x + ${b.toFixed(2)}`}
-          </text>
+          <foreignObject x={5} y={2} width="150" height="20">
+            <div className="text-xs text-emerald-600">
+              <InlineMath math={`y = ${a.toFixed(2)} x + ${b.toFixed(2)}`} />
+            </div>
+          </foreignObject>
         </>
       );
     }
@@ -555,9 +568,11 @@ export default function MLProblemExplorer({ showExplanations = true }: MLProblem
       return kmeansSolution.centroids.map((c, idx) => (
         <g key={idx}>
           <circle cx={toCanvasX(c.x)} cy={toCanvasY(c.y)} r={6} fill="#000" />
-          <text x={toCanvasX(c.x) + 8} y={toCanvasY(c.y) - 4} fontSize="12" fill="#000">
-            {`μ_${idx + 1}=[${c.x.toFixed(1)},${c.y.toFixed(1)}]`}
-          </text>
+          <foreignObject x={toCanvasX(c.x) + 8} y={toCanvasY(c.y) - 12} width="120" height="24">
+            <div className="text-xs">
+              <InlineMath math={`\\mu_${idx + 1} = [${c.x.toFixed(1)}, ${c.y.toFixed(1)}]`} />
+            </div>
+          </foreignObject>
         </g>
       ));
     }
@@ -585,9 +600,11 @@ export default function MLProblemExplorer({ showExplanations = true }: MLProblem
             stroke="#000"
             strokeWidth={2}
           />
-          <text x={5} y={CANVAS_SIZE - 5} fontSize="12" fill="#000">
-            {`λ=${lambda.toFixed(2)}  θ=(${thetaX.toFixed(2)},${thetaY.toFixed(2)})  δ=${delta.toFixed(2)}`}
-          </text>
+          <foreignObject x={5} y={CANVAS_SIZE - 25} width="300" height="20">
+            <div className="text-xs">
+              <InlineMath math={`\lambda = ${lambda.toFixed(2)}, \theta = (${thetaX.toFixed(2)}, ${thetaY.toFixed(2)}), \delta = ${delta.toFixed(2)}`} />
+            </div>
+          </foreignObject>
         </>
       );
     }
@@ -606,17 +623,33 @@ export default function MLProblemExplorer({ showExplanations = true }: MLProblem
           <option value="kMeans">k-Means</option>
           <option value="logisticRegression">Logistic Regression</option>
         </select>
-        <button
-          onClick={() => {
-            if (mode === "meanVariance") setPoints1D([]);
-            else if (mode === "linearRegression") setPoints2D([]);
-            else if (mode === "kMeans") setKmeansPts([]);
-            else if (mode === "logisticRegression") setLogPts([]);
-          }}
-          className="px-4 py-1 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
-        >
-          Reset
-        </button>
+        <div className="flex items-center space-x-2">
+          {/* k selector for k-means */}
+          {mode === "kMeans" && (
+            <div className="flex items-center space-x-1">
+              <span className="text-sm">k=</span>
+              <input
+                type="number"
+                min={2}
+                max={5}
+                value={k}
+                onChange={(e) => setK(parseInt(e.target.value) || 3)}
+                className="w-12 border p-1 rounded text-center"
+              />
+            </div>
+          )}
+          <button
+            onClick={() => {
+              if (mode === "meanVariance") setPoints1D([]);
+              else if (mode === "linearRegression") setPoints2D([]);
+              else if (mode === "kMeans") setKmeansPts([]);
+              else if (mode === "logisticRegression") setLogPts([]);
+            }}
+            className="px-4 py-1 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+          >
+            Reset
+          </button>
+        </div>
       </div>
 
       {/* Canvas */}
@@ -631,18 +664,6 @@ export default function MLProblemExplorer({ showExplanations = true }: MLProblem
 
       {/* Additional controls */}
       <div className="flex justify-center space-x-2">
-        {/* k selector for k-means */}
-        {mode === "kMeans" && (
-          <input
-            type="number"
-            min={2}
-            max={5}
-            value={k}
-            onChange={(e) => setK(parseInt(e.target.value) || 3)}
-            className="w-16 border p-1 rounded"
-          />
-        )}
-
         {/* Color toggle for logistic regression */}
         {mode === "logisticRegression" && (
           <button
