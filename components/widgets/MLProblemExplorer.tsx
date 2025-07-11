@@ -135,7 +135,7 @@ const content = {
       <div>
         <p>
           Given a set of numbers <NumberedMath math="x_1, \dots, x_n" />, how do we estimate their mean and variance?
-          We've already approached this riddle from various angles. Now, let's combine our insights.
+          We&apos;ve already approached this riddle from various angles. Now, let&apos;s combine our insights.
         </p>
         <p>
           First, we transform the general idea that mean and variance are important into a concrete probabilistic model.
@@ -156,14 +156,14 @@ const content = {
           />
         </div>
         <p>
-          It's typically easier to write down the logarithm of the likelihood function. As{" "}
+          It&apos;s typically easier to write down the logarithm of the likelihood function. As{" "}
           <a href="04-mle">we discussed</a>, we can call it cross-entropy minimization or log-likelihood maximization.
           In any case, the problem simplifies to this:
         </p>
         <NumberedMath
           displayMode={true}
           math="\hat\mu, \hat\sigma^2 = \argmax_{\mu, \sigma^2} \sum_{i = 1}^n \log\left( \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(X_i-\mu)^2}{2\sigma^2}} \right) 
-= \argmin_{\mu, \sigma^2} 2n \cdot \log \sigma + \sum_{i = 1}^n \frac{(X_i-\mu)^2}{2\sigma^2}"
+= \argmin_{\mu, \sigma^2} n \cdot \log \sqrt{2\pi\sigma^2} + \sum_{i = 1}^n \frac{(X_i-\mu)^2}{2\sigma^2}"
         />
         <p>
           There are several ways to solve this optimization problem. Differentiation is likely the cleanest: If we
@@ -174,36 +174,27 @@ const content = {
           math="\frac{\partial \mathcal{L}}{\partial \mu} = \frac{1}{\sigma^2} \sum_{i = 1}^n 2(X_i - \mu) "
         />
         <p>
-          Setting <NumberedMath math="\frac{\\partial \\mathcal{L}}{\\partial \\mu} = 0" /> leads to{" "}
+          Setting <NumberedMath math="\frac{\partial \mathcal{L}}{\partial \mu} = 0" /> leads to{" "}
           <NumberedMath math="\hat\mu = \frac{1}{n} \sum_{i=1}^n X_i" />. Similarly,
         </p>
         <NumberedMath
           displayMode={true}
-          math="\frac{\\partial \\mathcal{L}}{\\partial \\sigma} = 2n/\sigma -2  \sum_{i = 1}^n \frac{(X_i-\mu)^2}{\sigma^3}"
+          math="\frac{\partial \mathcal{L}}{\partial \sigma} = n/\sigma - \sum_{i = 1}^n \frac{(X_i-\mu)^2}{\sigma^3}"
         />
         <p>
-          Setting <NumberedMath math="\frac{\\partial \\mathcal{L}}{\\partial \\sigma} = 0" /> then leads to{" "}
+          Setting <NumberedMath math="\frac{\partial \mathcal{L}}{\partial \sigma} = 0" /> then leads to{" "}
           <NumberedMath math="\hat\sigma^2 = \frac{1}{n} \sum_{i = 1}^n (X_i - \mu)^2" />.
         </p>
-        <div className="my-4 text-center">
-          <NumberedMath displayMode={true} math="\hat\mu = \argmin_{\mu} \sum_{i = 1}^N (X_i-\mu)^2" />
-        </div>
         <p>
-          In this specific case, the optimization problem has a closed-form solution{" "}
-          <NumberedMath math="\hat\mu = \frac{1}{N} \cdot \sum_{i = 1}^N X_i" /> (and the formula for{" "}
-          <NumberedMath math="\hat\sigma^2" /> is analogous). Notice that while our formulas themselves don't explicitly
-          mention probabilities, probabilities are essential for understanding the underlying mechanics.
-        </p>
-        <p>
-          What I want to emphasize is how our only initial assumption about the data was simply, "we have a bunch of
-          numbers, and we care about their mean and variance." The rest flowed automatically from our understanding of
-          KL divergence.
+          What I want to emphasize is how our only initial assumption about the data was simply, &quot;we have a bunch of
+          numbers, and we care about their mean and variance.&quot; The KL divergence that reduced the rest to running the
+          math autopilot.
         </p>
       </div>
     ),
   },
   linearRegression: {
-    model: `p((x_1,y_1),\\ldots\\mid a,b,\\sigma^2) = \\prod_{i=1}^n \\frac{1}{\\sqrt{2\\pi\\sigma^2}} e^{-\\frac{(a x_i + b - y_i)^2}{2\\sigma^2}}`,
+    model: `p((x_1,y_1),\\ldots(x_n,y_n) \\mid a,b,\\sigma^2) = \\prod_{i=1}^n \\frac{1}{\\sqrt{2\\pi\\sigma^2}} e^{-\\frac{(a x_i + b - y_i)^2}{2\\sigma^2}}`,
     loss: `\\hat{a},\\hat{b} = \\arg\\min_{a,b} \\sum_{i=1}^n (a x_i + b - y_i)^2`,
     explanation: () => (
       <div>
@@ -215,38 +206,38 @@ const content = {
         </p>
 
         <p>
-          Let's transform this into a concrete probabilistic model. We'll model the data by assuming{" "}
+          Let&apos;s transform this into a concrete probabilistic model. We&apos;ll model the data by assuming{" "}
           <NumberedMath math="y_i" /> originates from the distribution{" "}
-          <NumberedMath math="a\cdot x_i + b + \text{noise}" />.
+          <NumberedMath displayMode={true} math="a\cdot x_i + b + \text{noise}." />
         </p>
 
         <p>
-          The noise is generated from a real-valued distribution. How do we choose it? The uniform distribution doesn't
+          The noise is generated from a real-valued distribution. How do we choose it? The uniform distribution doesn&apos;t
           normalize over real numbers, making it unsuitable; the same applies to the exponential distribution. The next
-          logical choice is the <strong>Gaussian distribution</strong> <NumberedMath math="N(\mu, \sigma^2)" />, so
-          let's select that. This introduces a slight complication as we now have two new parameters,{" "}
-          <NumberedMath math="\mu, \sigma^2" />, in our model{" "}
-          <NumberedMath math="y_i \sim a\cdot x_i + b + N(\mu, \sigma^2)" />, even though we primarily care about{" "}
-          <NumberedMath math="a" /> and <NumberedMath math="b" />.
+          choice on the menu is the <strong>Gaussian distribution</strong> <NumberedMath math="N(\mu, \sigma^2)" />, so
+          let&apos;s go with that. This introduces a slight complication as we now have two new parameters
+          <NumberedMath math="\mu, \sigma^2" /> in our model{" "}
+          <NumberedMath math="y_i \sim a\cdot x_i + b + N(\mu, \sigma^2)" />, even though we only care about{" "}
+          <NumberedMath math="a, b" /> and not <NumberedMath math="\mu, \sigma^2" />.
         </p>
 
         <p>
-          But this is fine. First, we can assume <NumberedMath math="\mu = 0" />, because otherwise, we could replace{" "}
+          But this is fine. We can assume <NumberedMath math="\mu = 0" />, because otherwise, we could replace{" "}
           <NumberedMath math="N(\mu, \sigma^2)" /> with <NumberedMath math="N(0, \sigma^2)" /> and{" "}
-          <NumberedMath math="b" /> with <NumberedMath math="b + \mu" /> to achieve the same data model. We'll address{" "}
+          <NumberedMath math="b" /> with <NumberedMath math="b + \mu" /> to achieve the same data model. We&apos;ll address{" "}
           <NumberedMath math="\sigma" /> in a moment.
         </p>
 
         <p>
-          Let's proceed with our recipe and apply the maximum likelihood principle. We write down the likelihood of our
-          data given our model:
+          Let&apos;s proceed with our recipe and apply the maximum likelihood principle. We write down the likelihood - the
+          probability of our data being sampled from the model distribution:
         </p>
 
         <div className="my-4 text-center">
           <NumberedMath math="P((x_1, y_1), \dots, (x_n, y_n) | a, b, \sigma^2, x_1, \dots, x_n) = \prod_{i = 1}^n \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(ax_i + b - y_i)^2}{2\sigma^2}}" />
         </div>
 
-        <p>As usual, it's simpler to consider the log-likelihood (or cross-entropy):</p>
+        <p>As usual, it&apos;s simpler to consider the log-likelihood (or cross-entropy):</p>
 
         <div className="my-4 text-center">
           <NumberedMath math="\log P(\text{data} | \text{parameters}) = -\frac{n}{2}\ln(2\pi\sigma^2) - \frac{1}{2\sigma^2} \sum_{i=1}^n (a\cdot x_i + b - y_i)^2" />
@@ -259,7 +250,10 @@ const content = {
         </p>
 
         <div className="my-4 text-center">
-          <NumberedMath math="\hat{a}, \hat{b} = \argmin_{a,b} \sum_{i=1}^n (a\cdot x_i + b - y_i)^2" />
+          <NumberedMath
+            displayMode={true}
+            math="\hat{a}, \hat{b} = \argmin_{a,b} \sum_{i=1}^n (a\cdot x_i + b - y_i)^2"
+          />
         </div>
 
         <p>
@@ -604,14 +598,25 @@ export default function MLProblemExplorer({ showExplanations = true }: MLProblem
 
   return (
     <div className="p-4 bg-gray-50 rounded-lg space-y-4">
-      {/* Mode selector */}
-      <div className="flex justify-center space-x-2">
+      {/* Mode selector and reset button */}
+      <div className="flex justify-between items-center mx-auto" style={{ width: `${CANVAS_SIZE}px` }}>
         <select value={mode} onChange={(e) => setMode(e.target.value as Mode)} className="border p-1 rounded">
           <option value="meanVariance">Mean & Variance</option>
           <option value="linearRegression">Linear Regression</option>
           <option value="kMeans">k-Means</option>
           <option value="logisticRegression">Logistic Regression</option>
         </select>
+        <button
+          onClick={() => {
+            if (mode === "meanVariance") setPoints1D([]);
+            else if (mode === "linearRegression") setPoints2D([]);
+            else if (mode === "kMeans") setKmeansPts([]);
+            else if (mode === "logisticRegression") setLogPts([]);
+          }}
+          className="px-4 py-1 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+        >
+          Reset
+        </button>
       </div>
 
       {/* Canvas */}
@@ -624,35 +629,8 @@ export default function MLProblemExplorer({ showExplanations = true }: MLProblem
         {renderSolutionOverlay()}
       </svg>
 
-      {/* Solve button */}
+      {/* Additional controls */}
       <div className="flex justify-center space-x-2">
-        {/* Solve */}
-        <button
-          onClick={() => {
-            // trigger re-render by resetting state (solutions are memoized on points)
-            if (mode === "meanVariance") setPoints1D([...points1D]);
-            else if (mode === "linearRegression") setPoints2D([...points2D]);
-            else if (mode === "kMeans") setKmeansPts([...kmeansPts]);
-            else if (mode === "logisticRegression") setLogPts([...logPts]);
-          }}
-          className="mt-2 px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          Solve
-        </button>
-
-        {/* Reset */}
-        <button
-          onClick={() => {
-            if (mode === "meanVariance") setPoints1D([]);
-            else if (mode === "linearRegression") setPoints2D([]);
-            else if (mode === "kMeans") setKmeansPts([]);
-            else if (mode === "logisticRegression") setLogPts([]);
-          }}
-          className="mt-2 px-4 py-1 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
-        >
-          Reset
-        </button>
-
         {/* k selector for k-means */}
         {mode === "kMeans" && (
           <input
@@ -661,7 +639,7 @@ export default function MLProblemExplorer({ showExplanations = true }: MLProblem
             max={5}
             value={k}
             onChange={(e) => setK(parseInt(e.target.value) || 3)}
-            className="mt-2 w-16 border p-1 rounded"
+            className="w-16 border p-1 rounded"
           />
         )}
 
@@ -669,7 +647,7 @@ export default function MLProblemExplorer({ showExplanations = true }: MLProblem
         {mode === "logisticRegression" && (
           <button
             onClick={() => setLogAddLabel(logAddLabel === 0 ? 1 : 0)}
-            className={`mt-2 px-4 py-1 rounded text-white ${logAddLabel === 0 ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700"}`}
+            className={`px-4 py-1 rounded text-white ${logAddLabel === 0 ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700"}`}
           >
             Add {logAddLabel === 0 ? "Red" : "Blue"}
           </button>
