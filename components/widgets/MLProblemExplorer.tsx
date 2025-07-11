@@ -187,9 +187,9 @@ const content = {
           <NumberedMath math="\hat\sigma^2 = \frac{1}{n} \sum_{i = 1}^n (X_i - \mu)^2" />.
         </p>
         <p>
-          What I want to emphasize is how our only initial assumption about the data was simply, &quot;we have a bunch of
-          numbers, and we care about their mean and variance.&quot; The KL divergence that reduced the rest to running the
-          math autopilot.
+          What I want to emphasize is how our only initial assumption about the data was simply, &quot;we have a bunch
+          of numbers, and we care about their mean and variance.&quot; The KL divergence that reduced the rest to
+          running the math autopilot.
         </p>
       </div>
     ),
@@ -213,10 +213,11 @@ const content = {
         </p>
 
         <p>
-          The noise is generated from a real-valued distribution. How do we choose it? The uniform distribution doesn&apos;t
-          normalize over real numbers, making it unsuitable; the same applies to the exponential distribution. The next
-          choice on the menu is the <strong>Gaussian distribution</strong> <NumberedMath math="N(\mu, \sigma^2)" />, so
-          let&apos;s go with that. This introduces a slight complication as we now have two new parameters
+          The noise is generated from a real-valued distribution. How do we choose it? The uniform distribution
+          doesn&apos;t normalize over real numbers, making it unsuitable; the same applies to the exponential
+          distribution. The next choice on the menu is the <strong>Gaussian distribution</strong>{" "}
+          <NumberedMath math="N(\mu, \sigma^2)" />, so let&apos;s go with that. This introduces a slight complication as
+          we now have two new parameters
           <NumberedMath math="\mu, \sigma^2" /> in our model{" "}
           <NumberedMath math="y_i \sim a\cdot x_i + b + N(\mu, \sigma^2)" />, even though we only care about{" "}
           <NumberedMath math="a, b" /> and not <NumberedMath math="\mu, \sigma^2" />.
@@ -225,13 +226,13 @@ const content = {
         <p>
           But this is fine. We can assume <NumberedMath math="\mu = 0" />, because otherwise, we could replace{" "}
           <NumberedMath math="N(\mu, \sigma^2)" /> with <NumberedMath math="N(0, \sigma^2)" /> and{" "}
-          <NumberedMath math="b" /> with <NumberedMath math="b + \mu" /> to achieve the same data model. We&apos;ll address{" "}
-          <NumberedMath math="\sigma" /> in a moment.
+          <NumberedMath math="b" /> with <NumberedMath math="b + \mu" /> to achieve the same data model. We&apos;ll
+          address <NumberedMath math="\sigma" /> in a moment.
         </p>
 
         <p>
-          Let&apos;s proceed with our recipe and apply the maximum likelihood principle. We write down the likelihood - the
-          probability of our data being sampled from the model distribution:
+          Let&apos;s proceed with our recipe and apply the maximum likelihood principle. We write down the likelihood -
+          the probability of our data being sampled from the model distribution:
         </p>
 
         <div className="my-4 text-center">
@@ -278,21 +279,28 @@ const content = {
         </p>
 
         <p>
-          Let's transform this into a probabilistic model. We'll use <NumberedMath math="\mu_1, \dots, \mu_k" /> to
-          represent the centers of these clusters. The significance of these points is that if a point{" "}
-          <NumberedMath math="x_i" /> belongs to cluster <NumberedMath math="j" />, then its Euclidean distance{" "}
-          <NumberedMath math="||x_i - \mu_j||" /> should be small.
+          Let&apos;s transform this into a probabilistic model. We&apos;ll use{" "}
+          <NumberedMath math="\mu_1, \dots, \mu_k" /> to represent the centers of these clusters. The significance of
+          these points is that if a point <NumberedMath math="x_i" /> belongs to cluster <NumberedMath math="j" />, then
+          its Euclidean distance <NumberedMath math="||x_i - \mu_j||" /> should be small.
         </p>
 
         <p>
           As before, we can employ the maximum entropy distribution to construct a concrete model. Since the exponential
           function doesn&apos;t normalize, we will use the Gaussian. This time, we need to use the{" "}
-          <a href="https://en.wikipedia.org/wiki/Multivariate_normal_distribution">Multivariate Gaussian</a> but don&apos;t worry, 
-          the 2D Gaussian with mean <NumberedMath math="\mu" /> and covariance matrix <NumberedMath math="\Sigma" /> is still 
-          the max-entropy distribution with that mean and that covariance. We will use{" "}
-          <NumberedMath displayMode={true} math="\Sigma = \begin{pmatrix} \sigma^2 & 0 \\ 0 & \sigma^2 \end{pmatrix}" /> so this 
-          is a rotationally symmetric distribution that looks like{" "}
-          <Tooltip tooltip="![Multivariate Gaussian](07-machine_learning/Multivariate_Gaussian.png)">a nice hill</Tooltip>.
+          <a href="https://en.wikipedia.org/wiki/Multivariate_normal_distribution">Multivariate Gaussian</a> but
+          don&apos;t worry, the 2D Gaussian with mean <NumberedMath math="\mu" /> and covariance matrix{" "}
+          <NumberedMath math="\Sigma" /> is still the max-entropy distribution with that mean and that covariance. We
+          will use{" "}
+          <NumberedMath
+            displayMode={true}
+            math="\Sigma = \begin{pmatrix} \sigma^2 & 0 \\ 0 & \sigma^2 \end{pmatrix},"
+          />{" "}
+          this corresponds to a nice rotationally symmetric distribution that looks like{" "}
+          <Tooltip tooltip="![Multivariate Gaussian](07-machine_learning/Multivariate_Gaussian.png)">
+            a beautiful hill
+          </Tooltip>
+          .
         </p>
 
         <div className="my-4 text-center">
@@ -313,7 +321,7 @@ const content = {
 
         <p>
           We now have a probabilistic model that generates data <NumberedMath math="x" /> from a distribution{" "}
-          <NumberedMath math="p" />. It's parameterized by <NumberedMath math="k+1" /> values:{" "}
+          <NumberedMath math="p" />. It&apos;s parameterized by <NumberedMath math="k+1" /> values:{" "}
           <NumberedMath math="\mu_1, \dots, \mu_k" />, and <NumberedMath math="\sigma^2" />. We will use maximum
           likelihood to determine these parameters. The principle dictates that we should maximize the following
           log-likelihood:
@@ -329,13 +337,14 @@ const content = {
             soft <NumberedMath math="k" />
             -means
           </a>
-          . The term "soft" indicates that the parameter <NumberedMath math="\sigma" /> allows us to output a
+          . The term &quot;soft&quot; indicates that the parameter <NumberedMath math="\sigma" /> allows us to output a
           probability distribution for each point <NumberedMath math="x" />, indicating its likelihood of belonging to
           each cluster.
         </p>
 
         <p>
-          In practice, people typically don't care that much about probabilistic assignment in <NumberedMath math="k" />
+          In practice, people typically don&apos;t care that much about probabilistic assignment in{" "}
+          <NumberedMath math="k" />
           -means; knowing the closest cluster is usually sufficient. This corresponds to considering the limit as{" "}
           <NumberedMath math="\sigma \rightarrow 0" />. In this limit, the messy expression above simplifies quite
           elegantly. Specifically, we can replace the summation{" "}
@@ -366,9 +375,9 @@ const content = {
     explanation: () => (
       <div>
         <p>
-          This time, we're presented with red and blue points on a plane, and our goal is to find the optimal line that
-          separates them. Ideally, all red points would be on one side and all blue points on the other, but this isn't
-          always achievable. In such cases, how do we determine the "best" separating line?
+          This time, we&apos;re presented with red and blue points on a plane, and our goal is to find the optimal line
+          that separates them. Ideally, all red points would be on one side and all blue points on the other, but this
+          isn&apos;t always achievable. In such cases, how do we determine the "best" separating line?
         </p>
 
         <p>
@@ -398,9 +407,9 @@ const content = {
 
         <p>
           The constant <NumberedMath math="\lambda" /> is a new parameter that the max-entropy principle compels us to
-          add to our probabilistic model. Fortunately, it's quite a useful parameter—it quantifies our confidence in the
-          classification. This is convenient because if we want to classify a new point in the future, we can not only
-          assign it a red/blue color based on which side of the line it falls, but also use the equation above to
+          add to our probabilistic model. Fortunately, it&apos;s quite a useful parameter—it quantifies our confidence
+          in the classification. This is convenient because if we want to classify a new point in the future, we can not
+          only assign it a red/blue color based on which side of the line it falls, but also use the equation above to
           compute how certain we are about our classification.
         </p>
 
@@ -523,7 +532,7 @@ export default function MLProblemExplorer({ showExplanations = true }: MLProblem
           <line x1={cx} y1={axisY - 6} x2={cx} y2={axisY + 6} stroke="#f59e0b" strokeWidth={3} />
           <foreignObject x={cx + 4} y={axisY - 20} width="60" height="20">
             <div className="text-xs text-amber-600">
-              <InlineMath math={`\mu = ${m.toFixed(2)}`} />
+              <InlineMath math={`\\mu = ${m.toFixed(2)}`} />
             </div>
           </foreignObject>
 
@@ -534,7 +543,7 @@ export default function MLProblemExplorer({ showExplanations = true }: MLProblem
           <line x1={endX} y1={arrowY - 4} x2={endX} y2={arrowY + 4} stroke="#f59e0b" strokeWidth={2} />
           <foreignObject x={(startX + endX) / 2 - 30} y={arrowY - 16} width="60" height="20">
             <div className="text-xs text-amber-600 text-center">
-              <InlineMath math={`\sigma = ${sd.toFixed(2)}`} />
+              <InlineMath math={`\\sigma = ${(sd || 0).toFixed(2)}`} />
             </div>
           </foreignObject>
         </>
@@ -570,7 +579,7 @@ export default function MLProblemExplorer({ showExplanations = true }: MLProblem
           <circle cx={toCanvasX(c.x)} cy={toCanvasY(c.y)} r={6} fill="#000" />
           <foreignObject x={toCanvasX(c.x) + 8} y={toCanvasY(c.y) - 12} width="120" height="24">
             <div className="text-xs">
-              <InlineMath math={`\\mu_${idx + 1} = [${c.x.toFixed(1)}, ${c.y.toFixed(1)}]`} />
+              <InlineMath math={`\\mu_{${idx + 1}} = [${c.x.toFixed(1)}, ${c.y.toFixed(1)}]`} />
             </div>
           </foreignObject>
         </g>
@@ -602,7 +611,9 @@ export default function MLProblemExplorer({ showExplanations = true }: MLProblem
           />
           <foreignObject x={5} y={CANVAS_SIZE - 25} width="300" height="20">
             <div className="text-xs">
-              <InlineMath math={`\lambda = ${lambda.toFixed(2)}, \theta = (${thetaX.toFixed(2)}, ${thetaY.toFixed(2)}), \delta = ${delta.toFixed(2)}`} />
+              <InlineMath
+                math={`\\lambda = ${lambda.toFixed(2)}, \\theta = (${thetaX.toFixed(2)}, ${thetaY.toFixed(2)}), \\delta = ${delta.toFixed(2)}`}
+              />
             </div>
           </foreignObject>
         </>
