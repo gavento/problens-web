@@ -195,7 +195,7 @@ export default function KLCalculatorWidget() {
           disabled={loading || !text1.trim() || !text2.trim()}
           className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
-          {loading ? "Computing..." : "Compute KL Divergence"}
+          {loading ? "Computing..." : "Compute KL & entropies"}
         </button>
       </div>
 
@@ -326,16 +326,16 @@ export default function KLCalculatorWidget() {
             <div className="space-y-3 text-sm text-gray-700">
               <p>
                 First, we can see that the mixed file has larger entropy. This makes sense! Every language uses
-                different letters with different frequencies. For example, &lsquo;z&rsquo; is quite uncommon in English,
+                different letters with different frequencies. For example, <KatexMath math="\mathsf{z}" /> is quite uncommon in English,
                 but pretty common in German. If we pool different languages together, the distribution of frequencies is
                 becoming &lsquo;smoother&rsquo;, more uniform. Hence, larger entropy. Admittedly, it&rsquo;s only
-                slightly larger, since increasing the probability of &lsquo;z&rsquo; from 0.02 to 0.0003 is not really
+                slightly larger, since increasing the probability of <KatexMath math="\mathsf{z}" /> from 0.0003 to 0.02 is not really
                 increasing the entropy that much.
               </p>
               <p>
-                For similar reasons, KL between p₁ and p₂ is smaller than vice versa. Remember, KL is all about
-                probability <em>ratios</em>. If p(&lsquo;e&rsquo;) = 0.12 and q(&lsquo;e&rsquo;) = 0.11, q is a good
-                model of p. But if p(&lsquo;z&rsquo;) = 0.02 and q(&lsquo;z&rsquo;)=0.0003, q is a crappy model of p.
+                For similar reasons, KL between <KatexMath math="p_1" /> and <KatexMath math="p_2" /> is smaller than vice versa. Remember, KL is all about
+                probability <em>ratios</em>, not differences. Since <KatexMath math="p_1" />(<KatexMath math="\mathsf{e}" />) = 0.12 and <KatexMath math="p_2" />(<KatexMath math="\mathsf{e}" />) = 0.11, <KatexMath math="p_2" /> is a good
+                model of <KatexMath math="p_1" />. However, since <KatexMath math="p_2" />(<KatexMath math="\mathsf{z}" />) = 0.02 and <KatexMath math="p_1" />(<KatexMath math="\mathsf{z}" />)=0.0003, <KatexMath math="p_1" /> is a crappy model of <KatexMath math="p_2" />.
               </p>
             </div>
           </div>

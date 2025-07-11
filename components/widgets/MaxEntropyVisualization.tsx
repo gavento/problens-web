@@ -17,10 +17,10 @@ const Heatmap2D = memo(({ heatmapData, getColor }: {
       {heatmapData.map(({ x1, x2, normalizedDensity, i, j }) => (
         <rect
           key={`${i}-${j}`}
-          x={x1 * 500}
-          y={(1 - x2) * 500}
-          width={500 / 100 + 1}
-          height={500 / 100 + 1}
+          x={x1 * 400}
+          y={(1 - x2) * 400}
+          width={400 / 100 + 1}
+          height={400 / 100 + 1}
           fill={getColor(normalizedDensity)}
         />
       ))}
@@ -123,12 +123,6 @@ const IntersectionCircle = ({ circleData, lambda1_3D, lambda2_3D, constraint1_3D
 const Axes3D = () => {
   return (
     <group>
-      {/* Unit cube wireframe */}
-      <lineSegments position={[0.5, 0.5, 0.5]}>
-        <edgesGeometry args={[new THREE.BoxGeometry(1, 1, 1)]} />
-        <lineBasicMaterial color="#666666" />
-      </lineSegments>
-      
       {/* Axes */}
       <Line points={[[0, 0, 0], [1.2, 0, 0]]} color="red" lineWidth={2} />
       <Line points={[[0, 0, 0], [0, 1.2, 0]]} color="green" lineWidth={2} />
@@ -167,6 +161,23 @@ const Axes3D = () => {
           <Line points={[[0, 0, v], [0, 1, v]]} color="#cccccc" lineWidth={1} />
         </group>
       ))}
+      
+      {/* Add edge lines for the three visible planes */}
+      {/* x1-x3 plane (y=0) edges */}
+      <Line points={[[0, 0, 0], [1, 0, 0]]} color="#999999" lineWidth={1} />
+      <Line points={[[1, 0, 0], [1, 0, 1]]} color="#999999" lineWidth={1} />
+      <Line points={[[1, 0, 1], [0, 0, 1]]} color="#999999" lineWidth={1} />
+      <Line points={[[0, 0, 1], [0, 0, 0]]} color="#999999" lineWidth={1} />
+      
+      {/* x1-x2 plane (z=0) edges */}
+      <Line points={[[0, 0, 0], [0, 1, 0]]} color="#999999" lineWidth={1} />
+      <Line points={[[0, 1, 0], [1, 1, 0]]} color="#999999" lineWidth={1} />
+      <Line points={[[1, 1, 0], [1, 0, 0]]} color="#999999" lineWidth={1} />
+      
+      {/* x2-x3 plane (x=0) edges */}
+      <Line points={[[0, 0, 0], [0, 0, 1]]} color="#999999" lineWidth={1} />
+      <Line points={[[0, 0, 1], [0, 1, 1]]} color="#999999" lineWidth={1} />
+      <Line points={[[0, 1, 1], [0, 1, 0]]} color="#999999" lineWidth={1} />
     </group>
   );
 };
@@ -387,7 +398,7 @@ const MaxEntropyVisualization: React.FC<MaxEntropyVisualizationProps> = () => {
           <div className="bg-white rounded-lg p-4">
             <div className="flex justify-center">
               <div className="relative inline-block">
-              <svg width="500" height="500" className="border border-gray-300">
+              <svg width="400" height="400" className="border border-gray-300">
                 {/* Heatmap */}
                 <Heatmap2D heatmapData={heatmapData} getColor={getColor} />
                 
@@ -395,17 +406,17 @@ const MaxEntropyVisualization: React.FC<MaxEntropyVisualizationProps> = () => {
                 {constraintLinePoints.length === 2 && (
                   <>
                     <line
-                      x1={constraintLinePoints[0][0] * 500}
-                      y1={(1 - constraintLinePoints[0][1]) * 500}
-                      x2={constraintLinePoints[1][0] * 500}
-                      y2={(1 - constraintLinePoints[1][1]) * 500}
+                      x1={constraintLinePoints[0][0] * 400}
+                      y1={(1 - constraintLinePoints[0][1]) * 400}
+                      x2={constraintLinePoints[1][0] * 400}
+                      y2={(1 - constraintLinePoints[1][1]) * 400}
                       stroke="white"
                       strokeWidth="3"
                       strokeDasharray="5,5"
                     />
                     <text
-                      x={(constraintLinePoints[0][0] + constraintLinePoints[1][0]) * 250}
-                      y={(2 - constraintLinePoints[0][1] - constraintLinePoints[1][1]) * 250 - 10}
+                      x={(constraintLinePoints[0][0] + constraintLinePoints[1][0]) * 200}
+                      y={(2 - constraintLinePoints[0][1] - constraintLinePoints[1][1]) * 200 - 10}
                       fill="white"
                       fontSize="14"
                       fontWeight="bold"
@@ -446,7 +457,7 @@ const MaxEntropyVisualization: React.FC<MaxEntropyVisualizationProps> = () => {
             
             
             {/* Color bar */}
-            <div className="mt-8 max-w-sm mx-auto">
+            <div className="mt-8 max-w-md mx-auto">
               <div className="flex items-center space-x-3">
                 <div className="text-sm font-medium">Density scale</div>
                 <span className="text-xs font-medium">Low</span>
@@ -534,12 +545,12 @@ const MaxEntropyVisualization: React.FC<MaxEntropyVisualizationProps> = () => {
           </div>
 
           {/* 3D Visualization */}
-          <div className="bg-white rounded-lg p-4">
+          <div className="bg-white rounded-lg p-2">
             <div className="flex justify-center">
               <div className="relative inline-block">
-                <div style={{ width: "500px", height: "500px" }}>
+                <div style={{ width: "500px", height: "400px" }}>
               <Canvas 
-                camera={{ position: [2, 1.5, 2], fov: 50 }}
+                camera={{ position: [1.5, 1.2, 1.5], fov: 50 }}
                 gl={{ localClippingEnabled: true }}
               >
                 <ambientLight intensity={0.5} />

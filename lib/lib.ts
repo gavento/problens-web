@@ -75,6 +75,8 @@ import MLProblemExplorer from "@/components/widgets/MLProblemExplorer";
 import MLProblemExplorerSimple from "@/components/widgets/MLProblemExplorerSimple";
 import MDLink from "@/components/content/MDLink";
 import SnippetDistributionTableWidget from "@/components/widgets/SnippetDistributionTableWidget";
+import LnVsXGraph from "@/components/widgets/LnVsXGraph";
+import DualActionImage from "@/components/content/DualActionImage";
 
 // Force color support for CI/build environments
 chalk.level = 3;
@@ -224,6 +226,8 @@ export async function getMdxContent(path: string) {
       UnifiedContentSimilarityWidget: UnifiedContentSimilarityWidget,
       WikipediaContentSimilarityWidget: WikipediaContentSimilarityWidget,
       ThreeCategoriesWidget: ThreeCategoriesWidget,
+      LnVsXGraph: LnVsXGraph,
+      DualActionImage: DualActionImage,
       GPT2CompressionWidget: GPT2CompressionWidget,
       LetterPredictionWidget: LetterPredictionWidget,
       SnippetDistributionTableWidget: SnippetDistributionTableWidget,

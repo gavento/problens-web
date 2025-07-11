@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import styles from "./Expand.module.css";
 
@@ -25,7 +25,39 @@ export default function Expand({
   advanced = false,
   id,
 }: ExpandProps) {
-  const [isOpen, setIsOpen] = useState(startOpen);
+  const [isOpen, setIsOpen] = useState(() => {
+    if (startOpen) return true;
+    if (typeof window !== "undefined" && id && window.location.hash === `#${id}`) {
+      return true;
+    }
+    return false;
+  });
+
+  // Open automatically when the hash in the URL matches our id (after first render as well)
+  useEffect(() => {
+    if (!id) return;
+
+    const maybeOpen = () => {
+      if (window.location.hash === `#${id}`) {
+        setIsOpen(true);
+      }
+    };
+
+    // Check again after mount (in case the hash appeared later)
+    maybeOpen();
+
+    // Listen for hash changes and browser navigation events
+    window.addEventListener("hashchange", maybeOpen);
+    window.addEventListener("popstate", maybeOpen); // covers router.back/forward or Next route changes
+    window.addEventListener("load", maybeOpen);
+
+    return () => {
+      window.removeEventListener("hashchange", maybeOpen);
+      window.removeEventListener("popstate", maybeOpen);
+      window.removeEventListener("load", maybeOpen);
+    };
+  }, [id]);
+
   const expandRef = useRef<HTMLDivElement>(null);
 
   // Use subtle red background for advanced sections header

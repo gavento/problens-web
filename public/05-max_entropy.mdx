@@ -235,9 +235,6 @@ Now, this formula isn't the complete solution to our problem because it involves
 </Expand>
 
 
-
----
-
 ## 📚 Catalogue of examples
 
 Let's go through the list of maximum-entropy distributions you might have encountered. In fact, most distributions used in practice are maximum entropy distributions for some specific choice of functions $f_1, \dots f_m$.
@@ -311,7 +308,7 @@ The parameter $1/|\lambda|$ is frequently called "temperature" because it behave
 <SoftmaxWidget values={[1, 3, 2, 5, 4]} title="Softmax Distribution Example" />
 
 
-<Expand headline = "Logits in Neural Networks">
+<Expand headline = "Example: Logits in Neural Networks">
 Typical neural networks output probabilities. For example, a common neural network classifying images will output an entire probability distribution indicating whether a given picture is a dog/cat/horse/... instead of just a single prediction.
 The issue with this is that often, most of these probabilities are extremely small, perhaps on the order of $10^{-10}$. That's because, given a picture of a dog, the neural network is usually quite certain it's not an octopus.
 
@@ -382,7 +379,7 @@ Often, I like to think about the Gaussian as the simplest possible distribution 
 </Expand>
 
 
-We can now revisit our financial mathematics riddle [from the intro](00-riddles/financial-mathematics). 
+We can now revisit our [financial mathematics riddle](00-riddles#financial-mathematics) from the intro. 
 
 <RiddleExplanation id="financial-mathematics">
 
@@ -399,7 +396,8 @@ The Laplace distribution has the shape <Math math = "p(x) \propto e^{-\lambda |x
 1.  Sample a variance $\sigma^2$ from the exponential distribution. 
 2.  Output a sample from $N(\mu, \sigma^2)$.<Footnote>More precisely, if we want Laplace distribution <Math math = "p(x) \propto e^{-\lambda |x-\mu|}" />, we should sample $\sigma^2$ from exponential distribution <Math math = "p'(t) \propto e^{-(\lambda^2/2) \cdot t}"/>. Let me know if you know a simple proof of [this fact](https://math.stackexchange.com/questions/1175076/how-to-prove-laplace-distribution-is-scale-mixture-of-gaussians)!</Footnote>
 
-### S&P stories
+
+### 📖 S&P stories
 
 To understand how this helps explain our financial data, consider the following two stories for price fluctuations:
 
@@ -417,7 +415,7 @@ Not really. We now understand that by fitting Laplace, we are claiming that dail
 
 <VolatilityDistributionWidget />
 
-Exponential is a good fit most of the time, but struggles to predict extreme events. As far as I know, in the pre-deep-learning practice, people used distributions such as log-normal, or inverse-gamma to fit this kind of data.<Footnote> I am not sure if this is still relevant - nowadays they may just train a network to predict it. </Footnote> These distributions are more complicated and using max-entropy principle, we could map them to more complicated stories about how the data behaves. Most importantly, they are basically power-law fits that are less surprised by stock crashes / world wars / etc. 
+Exponential is a good fit most of the time, but struggles to predict extreme events. As far as I know, people used distributions such as log-normal, or inverse-gamma to fit this kind of data.<Footnote> I am not sure if this is still relevant - nowadays they may just train a network. </Footnote> These distributions are more complicated and using max-entropy principle, we could map them to more complicated stories about how the data behaves. Most importantly, they are basically power-law fits (see below) that are less surprised by stock crashes / world wars / etc. 
 
 {/*<Footnote>As far as I know, one standard way of modeling financial data is the Student-t distribution. I won't bore you with its formula, but I'll tell you it's the distribution you get from a similar process to how we arrived at Laplace; but instead of sampling $\sigma^2$ from the exponential distribution, you sample it from the so-called inverse gamma distribution. The Gamma distribution is itself a max-entropy distribution for fixing $E[X]$ and $E[\log X]$ (and inverse gamma distribution means we measure volatility by $1/\sigma^2$ instead of $\sigma^2$).
 That is, the Student-t distribution takes our model a bit further and adds uncertainty about the _scale_ of the volatility. For example, maybe if you look far enough into the past, you start seeing some extreme events like world wars/the Great Depression/industrial revolution, so perhaps we should be open to power-law fits instead of exponential ones.</Footnote>*/}
@@ -448,13 +446,15 @@ After four chapters developing the theory of KL divergence, we're finally ready 
 
 [![Are the odds in our favor?](00-introduction/countdown.png)](https://xkcd.com/1159/)
 
-It's all about how to choose a prior for the number on the wall. The first natural choice is simply the uniform one; that is, before looking at the wall, we think the number is a uniform random number with 14 decimal digits. A nice property of the uniform distribution is that each even after observing the right 8 digits,<Footnote>We actually also see a small piece of the leftmost digit in the comic, but let's forget this for simplicity.</Footnote> the distribution of the first 6 digits remain uniformly random. So, for that prior, the probability of all 6 hidden digits being zero is $1/10^6$—we are probably fine.
+It's all about how to choose a prior for the number on the wall. The first natural choice is simply the uniform distribution; that is, before looking at the wall, we model the number as a uniform random number with 14 decimal digits. A nice property of the uniform distribution is that each even after observing the right 8 digits,<Footnote>We actually also see a small piece of the leftmost digit in the comic, but let's forget this for simplicity.</Footnote> the distribution of the first 6 digits remain uniformly random. So, for that prior, the probability of all 6 hidden digits being zero is $1/10^6$—we are probably fine.
 
-Uniform prior over $[0, 10^{14}]$ kind of sucks, though. If you look at various catastrophes, the average rate of how often they occur is all over the place -- $\sim 10^{15}$ seconds for $10\textrm{km}$-sized asteroids hitting Earth, $\sim 10^{10}$ for 9+ Richter-scale supervolcano eruption, and up to $\sim 10^{8}$ for AI doom. <Footnote>See [Precipice](https://books.ms/main/0F4823107289367C7A16C0AB1CF0F71D) by Toby Ord for estimations of these numbers. </Footnote> 
+Uniform prior over $[0, 10^{14}]$ kind of sucks, though. If you look at various catastrophes, the average rate of how often they occur is all over the place -- $\sim 10^{15}$ seconds for $10\textrm{km}$-sized asteroids hitting Earth, $\sim 10^{10}$ for 9+ Richter-scale supervolcano eruption, and up to $\sim 10^{8}$ for AI doom. <Footnote>See [Precipice](https://books.ms/main/0F4823107289367C7A16C0AB1CF0F71D) by Toby Ord for estimations of these numbers. </Footnote> The uniform prior over $[0, L]$ however predicts that most catastrophes should happen at the roughly same rate of once per $L$ seconds!
 
 Given all this, I'd argue for choosing the power-law distribution $p(x) \propto 1/x^\lambda$. In fact, I think that $p(x) \propto 1/x$ makes the most sense - that distribution corresponds to a uniform distribution over the _scales_. <Footnote>By this, I mean that this distribution satisfies <Math math = "\int_{10^1}^{10^2} \frac{1}{x} dx = \int_{10^2}^{10^3} \frac{1}{x} dx = \int_{10^3}^{10^4} \frac{1}{x} dx = \dots " />. You may know this kind of distriution from [the Benford's law](https://en.wikipedia.org/wiki/Benford%27s_law). </Footnote> This is also called the [log-uniform distribution](https://en.wikipedia.org/wiki/Reciprocal_distribution). The problem with $p(x) \propto 1/x$ is that we can't normalize this distribution if the domain is all real numbers, similarly to why we can't normalize the uniform distribution there. In our case, we can restrict the domain to integers between $0$ and $10^{14}$, so it's fine.
 
-See the posterior probability for $X = 2382$ in the widget below, starting with the power-law prior $p(x) \propto 1/x^\lambda$ with $\lambda$ ranging from $0$ to $2$ ($\lambda=0$ is uniform, $\lambda=1$ is log-uniform).
+In the widget below, you can check out that the posterior probabbility that all hidden digits are zero becomes about $99.99\%$ under the new prior! Here's how to think about this: For a four-digit number, the probability it ends with $2382$ (and zeros are just padding) is about $1/10^5$. But for an eight-digit number, the probability it ends with $00002382$ is about $1/10^9$. So, if the number $X$ under the image is a "random four-digit" number, the evidence is much less suprising than if $X$ is a "random 9-digit number". 
+
+In the widget below, the prior power-law distribution is binned into 14 bins between powers of 10. The Likelihood bar shows for each bin the probability that if a number sampled from the prior happens to be from that bin, it satisfies the revealed evidence about its digits. This is what goes into Bayes' rule that essentially multiplies the numbers in the first two tabs and normalizes them to get the posterior in the final tab. 
 
 <XKCDCountdownWidget />
 
@@ -477,25 +477,25 @@ The point is that the max-entropy principle gives us a language to talk about di
 
 ### 🔢 Other Examples
 
-Here are a few more examples.
+A few more advanced examples, you probably want to skip them.  
 
 <Expand advanced = {true} headline ="Assuming Independence">
-An important property of entropy is that if you have a joint distribution $(p,q)$, then $H((p,q)) \le H(p) + H(q)$, with equality if and only if $p$ and $q$ are independent. <Footnote>This is called [subadditivity of entropy](https://math.stackexchange.com/questions/3326158/proof-of-sub-additivity-for-shannon-entropy). Why is it subadditive? If you still remember [our discussion of mutual information](01-kl_intro#information-theory), mutual information is defined as $D((p,q), p \otimes q)$. You can rewrite this expression as $H(p) + H(q) - H((p,q))$ (try it!), so subadditivity of entropy is equivalent to mutual information being non-negative.</Footnote>
+An important property of entropy that [we mentioned earlier](03-entropy_properties#additivity) is its _subadditivity_: If you have a joint distribution $r$ with marginals $p,q$, then $H(r) \le H(p) + H(q)$. 
 
-The implication for the max-entropy principle is this: Imagine you're working with a joint distribution and you know its two marginals $p,q$. Then, the maximum entropy principle tells us that the joint distribution with these two marginals that maximizes entropy is the one where they are independent.
+The implication for the max-entropy principle is this: Imagine you're working with a joint distribution and you know its two marginals $p,q$. Then, the maximum entropy principle tells us that the max-entropy joint distribution with these two marginals is the independent, product distribution.
 
-Whenever people model things using probability distributions, they often assume that certain distributions are independent if they don't know what the dependence between them looks like (i.e., they make this assumption all the time). We can think of this as a special case of using the maximum entropy principle.
+Whenever people model things using probability distributions, they often assume that certain distributions / random variables are independent if they don't know what the dependence between them should look like. We can think of this as a special case of using the maximum entropy principle.
 
-![independence](04-max_entropy/independence.png)
+![independence](05-max_entropy/independence.png)
 
 </Expand>
 
 <Expand advanced={true} headline ="Beta Distribution">
-Our coin-flipping riddle from the [intro](01-kl_intro) was a bit silly - we somehow assumed that our coin was either fair, or 40/60 biased, but nothing else was possible. In reality, any bias $p$ is plausible, so Bayesian statistician would work with a distribution over $[0,1]$ and update the whole distribution after each flip. 
+Our coin-flipping riddle from the [intro](01-kl_intro) was a bit silly - we somehow assumed that our coin was either fair, or 75/25 biased, but nothing else was possible. In reality, any bias $p$ is plausible, so a Bayesian detective would work with a distribution over biases with domain $[0,1]$, and she would update the whole distribution after each flip. 
 
-What distribution over $[0,1]$ should we choose? If we start with the uniform distribution (max-entropy without any constraints), then the family of the distributions that the Bayesian can see after a few flips is called the [Beta distributions](https://en.wikipedia.org/wiki/Beta_distribution). 
+What distribution over $[0,1]$ should she choose? If she starts with the uniform distribution (max-entropy without any constraints), then the family of the distributions that she may see after a few flips is essentially the [Beta distributions](https://en.wikipedia.org/wiki/Beta_distribution). 
 
-Here's another reason for why this family is natural: We could argue that given some $X \in [0,1]$ the more relevant quantity to work with is the logit - $\log X / \log (1-X)$. So, shouldn't the _right_ distribution to work with be the max-entropy distribution for $f(X) = \log X / \log (1-X)$? Unfortunately, max-entropy distribution for this does not exist (it blows up on one end of $[0,1]$), but the max-entropy family for $f_1(X) = \log X$ and $f_2(X) = \log (1-X)$ normalize in the relevant scenarios and it's exactly the family of beta distributions. 
+Here's another reason for why this family is natural: We could argue that given some $X \in [0,1]$ representing probability (unknwown coin bias), the more relevant quantity to work with is the logit - $\log X / (1-X)$. So, shouldn't the _right_ distribution to work with be the max-entropy distribution for $f(X) = \log X / (1-X)$? Unfortunately, max-entropy distribution for this does not exist (it blows up on one end of $[0,1]$), but the max-entropy family for $f_1(X) = \log X$ and $f_2(X) = \log (1-X)$ normalize in the relevant scenarios and it's the family of Beta distributions. 
 </Expand>
 <Expand advanced={true} headline ="Exponential Family">
 
@@ -512,13 +512,11 @@ Here's one of the nice properties that's relevant for the next chapter but perha
 
 Suppose you have some data with mean $\mu$ and variance $\sigma^2$ and you want to fit it with a distribution. There are two ways to approach this:
 
-1.  Use the maximum entropy principle to deduce that you should model it with a normal distribution. Then use maximum likelihood to find the best parameters <Math math = "\hat{\mu}, \hat{\sigma^2}" /> for this general model—it turns out that <Math math = "\hat\mu_{MLE} = \mu, \hat\sigma^2_{MLE} = \sigma^2"/>.
+1.  Use the maximum entropy principle to deduce the right _family_ of distributions: In this case, we would use it to restrict our attention to the class of Gaussian distributions. Then use maximum likelihood to find the best parameters <Math math = "\hat{\mu}, \hat{\sigma^2}" /> among Gaussians. It turns out that <Math math = "\hat\mu_{MLE} = \mu, \hat\sigma^2_{MLE} = \sigma^2"/>.
 
-2.  Use the maximum entropy principle directly—the max entropy distribution with mean $\mu$ and variance $\sigma^2$ is $N(\mu, \sigma^2)$.
+2.  Use the maximum entropy principle directly without any MLE. The max entropy distribution with mean $\mu$ and variance $\sigma^2$ is the Gaussian $N(\mu, \sigma^2)$.
 
-Both approaches yield the same answer, but it's not clear a priori that this should be the case! Perhaps MLE could have determined that $N(\mu, \frac{n-1}{n} \sigma^2)$ is a better fit for the data.
-
-Fortunately, distributions in the exponential family have the nice property that both approaches give the same answer. That is, if you determine the parameters of the distribution using MLE, they turn out to be what they "should" be. Formally, if your distribution is defined by constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$, then <Math math = "\hat\alpha_{1, MLE} = \alpha_1, \dots, \hat\alpha_{m,MLE} = \alpha_m" />.
+Both approaches yield the same answer, but it's not clear a priori that this should be the case! Fortunately, distributions in the exponential family have the nice property that both approaches agree. Formally, if your exponential-family distribution is defined by constraints $E[f_1(X)] = \alpha_1, \dots, E[f_m(X)] = \alpha_m$, then <Math math = "\hat\alpha_{1, MLE} = \alpha_1, \dots, \hat\alpha_{m,MLE} = \alpha_m" />.
 </Expand>
 
 </Expand>
@@ -527,4 +525,4 @@ Fortunately, distributions in the exponential family have the nice property that
 
 ## 🚀 What's next? <a id="next-steps"></a>
 
-In the [next chapter](07-machine_learning), we'll see how KL divergence explains the choice of loss functions used in machine learning.
+In the [next chapter](07-machine_learning), we'll see how the combo of maximum likelihood + maximum entropy explains the choice of loss functions used in machine learning.

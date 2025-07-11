@@ -14,26 +14,6 @@ Test your intelligence with the following widget! You will be given a bunch of t
 Don't feel bad if a machine beats you; they've been studying for this test their entire lives! But why? And why did Claude Shannon - the information theory [GOAT](https://www.merriam-webster.com/dictionary/goat) - make this experiment in the 1940s? 
 </RiddleStatement>
 
-<RiddleStatement id="predictions">
-
-It'd be awesome to know the future—or at least know someone who does. So you've gathered some experts and come up with five questions (Q1 to Q5). You ask the experts to give you probabilities for all 5 questions.
-A year later, you know what actually happened. Time to find the best expert!  
-
-<ImageGallery images={[{src: "00-introduction/questions.png", alt: "questions"}]} fullWidth={true} />
-
-The question is: who's the best here?
-
-<MultipleChoiceQuestion
-  options={["🧑 Expert 1", "👵🏿 Expert 2", "👶 Expert 3"]}
-  correctIndices={[0, 1, 2]}
-  feedbackType="all-show"
-  explanation={<>This is actually hard to tell with just 5 questions, we would need many more of them. But I am not a big fan of 🧑 though, with his failed 99%-confidence prediction! Later, we'll see how KL divergence gives us the log-score that forecasting tournaments use; this score penalizes failed 99%-confidence predictions quite heavily!   
-  <ExpertRatingWidget
-    title="Log score"
-    showBrierScore={false}
-  />  </> }
-  />
-</RiddleStatement>
 
 
 
@@ -53,10 +33,38 @@ I grabbed some historical data, calculated the daily price changes, and normaliz
   feedbackType="all-show"
   explanation={<>This is hard to say, try it below yourself. I fitted the data by two curves - Gaussian distribution (looks like the shape in C), and Laplace distribution (looks like the shape in B). 
   <FinancialDistributionWidget showBTC={false} showSAP={true} />
-  What's happening here? We will discuss this example in the [chapter about the max-entropy principle](05-max_entropy). This principle is extremely useful in situations like ours, when we want to model some kind of data. <br/><br/></>}
+  What's happening here? We will discuss this example in the <a href = "05-max_entropy">chapter about the max-entropy principle</a> which is extremely useful whenever we want to model some kind of data. <br/><br/></>}
 />
 
 </RiddleStatement>
+
+
+
+
+
+
+<RiddleStatement id="predictions">
+
+It'd be awesome to know the future—or at least know someone who does. So you've gathered some experts and come up with five questions (Q1 to Q5). You ask the experts to give you probabilities for all 5 questions.
+A year later, you know what actually happened. Time to find the best expert!  
+
+<ImageGallery images={[{src: "00-introduction/questions.png", alt: "questions"}]} width="75%" />
+
+The question is: who's the best here?
+
+<MultipleChoiceQuestion
+  options={["🧑 Expert 1", "👵🏿 Expert 2", "👶 Expert 3"]}
+  correctIndices={[0, 1, 2]}
+  feedbackType="all-show"
+  explanation={<><p>This is actually hard to tell with just 5 questions, we would need many more of them. Expert 🧑 looks pretty impressive, but I am worried about his failed 99%-confidence prediction! Later, we'll see derive the log-score that forecasting tournaments use; this score penalizes failed 99%-confidence predictions quite heavily and we'll get some intuition for why. </p>
+  <p>  In the following widget, you can confirm that if Expert 🧑 gave only 80% or 90% probabilities instead of 99%, he would be doing great!</p> 
+  <ExpertRatingWidget
+    title="Comparing expert predictions"
+    showBrierScore={false}
+  />  </> }
+  />
+</RiddleStatement>
+
 
 
 
@@ -68,7 +76,7 @@ Marcus Hutter, an AI researcher, started <a href="http://prize.hutter1.net/">thi
 <MultipleChoiceQuestion
   options={["around 1MB", "around 10MB", "around 100MB"]}
   correctIndices={[2]}
-  explanation={<>It's around 100MB. But wait—why does an <em>AI</em> researcher care about compression? We'll see the connection with <a href="02-crossentropy/coding">entropy</a>, <a href = "02-crossentropy/hutter">next token prediction</a>, and <a href="#">Kolmogorov complexity</a>. In the meantime, you can try to guess how well can various other texts be compressed by various algorithms. 
+  explanation={<>It's around 100MB. But wait—why does an <em>AI</em> researcher care about compression? We'll see the connection with <a href="02-crossentropy#coding">entropy</a>, <a href = "02-crossentropy#hutter">next token prediction</a>, and <a href="#">Kolmogorov complexity</a>. In the meantime, you can try to guess how well can various other texts be compressed by various algorithms. 
   <CompressionWidget />
 </>}
 /> 
@@ -131,9 +139,9 @@ So... are the odds in our favor?
   options={["Yes", "No", "depends"]}
   correctIndices={[1, 2]}
   explanation={<>
-  The guy in the hat seems to be confident that at least one digit behind the picture is not zero. If those digits are uniformly random, it's a safe assumption. However, we will use the maximum entropy principle and confirm our gut feeling: Given all the zeros we can see, it's actually very plausible that all other hidden digits are zeros too.
+  <p>The guy in the hat seems to be confident that at least one digit behind the picture is not zero. If those digits are uniformly random, it's a safe assumption. However, we will use the maximum entropy principle to justify a different probabilistic model and confirm our gut feeling: Given all the zeros we can see, it's actually very plausible that all other hidden digits are zeros too.</p>
 
-  More on that <a href="05-max_entropy#xkcd">later</a>; in the widget below, you can confirm that there's actually a huge difference between revealing digits "00002382" and just "2382".
+  <p>More on that <a href="05-max_entropy#xkcd">later</a>; We will use the widget below to confirm that there's a huge difference between seing "00002382" and just "2382".</p>
 
   <XKCDCountdownWidget />
   </>}
@@ -164,8 +172,16 @@ Where the hell are all these, so-called "loss functions", coming from?? [We'll s
 As we go through the mini-course, we'll revisit each puzzle and understand what's going on. 
 There are three parts to it. 
 
-1. First, we will understand how Bayes' rule leads to the notions of KL divergence, cross-entropy and entropy (first three chapters). 
+1. First, we will understand how Bayes' rule leads to the KL divergence, cross-entropy and entropy (first three chapters). 
 2. Next, we will see that minimizing KL divergence is a powerful principle to build good probabilistic models. We will use it to explain where the machine-learning loss function are coming from (next three chapters).
-3. Finally, we will discuss how entropy and KL divergence are related to coding theory, and what kind of intuition it gives us about large language models (final two chapters). 
+3. Finally, we will discuss how entropy is related to coding theory, and what kind of intuition it gives us about large language models (final two chapters). 
 
-See you in [the first chapter](01-kl_intro)!
+This is your last chance. You can go on with your life and believe whatever you want to believe about KL divergence. Or you go to [the first chapter](01-kl_intro) and see how far the rabbit-hole goes. 
+
+
+<DualActionImage src="fig/pills.png" alt="pills" width="75%" />
+
+<p className="text-center text-sm italic font-medium text-gray-700 max-w-2xl mx-auto mt-0 px-2">
+  I am very upset that in Matrix, it's the red pill that represents the “truth”.  We will talk a lot about the
+  <em>true distribution</em> and <em>its model</em>, with the opposite color-coding.
+</p>

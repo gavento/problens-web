@@ -13,7 +13,7 @@ const ExpertRatingWidget: React.FC<Props> = ({
 }) => {
   // Initial data: 3 experts + ground truth, 5 questions
   const [predictions, setPredictions] = useState<number[][]>([
-    [0.99, 0.99, 0.5, 0.5, 0.99], // 🧑
+    [0.99, 0.99, 0.01, 0.99, 0.99], // 🧑
     [0.5, 0.9, 0.6, 0.6, 0.6],    // 👵🏿
     [0.5, 0.5, 0.5, 0.5, 0.5],    // 👶
   ]);
@@ -121,12 +121,12 @@ const ExpertRatingWidget: React.FC<Props> = ({
                 Expert
               </th>
               {Array.from({ length: numQuestions }, (_, i) => (
-                <th key={i} className="border border-gray-300 p-2 text-center font-semibold" style={{ minWidth: '80px' }}>
+                <th key={i} className="border border-gray-300 p-2 text-center font-semibold" style={{ minWidth: '65px' }}>
                   Q{i + 1}
                 </th>
               ))}
-              <th className="border-l-4 border-blue-500 border-t border-r border-b border-gray-300 p-2 text-center font-semibold text-blue-700" style={{ minWidth: '120px' }}>
-                Log Score<br/>(Cross-entropy)
+              <th className="border-l-4 border-blue-500 border-t border-r border-b border-gray-300 p-1 text-center font-semibold text-black" style={{ minWidth: 'auto', whiteSpace: 'nowrap' }}>
+                Log Score<br/><span className="text-xs font-normal">(Cross-entropy)</span>
               </th>
               {showBrierScore && (
                 <th className="border border-gray-300 p-2 text-center font-semibold text-green-700">
@@ -143,7 +143,7 @@ const ExpertRatingWidget: React.FC<Props> = ({
                   <div className="text-xs text-gray-600">{expert.name}</div>
                 </td>
                 {Array.from({ length: numQuestions }, (_, questionIdx) => (
-                  <td key={questionIdx} className="border border-gray-300 p-0" style={{ minWidth: '80px' }}>
+                  <td key={questionIdx} className="border border-gray-300 p-0" style={{ minWidth: '65px' }}>
                     <input
                       type="number"
                       min="0"
@@ -172,7 +172,7 @@ const ExpertRatingWidget: React.FC<Props> = ({
                 <div className="text-sm font-bold text-gray-700">Ground Truth</div>
               </td>
               {Array.from({ length: numQuestions }, (_, questionIdx) => (
-                <td key={questionIdx} className="border border-gray-300 p-0" style={{ minWidth: '80px' }}>
+                <td key={questionIdx} className="border border-gray-300 p-0" style={{ minWidth: '65px' }}>
                   <select
                     value={groundTruth[questionIdx]}
                     onChange={(e) => updateGroundTruth(questionIdx, e.target.value)}

@@ -14,6 +14,8 @@ interface ImageGalleryProps {
   fullWidth?: boolean;
   // Optional custom width (e.g., "75%" or "500px") for single-image galleries.
   width?: string | number;
+  /** If true, caption will have minimal spacing (closer to image). */
+  compactCaption?: boolean;
 }
 
 const DEFAULT_HEIGHT = 160;
@@ -24,6 +26,7 @@ export default function ImageGallery({
   height = DEFAULT_HEIGHT,
   fullWidth = false,
   width,
+  compactCaption = false,
 }: ImageGalleryProps) {
   // Special handling for single image with fullWidth
   // Also allow custom width for single-image case
@@ -37,7 +40,9 @@ export default function ImageGallery({
           </div>
         </div>
         {/* Markdown caption below */}
-        <div className="text-center text-sm text-gray-600 max-w-2xl mx-auto min-h-[1.5em] mt-1 px-6 py-1">
+        <div
+          className={`text-center text-sm italic font-medium text-gray-700 max-w-2xl mx-auto min-h-[1.5em] ${compactCaption ? "mt-0 px-2 py-0" : "mt-0.5 px-4 py-0.5"}`}
+        >
           {typeof caption === "string" ? <ReactMarkdown>{caption}</ReactMarkdown> : caption || null}
         </div>
       </div>
@@ -72,7 +77,9 @@ export default function ImageGallery({
         </div>
       </div>
       {/* Markdown caption below (always rendered) */}
-      <div className="text-center text-sm text-gray-600 max-w-2xl mx-auto min-h-[1.5em] px-6 py-1">
+      <div
+        className={`text-center text-sm italic font-medium text-gray-700 max-w-2xl mx-auto min-h-[1.5em] ${compactCaption ? "mt-0 px-2 py-0" : "px-4 py-0.5 mt-0.5"}`}
+      >
         {typeof caption === "string" ? <ReactMarkdown>{caption}</ReactMarkdown> : caption || null}
       </div>
     </div>

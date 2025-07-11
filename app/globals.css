@@ -355,3 +355,8 @@ div.widget-explanation {
   line-height: 1.6 !important;
   font-family: var(--content-font) !important;
 }
+
+/* Left-aligned variant of widget-explanation - use with .widget-explanation */
+.widget-explanation.left-aligned {
+  text-align: left !important;
+}

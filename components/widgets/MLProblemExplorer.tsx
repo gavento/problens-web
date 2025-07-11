@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from "react";
 import { InlineMath } from "react-katex";
 import ReactMarkdown from "react-markdown";
+import NumberedMath from "@/components/content/NumberedMath";
 
 // Types -------------------------------------------------------
 
@@ -130,97 +131,296 @@ const content = {
   meanVariance: {
     model: `p(x_1,\\ldots,x_n\\mid \\mu,\\sigma^2) = \\prod_{i=1}^n \\frac{1}{\\sqrt{2\\pi\\sigma^2}} e^{-\\frac{(x_i-\\mu)^2}{2\\sigma^2}}`,
     loss: `\\hat{\\mu} = \\arg\\min_{\\mu} \\sum_{i = 1}^n (x_i-\\mu)^2`,
-    explanation: `Our [basic statistics riddle](00-introduction/statistics) posed the following: Given a set of numbers $X_1, \dots, X_n$, how do we estimate their mean and variance?
-
-We've already approached this riddle from various angles; now, let's combine our insights.
-
-First, we transform the general idea that mean and variance are important into a concrete probabilistic model. The [maximum entropy principle](04-max_entropy) suggests modeling the data as independent samples drawn from [the gaussian distribution](04-max_entropy#normal).
-
-Once we have a set of possible models—all Gaussian distributions—we can select the best one using [the maximum likelihood principle](03-minimizing#mle).
-
-We want to find $\hat\mu, \hat\sigma^2$ that maximizes
-$\hat\mu, \hat\sigma^2 = \argmin_{\mu, \sigma^2} \prod_{i = 1}^N \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(X_i-\mu)^2}{2\sigma^2}}$
-
-It's typically easier to write down the logarithm of the likelihood function, i.e., the log-likelihood. This is not too surprising since [we understand](03-minimizing#mle) that maximizing log-likelihood is a synonym to minimizing KL divergence. If we make the problem simpler for us and consider only the estimation of the mean $\mu$, the equation simplifies like this:
-
-$\hat\mu = \argmin_{\mu} \sum_{i = 1}^N (X_i-\mu)^2$
-
-In this specific case, the optimization problem has a closed-form solution $\hat\mu = \frac{1}{N} \cdot \sum_{i = 1}^N X_i$ (and the formula for $\hat\sigma^2$ is analogous). Notice that while our formulas themselves don't explicitly mention probabilities, probabilities are essential for understanding the underlying mechanics.
-
-What I want to emphasize is how our only initial assumption about the data was simply, "we have a bunch of numbers, and we care about their mean and variance." The rest flowed automatically from our understanding of KL divergence.`,
+    explanation: () => (
+      <div>
+        <p>
+          Given a set of numbers <NumberedMath math="x_1, \dots, x_n" />, how do we estimate their mean and variance?
+          We've already approached this riddle from various angles. Now, let's combine our insights.
+        </p>
+        <p>
+          First, we transform the general idea that mean and variance are important into a concrete probabilistic model.
+          The maximum entropy principle suggests modeling the data as independent samples drawn from{" "}
+          <a href="04-max_entropy#normal">the Gaussian distribution</a>.
+        </p>
+        <p>
+          Once we have a set of possible models—all Gaussian distributions—we can select the best one using{" "}
+          <a href="03-minimizing#mle">the maximum likelihood principle</a>.
+        </p>
+        <p>
+          We want to find <NumberedMath math="\hat\mu, \hat\sigma^2" /> that maximize
+        </p>
+        <div className="my-4 text-center">
+          <NumberedMath
+            displayMode={true}
+            math="\hat\mu, \hat\sigma^2 = \argmin_{\mu, \sigma^2} \prod_{i = 1}^N \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x_i-\mu)^2}{2\sigma^2}}"
+          />
+        </div>
+        <p>
+          It's typically easier to write down the logarithm of the likelihood function. As{" "}
+          <a href="04-mle">we discussed</a>, we can call it cross-entropy minimization or log-likelihood maximization.
+          In any case, the problem simplifies to this:
+        </p>
+        <NumberedMath
+          displayMode={true}
+          math="\hat\mu, \hat\sigma^2 = \argmax_{\mu, \sigma^2} \sum_{i = 1}^n \log\left( \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(X_i-\mu)^2}{2\sigma^2}} \right) 
+= \argmin_{\mu, \sigma^2} 2n \cdot \log \sigma + \sum_{i = 1}^n \frac{(X_i-\mu)^2}{2\sigma^2}"
+        />
+        <p>
+          There are several ways to solve this optimization problem. Differentiation is likely the cleanest: If we
+          define <NumberedMath math="\mathcal{L}" /> to be the expression above, then:
+        </p>
+        <NumberedMath
+          displayMode={true}
+          math="\frac{\partial \mathcal{L}}{\partial \mu} = \frac{1}{\sigma^2} \sum_{i = 1}^n 2(X_i - \mu) "
+        />
+        <p>
+          Setting <NumberedMath math="\frac{\\partial \\mathcal{L}}{\\partial \\mu} = 0" /> leads to{" "}
+          <NumberedMath math="\hat\mu = \frac{1}{n} \sum_{i=1}^n X_i" />. Similarly,
+        </p>
+        <NumberedMath
+          displayMode={true}
+          math="\frac{\\partial \\mathcal{L}}{\\partial \\sigma} = 2n/\sigma -2  \sum_{i = 1}^n \frac{(X_i-\mu)^2}{\sigma^3}"
+        />
+        <p>
+          Setting <NumberedMath math="\frac{\\partial \\mathcal{L}}{\\partial \\sigma} = 0" /> then leads to{" "}
+          <NumberedMath math="\hat\sigma^2 = \frac{1}{n} \sum_{i = 1}^n (X_i - \mu)^2" />.
+        </p>
+        <div className="my-4 text-center">
+          <NumberedMath displayMode={true} math="\hat\mu = \argmin_{\mu} \sum_{i = 1}^N (X_i-\mu)^2" />
+        </div>
+        <p>
+          In this specific case, the optimization problem has a closed-form solution{" "}
+          <NumberedMath math="\hat\mu = \frac{1}{N} \cdot \sum_{i = 1}^N X_i" /> (and the formula for{" "}
+          <NumberedMath math="\hat\sigma^2" /> is analogous). Notice that while our formulas themselves don't explicitly
+          mention probabilities, probabilities are essential for understanding the underlying mechanics.
+        </p>
+        <p>
+          What I want to emphasize is how our only initial assumption about the data was simply, "we have a bunch of
+          numbers, and we care about their mean and variance." The rest flowed automatically from our understanding of
+          KL divergence.
+        </p>
+      </div>
+    ),
   },
   linearRegression: {
     model: `p((x_1,y_1),\\ldots\\mid a,b,\\sigma^2) = \\prod_{i=1}^n \\frac{1}{\\sqrt{2\\pi\\sigma^2}} e^{-\\frac{(a x_i + b - y_i)^2}{2\\sigma^2}}`,
     loss: `\\hat{a},\\hat{b} = \\arg\\min_{a,b} \\sum_{i=1}^n (a x_i + b - y_i)^2`,
-    explanation: `Suppose we are given a list of pairs $(x_1, y_1), \dots, (x_n, y_n)$. We believe the data exhibits a roughly linear dependency, meaning there exist some constants $a,b$ such that $y_i \approx a\cdot x_i + b$. Our objective is to determine $a$ and $b$.
+    explanation: () => (
+      <div>
+        <p>
+          Suppose we are given a list of pairs <NumberedMath math="(x_1, y_1), \dots, (x_n, y_n)" />. We believe the
+          data exhibits a roughly linear dependency, meaning there exist some constants <NumberedMath math="a,b" /> such
+          that <NumberedMath math="y_i \approx a\cdot x_i + b" />. Our objective is to determine{" "}
+          <NumberedMath math="a" /> and <NumberedMath math="b" />.
+        </p>
 
-Let's transform this into a concrete probabilistic model. We'll model the data by assuming $y_i$ originates from the distribution $a\cdot x_i + b + \text{noise}$.
+        <p>
+          Let's transform this into a concrete probabilistic model. We'll model the data by assuming{" "}
+          <NumberedMath math="y_i" /> originates from the distribution{" "}
+          <NumberedMath math="a\cdot x_i + b + \text{noise}" />.
+        </p>
 
-The noise is generated from a real-valued distribution. How do we choose it? The uniform distribution doesn't normalize over real numbers, making it unsuitable; the same applies to the exponential distribution. The next logical choice is the **Gaussian distribution** $N(\mu, \sigma^2)$, so let's select that. This introduces a slight complication as we now have two new parameters, $\mu, \sigma^2$, in our model $y_i \sim a\cdot x_i + b + N(\mu, \sigma^2)$, even though we primarily care about $a$ and $b$.
+        <p>
+          The noise is generated from a real-valued distribution. How do we choose it? The uniform distribution doesn't
+          normalize over real numbers, making it unsuitable; the same applies to the exponential distribution. The next
+          logical choice is the <strong>Gaussian distribution</strong> <NumberedMath math="N(\mu, \sigma^2)" />, so
+          let's select that. This introduces a slight complication as we now have two new parameters,{" "}
+          <NumberedMath math="\mu, \sigma^2" />, in our model{" "}
+          <NumberedMath math="y_i \sim a\cdot x_i + b + N(\mu, \sigma^2)" />, even though we primarily care about{" "}
+          <NumberedMath math="a" /> and <NumberedMath math="b" />.
+        </p>
 
-But this is fine. First, we can assume $\mu = 0$, because otherwise, we could replace $N(\mu, \sigma^2)$ with $N(0, \sigma^2)$ and $b$ with $b + \mu$ to achieve the same data model. We'll address $\sigma$ in a moment.
+        <p>
+          But this is fine. First, we can assume <NumberedMath math="\mu = 0" />, because otherwise, we could replace{" "}
+          <NumberedMath math="N(\mu, \sigma^2)" /> with <NumberedMath math="N(0, \sigma^2)" /> and{" "}
+          <NumberedMath math="b" /> with <NumberedMath math="b + \mu" /> to achieve the same data model. We'll address{" "}
+          <NumberedMath math="\sigma" /> in a moment.
+        </p>
 
-Let's proceed with our recipe and apply the maximum likelihood principle. We write down the likelihood of our data given our model:
+        <p>
+          Let's proceed with our recipe and apply the maximum likelihood principle. We write down the likelihood of our
+          data given our model:
+        </p>
 
-$P((x_1, y_1), \dots, (x_n, y_n) | a, b, \sigma^2, x_1, \dots, x_n) = \prod_{i = 1}^n \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(ax_i + b - y_i)^2}{2\sigma^2}}$
+        <div className="my-4 text-center">
+          <NumberedMath math="P((x_1, y_1), \dots, (x_n, y_n) | a, b, \sigma^2, x_1, \dots, x_n) = \prod_{i = 1}^n \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(ax_i + b - y_i)^2}{2\sigma^2}}" />
+        </div>
 
-As usual, it's simpler to consider the log-likelihood (or cross-entropy):
+        <p>As usual, it's simpler to consider the log-likelihood (or cross-entropy):</p>
 
-$\log P(\text{data} | \text{parameters}) = -\frac{n}{2}\ln(2\pi\sigma^2) - \frac{1}{2\sigma^2} \sum_{i=1}^n (a\cdot x_i + b - y_i)^2$
+        <div className="my-4 text-center">
+          <NumberedMath math="\log P(\text{data} | \text{parameters}) = -\frac{n}{2}\ln(2\pi\sigma^2) - \frac{1}{2\sigma^2} \sum_{i=1}^n (a\cdot x_i + b - y_i)^2" />
+        </div>
 
-This expression appears rather complex, but we notice that for any fixed value of $\sigma^2$, the optimization problem for $a,b$ reduces to minimizing:
+        <p>
+          This expression appears rather complex, but we notice that for any fixed value of{" "}
+          <NumberedMath math="\sigma^2" />, the optimization problem for <NumberedMath math="a,b" /> reduces to
+          minimizing:
+        </p>
 
-$\hat{a}, \hat{b} = \argmin_{a,b} \sum_{i=1}^n (a\cdot x_i + b - y_i)^2$
+        <div className="my-4 text-center">
+          <NumberedMath math="\hat{a}, \hat{b} = \argmin_{a,b} \sum_{i=1}^n (a\cdot x_i + b - y_i)^2" />
+        </div>
 
-Therefore, we can effectively disregard the added parameter $\sigma^2$ and simply optimize above expression, which is the classical [least-squares loss function](https://en.wikipedia.org/wiki/Ordinary_least_squares) for linear regression. Notice how the square in the loss function emerged directly from our maximum entropy assumption of Gaussian noise.`,
+        <p>
+          Therefore, we can effectively disregard the added parameter <NumberedMath math="\sigma^2" /> and simply
+          optimize above expression, which is the classical{" "}
+          <a href="https://en.wikipedia.org/wiki/Ordinary_least_squares">least-squares loss function</a> for linear
+          regression. Notice how the square in the loss function emerged directly from our maximum entropy assumption of
+          Gaussian noise.
+        </p>
+      </div>
+    ),
   },
   kMeans: {
     model: `p(x) = \\frac{1}{k} \\sum_{j=1}^k \\mathcal{N}(x\\mid \\mu_j,\\sigma^2 I)`,
     loss: `\\arg\\min_{\\mu_1,\\ldots,\\mu_k} \\sum_{i=1}^n \\min_j \\|x_i-\\mu_j\\|^2`,
-    explanation: `We are given a set of points $x_1, \dots, x_n$ on, say, a 2D plane. Our objective is to group them into $k$ clusters.
+    explanation: () => (
+      <div>
+        <p>
+          We are given a set of points <NumberedMath math="x_1, \dots, x_n" /> on, say, a 2D plane. Our objective is to
+          group them into <NumberedMath math="k" /> clusters.
+        </p>
 
-Let's transform this into a probabilistic model. We'll use $\mu_1, \dots, \mu_k$ to represent the centers of these clusters. The significance of these points is that if a point $x_i$ belongs to cluster $j$, then its Euclidean distance $||x_i - \mu_j||$ should be small.
+        <p>
+          Let's transform this into a probabilistic model. We'll use <NumberedMath math="\mu_1, \dots, \mu_k" /> to
+          represent the centers of these clusters. The significance of these points is that if a point{" "}
+          <NumberedMath math="x_i" /> belongs to cluster <NumberedMath math="j" />, then its Euclidean distance{" "}
+          <NumberedMath math="||x_i - \mu_j||" /> should be small.
+        </p>
 
-As before, we can employ the maximum entropy distribution to construct a concrete model. Since the exponential function doesn't normalize, we will use the Normal distribution:
+        <p>
+          As before, we can employ the maximum entropy distribution to construct a concrete model. Since the exponential
+          function doesn't normalize, we will use the Normal distribution:
+        </p>
 
-$p(x | \mu_j) \propto e^{-\frac{||x-\mu_j||^2}{2\sigma^2}}$
+        <div className="my-4 text-center">
+          <NumberedMath math="p(x | \mu_j) \propto e^{-\frac{||x-\mu_j||^2}{2\sigma^2}}" />
+        </div>
 
-The notation $p(x | \mu_j)$ signifies that this is our model for points originating from the $j$-th cluster. However, we desire a complete probabilistic model $p(x)$. We can achieve this by assigning a prior probability to how likely each cluster is. The maximum entropy prior is the uniform distribution, so we will choose:
+        <p>
+          The notation <NumberedMath math="p(x | \mu_j)" /> signifies that this is our model for points originating from
+          the <NumberedMath math="j" />
+          -th cluster. However, we desire a complete probabilistic model <NumberedMath math="p(x)" />. We can achieve
+          this by assigning a prior probability to how likely each cluster is. The maximum entropy prior is the uniform
+          distribution, so we will choose:
+        </p>
 
-$p(x) = \frac{1}{k} \sum_{j = 1}^k p(x | \mu_j)$
+        <div className="my-4 text-center">
+          <NumberedMath math="p(x) = \frac{1}{k} \sum_{j = 1}^k p(x | \mu_j)" />
+        </div>
 
-We now have a probabilistic model that generates data $x$ from a distribution $p$. It's parameterized by $k+1$ values: $\mu_1, \dots, \mu_k$, and $\sigma^2$. We will use maximum likelihood to determine these parameters. The principle dictates that we should maximize the following log-likelihood:
+        <p>
+          We now have a probabilistic model that generates data <NumberedMath math="x" /> from a distribution{" "}
+          <NumberedMath math="p" />. It's parameterized by <NumberedMath math="k+1" /> values:{" "}
+          <NumberedMath math="\mu_1, \dots, \mu_k" />, and <NumberedMath math="\sigma^2" />. We will use maximum
+          likelihood to determine these parameters. The principle dictates that we should maximize the following
+          log-likelihood:
+        </p>
 
-$\argmax_{\substack{\mu_1, \dots, \mu_k \\ \sigma^2}} -n \log \left( k\sqrt{2\pi\sigma^2}\right) + \sum_{i = 1}^n  \log \sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{2\sigma^2}}$
+        <div className="my-4 text-center">
+          <NumberedMath math="\argmax_{\substack{\mu_1, \dots, \mu_k \\ \sigma^2}} -n \log \left( k\sqrt{2\pi\sigma^2}\right) + \sum_{i = 1}^n  \log \sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{2\sigma^2}}" />
+        </div>
 
-Optimizing this expression corresponds to an algorithm known as [soft $k$-means](https://en.wikipedia.org/wiki/Fuzzy_clustering). The term "soft" indicates that the parameter $\sigma$ allows us to output a probability distribution for each point $x$, indicating its likelihood of belonging to each cluster.
+        <p>
+          Optimizing this expression corresponds to an algorithm known as{" "}
+          <a href="https://en.wikipedia.org/wiki/Fuzzy_clustering">
+            soft <NumberedMath math="k" />
+            -means
+          </a>
+          . The term "soft" indicates that the parameter <NumberedMath math="\sigma" /> allows us to output a
+          probability distribution for each point <NumberedMath math="x" />, indicating its likelihood of belonging to
+          each cluster.
+        </p>
 
-In practice, people typically don't care that much about probabilistic assignment in $k$-means; knowing the closest cluster is usually sufficient. This corresponds to considering the limit as $\sigma \rightarrow 0$. In this limit, the messy expression above simplifies quite elegantly. Specifically, we can replace the summation $\sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{2\sigma^2}}$ with $\max_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{2\sigma^2}}$ because all terms in the sum, except the largest one, become negligible as $\sigma \rightarrow 0$. The expression then simplifies to:
+        <p>
+          In practice, people typically don't care that much about probabilistic assignment in <NumberedMath math="k" />
+          -means; knowing the closest cluster is usually sufficient. This corresponds to considering the limit as{" "}
+          <NumberedMath math="\sigma \rightarrow 0" />. In this limit, the messy expression above simplifies quite
+          elegantly. Specifically, we can replace the summation{" "}
+          <NumberedMath math="\sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{2\sigma^2}}" /> with{" "}
+          <NumberedMath math="\max_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{2\sigma^2}}" /> because all terms in the sum,
+          except the largest one, become negligible as <NumberedMath math="\sigma \rightarrow 0" />. The expression then
+          simplifies to:
+        </p>
 
-$\argmin_{\substack{\mu_1, \dots, \mu_k}} \sum_{i = 1}^n \min_{j = 1}^k ||x_i-\mu_j||^2$
+        <div className="my-4 text-center">
+          <NumberedMath math="\argmin_{\substack{\mu_1, \dots, \mu_k}} \sum_{i = 1}^n \min_{j = 1}^k ||x_i-\mu_j||^2" />
+        </div>
 
-The problem of finding $\mu_1, \dots, \mu_k$ that minimize this expression is called [$k$-means](https://en.wikipedia.org/wiki/K-means_clustering).`,
+        <p>
+          The problem of finding <NumberedMath math="\mu_1, \dots, \mu_k" /> that minimize this expression is called{" "}
+          <a href="https://en.wikipedia.org/wiki/K-means_clustering">
+            <NumberedMath math="k" />
+            -means
+          </a>
+          .
+        </p>
+      </div>
+    ),
   },
   logisticRegression: {
     model: `p(\\text{red}|(x,y)) = \\sigma(\\lambda(\\theta\\cdot(x,y)+\\delta))`,
     loss: `\\arg\\min_{\\theta,\\delta,\\lambda} \\sum_i \\ell_i \\log p_i + (1-\\ell_i) \\log(1-p_i)`,
-    explanation: `This time, we're presented with red and blue points on a plane, and our goal is to find the optimal line that separates them. Ideally, all red points would be on one side and all blue points on the other, but this isn't always achievable. In such cases, how do we determine the "best" separating line?
+    explanation: () => (
+      <div>
+        <p>
+          This time, we're presented with red and blue points on a plane, and our goal is to find the optimal line that
+          separates them. Ideally, all red points would be on one side and all blue points on the other, but this isn't
+          always achievable. In such cases, how do we determine the "best" separating line?
+        </p>
 
-It will be easier to represent the line not as $y = ax+b$, but using its normal vector $\theta$ (orthogonal to the line) and the distance $\delta$ of the origin from the line.
+        <p>
+          It will be easier to represent the line not as <NumberedMath math="y = ax+b" />, but using its normal vector{" "}
+          <NumberedMath math="\theta" /> (orthogonal to the line) and the distance <NumberedMath math="\delta" /> of the
+          origin from the line.
+        </p>
 
-Given a point $(x, y)$, the crucial quantity is its distance from our line. This can be calculated using the dot product as $\theta \cdot (x, y) + \delta$.
+        <p>
+          Given a point <NumberedMath math="(x, y)" />, the crucial quantity is its distance from our line. This can be
+          calculated using the dot product as <NumberedMath math="\theta \cdot (x, y) + \delta" />.
+        </p>
 
-Now, employing the maximum entropy principle, we construct a probabilistic model that transforms this distance into a probability of color. We utilize the [logistic function](04-max_entropy). That is, our model states:
-$p(\textrm{red} | (x, y)) = \sigma\left( \lambda (\theta \cdot (x, y) + \delta) \right)$
-where $\sigma$ is the logistic function $\sigma(x) = e^x / (1+e^x)$. Naturally, we also have $p(\textrm{blue} | (x, y)) = 1 - p(\textrm{red} | (x, y))$.
+        <p>
+          Now, employing the maximum entropy principle, we construct a probabilistic model that transforms this distance
+          into a probability of color. We utilize the <a href="04-max_entropy">logistic function</a>. That is, our model
+          states:
+        </p>
+        <div className="my-4 text-center">
+          <NumberedMath math="p(\textrm{red} | (x, y)) = \sigma\left( \lambda (\theta \cdot (x, y) + \delta) \right)" />
+        </div>
+        <p>
+          where <NumberedMath math="\sigma" /> is the logistic function{" "}
+          <NumberedMath math="\sigma(x) = e^x / (1+e^x)" />. Naturally, we also have{" "}
+          <NumberedMath math="p(\textrm{blue} | (x, y)) = 1 - p(\textrm{red} | (x, y))" />.
+        </p>
 
-The constant $\lambda$ is a new parameter that the max-entropy principle compels us to add to our probabilistic model. Fortunately, it's quite a useful parameter—it quantifies our confidence in the classification. This is convenient because if we want to classify a new point in the future, we can not only assign it a red/blue color based on which side of the line it falls, but also use the equation above to compute how certain we are about our classification.
+        <p>
+          The constant <NumberedMath math="\lambda" /> is a new parameter that the max-entropy principle compels us to
+          add to our probabilistic model. Fortunately, it's quite a useful parameter—it quantifies our confidence in the
+          classification. This is convenient because if we want to classify a new point in the future, we can not only
+          assign it a red/blue color based on which side of the line it falls, but also use the equation above to
+          compute how certain we are about our classification.
+        </p>
 
-Once we have a model, we can apply the maximum likelihood principle to find its parameters. This principle instructs us to find $a,b,\lambda$ that minimize the following log-likelihood:
+        <p>
+          Once we have a model, we can apply the maximum likelihood principle to find its parameters. This principle
+          instructs us to find <NumberedMath math="a,b,\lambda" /> that minimize the following log-likelihood:
+        </p>
 
-$\argmin_{\theta, \delta, \lambda} \sum_{i = 1}^n \ell_i \log \sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)) + (1-\ell_i) \log (1-\sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)))$
+        <div className="my-4 text-center">
+          <NumberedMath math="\argmin_{\theta, \delta, \lambda} \sum_{i = 1}^n \ell_i \log \sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)) + (1-\ell_i) \log (1-\sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)))" />
+        </div>
 
-where $\ell_i$ is an indicator variable (i.e., $\ell_i \in \{0,1\}$) denoting whether the point $(x_i,y_i)$ is red. This problem, known as [logistic regression](https://en.wikipedia.org/wiki/Logistic_regression), is hard to solve exactly (NP-hard in particular), but gradient descent typically works well.`,
+        <p>
+          where <NumberedMath math="\ell_i" /> is an indicator variable (i.e.,{" "}
+          <NumberedMath math="\ell_i \in \{0,1\}" />) denoting whether the point <NumberedMath math="(x_i,y_i)" /> is
+          red. This problem, known as{" "}
+          <a href="https://en.wikipedia.org/wiki/Logistic_regression">logistic regression</a>, is hard to solve exactly
+          (NP-hard in particular), but gradient descent typically works well.
+        </p>
+      </div>
+    ),
   },
 } as const;
 
@@ -493,11 +693,7 @@ export default function MLProblemExplorer({ showExplanations = true }: MLProblem
       </div>
 
       {/* Explanation */}
-      {showExplanations && (
-        <div className="prose max-w-none bg-white p-4 rounded">
-          <ReactMarkdown>{content[mode].explanation}</ReactMarkdown>
-        </div>
-      )}
+      {showExplanations && <div className="prose max-w-none bg-white p-4 rounded">{content[mode].explanation()}</div>}
     </div>
   );
 }

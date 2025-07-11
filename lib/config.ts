@@ -37,8 +37,8 @@ export const PARTS = [
 
 // Meta pages (always visible)
 export const META_PAGES = [
-  ["Resources", "resources"],
   ["About", "about"],
+  ["Resources", "resources"],
   ["Graveyard", "bonus"],
 ];
 

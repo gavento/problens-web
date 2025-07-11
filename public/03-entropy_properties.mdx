@@ -1,3 +1,5 @@
+import LnVsXGraph from "@/components/widgets/LnVsXGraph";
+
 # Entropy properties
 
 In this chapter, we'll go over the fundamental properties of KL-divergence, entropy, and cross-entropy. We have already encountered most of the properties before, but it's good to understand them in more depth. 
@@ -69,9 +71,9 @@ This is the only occasion on which KL can be equal to zero. Otherwise, KL diverg
 This is not a proof though, just an argument that the world with possibly negative KL is not worth living in. Check out the formal proof if you're curious.
 
 <Expand headline="Proof of nonnegativity">
-We'll use natural logarithm to keep things short. We want to prove that <Math math = "D(p,q) =  \sum_{i = 1}^n p_i \cdot \ln \frac{p_i}{q_i}  \ge 0" /> for any $p,q$. 
+We want to prove that <Math math = "\sum_{i = 1}^n p_i \cdot \ln \frac{p_i}{q_i}  \ge 0" /> for any $p,q$. I've used the natural logarithm in the KL divergence definition to keep things short. 
 
-Let's estimate what's inside the sum: $\ln \frac{p_i}{q_i}$. Since we know the inequality is tight when $p_i = q_i$, we need an estimate of logarithm that's tight around 1. The best linear approximation near 1 is $\ln (1+x) \le x$. We use it like this:
+Let's estimate the logarithmic expression $\ln \frac{p_i}{q_i}$ inside the sum. Our estimate should be tight whenever $p_i = q_i$ since we know the inequality is tight for $p = q$. The best linear approximation of logarithm tight at 1 <Tooltip tooltip={<LnVsXGraph width={140} height={90} />}>is this one: $\ln (1+x) \le x$</Tooltip>. We use it like this:
 
 <Math displayMode={true} math="\begin{aligned}
 -D(p,q)
@@ -88,22 +90,23 @@ Since KL can be written as the difference between cross-entropy and entropy, we 
 That is, the best model of $p$ that accumulates the surprisal at the least possible rate is ... 🥁 🥁 🥁 ... $p$ itself. 
 
 
-### ➕ Additivity
+### ➕ Additivity <a id = "additivity"></a>
 
-Say you've got two distribution pairs $(p, q)$ and $(p', q')$. Let's use $p \otimes p'$ for the product distribution -- a joint distribution over $p,p'$ where they are independent. We have:
+Whenever we keep flipping coins, the total entropy/cross-entropy/relative entropy just keeps adding up. This property is called additivity and it's so natural that it's very simple to forget how important it is. We've used this property implicitly in earlier chapters, whenever we talked about repeating the flipping experiment and summing surprisals. 
+
+More formally: Say you've got a distribution pair $p$ and $q$ - think $q$ is a model of $p$ - and another pair $p'$ and $q'$. Let's use $p \otimes p'$ for the product distribution -- [a joint distribution](https://en.wikipedia.org/wiki/Joint_probability_distribution) with marginals $p,p'$ where they are independent. In this setup, we have this: 
 
 <Math displayMode={true} math="D(p \otimes p', q \otimes q') = D(p, q) + D(p', q')" />
 <Math displayMode={true} math="H(p \otimes p', q \otimes q') = H(p, q) + H(p', q')" />
 <Math displayMode={true} math="H(p \otimes p') = H(p) + H(p')" />
 
-This property is called additivity. Basically, when we keep flipping coins, the total entropy/cross-entropy/relative entropy just keeps adding up. This property is so natural that it's very simple to forget how important it is. We've used this property implicitly in earlier chapters, whenever we talked about repeating the flipping experiment and summing surprisals. 
-
-
-
+Entropy has an even stronger property called _subadditivity_: Imagine any distribution $r$ with marginals $p, q$. Then, 
+<Math displayMode={true} math="H(r) \le H(p) + H(p')" />
+For example, imagine you flip a coin and record the same outcome twice. Then, the entropy of each record is 1 bit and subadditivity says that the total entropy is at most $2$ bits. In this case, it's actually still just 1 bit. 
 
 ## 🎵 Anthem battle
 
-I collected the national anthems of the USA, UK, and Australia, and put them into one file. The other text file contains anthems of a bunch of random-ish countries. For both text files, I compute the frequencies of 26 letters 'a' to 'z'. So there are two distributions $p_1$ (English-speaking) and $p_2$ (others). The question is: which one has larger entropy? And which of the two KL divergences between them is larger? 
+I collected the national anthems of the USA, UK, and Australia, and put them into one file. The other text file contains anthems of a bunch of random-ish countries. For both text files, I compute the frequencies of 26 letters 'a' to 'z'. So there are two distributions $p_1$ (English-speaking) and $p_2$ (others). The question is: which one has larger entropy? And which of the two KL divergences $D(p_1, p_2), D(p_2, p_1)$ is larger? 
 
 Make your guess before revealing the answer. 
 
@@ -118,4 +121,12 @@ Make your guess before revealing the answer.
 
 ## 🚀 Next steps
 
-We now understand pretty well what KL divergence and cross-entropy stand for. In the next part of the mini-course, we will have a lot of fun thinking about what happens if we try to make them small. See you in the [next chapter](03-minimizing)!
+We now understand pretty well what KL divergence and cross-entropy stand for. 
+
+The mini-course has two more parts. We will:
+- Pondering what happens if we try to make KL divergence small. This will explain a lot about ML loss functions, and includes some fun applications of probability to several of our riddles. Continue with the [next chapter (Maximum likelihood)](03-minimizing) in the menu. 
+- Play with codes and see what they can tell us about neural nets. That's the [Coding theory chapter](08-coding_theory) in the menu. 
+
+I suggest you jump to whatever sounds more interesting. See you there!
+
+

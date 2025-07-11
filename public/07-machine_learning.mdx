@@ -2,38 +2,22 @@
 
 In this chapter, we will leverage our newfound KL superpowers to tackle machine learning. We will understand a crucial aspect of it: [setting up loss functions](00-riddles#machine-learning). 
 
-The main point here is that **KL divergence guides us from a rough idea about important data aspects to a concrete estimation algorithm**. Specifically, we can use the _maximum entropy principle_ to transform our initial concept into a fully probabilistic model, and then apply _maximum likelihood_ to derive a loss function for optimization.
+The main point here is that KL divergence and its friends cross-entropy & entropy are a guiding beacon: **Starting with a rough idea about important aspects of data, they help us to build a concrete estimation algorithm**. Specifically, we can use the _maximum entropy principle_ to transform our initial concept into a fully probabilistic model, and then apply _maximum likelihood_ to derive the loss function that needs to be optimized.
 
 
 <KeyTakeaway>
 Maximum entropy and maximum likelihood principles explain many machine-learning algorithms. 
 </KeyTakeaway>
 
-## Cross-entropy loss
 
+## Good old machine learning <a id="examples"></a>
 
+In the following widget, you can explore four problems. The first one, estimating the mean & variance of a bunch of numbers, is a classical statistics problem. The following ones - linear regression, $k$-means, logistic regression - are "good old machine learning problems", it's the kind of stuff you see in ML 101 class before diving into neural networks. 
 
-## Building probabilistic models <a id="examples"></a>
-
-We will explore the examples in the following table (feel free to skip some) and illuminate the origins of their respective loss functions.
+I want to convey how it all __makes sense__. Starting with some simplistic visual feel for what we want (like the picture in the widget's canvas), maximum entropy gives us a concrete probabilistic model for what's happening. We can then minimize the cross-entropy (or, if you want, use maximum likelihood approach) to find the best parameters. 
 
 <MLProblemExplorer />
 
-
-
-<Expand headline="Classification by neural networks"> <a id="neural-nets"></a>
-
-We are provided with a vast collection of images, each assigned one of $k$ possible labels (e.g., a dog, a muffin). Our goal is to optimize a neural network that takes an image as input and outputs a probability distribution over these $k$ possible classes.
-
-![dogs](07-machine_learning/dogs.png "taken from https://www.freecodecamp.org/news/chihuahua-or-muffin-my-search-for-the-best-computer-vision-api-cbda4d6b425d/")
-
-Designing the architecture of a neural network is an extremely intricate problem that cannot be "solved" simply by name-dropping KL divergence. However, maximum entropy does offer some assistance: [we've already discussed](04-max_entropy#softmax) that the final layer of the network typically converts logits into probabilities using a softmax function. That is, if we build a neural network that transforms an input image $X$ into $k$ numbers $NN_1(X), \dots, NN_k(X)$, we should map them into probabilities as <Math math = "p_j(X) \propto e^{\lambda NN_j(X)}" />. The constant $\lambda$ can be optimized alongside the network's weights or simply hardcoded to $1$.
-
-Next, the maximum likelihood principle states that we should maximize the log-likelihood. This means that if for an image $X_i$ with label $\ell_i$, the network outputs a distribution $p_1(X_i), \dots, p_k(X_i)$, we should aim to maximize:
-<Math displayMode={true} math = "\argmax_{\substack{\textrm{neural net \\ weights}}} \sum_{i = 1}^n \log p_{\ell_i}(X_i)"/>
-
-Maximizing the log-likelihood is equivalent to minimizing cross-entropy. Therefore, in this context, we usually refer to this as _training the network by minimizing the cross-entropy loss <Math math = "\sum_{i = 1}^n \log 1/p_{\ell_i}(X_i)" />._
-</Expand>
 
 <Expand advanced={true} headline="Variational autoencoders"> <a id="variational-autoencoders"></a>
 
@@ -109,20 +93,14 @@ In general, computing the expression <Math math = "\sum_{i = 1}^N \sum_y p'(y | 
 That is, for each image $X_i$, we simply sample a few times from $p'(y|X_i)$ and compute the reconstruction loss $\| X_i - \textrm{Dec}(y)\|^2$. We estimate the expectation $E_y$ by plugging in these few samples. 
 </Expand>
 
-You are the master of KL, congrats! 
 
-If you want to know even more, click on the Danger button in the menu. It reveals bonus riddles & chapters. Also, it reveals some advanced Expand blocks in the chapters you already read. All bonus content is marked with ⚠️. Also, check out [Resources](../resources) and leave us feedback at the [About](../about) page.
+<RiddleExplanation id = "machine-learning">
+This is really just a placeholder. If you got the stuff above, you're the master of loss functions, congrats! 
+</RiddleExplanation>
 
+## 🚀 What's next? <a id="next-steps"></a>
 
-TODO Add FREE intelligence test widget. 
-
-
-## 🧠 Human vs AI: Next Letter Prediction
-
-Inspired by Shannon's original experiment, you can now test your own next-letter prediction abilities against modern language models! The widget below shows you partial sentences from Wikipedia and asks you to guess the missing letter. Your score is based on how many attempts it takes you to find the correct letter.
-
-<LetterPredictionWidget />
-
+In the [next chapter](05-max_entropy), we will see what happens if we minimize the _first_ parameter in $D(p, q)$. 
 
 
 
