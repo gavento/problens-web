@@ -29,7 +29,12 @@ export default function DualActionImage({ src, alt = "image", width = "75%", cla
       style={typeof width === "string" ? { width } : { width }}
     >
       {/* The core image */}
-      <img src={getAssetPath(src)} alt={alt} className="block max-w-full h-auto select-none" />
+      <img 
+        src={getAssetPath(src)} 
+        alt={alt} 
+        className="block max-w-full h-auto select-none" 
+        title="Image source: https://www.pngegg.com/en/png-nllqe/"
+      />
 
       {/* Bottom-left clickable quadrant (25% width & height) */}
       <Link

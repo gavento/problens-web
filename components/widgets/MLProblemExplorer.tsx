@@ -4,6 +4,7 @@ import { InlineMath } from "react-katex";
 import ReactMarkdown from "react-markdown";
 import NumberedMath from "@/components/content/NumberedMath";
 import { Tooltip } from "@/components/content/Tooltip";
+import EquationRef from "@/components/content/EquationRef";
 
 // Types -------------------------------------------------------
 
@@ -270,7 +271,7 @@ const content = {
   },
   kMeans: {
     model: `p(x) = \\frac{1}{k} \\sum_{j=1}^k \\mathcal{N}(x\\mid \\mu_j,\\sigma^2 I)`,
-    loss: `\\arg\\min_{\\mu_1,\\ldots,\\mu_k} \\sum_{i=1}^n \\min_j \\|x_i-\\mu_j\\|^2`,
+    loss: `\\argmin_{\\mu_1,\\ldots,\\mu_k} \\sum_{i=1}^n \\min_j \\|x_i-\\mu_j\\|^2`,
     explanation: () => (
       <div>
         <p>
@@ -304,7 +305,7 @@ const content = {
         </p>
 
         <div className="my-4 text-center">
-          <NumberedMath math="p(x | \mu_j) \propto e^{-\frac{||x-\mu_j||^2}{2\sigma^2}}" />
+          <NumberedMath math="p(x | \mu_j) = \frac{1}{2\pi\sigma^2} e^{-\frac{||x-\mu_j||^2}{2\sigma^2}}" />
         </div>
 
         <p>
@@ -330,7 +331,8 @@ const content = {
         <div className="my-4 text-center">
           <NumberedMath
             displayMode={true}
-            math="\argmax_{\substack{\mu_1, \dots, \mu_k \\ \sigma^2}}\,\,\, -n \log \left( k\sqrt{2\pi\sigma^2}\right) + \sum_{i = 1}^n  \log \sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{2\sigma^2}}"
+            id="kmeans-likelihood"
+            math="\argmax_{\substack{\mu_1, \dots, \mu_k \\ \sigma^2}}\,\,\, -n \log \left( k\cdot 2\pi\sigma^2\right) + \sum_{i = 1}^n  \log \sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{2\sigma^2}}"
           />
         </div>
 
@@ -340,17 +342,17 @@ const content = {
             soft <NumberedMath math="k" />
             -means
           </a>
-          . The term &quot;soft&quot; indicates that the parameter <NumberedMath math="\sigma" /> allows us to output a
-          probability distribution for each point <NumberedMath math="x" />, indicating its likelihood of belonging to
-          each cluster.
+          . The term &quot;soft&quot; indicates that if a new point <NumberedMath math="x" /> arrives, the parameter{" "}
+          <NumberedMath math="\sigma" /> allows us to output a probability distribution for which cluster{" "}
+          <NumberedMath math="x" /> belongs to.
         </p>
 
         <p>
-          In practice, people typically don&apos;t care that much about probabilistic assignment in{" "}
+          In practice, we typically don&apos;t care that much about probabilistic assignment in{" "}
           <NumberedMath math="k" />
           -means; knowing the closest cluster is usually sufficient. This corresponds to considering the limit as{" "}
-          <NumberedMath math="\sigma \rightarrow 0" />. In this limit, the messy expression above simplifies quite
-          elegantly. Specifically, we can replace the summation{" "}
+          <NumberedMath math="\sigma \rightarrow 0" />. In this limit, <EquationRef id="kmeans-likelihood" /> simplifies
+          quite elegantly. Specifically, we can replace the summation{" "}
           <NumberedMath math="\sum_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{2\sigma^2}}" /> with{" "}
           <NumberedMath math="\max_{j = 1}^k e^{-\frac{||x_i-\mu_j||^2}{2\sigma^2}}" /> because all terms in the sum,
           except the largest one, become negligible as <NumberedMath math="\sigma \rightarrow 0" />. The expression then
@@ -358,7 +360,10 @@ const content = {
         </p>
 
         <div className="my-4 text-center">
-          <NumberedMath math="\argmin_{\substack{\mu_1, \dots, \mu_k}} \sum_{i = 1}^n \min_{j = 1}^k ||x_i-\mu_j||^2" />
+          <NumberedMath
+            displayMode={true}
+            math="\argmin_{\substack{\mu_1, \dots, \mu_k}} \sum_{i = 1}^n \min_{j = 1}^k ||x_i-\mu_j||^2"
+          />
         </div>
 
         <p>
@@ -374,63 +379,68 @@ const content = {
   },
   logisticRegression: {
     model: `p(\\text{red}|(x,y)) = \\sigma(\\lambda(\\theta\\cdot(x,y)+\\delta))`,
-    loss: `\\arg\\min_{\\theta,\\delta,\\lambda} \\sum_i \\ell_i \\log p_i + (1-\\ell_i) \\log(1-p_i)`,
+    loss: `\\argmin_{\\theta, \\delta, \\lambda} \\sum_{i = 1}^n \\ell_i \\log \\sigma(\\lambda (\\theta \\cdot (x_i,y_i) + \\delta)) + (1-\\ell_i) \\log (1-\\sigma(\\lambda (\\theta \\cdot (x_i,y_i) + \\delta)))`,
     explanation: () => (
       <div>
         <p>
           This time, we&apos;re presented with red and blue points on a plane, and our goal is to find the optimal line
-          that separates them. Ideally, all red points would be on one side and all blue points on the other, but this
-          isn&apos;t always achievable. In such cases, how do we determine the &quot;best&quot; separating line?
+          that separates them. Ideally, all red points would be on one side of the line, and all blue points on the
+          other, but this isn&apos;t always achievable. In such cases, how do we determine the &quot;best&quot;
+          separating line?
         </p>
 
         <p>
           It will be easier to represent the line not as <NumberedMath math="y = ax+b" />, but using its normal vector{" "}
-          <NumberedMath math="\theta" /> (orthogonal to the line) and the distance <NumberedMath math="\delta" /> of the
-          origin from the line.
+          <NumberedMath math="\theta" /> (orthogonal to the line and of unit length) and the distance{" "}
+          <NumberedMath math="\delta" /> of the origin from the line.
         </p>
 
         <p>
-          Given a point <NumberedMath math="(x, y)" />, the crucial quantity is its distance from our line. This can be
-          calculated using the dot product as <NumberedMath math="\theta \cdot (x, y) + \delta" />.
+          Given a point <NumberedMath math="(x, y)" /> in the plane, the crucial quantity is its distance from our line.
+          This can be calculated using the dot product as <NumberedMath math="\theta \cdot (x, y) + \delta" />.
         </p>
 
         <p>
           Now, employing the maximum entropy principle, we construct a probabilistic model that transforms this distance
-          into a probability of color. We utilize the <a href="04-max_entropy">logistic function</a>. That is, our model
-          states:
+          into a probability of color. It tells us that the right way of converting real numbers to probabilities is the{" "}
+          <a href="04-max_entropy">logistic function</a>. That is, our probabilistic model says:
         </p>
         <div className="my-4 text-center">
           <NumberedMath math="p(\textrm{red} | (x, y)) = \sigma\left( \lambda (\theta \cdot (x, y) + \delta) \right)" />
         </div>
         <p>
           where <NumberedMath math="\sigma" /> is the logistic function{" "}
-          <NumberedMath math="\sigma(x) = e^x / (1+e^x)" />. Naturally, we also have{" "}
+          <NumberedMath math="\sigma(x) = e^x / (1+e^x)" /> and $<NumberedMath math="\lambda" /> is a new parameter that
+          we have to optimize alongside $\theta$ and $\delta$. Naturally, we also have{" "}
           <NumberedMath math="p(\textrm{blue} | (x, y)) = 1 - p(\textrm{red} | (x, y))" />.
         </p>
 
         <p>
-          The constant <NumberedMath math="\lambda" /> is a new parameter that the max-entropy principle compels us to
-          add to our probabilistic model. Fortunately, it&apos;s quite a useful parameter—it quantifies our confidence
-          in the classification. This is convenient because if we want to classify a new point in the future, we can not
-          only assign it a red/blue color based on which side of the line it falls, but also use the equation above to
-          compute how certain we are about our classification.
+          The constant <NumberedMath math="\lambda" /> is fortunately quite useful parameter—it quantifies our
+          confidence in the classification. This is convenient because if we want to classify a new point in the future,
+          we can not only assign it a red/blue color based on which side of the line it falls, but also use our
+          probabilistic model to compute how certain we are about our classification.
         </p>
 
         <p>
           Once we have a model, we can apply the maximum likelihood principle to find its parameters. This principle
-          instructs us to find <NumberedMath math="a,b,\lambda" /> that minimize the following log-likelihood:
+          instructs us to find <NumberedMath math="\theta, \delta, \lambda" /> that minimize the following
+          log-likelihood:
         </p>
 
         <div className="my-4 text-center">
-          <NumberedMath math="\argmin_{\theta, \delta, \lambda} \sum_{i = 1}^n \ell_i \log \sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)) + (1-\ell_i) \log (1-\sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)))" />
+          <NumberedMath
+            displayMode={true}
+            math="\argmin_{\theta, \delta, \lambda} \sum_{i = 1}^n \ell_i \log \sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)) + (1-\ell_i) \log (1-\sigma(\lambda (\theta \cdot (x_i,y_i) + \delta)))"
+          />
         </div>
 
         <p>
           where <NumberedMath math="\ell_i" /> is an indicator variable (i.e.,{" "}
           <NumberedMath math="\ell_i \in \{0,1\}" />) denoting whether the point <NumberedMath math="(x_i,y_i)" /> is
           red. This problem, known as{" "}
-          <a href="https://en.wikipedia.org/wiki/Logistic_regression">logistic regression</a>, is hard to solve exactly
-          (NP-hard in particular), but gradient descent typically works well.
+          <a href="https://en.wikipedia.org/wiki/Logistic_regression">logistic regression</a>, is hard to solve exactly,
+          but gradient descent typically works well.
         </p>
       </div>
     ),
@@ -443,10 +453,11 @@ const CANVAS_SIZE = 400;
 
 interface MLProblemExplorerProps {
   showExplanations?: boolean;
+  defaultMode?: Mode;
 }
 
-export default function MLProblemExplorer({ showExplanations = true }: MLProblemExplorerProps) {
-  const [mode, setMode] = useState<Mode>("meanVariance");
+export default function MLProblemExplorer({ showExplanations = true, defaultMode = "meanVariance" }: MLProblemExplorerProps) {
+  const [mode, setMode] = useState<Mode>(defaultMode);
   const [points1D, setPoints1D] = useState<number[]>(defaultMeanVar);
   const [points2D, setPoints2D] = useState<Point2D[]>(defaultLinReg);
   const [kmeansPts, setKmeansPts] = useState<Point2D[]>(defaultKMeans);
@@ -652,6 +663,15 @@ export default function MLProblemExplorer({ showExplanations = true }: MLProblem
               />
             </div>
           )}
+          {/* Color toggle for logistic regression */}
+          {mode === "logisticRegression" && (
+            <button
+              onClick={() => setLogAddLabel(logAddLabel === 0 ? 1 : 0)}
+              className={`px-4 py-1 rounded text-white ${logAddLabel === 0 ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700"}`}
+            >
+              Add {logAddLabel === 0 ? "Red" : "Blue"}
+            </button>
+          )}
           <button
             onClick={() => {
               if (mode === "meanVariance") setPoints1D([]);
@@ -676,31 +696,18 @@ export default function MLProblemExplorer({ showExplanations = true }: MLProblem
         {renderSolutionOverlay()}
       </svg>
 
-      {/* Additional controls */}
-      <div className="flex justify-center space-x-2">
-        {/* Color toggle for logistic regression */}
-        {mode === "logisticRegression" && (
-          <button
-            onClick={() => setLogAddLabel(logAddLabel === 0 ? 1 : 0)}
-            className={`px-4 py-1 rounded text-white ${logAddLabel === 0 ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700"}`}
-          >
-            Add {logAddLabel === 0 ? "Red" : "Blue"}
-          </button>
-        )}
-      </div>
-
       {/* Formulas */}
       <div className="space-y-3 text-sm">
         <div>
           <span className="font-semibold">Probabilistic model:</span>
-          <div className="math-display-large">
-            <InlineMath math={content[mode].model} />
+          <div className="text-sm my-0">
+            <NumberedMath displayMode={true} math={content[mode].model} />
           </div>
         </div>
         <div>
           <span className="font-semibold">Loss function:</span>
-          <div className="math-display-large">
-            <InlineMath math={content[mode].loss} />
+          <div className="text-sm my-0">
+            <NumberedMath displayMode={true} math={content[mode].loss} />
           </div>
         </div>
       </div>

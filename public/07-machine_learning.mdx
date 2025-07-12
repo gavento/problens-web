@@ -18,6 +18,29 @@ I want to convey how it all __makes sense__. Starting with some simplistic visua
 
 <MLProblemExplorer />
 
+Let's talk about our [statistics riddle](00-riddles#statistics). 
+
+<RiddleExplanation id = "statistics">
+I love how in mathematics, we typically have clear answers. We all agree on how to add numbers, compute areas under curves, and how to handle probabilities. 
+
+This unambiguous logical structure of most of mathematics is what makes the statistics so hard to love. Look, there's not even a single obviously right way of estimating the sample variance of bunch of numbers. Sure, the formula should look roughly like this: 
+<Math displayMode={true} math="\hat{\sigma}^2 = \frac{1}{n} \sum_{i=1}^{n} (X_i - \hat{\mu})^2" />
+and this is what we derived by MLE in the above widget, but there are competing approaches. 
+
+For example, if $n = 0$, our formula always says zero. But the underlying probabilistic process that generated the data likely has nonzero variance, and we still always answer 0! Our estimate is _thus_ <a href="https://en.wikipedia.org/wiki/Bias_of_an_estimator">biased</a>, we know that it tends to be smaller than the true variance. If we want to make it unbiased, we have to compute it like this: <Math math="\hat{\sigma}^2 = \frac{1}{n-1} \sum_{i=1}^{n} (X_i - \hat{\mu})^2" />. And the formula <Math math="\hat{\sigma}^2 = \frac{1}{n+1} \sum_{i=1}^{n} (X_i - \hat{\mu})^2" /> can also be justified by <a href="https://en.wikipedia.org/wiki/Mean_squared_error">the mean squared error</a> minimization. 
+
+It's not so bad though. There actually is a crisp, beautiful, and unambiguous way of doing statistics, and it's called [Bayesian statistics](https://en.wikipedia.org/wiki/Bayesian_statistics). Long story short, Bayesian statistics is about what our Bayesian detective from [the first chapter](00-riddles) keeps doing: She starts with a prior $p_1, \dots, p_n$ over competing hypotheses. Then, gathers evidence and for each hypothesis computes its likelihood $\ell_i$ - the probability of seeing the evidence under the hypothesis. Then, she applies Bayes' rule to compute the posterior. I.e., she computes the products $p_1\ell_1, \dots, p_n \ell_n$ and normalize it to sum up to one, the result is $p_1', \dots, p_n'$. 
+
+There are all kind of theorems that suggest that this is the __right__ way to think about statistics. The only downside to this framework is practical: A Bayesian detective has to start with a prior distribution $p_1, \dots, p_n$, but where to take one? Also, getting the whole posterior distribution $p_1', \dots, p_n'$ is great, but often we just want a simple formula that computes a single number as an answer. 
+
+If we assume that we have tons of data that provides a great deal of evidence, we can simplify this process to its core. First, instead of reporting the whole posterior distribution $p_1', \dots, p_n'$, we will report just hypothesis $i$ with largest $p'_i$ -- hopefully, the posterior probability of other hypotheses is going to be very small anyway in light of all the evidence.<Footnote>This principle is called [maximum a posteriori estimation](https://en.wikipedia.org/wiki/Maximum_a_posteriori_estimation). </Footnote> 
+
+Also, if there's so much evidence, the prior $p_1, \dots, p_n$ is likely not going to matter much. For example, remember our example of a flipping a coin that is either fair, or 25/75 biased. The KL divergences between the two hypotheses are .. and .. That is, each flip, we are expecting to get around 0.5 bits of evidence for the correct hypothesis; or about $0.5n$ bits if we flip $n$ times. Whether we started with prior $1:2$ or $2:1$ is pretty irrelevant, that's just one bit of evidence that we start with before gathering evidence. So, we may simplify the Bayesian statistics all the way to simply reporting hypothesis $i$ with the largest $\ell_i$ - this is the maximum likelihood approach. 
+
+I like this view on maximum likelihood as "poor man's Bayesian statistics" to appreciate where it's coming from. Perhaps this is also the reason why maximum likelihood approach is so useful in machine learning! It also helps to appreciate the flip side -- if you want to estimate the variance and $n = 3$, perhaps you shouldn't worry too much about using a formula with $\frac{1}{2}, \frac{1}{3}$ or $\frac{1}{4}$. The justifications for why we can simplify Bayes' rule are anyway breaking down, so we should rather spend our time thinking carefully about the prior to use in the Bayesian approach.    
+
+</RiddleExplanation>
+
 
 <Expand advanced={true} headline="Variational autoencoders"> <a id="variational-autoencoders"></a>
 
@@ -93,11 +116,6 @@ In general, computing the expression <Math math = "\sum_{i = 1}^N \sum_y p'(y | 
 That is, for each image $X_i$, we simply sample a few times from $p'(y|X_i)$ and compute the reconstruction loss $\| X_i - \textrm{Dec}(y)\|^2$. We estimate the expectation $E_y$ by plugging in these few samples. 
 </Expand>
 
-
-<RiddleExplanation id = "machine-learning">
-This is really just a placeholder. If you got the stuff above, you're the master of loss functions, congrats! 
-</RiddleExplanation>
-
 ## 🚀 What's next? <a id="next-steps"></a>
 
 In the [next chapter](05-max_entropy), we will see what happens if we minimize the _first_ parameter in $D(p, q)$. 
@@ -105,33 +123,3 @@ In the [next chapter](05-max_entropy), we will see what happens if we minimize t
 
 
 
-
-<Expand headline = "Example: Maximum likelihood for Normal Distribution">
-<a id = "mle_for_mean_sigma"></a>
-
-Suppose we are given data $X_1, \dots, X_n$ (which we represent by its empirical distribution $p$) and want to find the best-fitting Gaussian $N(\mu, \sigma^2)$. How should we choose $\hat\mu$ and $\hat\sigma^2$?
-
-The Maximum Likelihood Principle suggests that we should maximize the likelihood, or, more conveniently, maximize the log-likelihood (which is equivalent to minimizing the cross-entropy):
-
-<Math displayMode={true} math="\hat\mu, \hat\sigma^2 = \argmax_{\mu, \sigma^2} \sum_{i = 1}^n \log\left( \frac{1}{2\pi\sigma^2} e^{-\frac{(X_i-\mu)^2}{2\sigma^2}} \right) 
-= \argmin_{\mu, \sigma^2} 2n \cdot \log \sigma + \sum_{i = 1}^n \frac{(X_i-\mu)^2}{2\sigma^2}"/>
-
-There are several ways to solve this optimization problem. Differentiation is likely the cleanest: If we define $\mathcal{L}$ to be the expression above, then:
-<Math displayMode={true} math = "\frac{\partial \mathcal{L}}{\partial \mu} = \frac{1}{\sigma^2} \sum_{i = 1}^n 2(X_i - \mu) "/>
-
-Setting <Math displayMode={false} math="\frac{\partial \mathcal{L}}{\partial \mu} = 0"/> leads to $\hat\mu = \frac{1}{n} \sum_{i = 1}^n X_i$.
-
-Similarly,
-<Math displayMode={true} math="\frac{\partial \mathcal{L}}{\partial \sigma} = 2n/\sigma -2  \sum_{i = 1}^n \frac{(X_i-\mu)^2}{\sigma^3}"/>
-
-Setting <Math displayMode={false} math="\frac{\partial \mathcal{L}}{\partial \sigma} = 0"/> then leads to <Math displayMode={false} math="\hat\sigma^2 = \frac{1}{n} \sum_{i = 1}^n (X_i - \mu)^2. "/>
-</Expand>
-
-
-<Expand headline = "Application: Measuring Feet">
-One of the running examples we used was [measuring of feet](00-riddles#statistics). Why should we model the data using the normal distribution? One way to reason about this is that the length of a foot is a random variable that can probably be modeled as a sum of many small and relatively independent random variables. Thus, using the central limit theorem, the normal distribution is a good fit.
-
-We could also try to approach this modeling problem purely from the max-entropy perspective. Since the data is positive, the simplest model for it is the exponential distribution. But that seems to predict, for example, that we'll see many people with foot lengths twice the average, which doesn't seem to match reality.
-
-The next better model takes into account that the typical deviation of the distribution from the mean is probably quite a bit smaller than the mean. The max entropy distribution if we now consider both the mean and the variance (which represents the scale) is going to be the normal distribution. <Footnote>More precisely, since the domain is _positive_ real numbers, the max entropy distribution is a Gaussian that is clipped to zero for negative numbers and rescaled to sum up to 1.</Footnote>
-</Expand>

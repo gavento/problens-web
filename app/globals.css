@@ -360,3 +360,8 @@ div.widget-explanation {
 .widget-explanation.left-aligned {
   text-align: left !important;
 }
+
+/* ImageGallery caption styling - make em tags non-italic within italic captions */
+.italic em {
+  font-style: normal;
+}

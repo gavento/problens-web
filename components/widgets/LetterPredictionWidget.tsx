@@ -137,10 +137,17 @@ const LetterPredictionWidget: React.FC = () => {
   const startNewGame = () => {
     if (snapshots.length === 0) return;
 
-    // Hotfix: Exclude snapshots with IDs 506, 422, 476, 280, 487, 838, 835, 720, 546, 827, 789, 308, 153, 163, 399, 590, 875, 856, 79, 218, 201, 57, 112, 274, 576, 602, 615, 676, 8, 344, 304
+    // Hotfix: Exclude snapshots with IDs 506, 422, 476, 280, 487, 838, 835, 720, 546, 827, 789, 308, 153, 163, 399, 590, 875, 856, 79, 218, 201, 57, 112, 274, 576, 602, 615, 676, 8, 344, 304, 174
+    // Also exclude snapshots containing "sex": 134, 135, 140, 166, 202, 306, 308, 344, 365, 366, 372, 426, 463, 497, 536, 562, 631, 634, 758, 798, 827
+    // Also exclude snapshots containing "Rearden": 14, 35, 36, 37, 56, 67, 73, 90, 135, 178, 180, 223, 281, 292, 293, 296, 306, 332, 350, 361, 365, 368, 373, 397, 453, 554, 562, 568, 575, 596, 622, 665, 675, 758, 763, 775, 783, 812, 815, 827, 866
+    // Also exclude snapshots containing "Dagny": 31, 60, 64, 67, 68, 73, 79, 97, 108, 131, 155, 241, 247, 281, 306, 373, 386, 398, 400, 447, 449, 453, 457, 480, 490, 524, 542, 546, 549, 562, 568, 585, 607, 618, 648, 693, 700, 711, 725, 763, 783, 789, 835, 881, 883
     const excludedIds = [
       506, 422, 476, 280, 487, 838, 835, 720, 546, 827, 789, 308, 153, 163, 399, 590, 875, 856, 79, 218, 201, 57, 112,
-      274, 576, 602, 615, 676, 8, 344, 304,
+      274, 576, 602, 615, 676, 8, 344, 304, 174,
+      134, 135, 140, 166, 202, 306, 365, 366, 372, 426, 463, 497, 536, 562, 631, 634, 758, 798,
+      14, 35, 36, 37, 56, 67, 73, 90, 178, 180, 223, 281, 292, 293, 296, 332, 350, 361, 368, 373, 397, 453, 554, 568, 575, 596, 622, 665, 675, 763, 775, 783, 812, 815, 866,
+      31, 60, 64, 68, 97, 108, 131, 155, 241, 247, 386, 398, 400, 447, 449, 457, 480, 490, 524, 542, 549, 585, 607, 618, 648, 693, 700, 711, 725, 881, 883,
+      212,
     ];
     const validSnapshots = snapshots.filter((s) => !excludedIds.includes(s.id) && !usedSnapshotIds.has(s.id));
 
@@ -185,23 +192,50 @@ const LetterPredictionWidget: React.FC = () => {
     setCurrentInput("");
   };
 
+  const isLlamaMultipleTries = (snapshotId: number): boolean => {
+    const llamaData = llmDetailedScores["meta-llama/Llama-4-Scout-17B-16E"];
+    if (!llamaData) return false;
+
+    const scoreData = llamaData.find((score) => score.snapshot_id === snapshotId);
+    if (!scoreData) return false;
+
+    // Multiple tries means target_position > 1
+    return scoreData.target_position !== undefined && scoreData.target_position > 1;
+  };
+
+  const isGPT2MultipleTries = (snapshotId: number): boolean => {
+    const gpt2Data = llmDetailedScores["gpt2"];
+    if (!gpt2Data) return false;
+
+    const scoreData = gpt2Data.find((score) => score.snapshot_id === snapshotId);
+    if (!scoreData) return false;
+
+    // Multiple tries means target_position > 1
+    return scoreData.target_position !== undefined && scoreData.target_position > 1;
+  };
+
   const selectWeightedSnapshot = (snapshots: Snapshot[]): Snapshot => {
-    // Separate easy (GPT2 first try) and hard snapshots
-    const easySnapshots = snapshots.filter((s) => isGPT2FirstTry(s.id));
-    const hardSnapshots = snapshots.filter((s) => !isGPT2FirstTry(s.id));
+    // Categorize snapshots
+    const llamaHardSnapshots = snapshots.filter((s) => isLlamaMultipleTries(s.id));
+    const gpt2HardSnapshots = snapshots.filter((s) => isGPT2MultipleTries(s.id));
 
-    // With 50% probability, sample from easy snapshots, otherwise from hard ones
-    // This reduces the frequency of easy snapshots since they're naturally more common
-    const useEasy = Math.random() < 0.5;
-
-    if (useEasy && easySnapshots.length > 0) {
-      return easySnapshots[Math.floor(Math.random() * easySnapshots.length)];
-    } else if (hardSnapshots.length > 0) {
-      return hardSnapshots[Math.floor(Math.random() * hardSnapshots.length)];
-    } else {
-      // Fallback to any available snapshot
-      return snapshots[Math.floor(Math.random() * snapshots.length)];
+    // Choose category with 1/3 probability each
+    const rand = Math.random();
+    
+    if (rand < 1/3) {
+      // 1/3: Llama needs more than one try
+      if (llamaHardSnapshots.length > 0) {
+        return llamaHardSnapshots[Math.floor(Math.random() * llamaHardSnapshots.length)];
+      }
+    } else if (rand < 2/3) {
+      // 1/3: GPT2 needs more than one try
+      if (gpt2HardSnapshots.length > 0) {
+        return gpt2HardSnapshots[Math.floor(Math.random() * gpt2HardSnapshots.length)];
+      }
     }
+    
+    // 1/3: Uniformly random (or fallback if the selected category is empty)
+    return snapshots[Math.floor(Math.random() * snapshots.length)];
   };
 
   const saveGameResult = (game: GameState, gaveUp: boolean = false) => {
@@ -758,14 +792,28 @@ const LetterPredictionWidget: React.FC = () => {
                   if (llmAvg > 0) allScores.push(llmAvg);
                 });
 
-                // Find max score and round up to next integer
-                const maxScore = Math.max(...allScores, 1);
-                const maxScaleScore = Math.ceil(maxScore + 0.5);
-
-                // Generate tick marks from 0 to maxScaleScore
-                const tickValues: number[] = [];
-                for (let i = 0; i <= maxScaleScore; i++) {
-                  tickValues.push(i);
+                // Find max score
+                const maxScore = Math.max(...allScores, 0);
+                
+                // Determine scale based on max score
+                let maxScaleScore: number;
+                let tickValues: number[];
+                
+                if (maxScore < 0.95) {
+                  // All players better than 0.95 bits: show 0 to 1
+                  maxScaleScore = 1;
+                  tickValues = [0, 1];
+                } else if (maxScore < 1.45) {
+                  // All players better than 1.45 bits: show 0 to 1.5
+                  maxScaleScore = 1.5;
+                  tickValues = [0, 1]; // Only ticks at 0 and 1, not 1.5
+                } else {
+                  // Normal scaling
+                  maxScaleScore = Math.ceil(maxScore + 0.5);
+                  tickValues = [];
+                  for (let i = 0; i <= maxScaleScore; i++) {
+                    tickValues.push(i);
+                  }
                 }
 
                 return tickValues.map((value) => {
@@ -792,8 +840,17 @@ const LetterPredictionWidget: React.FC = () => {
                   const llmAvg = calculateLLMAverage(model);
                   if (llmAvg > 0) allScores.push(llmAvg);
                 });
-                const maxScore = Math.max(...allScores, 1);
-                const maxScaleScore = Math.ceil(maxScore + 0.5);
+                const maxScore = Math.max(...allScores, 0);
+                
+                // Use same scale logic as tick marks
+                let maxScaleScore: number;
+                if (maxScore < 0.95) {
+                  maxScaleScore = 1;
+                } else if (maxScore < 1.45) {
+                  maxScaleScore = 1.5;
+                } else {
+                  maxScaleScore = Math.ceil(maxScore + 0.5);
+                }
 
                 return (
                   <div
@@ -829,8 +886,17 @@ const LetterPredictionWidget: React.FC = () => {
                   const llmAvg = calculateLLMAverage(model);
                   if (llmAvg > 0) allScores.push(llmAvg);
                 });
-                const maxScore = Math.max(...allScores, 1);
-                const maxScaleScore = Math.ceil(maxScore + 0.5);
+                const maxScore = Math.max(...allScores, 0);
+                
+                // Use same scale logic as tick marks
+                let maxScaleScore: number;
+                if (maxScore < 0.95) {
+                  maxScaleScore = 1;
+                } else if (maxScore < 1.45) {
+                  maxScaleScore = 1.5;
+                } else {
+                  maxScaleScore = Math.ceil(maxScore + 0.5);
+                }
 
                 return Object.entries(llmScores).map(([model, scores]) => {
                   const llmAvg = calculateLLMAverage(model);
@@ -874,13 +940,24 @@ const LetterPredictionWidget: React.FC = () => {
                   const llmAvg = calculateLLMAverage(model);
                   if (llmAvg > 0) allScores.push(llmAvg);
                 });
-                const maxScore = Math.max(...allScores, 1);
-                const maxScaleScore = Math.ceil(maxScore + 0.5);
-
-                // Generate tick labels from 0 to maxScaleScore
-                const tickValues: number[] = [];
-                for (let i = 0; i <= maxScaleScore; i++) {
-                  tickValues.push(i);
+                const maxScore = Math.max(...allScores, 0);
+                
+                // Use same scale logic as tick marks
+                let maxScaleScore: number;
+                let tickValues: number[];
+                
+                if (maxScore < 0.95) {
+                  maxScaleScore = 1;
+                  tickValues = [0, 1];
+                } else if (maxScore < 1.45) {
+                  maxScaleScore = 1.5;
+                  tickValues = [0, 1]; // Only show labels at 0 and 1
+                } else {
+                  maxScaleScore = Math.ceil(maxScore + 0.5);
+                  tickValues = [];
+                  for (let i = 0; i <= maxScaleScore; i++) {
+                    tickValues.push(i);
+                  }
                 }
 
                 return tickValues.map((value) => {

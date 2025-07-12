@@ -1,4 +1,4 @@
-# All those riddles <a id="introduction"></a>
+# A few riddles <a id="introduction"></a>
 
 This site introduces various topics at the intersection of probability, information theory, and machine learning. 
 {/*Our tour guide through this corner of the world is a formula called _Kullback-Leibler (KL) divergence_. */}
@@ -148,7 +148,7 @@ So... are the odds in our favor?
 /> 
 </RiddleStatement>
 
-
+{/*
 <RiddleStatement id="machine-learning">
 
 When you first dive into machine learning, it looks like total chaos. There's linear regression, and logistic regression, and $k$-means. All of those  look like a bunch of random tricks and optimization problems. 
@@ -157,24 +157,25 @@ Then, there are neural networks. Very impressive, but still pretty daunting. Tak
 
 <Math displayMode={true} math = "\frac{1}{N} \sum_{i = 1}^N \left( \sum_y p'(y | x) \frac{\| X_i - \textrm{Dec}(y)\|^2}{2d} \,+\, \left( \frac12 \sum_{j = 1}^d \textrm{Enc}_{\mu, j}(X_i)^2 + \textrm{Enc}_{\sigma^2, j}(X_i) - \log \textrm{Enc}_{\sigma^2, j}(X_i) \right)\right)"/>
 
-Where the hell are all these, so-called "loss functions", coming from?? [We'll see](07-machine_learning) how KL divergence & friends make sense of this mess—and tons of other standard ML algorithms too, like those in the widget below. 
+Where the hell are all these, so-called "loss functions", coming from? [We'll see](07-machine_learning) how KL divergence & friends make sense of this mess—and tons of other standard ML algorithms too, like those in the widget below. 
 
-<MLProblemExplorerSimple />
+<MLProblemExplorerSimple defaultMode="logisticRegression" />
 
 </RiddleStatement>
-
+*/}
 
 
 
 
 ## 🚀 What's next? <a id="next-steps"></a>
 
-As we go through the mini-course, we'll revisit each puzzle and understand what's going on. 
-There are three parts to it. 
+As we go through the mini-course, we'll revisit each puzzle and understand what's going on. But this text is not just about the riddles. It's about explaining some mathematics that I find cool and important, with focus on getting solid theoretical background behind current machine learning. 
 
-1. First, we will understand how Bayes' rule leads to the KL divergence, cross-entropy and entropy (first three chapters). 
-2. Next, we will see that minimizing KL divergence is a powerful principle to build good probabilistic models. We will use it to explain where the machine-learning loss function are coming from (next three chapters).
-3. Finally, we will discuss how entropy is related to coding theory, and what kind of intuition it gives us about large language models (final two chapters). 
+There are three parts to this website. 
+
+1. First (first three chapters), we will start by recalling the Bayes' rule. Playing with probabilities will help us understand KL divergence, cross-entropy and entropy. Those are the secret weapons that solve all our riddles. 
+2. Then (next three chapters), we will see that minimizing KL divergence is a powerful principle to build good probabilistic models. We will use it to explain most of our riddles, but even better, we'll get pretty good understanding of a super-important part of machine-learning -- setting up loss functions.
+3. Finally (final two chapters), we will dig into how entropy is related to coding theory and compression. This can give us pretty useful intuitions about large language models. 
 
 This is your last chance. You can go on with your life and believe whatever you want to believe about KL divergence. Or you go to [the first chapter](01-kl_intro) and see how far the rabbit-hole goes. 
 

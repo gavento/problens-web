@@ -117,3 +117,13 @@
   margin: 0;
   padding: 0;
 }
+
+@media (max-width: 1023px) {
+  /* On mobile and tablet, the sidebar sits inside a container that starts 4rem below the top header (see `top-16`).
+   * Without subtracting that offset, the sidebar is taller than its container, so the bottom items are cut off and
+   * unreachable by scrolling. Limiting the height fixes the issue. */
+  .sidebar {
+    height: calc(100vh - 4rem);
+    max-height: calc(100vh - 4rem);
+  }
+}
