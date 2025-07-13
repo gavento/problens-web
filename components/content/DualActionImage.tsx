@@ -46,7 +46,7 @@ export default function DualActionImage({ src, alt = "image", width = "75%", cla
 
       {/* Bottom-right clickable quadrant – external link */}
       <a
-        href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+        href="about:blank"
         target="_blank"
         rel="noopener noreferrer"
         className="absolute bottom-0 right-0 hover:bg-blue-300/20"
