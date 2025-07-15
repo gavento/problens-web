@@ -141,6 +141,7 @@ const LetterPredictionWidget: React.FC = () => {
     // Also exclude snapshots containing "sex": 134, 135, 140, 166, 202, 306, 308, 344, 365, 366, 372, 426, 463, 497, 536, 562, 631, 634, 758, 798, 827
     // Also exclude snapshots containing "Rearden": 14, 35, 36, 37, 56, 67, 73, 90, 135, 178, 180, 223, 281, 292, 293, 296, 306, 332, 350, 361, 365, 368, 373, 397, 453, 554, 562, 568, 575, 596, 622, 665, 675, 758, 763, 775, 783, 812, 815, 827, 866
     // Also exclude snapshots containing "Dagny": 31, 60, 64, 67, 68, 73, 79, 97, 108, 131, 155, 241, 247, 281, 306, 373, 386, 398, 400, 447, 449, 453, 457, 480, 490, 524, 542, 546, 549, 562, 568, 585, 607, 618, 648, 693, 700, 711, 725, 763, 783, 789, 835, 881, 883
+    // Additional excluded IDs: 525, 557, 756, 104, 752, 867, 382, 799
     const excludedIds = [
       506, 422, 476, 280, 487, 838, 835, 720, 546, 827, 789, 308, 153, 163, 399, 590, 875, 856, 79, 218, 201, 57, 112,
       274, 576, 602, 615, 676, 8, 344, 304, 174,
@@ -148,6 +149,7 @@ const LetterPredictionWidget: React.FC = () => {
       14, 35, 36, 37, 56, 67, 73, 90, 178, 180, 223, 281, 292, 293, 296, 332, 350, 361, 368, 373, 397, 453, 554, 568, 575, 596, 622, 665, 675, 763, 775, 783, 812, 815, 866,
       31, 60, 64, 68, 97, 108, 131, 155, 241, 247, 386, 398, 400, 447, 449, 457, 480, 490, 524, 542, 549, 585, 607, 618, 648, 693, 700, 711, 725, 881, 883,
       212,
+      525, 557, 756, 104, 752, 867, 382, 799,
     ];
     const validSnapshots = snapshots.filter((s) => !excludedIds.includes(s.id) && !usedSnapshotIds.has(s.id));
 
@@ -219,22 +221,25 @@ const LetterPredictionWidget: React.FC = () => {
     const llamaHardSnapshots = snapshots.filter((s) => isLlamaMultipleTries(s.id));
     const gpt2HardSnapshots = snapshots.filter((s) => isGPT2MultipleTries(s.id));
 
-    // Choose category with 1/3 probability each
+    // New importance sampling: 50% uniform random, 25% llama hard, 25% gpt2 hard
     const rand = Math.random();
     
-    if (rand < 1/3) {
-      // 1/3: Llama needs more than one try
+    if (rand < 0.5) {
+      // 50%: Uniformly random
+      return snapshots[Math.floor(Math.random() * snapshots.length)];
+    } else if (rand < 0.75) {
+      // 25%: Llama needs more than one try
       if (llamaHardSnapshots.length > 0) {
         return llamaHardSnapshots[Math.floor(Math.random() * llamaHardSnapshots.length)];
       }
-    } else if (rand < 2/3) {
-      // 1/3: GPT2 needs more than one try
+    } else {
+      // 25%: GPT2 needs more than one try
       if (gpt2HardSnapshots.length > 0) {
         return gpt2HardSnapshots[Math.floor(Math.random() * gpt2HardSnapshots.length)];
       }
     }
     
-    // 1/3: Uniformly random (or fallback if the selected category is empty)
+    // Fallback to uniformly random if the selected category is empty
     return snapshots[Math.floor(Math.random() * snapshots.length)];
   };
 

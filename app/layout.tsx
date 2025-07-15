@@ -5,7 +5,6 @@ import type { Metadata } from "next";
 import { JetBrains_Mono, Merriweather } from "next/font/google";
 import { StrictMode } from "react";
 import "./globals.css";
-import { AuthProvider } from "../lib/auth";
 
 // Define Merriweather font configuration
 const merriweather = Merriweather({
@@ -37,9 +36,7 @@ export default function RootLayout({
     <html lang="en" className={`${merriweather.variable} ${jetbrainsMono.variable}`}>
       <StrictMode>
         <body className="antialiased">
-          <AuthProvider>
-            <Page>{children}</Page>
-          </AuthProvider>
+          <Page>{children}</Page>
         </body>
         {GTM_ID && <GoogleAnalytics gaId={GTM_ID} />}
       </StrictMode>

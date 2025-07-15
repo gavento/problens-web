@@ -119,9 +119,9 @@ export function Footnote({ children, mark }: { children?: React.ReactNode; mark?
     <HoverCard.Root openDelay={100} closeDelay={300}>
       <HoverCard.Trigger asChild>
         <sup id={`ref-${footnoteIdRef.current}-${locationRef.current}`} className={styles.footnote}>
-          <a href={`#${footnoteIdRef.current}`} className={styles["footnote-link"]}>
+          <span className={styles["footnote-link"]}>
             {footnote.mark}
-          </a>
+          </span>
         </sup>
       </HoverCard.Trigger>
       <HoverCard.Portal>
@@ -132,41 +132,8 @@ export function Footnote({ children, mark }: { children?: React.ReactNode; mark?
     </HoverCard.Root>
   );
 }
-// Footnotes section component
+// Footnotes section component - now only keeps tooltips, no bottom list
 export function Footnotes({ headerLevel = 2 }: { headerLevel?: number }) {
-  const { footnotes, footnoteOrder } = useFootnotes();
-
-  if (footnoteOrder.length === 0) return null;
-
-  return (
-    <div id="footnotes" className={styles.footnotes}>
-      {headerLevel ? React.createElement(`h${headerLevel}`, null, "Footnotes") : null}
-      <div className={styles["footnote-list"]}>
-        {footnoteOrder.map((id) => {
-          const footnote = footnotes.get(id);
-          if (!footnote) return null;
-
-          return (
-            <div key={id} id={id} className={styles["footnote-item"]} data-mark={footnote.mark}>
-              {footnote.content}{" "}
-              {footnote.locations.length > 0 && (
-                <>
-                  [
-                  {footnote.locations.map((loc, idx) => (
-                    <React.Fragment key={loc}>
-                      <a href={`#ref-${id}-${loc}`} className={styles["footnote-link"]}>
-                        ^{footnote.locations.length > 1 ? idx + 1 : ""}
-                      </a>
-                      {idx < footnote.locations.length - 1 && ", "}
-                    </React.Fragment>
-                  ))}
-                  ]
-                </>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+  // Return null to not render the footnotes section at the bottom
+  return null;
 }

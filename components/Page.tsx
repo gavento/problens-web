@@ -9,8 +9,6 @@ import { referencesPath } from "@/lib/config";
 import { Footnotes, FootnotesProvider } from "./content/Footnotes";
 import { EquationProvider } from "./content/EquationContext";
 import styles from "./Page.module.css";
-import CommentSection from "./CommentSection";
-import AdminPanel from "./AdminPanel";
 import ViewTracker from "./ViewTracker";
 
 interface PageProps {
@@ -30,7 +28,6 @@ export default async function Page({ children }: PageProps) {
         <main className={`${styles.main} max-w-[var(--content-width)] mx-auto px-4 pt-12 pb-8`}>{children}</main>
       </div>
       <Footer />
-      <AdminPanel />
     </div>
   );
 }
@@ -46,8 +43,6 @@ export async function singlePage(path: string) {
             {content}
             <Footnotes headerLevel={0} />
             <References />
-            {path !== "index" && <CommentSection pageId={path} />}
-            <AdminPanel />
           </article>
         </FootnotesProvider>
       </CitationsProvider>
