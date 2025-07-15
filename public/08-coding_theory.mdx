@@ -1,22 +1,23 @@
 # Coding Theory
 
-Entropy is deeply connected to the topic of compression. In this chapter, we will discuss the connection and see how LLMs can be interpreted as compressing algorithms. 
+Here's one of my favorite science stories. Norbert Wiener was a professor at MIT, known for roaming the corridors and stopping in offices of other researchers. Once, he stopped in the office of Robert Fano, said: "You know, information is entropy", and walked out. Fano started to think about what that meant and a few months later, on a train ride to a meeting, he finally worked it out. At that meeting, a guy named Claude Shannon presented an early version of what later became one of the most cited papers, ever - [The mathematical theory of communication](https://en.wikipedia.org/wiki/A_Mathematical_Theory_of_Communication). The topic of the paper was pretty much the same as what Fano worked out: What does the formula for entropy has to do with storing data on a computer. Shannon and Fano hitted it off the next day and information theory was born. 
+
+I will explain this connection and we will see what intuitions about large language models it gives us. 
+
 
 <KeyTakeaway>
-Entropy is the unbeatable lower bound for lossless compression, if we treat text symbols independently.  
+Entropy is the unbeatable lower bound for lossless compression, if we treat letters independently.  
 </KeyTakeaway>
 
 
 ## 📝 Code intro
-Say you've got a long DNA string built from letters $\{\mathsf{A},\mathsf{C},\mathsf{G},\mathsf{T}\}$. You want to store it using as little disk space as possible.  
-
-Here's the most basic plan: We assign a binary code for each letter and encode the string using that code. 
+Say we've got a long DNA string built from letters $\{\mathsf{A},\mathsf{C},\mathsf{G},\mathsf{T}\}$. We want to store it using as little disk space as possible. Here's a simple plan: We assign a binary code for each letter and encode the string using that code. 
 
 For example, we can use <Math math = "\mathsf{A} \rightarrow \textsf{00}, \mathsf{C} \rightarrow \textsf{01}, \mathsf{G} \rightarrow \textsf{10}, \mathsf{T} \rightarrow \textsf{11} " />. The string gets stored using just 2 bits per letter. Done! 
 
-Can we do better? Sometimes, yes! Here's a riddle: try to build a code that encodes the following string with 1.75 bits per letter on average. 
+Can we do better? Sometimes, yes! Here's a riddle: In the following widget, try to build a code that encodes the following string <Math math = "\mathsf{AACATACG}" /> with just 1.75 bits per letter on average. 
 
-While playing, notice that when you e.g. use the code $\mathsf{A} \rightarrow \textsf{0}$, no other letter can get a code-name starting with $\textsf{0}$. The reason is that such a code may not be decodable. E.g., if you use codes <Math  math = "\textsf{0}" /> and <Math  math = "\textsf{00}" />, how do you decode <Math  math = "\textsf{00}" />?
+While playing, notice that whenever you use a short code name to a letter, e.g. $\mathsf{A} \rightarrow \textsf{0}$, no other letter can get a code name starting with the same code name $\textsf{0}$. The reason is that otherwise, the resulting code wouldn't sometimes be decodable. E.g., if you use code names <Math  math = "\mathsf{A} \rightarrow \textsf{0}" /> and <Math  math = "\mathsf{C} \rightarrow \textsf{00}" />, the message "<Math  math = "\textsf{00}" />" has two meanings. 
 
 <BuildYourOwnCodeWidget /> 
 
@@ -50,7 +51,7 @@ If we implement our $p \rightarrow \log 1/p$-rule-of-thumb with the most direct 
 
 <ShannonCodeWidget />
 
-You can notice that the number of bits per letter (also called _rate_) is a bit north of the entropy of the underlying distribution. This is because of the rounding $\log 1/p \rightarrow \lceil \log 1/p \rceil$. For example, if $p = 0.49$, we would like to give the letter a code name of length $\log \frac{1}{0.49} \approx 1.03$. Too bad that code names have to be integers and Shannon's code assigns it a code name of length $2$. As a general rule, Shannon's code can use up to 1 bit per letter more than what's the entropy. <Footnote>Try to work out the details of what's happening in Shannon's code. Especially: Why does Shannon's algorithm of assigning letters never runs out of available code names? </Footnote>
+You can notice that the number of bits per letter (also called _rate_) is a bit north of the entropy of the underlying distribution. This is because of the rounding $\log 1/p \rightarrow \lceil \log 1/p \rceil$. For example, if there is a letter with frequency $p = 0.49$, we would like to give it a code name of length $\log \frac{1}{0.49} \approx 1.03$. Too bad that code names have to be integers and Shannon's code assigns it a code name of length $2$. As a general rule, Shannon's code can use up to 1 bit per letter more than what's the entropy. <Footnote>Try to work out the details of what's happening in Shannon's code. Especially: Why does Shannon's algorithm of assigning letters never runs out of available code names? </Footnote>
 
 Unfortunately, there are situations where Shannon's code is really almost 1 bit worse than the entropy. Take a string that uses just two characters $\mathsf{A}, \mathsf{B}$, but the frequency of $\mathsf{B}$ is close to zero. Then, the entropy is close to zero, but Shannon can't do better than 1 bit per letter. 
 
@@ -67,24 +68,17 @@ The source coding theorem says that first, there's a way to store the emitted st
 
 <Expand advanced={true} headline="More on better codes">
 
-There are two simple ways to get rid of the 1-bit slack. 
-
-### Shannon's code on tuples
 Think of constructing Shannon's code not for every letter, but for every _pair of letters_ (i.e., the alphabet grows from $26$ to $26^2$). If Shannon's code loses 1 bit per encoded letter-pair, it means it loses $1/2$ bits per actual letter! Doing this trick not for a pair of letters but a tuple of several letters can bring us arbitrarily close to a code that spends $H(p)$ bits per letter. 
 
-This is a theoretical argument why we can reach the entropy limit. It's not very practical, though, since the alphabet gets very larger pretty soon ($26^2$ for pairs, $26^3$ for triples, ...). 
-
-### Arithmetic coding
-[Arithmetic coding](https://en.wikipedia.org/wiki/Arithmetic_coding) is a much better way to encode strings into binary, and it's widely used in practice. 
-
-[todo drop or widget]
+Doing this is not very practical, since the alphabet gets very larger pretty soon ($26^2$ for pairs, $26^3$ for triples, ...). Check out [arithmetic coding](https://en.wikipedia.org/wiki/Arithmetic_coding) for a practical code approaching the entropy limit. 
 
 </Expand>
 
 The second part of the theorem says that we can't beat the rate $H(p)$. Details for that in the expand box. 
 
-<Expand advanced = {true} headline = "Details of Shannon's source coding theorem">
-To see why we can't do better than $H(p)$ bits per letter on average, we will have to understand [Kraft's inequlaity](https://en.wikipedia.org/wiki/Kraft%E2%80%93McMillan_inequality). This inequality says that if we work with alphabet with $k$ letters and we build a code with words of lengths $\ell_1, \dots, \ell_k$, then it has to be the case that 
+<Expand advanced = {true} headline = "Beating entropy is impossible">
+I will prove that codes that simply map each letter to a code-name can't beat $H(p)$. 
+To see why, we will have to understand [Kraft's inequality](https://en.wikipedia.org/wiki/Kraft%E2%80%93McMillan_inequality). This inequality says that if we work with alphabet with $k$ letters and we build a code with words of lengths $\ell_1, \dots, \ell_k$, then it has to be the case that 
 <Math id = "kraft" displayMode = {true} math = "\sum_{i = 1}^k 2^{- \ell_i} \le 1. " />
 
 To understand this inequality, go back to widgets above - whenever we give a code-name to a letter, like <Math math="\mathsf{e} \rightarrow \textsf{000}" />, we can no longer use codewords that start with <Math math="\textsf{000}" /> for other letters, since that would create clashes. The node with <Math math="\textsf{000}" /> has to be a _leaf_. Some leaves 'take more space' than others - for example, using code name of <Math math="\textsf{0}" /> intuitively kills off half of the space of possibilities. 
@@ -107,35 +101,46 @@ Plugging in <Math math="q_i = 2^{-\ell_i}" />, we get
 That is, the average code-name length is at least $H(p)$. This works for any code, hence the second part of [Shannon's source coding theorem](https://en.wikipedia.org/wiki/Shannon%27s_source_coding_theorem). 
 </Expand>
 
-## 🧠 Entropy intuition
 
-Using the fact that good codes can achieve a rate close to entropy can give us a lot of intuition! Remember [how we defined](/02-crossentropy) entropy as the "average surprisal" of a distribution? We could also ask: if we keep sampling from the distribution, how many bits per flip do we need to store the results? 
+## 🧠 Prediction = Compression
 
-For example, if we are flipping a fair coin and want to keep the results, there is nothing smarter then writing one bit <Math math="\textsf{0}" />/<Math math="\textsf{1}" /> for each heads/tails that we flipped. This is 1 bit per flip. 
+Using the fact that good codes can achieve a rate close to entropy can give us a lot of intuition! 
 
-But if we are flipping a biased coin where heads have only $0.01$ probability, there are better ways to store the results! For example, we could split the outcomes into batches of 10, and give a code-name to each of the $2^{10}$ possibilities in a batch. If we use short code-names for very probably outcomes - e.g., $\mathsf{TTTTTTTTTT} \rightarrow \textsf{0}$, we can spare a lot of disk space! <Footnote>This goes back to our discussion of how to improve the slack of one bit in Shannon's code. </Footnote>
+Let's go through the terms in our dictionary and see how we can interpret them using the coding-theory language. 
 
-The entropy of the coin flip is the rate of the best code, it's the rate at which we generate 'relevant information' with our flips.  
+We defined the _surprisal_ $\log 1/p$ as a way of measuring how surprised we are given an outcome that happens with probability $p$. But equivalently, it's also how many bits you need to store the outcome in memory, using the optimal code. 
 
-With coding theory intuitions, cross-entropy also becomes very natural: it's how many bits you need when data comes from $p$ but you are using the code that's optimized for a different distribution $q$. For example, in the top widget, you can construct the best code for $\mathsf{AACATACG}$, but then run it on $\mathsf{AAAAAAAA}$. 
+We introduced entropy as the "average surprisal" of a distribution. But equivalently, it's the rate of how many bits on average we need to store outcomes sampled from a distribution $p$: We can interpret the formula $\sum_{i = 1}^n p_i \log 1/p_i$ as "The $i$-th symbol comes with frequency $p_i$ and whenever it comes, we need $\log 1/p_i$ bits to store it". 
 
-Finally, KL divergence (relative entropy) is how much worse your mismatched code is compared to the optimal one. 
+The cross-entropy is very similar; it's how many bits we need when data comes from $p$ but we store them using the code that's optimized for a different distribution $q$. Finally, KL divergence (relative entropy) is how much worse our mismatched code is compared to the optimal one. 
 
-We will now see more examples of how entropy and compression clicks. 
+Here it is again, more concisely in a table: 
 
-## 📦 Predictive coding and LLMs
+| **Concept** | **Formula** | **Bayesian detective** | **Compression** |
+|-------------|-------------|------------------------|-----------------|
+| **Surprisal** | $\log \frac{1}{p}$ | Surprise of an outcome | Bits to store a letter |
+| **Entropy** | $ \sum p_i \log \frac{1}{p_i}$ | Expected surprisal | Average bits per letter |
+| **Cross-entropy** | $\sum p_i \log \frac{1}{q_i}$ | Expected surprisal of model $q$ | Average bits per letter for code optimized for $q$ |
+| **KL divergence** | $\sum p_i \log \frac{p_i}{q_i}$ | Additional surprise from $p \neq q$ | Additional storage from $p \neq q$ |
 
-So far, all our discussion was encoding the text letter-by-letter. This is not too hard. The real fun starts when we want to compress a given text _without the assumption that letters are independent_. We now want to use the fact that $\textsf{th}$ usually follows by $\textsf{e}$ to achieve the best compression possible. 
 
-Here is a generic approach of how most compressions algorithm work, called [predictive coding](). A generic predictive-coding algorithm goes through the text letter by letter and tries to build some kind of understanding of it. For each letter, it tries to predict it using the past text. As we know, once you have a distribution over the next letter, we can convert it to a code, e.g. Shannon's code. This way, we can encode the whole text.  
+## 📦 Adaptive compression and LLMs
 
-I want to explain two examples of predictive coding algorithms. The first example is how LLMs can be used to compress text, the second example would be a typical implementation of ZIP. 
+So far, all our discussion was about encoding each letter independently of its context. The real fun starts when we want to compress a given text as much as possible, period. Now we definitely want to use the fact that $\textsf{th}$ usually follows by $\textsf{e}$ as much as possible. 
+
+Let's discuss two compression algorithms, the first one hypothetical, the second one widely used. 
 
 ### 🤖 LLMs 
 
-LLMs are exactly fitting the description of our next-letter predictor. A small technicality - to make the prediction task easier, the text is first split into so-called tokens (think short words, syllables). The net then predicts the next token, not the next letter. 
+LLMs can be used to compress text. 
 
-We have discussed LLMs in the main text; they are trained by reading the Internet, minimizing the cross-entropy loss. But we can now understand that equivalently, __they are trained to compress Internet as much as possible__!  
+First, a technicality we have to go through quickly. Although [we discussed](04-mle#llm) that LLMs are predicting the next letter, that's a simplification. Before training any LLM, we split all texts into _tokens_ and the input and output of LLMs consists of tokens, not letters. There is no fixed definition of what a token is, but for example GPT-2 works with around $50\,000$ different tokens. That's enough to cover all frequent syllables, medium-length words, common names, and special symbols. 
+
+We have discussed how LLMs are trained by minimizing the cross-entropy loss:
+<Math math = ""/>
+
+
+in the main text; they are trained by reading the Internet, minimizing the cross-entropy loss. But we can now understand that equivalently, __they are trained to compress Internet as much as possible__!  
 
 In the next widget, you can see how it works. 
 
@@ -146,11 +151,15 @@ This way of compressing test is extremely efficient, since LLMs can predict the 
 ### 🗁️ ZIP 
 Typical algorithm used in ZIP works like this: It reads the text and constructs a dictionary -- list of common patterns (syllables, words) that were frequent in the past. When it encounters a word it has in its dictionary, instead of writing 'divergence', it writes something like [now comes entry 42 in the dictionary]. The algorithm does not juggle with any probabilities. However, due to the connection of probabilties and code lengths, we can now understand that if the ZIP algorithm can at some position encode the word 'divergence' in 10 bits, we can interpret it as the ZIP algorithm __predicting__ that the probability of 'divergence' is $2^{-10}$. 
 
-### 🕰️ Prediction = Compression
 
-These two examples of predictive coding algorithms go back to our discussion of coding intuition for entropy. We defined entropy in the language of surprise, probabilities, prediction. Coding theory uses the language of codes, and compression. But since the probability $p$ corresponds both to surprise of $\log 1/p$ and ideal-code-length of $\log 1/p$, the math is the same for both. 
+### Really, prediction = compression
+Here is the generic approach for how most compressions algorithm work that I'll call adaptive compression. An adaptive compression algorithm goes through the text letter by letter and always tries to use the past text to predict the next letter. Knowing the next letter can be turned into efficient compression.   If it is doing good job predicting, it's also doing a good job compressing. 
 
-Hence, whenever there is a good prediction, there's a good compression, and vice versa. This is really super important and we will return to it in the [Kolmogorov complexity chapter](09-kolmogorov). 
+As we know, once you have a distribution over the next letter, we can convert it to a code, e.g. Shannon's code. This way, we can encode the whole text.  
+
+I want to explain two examples of predictive coding algorithms. The first example is how LLMs can be used to compress text, the second example would be a typical implementation of ZIP. 
+
+
 
 
 ## 🧩 Cracking riddles <a id = "compression"></a>

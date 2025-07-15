@@ -6,6 +6,7 @@ import { getAssetPath } from "@/lib/utils";
 interface ExpandableImageProps {
   src: string;
   alt: string;
+  title?: string;
   style?: React.CSSProperties;
   className?: string;
 }
@@ -13,6 +14,7 @@ interface ExpandableImageProps {
 const ExpandableImage: React.FC<ExpandableImageProps> = ({ 
   src, 
   alt, 
+  title,
   style, 
   className = "" 
 }) => {
@@ -35,6 +37,7 @@ const ExpandableImage: React.FC<ExpandableImageProps> = ({
             <img
               src={imageSrc}
               alt={alt}
+              title={title}
               className="max-w-full max-h-full object-contain cursor-pointer"
               style={{ maxWidth: '100vw', maxHeight: '100vh' }}
               onClick={handleClick}
@@ -55,6 +58,7 @@ const ExpandableImage: React.FC<ExpandableImageProps> = ({
     <img
       src={imageSrc}
       alt={alt}
+      title={title}
       style={{ cursor: 'pointer', ...style }}
       className={className}
       onClick={handleClick}

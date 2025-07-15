@@ -132,9 +132,11 @@ const BuildYourOwnCodeWidget: React.FC = () => {
     }
   };
 
-  const handleAddLayer = () => {
-    if (treeLayers < 5) {
-      setTreeLayers(treeLayers + 1);
+  const handleToggleLayer = () => {
+    if (treeLayers === 4) {
+      setTreeLayers(5);
+    } else if (treeLayers === 5) {
+      setTreeLayers(4);
     }
   };
 
@@ -375,15 +377,10 @@ const BuildYourOwnCodeWidget: React.FC = () => {
           <h3 className="text-lg font-medium">Binary Tree ({treeLayers} layers)</h3>
           <div className="flex gap-2">
             <button
-              onClick={handleAddLayer}
-              disabled={treeLayers >= 5}
-              className={`px-3 py-1 text-sm rounded ${
-                treeLayers >= 5 
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-blue-500 hover:bg-blue-600 text-white'
-              }`}
+              onClick={handleToggleLayer}
+              className="px-3 py-1 text-sm rounded bg-blue-500 hover:bg-blue-600 text-white"
             >
-              Add Layer
+              {treeLayers === 4 ? 'Add Layer' : 'Remove Layer'}
             </button>
             <button
               onClick={resetLetters}

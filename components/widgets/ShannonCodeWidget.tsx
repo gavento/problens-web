@@ -666,7 +666,7 @@ export default function ShannonCodeWidget() {
           </div>
           
           <div className="bg-green-50 rounded-lg p-4">
-            <h5 className="font-semibold text-green-800 mb-2">Average Code Length</h5>
+            <h5 className="font-semibold text-green-800 mb-2">Average code length (rate)</h5>
             <div className="text-2xl font-bold text-green-600">
               {averageCodeLength.toFixed(3)} bits
             </div>
