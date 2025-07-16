@@ -10,7 +10,7 @@ Entropy is the unbeatable lower bound for lossless compression, if we treat lett
 </KeyTakeaway>
 
 
-## 📝 Code intro
+## Code intro
 Say we've got a long DNA string built from letters $\{\mathsf{A},\mathsf{C},\mathsf{G},\mathsf{T}\}$. We want to store it using as little disk space as possible. Here's a simple plan: We assign a binary code for each letter and encode the string using that code. 
 
 For example, we can use <Math math = "\mathsf{A} \rightarrow \textsf{00}, \mathsf{C} \rightarrow \textsf{01}, \mathsf{G} \rightarrow \textsf{10}, \mathsf{T} \rightarrow \textsf{11} " />. The string gets stored using just 2 bits per letter. Done! 
@@ -56,7 +56,7 @@ You can notice that the number of bits per letter (also called _rate_) is a bit 
 Unfortunately, there are situations where Shannon's code is really almost 1 bit worse than the entropy. Take a string that uses just two characters $\mathsf{A}, \mathsf{B}$, but the frequency of $\mathsf{B}$ is close to zero. Then, the entropy is close to zero, but Shannon can't do better than 1 bit per letter. 
 
 
-### 📜 The source coding theorem <a id="source-coding"></a>
+### The source coding theorem <a id="source-coding"></a>
 
 The [source coding theorem](https://en.wikipedia.org/wiki/Shannon%27s_source_coding_theorem) is the most important theorem in coding theory. It basically says that on one hand, there are codes that get very close to the entropy bound. On the other hand, you can't beat that bound. 
 
@@ -102,7 +102,7 @@ That is, the average code-name length is at least $H(p)$. This works for any cod
 </Expand>
 
 
-## 🧠 Prediction = Compression
+## Prediction = Compression
 
 Using the fact that good codes can achieve a rate close to entropy can give us a lot of intuition! 
 
@@ -182,7 +182,7 @@ I think that this is a powerful intuition that can help us understand where the 
 
 This is a complementary intuition to our intuition that being good in the text-prediction game requires knowledge. Indeed, prediction and compression are two sides of the same coin! 
 
-## 🧩 Cracking riddles <a id = "compression"></a>
+## Cracking riddles <a id = "compression"></a>
 
 Let's go back to our Wikipedia compression riddle, the last riddle we haven't discussed yet. 
 
