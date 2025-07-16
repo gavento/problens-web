@@ -16,11 +16,10 @@ interface DualActionImageProps {
 }
 
 /**
- * Displays an image that has two invisible click-hotspots in the bottom corners:
- *  – Bottom-left  : navigates to "/01-kl_intro"
- *  – Bottom-right : closes the current tab (window.close)
+ * Displays an image with an invisible click-hotspot in the bottom-left corner
+ * that navigates to "/01-kl_intro"
  *
- * Useful for the Matrix "red pill / blue pill" illustration.
+ * Useful for the Matrix "red pill" illustration.
  */
 export default function DualActionImage({ src, alt = "image", width = "75%", className = "" }: DualActionImageProps) {
   return (
@@ -44,15 +43,6 @@ export default function DualActionImage({ src, alt = "image", width = "75%", cla
         aria-label="Go to first chapter"
       />
 
-      {/* Bottom-right clickable quadrant – external link */}
-      <a
-        href="about:blank"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="absolute bottom-0 right-0 hover:bg-blue-300/20"
-        style={{ width: "33%", height: "33%" }}
-        aria-label="Special link"
-      />
     </div>
   );
 }

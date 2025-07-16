@@ -118,10 +118,14 @@ export function Footnote({ children, mark }: { children?: React.ReactNode; mark?
   return (
     <HoverCard.Root openDelay={100} closeDelay={300}>
       <HoverCard.Trigger asChild>
-        <sup id={`ref-${footnoteIdRef.current}-${locationRef.current}`} className={styles.footnote}>
-          <span className={styles["footnote-link"]}>
-            {footnote.mark}
-          </span>
+        {/* Make footnote trigger focusable so that Radix HoverCard also opens on focus/click (required for mobile). */}
+        <sup
+          id={`ref-${footnoteIdRef.current}-${locationRef.current}`}
+          className={styles.footnote}
+          tabIndex={0}
+          role="button"
+        >
+          <span className={styles["footnote-link"]}>{footnote.mark}</span>
         </sup>
       </HoverCard.Trigger>
       <HoverCard.Portal>
