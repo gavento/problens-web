@@ -8,7 +8,7 @@ In this chapter, we will ponder the second question - what happens if we minimiz
 Max-entropy principle constructs the most generic distributions satifying some constraints. Most useful distributions are max-entropy for some parameter. 
 </KeyTakeaway>
 
-## 💪 Conditioning on steroids <a id="finding-better-model"></a>
+## Conditioning on steroids <a id="finding-better-model"></a>
 
 Suppose I want to determine a probability distribution modelling the random variable $X$ of how long it takes me to eat lunch. My initial (and very crude) model of $X$ might be a uniform distribution $q$ between <Math math="0" /> and <Math math="60" /> minutes.
 
@@ -77,7 +77,7 @@ The observation we can now make is that <Math math="p_{new} = \argmin_{p \in P} 
 </Expand>
 */}
 
-### 🌪️ The maximum entropy principle <a id="maximum-entropy-principle"></a>
+### The maximum entropy principle <a id="maximum-entropy-principle"></a>
 
 Let's delve deeper into the minimum relative entropy principle. A conceptual issue with it is that it only allows us to refine an existing model $q$ into a better model $p$. But how did we choose the initial model $q$ in the first place? It feels a bit like a chicken-and-egg dilemma.
 
@@ -123,7 +123,7 @@ But make no mistake: entropy is not differential entropy! The fact that we can u
 </Expand>
 
 
-## 📐 General form of maximum entropy distributions
+## General form of maximum entropy distributions
 
 Let's now dive a bit deeper into maximum entropy. We'll try to understand what maximum entropy distributions actually look like. For example, we will see soon how does the maximum entropy distribution with $E[X] = 15$ looks like. 
 
@@ -149,7 +149,7 @@ Try building your own maximum entropy distribution on the interval $[0,1]$ by pl
 
 <DistributionConstraintBuilder />
 
-### 🧐 Why? <a id = "intuition"></a>
+### Why? <a id = "intuition"></a>
 
 Let's build some intuition for this. Remember from [the previous chapter](04-mle) that the max-entropy principle is essentially about finding a distribution that is as close to uniform as possible, in the sense of minimizing KL divergence.
 
@@ -235,7 +235,7 @@ Now, this formula isn't the complete solution to our problem because it involves
 </Expand>
 
 
-## 📚 Catalogue of examples
+## Catalogue of examples
 
 Let's go through the list of maximum-entropy distributions you might have encountered. In fact, most distributions used in practice are maximum entropy distributions for some specific choice of functions $f_1, \dots f_m$.
 
@@ -251,7 +251,7 @@ In the absence of any constraints, we have $p(x) \propto e^{0}$, which means the
 One painful fact to keep in mind is that the uniform distribution doesn't always exist. Concretely, there's no uniform distribution over all real numbers.
 </Expand>
 
-### 📈 Logits, softmax, exponentials
+### Logits, softmax, exponentials
 
 If we believe the mean is an important parameter of a distribution (which is very typical), the max entropy principle states that the right family of distributions to work with are those with the shape:
 
@@ -397,7 +397,7 @@ The Laplace distribution has the shape <Math math = "p(x) \propto e^{-\lambda |x
 2.  Output a sample from $N(\mu, \sigma^2)$.<Footnote>More precisely, if we want Laplace distribution <Math math = "p(x) \propto e^{-\lambda |x-\mu|}" />, we should sample $\sigma^2$ from exponential distribution <Math math = "p'(t) \propto e^{-(\lambda^2/2) \cdot t}"/>. Let me know if you know a simple proof of [this fact](https://math.stackexchange.com/questions/1175076/how-to-prove-laplace-distribution-is-scale-mixture-of-gaussians)!</Footnote>
 
 
-### 📖 S&P stories
+### S&P stories
 
 To understand how this helps explain our financial data, consider the following two stories for price fluctuations:
 
@@ -424,7 +424,7 @@ The point of this riddle is not really to come up with the best model for the da
 </RiddleExplanation>
 
 
-### ⚖️ Power-law
+### Power-law
 
 If you care about the _scale_ of a random variable, maximum entropy leads to so-called power-law distributions. 
 
@@ -523,6 +523,6 @@ Both approaches yield the same answer, but it's not clear a priori that this sho
 
 
 
-## 🚀 What's next? <a id="next-steps"></a>
+## What's next? <a id="next-steps"></a>
 
 In the [next chapter](07-machine_learning), we'll see how the combo of maximum likelihood + maximum entropy explains the choice of loss functions used in machine learning.

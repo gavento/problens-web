@@ -11,7 +11,7 @@ Kolmogorov complexity is the ultimate limit for how much a file can be compresse
 Kolmogorov complexity of an object is the length of its shortest specification. This is the ultimate limit of compression. 
 </KeyTakeaway>
 
-## 🌀 The Mandelbrot Set
+## The Mandelbrot Set
 
 Take a good look at the following picture.<Footnote>Be careful, though, excessive zooming may result in psychedelic experience. </Footnote> It shows a so called Mandelbrot set -- we color each pixel of the plane based on how quickly a certain sequence of numbers shoots to infinity. 
 
@@ -30,7 +30,7 @@ Here are a few more examples.
 - If you keep flipping a coin $n$ times, the resulting sequence is likely to have Kolmogorov complexity of about $n$. There's no good way of compressing it.  
 
 
-## 💻 Choosing the language
+## Choosing the language
 
 There is an awkward problem with the definition of Kolmogorov complexity. It's the length of the shortest program -- but what programming language do we use? Python? C? Assembly? Turing machine? Do we allow languages _and_ libraries? Printing million digits of $\pi$ can then reduce to this:
 
@@ -46,7 +46,7 @@ In any reasonable programming language, you can write an interpreter for any oth
 
 So for large objects (like the 1GB Wikipedia file from Hutter's prize), there's nothing awkward in using Kolmogorov complexity. The flip side is that it's pretty meaningless to argue whether the Kolmogorov complexity of $\pi$ is 200 or 300 bytes. That difference depends on the choice of programming language too much. 
 
-## ⚖️ Kolmogorov vs entropy: $E[K(x)] \approx H(X)$ 
+## Kolmogorov vs entropy: $E[K(x)] \approx H(X)$ 
 
 Both Kolmogorov complexity and entropy are trying to measure something very similar: complexity, information, compression limit. Naturally, there are closely connected. The connection goes like this: If you have a reasonable distribution ($X$) over bit strings and you sample from it ($x$), then the entropy of the distribution is roughly equal to the expected Kolmogorov complexity of the sample. I.e., <Math displayMode={false} math = "E[K(x)] \approx H(X)"/>. 
 
@@ -82,7 +82,7 @@ The true power of this view is that we can now understand why random strings can
 </Expand>
 
 
-## 🔮 Prediction, compression, and the Chinese room
+## Prediction, compression, and the Chinese room
 
 In previous chapter, we talked about how prediction and compression are closely related. It may have looked a bit like some kind of algebraic trick - coincidentally, surprise is measured as $\log 1/p$ and lengths of good code name is also $\log 1/p$, so there's the connection between prediction and coding. 
 Kolmogorov complexity gives a smooth language to talk about this connection. In particular, I find it especially helpful that we can talk about compression / Kolmogorov complexity without talking about probability distributions.  
@@ -112,7 +112,7 @@ This is of course very different for current AIs. As we now understand, they are
 
 
 
-## 🧠 Solomonoff prior & induction
+## Solomonoff prior & induction
 
 
 What's the most natural distribution over all (finite) binary strings, if what we care about is their Kolmogorov complexity? The [maximum entropy principle](04-max_entropy) says we should consider the distribution <Math math = "p(x) \propto e^{- \lambda K(x)}" />, for some $\lambda$. In a minute, we will see that the right $\lambda$ is such that $p(x) \propto 2^{-K(x)}$ <Footnote>A quick intuition: Larger $\lambda$ makes the weight of long algorithms negligible, and smaller $\lambda$ will likely not even be normalizable. </Footnote> This distribution is called _Solomonoff prior_. <Footnote>todo maybe mention universal probability. </Footnote>

@@ -215,6 +215,17 @@ const EntropyWidget: React.FC<Props> = ({ title = "Entropy Explorer", numCategor
 
             return (
               <g key={i}>
+                {/* Touch overlay covering full column for easier tapping */}
+                {isTouchDevice && (
+                  <rect
+                    x={categoryX}
+                    y={margin.top}
+                    width={categoryWidth}
+                    height={innerHeight}
+                    fill="transparent"
+                    onClick={(e) => handleBarClick(i, e)}
+                  />
+                )}
                 {/* Bar */}
                 <rect
                   x={barX}

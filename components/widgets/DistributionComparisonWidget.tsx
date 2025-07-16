@@ -12,6 +12,15 @@ const DistributionComparisonWidget: React.FC<Props> = ({ title = "Distribution C
   const [blueDist, setBlueDist] = useState<number[]>([0.2, 0.2, 0.2, 0.2, 0.2]);
   const [containerWidth, setContainerWidth] = useState(500);
 
+  // detect touch devices
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  useEffect(() => {
+    const coarse = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+    setIsTouchDevice(
+      coarse || (typeof window !== "undefined" && ("ontouchstart" in window || navigator.maxTouchPoints > 0)),
+    );
+  }, []);
+
   useEffect(() => {
     const updateWidth = () => {
       setContainerWidth(Math.min(500, window.innerWidth - 80));
@@ -106,7 +115,7 @@ const DistributionComparisonWidget: React.FC<Props> = ({ title = "Distribution C
     [],
   );
 
-  // Handle bar dragging
+  // Handle bar dragging (desktop)
   const handleBarDrag = useCallback(
     (isRed: boolean, index: number, event: React.MouseEvent<SVGRectElement>) => {
       const rect = event.currentTarget.getBoundingClientRect();
@@ -134,6 +143,27 @@ const DistributionComparisonWidget: React.FC<Props> = ({ title = "Distribution C
       document.addEventListener("mouseup", handleMouseUp);
     },
     [redDist, blueDist, updateDistribution, yScale],
+  );
+
+  // Handle simple tap/click for mobile
+  const handleBarClick = useCallback(
+    (isRed: boolean, index: number, event: React.MouseEvent<SVGRectElement>) => {
+      if (!isTouchDevice) return;
+
+      const svg = (event.currentTarget as SVGRectElement).closest("svg")!;
+      const svgRect = svg.getBoundingClientRect();
+      const clientY = (event as any).clientY ?? 0;
+      const y = clientY - svgRect.top;
+      const relativeY = y - margin.top;
+      const probability = Math.max(0, Math.min(1, 1 - relativeY / yScale));
+
+      if (isRed) {
+        updateDistribution(redDist, setRedDist, index, probability);
+      } else {
+        updateDistribution(blueDist, setBlueDist, index, probability);
+      }
+    },
+    [isTouchDevice, margin.top, yScale, redDist, blueDist, updateDistribution],
   );
 
   return (
@@ -217,6 +247,7 @@ const DistributionComparisonWidget: React.FC<Props> = ({ title = "Distribution C
                   strokeWidth="1"
                   className="cursor-ns-resize"
                   onMouseDown={(e) => handleBarDrag(false, i, e)}
+                  onClick={(e) => handleBarClick(false, i, e)}
                 />
 
                 {/* Red bar (model q) */}
@@ -230,6 +261,7 @@ const DistributionComparisonWidget: React.FC<Props> = ({ title = "Distribution C
                   strokeWidth="1"
                   className="cursor-ns-resize"
                   onMouseDown={(e) => handleBarDrag(true, i, e)}
+                  onClick={(e) => handleBarClick(true, i, e)}
                 />
               </g>
             );
@@ -269,7 +301,9 @@ const DistributionComparisonWidget: React.FC<Props> = ({ title = "Distribution C
       </div>
 
       {/* Instructions */}
-      <p className="widget-explanation">Drag bars to adjust probabilities</p>
+      <p className="widget-explanation">
+        {isTouchDevice ? "Tap above or below bars to set probabilities." : "Drag bars to adjust probabilities"}
+      </p>
 
       {/* Distance Metrics */}
       <div className="grid grid-cols-3 gap-4 text-sm">

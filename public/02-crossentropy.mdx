@@ -10,7 +10,7 @@ Cross-entropy measures the average surprisal of model $q$ on data from $p$. When
 
 
 
-## 🧠 KL = cross-entropy - entropy
+## KL = cross-entropy - entropy
 
 Quick refresher: In the [previous chapter](01-kl_intro), we saw how KL divergence comes from repeatedly using Bayes' theorem with log-space updating:
 
@@ -31,7 +31,7 @@ But the detective could also add up the total surprisal for each hypothesis (gre
 
 These two pieces on the right are super important: $H(p,q)$ is called cross-entropy and $H(p)$ is entropy. Let's build intuition for what they mean. 
 
-##  ❌ Cross-entropy <a id = "cross"></a>
+##  Cross-entropy <a id = "cross"></a>
 Think of cross-entropy as: __how surprised you are on average when seeing data from $p$ while modeling it as $q$?__ 
 
 Explore this in the widget below. The widget shows what happens when our Bayesian detective from the previous chapter keeps flipping her coin. The red dashed line is showing cross-entropy - the expected surprisal of the model $q$ as we keep flipping the coin with bias $p$. The orange line shows the entropy—this is the expected surprisal when both the model and actual bias are $p$. 
@@ -48,7 +48,7 @@ If you let the widget run, you will also see a blue and a green curve - the actu
 
 Bottom line: _Better models are less surprised by the data and have smaller cross-entropy. KL divergence measures how far our model is from the best one._
 
-## 🎲 Entropy
+## Entropy
 
 The term $H(p) = H(p, p) = \sum_{i = 1}^n p_i \log 1 / p_i$ is a special case of cross-entropy called just plain _entropy_. It's the best possible cross-entropy you can get for distribution $p$—when you model it perfectly as itself.  
 
@@ -73,13 +73,13 @@ This comic wisely teaches us that this many possibilities make it a pretty secur
 </Expand>
 
 
-## ⚖️ Relative entropy
+## Relative entropy
 KL divergence can be interpreted as the gap between cross-entropy and entropy. It tells us how far your average surprisal (cross-entropy) is from the best possible (entropy). 
 That's why in some communities, people call KL divergence the _relative entropy_ between $p$ and $q$. <Footnote>Way better name than 'KL divergence' if you ask me. But 'KL divergence' is what most people use, so I guess we're stuck with it. </Footnote>
 
 
 
-## 🚀 What's next? <a id="next-steps"></a>
+## What's next? <a id="next-steps"></a>
 
 We're getting the hang of KL divergence, cross-entropy, and entropy! Quick recap:
 

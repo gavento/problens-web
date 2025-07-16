@@ -12,7 +12,7 @@ KL divergence $D(p,q)$ is always nonnegative. Equivalently, $H(p, q) \ge H(p)$.
 
 
 
-## 💥 KL divergence can blow up
+## KL divergence can blow up
 
 
 Recall, KL divergence is algebraically defined like this:
@@ -33,7 +33,7 @@ Try making KL divergence infinite in the widget below. Next level: Try to make i
 
 
 
-## ⚖️ KL divergence is asymmetrical<a id = "asymmetry"></a>
+## KL divergence is asymmetrical<a id = "asymmetry"></a>
 
 The KL formula isn't symmetrical—in general, $D(p,q) \neq D(q,p)$. Some describe this as a disadvantage, especially when comparing KL to simple symmetric distance functions like $\ell_1$ or $\ell_2$. But I want to stress that the asymmetry is a feature, not a bug! KL measures how well a model $q$ fits the true distribution $p$. That's inherently asymmetrical, so we need an asymmetrical formula—and that's perfectly fine.
 
@@ -57,7 +57,7 @@ Here's a question: The following widget contains two distributions—one peaky a
 <KLAsymmetryVisualizerWidget />
 
 
-## ✅ KL is nonnegative
+## KL is nonnegative
 
 If you plug in the same distribution into KL twice, you get:
 
@@ -90,7 +90,7 @@ Since KL can be written as the difference between cross-entropy and entropy, we 
 That is, the best model of $p$ that accumulates the surprisal at the least possible rate is ... 🥁 🥁 🥁 ... $p$ itself. 
 
 
-### ➕ Additivity <a id = "additivity"></a>
+### Additivity <a id = "additivity"></a>
 
 Whenever we keep flipping coins, the total entropy/cross-entropy/relative entropy just keeps adding up. This property is called additivity and it's so natural that it's very simple to forget how important it is. We've used this property implicitly in earlier chapters, whenever we talked about repeating the flipping experiment and summing surprisals. 
 
@@ -104,7 +104,7 @@ Entropy has an even stronger property called _subadditivity_: Imagine any distri
 <Math displayMode={true} math="H(r) \le H(p) + H(p')" />
 For example, imagine you flip a coin and record the same outcome twice. Then, the entropy of each record is 1 bit and subadditivity says that the total entropy is at most $2$ bits. In this case, it's actually still just 1 bit. 
 
-## 🎵 Anthem battle
+## Anthem battle
 
 I collected the national anthems of the USA, UK, and Australia, and put them into one file. The other text file contains anthems of a bunch of random-ish countries. For both text files, I compute the frequencies of 26 letters 'a' to 'z'. So there are two distributions $p_1$ (English-speaking) and $p_2$ (others). The question is: which one has larger entropy? And which of the two KL divergences $D(p_1, p_2), D(p_2, p_1)$ is larger? 
 
@@ -119,7 +119,7 @@ Make your guess before revealing the answer.
 
 
 
-## 🚀 Next steps
+## Next steps
 
 We now understand pretty well what KL divergence and cross-entropy stand for. 
 

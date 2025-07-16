@@ -13,7 +13,7 @@ Multiplicative weights update is a useful algorithmic trick based on treating pr
 </KeyTakeaway>
 
 
-## 🔄 Basic algorithm
+## Basic algorithm
 
 Let's return to one of our riddles:
 
@@ -23,7 +23,7 @@ Our general investing strategy is this: We start with a uniform distribution $p_
 
 The question is: how should we update? Let's discuss three possible algorithms from the riddle statement. 
 
-### 🔺 Gradient descent / proportional sampling
+### Gradient descent / proportional sampling
 One way is using gradient descent:
 
 <Math id="gradient" displayMode={true} math = "p_i^{(t+1)} = p_i^{(t)} + \eps \cdot g_i^{(t)}"/>
@@ -39,10 +39,10 @@ Notice that the learning rate doesn't matter due to the normalization, so we end
 
 This proportional rule has some problems. In the widget, you can notice that if the first expert has gained $67 and the other expert gained $33, the proportional rule goes with the top expert only with 2/3 probability, although it should ideally go for her with close to 100% probability. 
 
-### 👑 Follow the leader 
+### Follow the leader 
 Maybe sampling the next expert is not the right approach and we should simply pick the best expert so far? This algorithm—called follow the leader—is very natural and works mostly very well. There are some edge cases, though, when it behaves poorly (see the widget). 
 
-### ⚖️ Multiplicative weights update
+### Multiplicative weights update
 Multiplicative weights update algorithm is like the gradient descent rule <EqRef id = "gradient"/>, but uses multiplicative instead of additive updates:
 
 <Math displayMode={true} math = "p_i^{(t+1)} \propto p_i^{(t)} \cdot e^{- \eps \cdot g_i^{(t)}}" />
@@ -52,17 +52,17 @@ This algorithm interpolates between gradient descent (the limit of this algorith
 If we set $\eps$ in the right way, this turns out to be an amazing algorithm combining the strengths of both approaches. 
 The remarkable property is that if you run multiplicative weights algorithm for $t$ steps and set $\eps$ to be about $1/\sqrt{t}$, the algorithm is _always almost as good as the best expert_! In particular, it gains at most $O(\sqrt{t})$ dollars less than the best expert in expectation. <Footnote>Assuming all gains are between $0$ and $1$. If there are $n$ experts, the algorithm lacks at most <Math math = "O(\sqrt{t\log n})" /> dollars in expectation. Check out [this excellent survey](https://www.cs.princeton.edu/~arora/pubs/MWsurvey.pdf) for more math behind the algorithm and its uses in computer science. </Footnote> In other words, whatever sequence of expert gains we could come up with in our widget, MWU would always end up on top. 
 
-## 💡 Intuitions
+## Intuitions
 
 Let me give you three intuitions for why multiplicative weights update algorithm makes sense.
 
-### 🔄 Bayes updating
+### Bayes updating
 
 You can think of our problem as "trying to find the best expert". In this sense, the algorithm's probability distribution over experts is its "guess about who the best expert is". Whenever we learn how well each expert performed, this corresponds to learning "the likelihood of each expert being the best". Bayes' rule says our guess should be updated multiplicatively by multiplying by the likelihood—which is exactly what the algorithm does.
 
 Notice that a more precise name for the MWU algorithm might be _multiplicative probability update_ since the weights are typically thought of as probabilities. And frankly, that name sounds like a description of Bayes' rule.
 
-### 🎁 Softmax intuition
+### Softmax intuition
 
 Let's think about all the information we learn in the first $t$ steps of our investing game. Each expert $i$ accumulated a total gain $G_i^{(t)} = g_i^{(1)} + \dots + g_i^{(t)}$. How should this total gain translate to the probability that we sample them in the $t+1$-th round?
 
@@ -70,7 +70,7 @@ We understand this! In the chapter on [max entropy distributions](04-max_entropy
 
 But look -- this is exactly what the multiplicative weights algorithm is doing. It updates $p_i$ by multiplying it by <Math math = "e^{\varepsilon \cdot g_i^{(t)}}"/> in each step, so $p_i^{(t)}$ is proportional to <Math math = "e^{\varepsilon \cdot g_i^{(1)}} \cdot \dots \cdot e^{\varepsilon \cdot g_i^{(t)}} = e^{\varepsilon \cdot G_i^{(t)}}"/>. So what we call $\lambda$ in softmax is called the learning rate $\varepsilon$ in multiplicative weights.
 
-### 📐 Geometric intuition
+### Geometric intuition
 
 As we've seen in the [preceding chapter](07-machine_learning), it's really nice to think in terms of optimization problems that optimize loss functions. In fact, one step of gradient descent or multiplicative weights can be seen as optimizing a certain loss function. Let's see how.
 
@@ -98,17 +98,17 @@ But wait! KL divergence can't measure distance. We've emphasized how it's import
 
 The general algorithm that generalizes both gradient descent and multiplicative weights is called mirror descent. The algorithm needs to be supplied with a distance-like function. For example, KL divergence works for mirror descent, even though it's asymmetric. It's beyond our scope to analyze what properties a function needs to satisfy to work inside mirror descent. The class of functions that work is called Bregman divergences. This is why _KL divergence_ is called this way -- it's a particular instance of a Bregman divergence.
 
-## 🚀 Applications
+## Applications
 
 Let's briefly discuss some applications of the algorithm.
 
-### 🤖 Machine learning applications
+### Machine learning applications
 
 Multiplicative weights are a super important algorithm in machine learning. Essentially, whenever you want to recommend users [the next video](https://www.youtube.com/), provide them [some kind of web search](https://www.google.com/), or aggregate several algorithms together, you're solving a variant of our experts problem. In reinforcement learning, this is called the [multi-armed bandit problem](https://en.wikipedia.org/wiki/Multi-armed_bandit) and it's a bit more complicated than our setup. In our setup, at the end of the day we learn how well each expert performs. But in the bandit setup, we only learn the performance of the chosen expert. For example, if you recommend a certain video, you get feedback whether the user liked it, but you don't get any feedback regarding whether the user likes all the other videos you considered recommending. 
 
 This lack of knowledge about other experts makes this a problem about balancing _exploration_ and _exploitation_. The follow-the-leader strategy that worked pretty well above (except for certain special cases) is based on exploiting the knowledge of who the best expert is. But the strategy can't work by itself because you also have to explore to "find" the best expert. Fortunately, variants of the multiplicative weights algorithm still work pretty well for the bandit problem - they can very nicely balance the tradeoff between exploring (we have a distribution over all experts) and exploiting (good experts are going to dominate it). 
 
-### 💻 Algorithmic applications
+### Algorithmic applications
 
 Here's my favorite algorithmic application of multiplicative weights that also shows how multiplicative weights connect to the idea of Bayesian updating.
 
@@ -136,6 +136,6 @@ Let's also revisit our original investment problem and see how different algorit
 
 <MWUWidget />
 
-## 💡 The important idea
+## The important idea
 
 The focus of our minicourse was on how KL divergence and related techniques can be used to model the world around us. I think multiplicative weights are a good example of a different application -- KL can guide us to come up with the right algorithm to approach a problem!

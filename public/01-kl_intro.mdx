@@ -7,7 +7,7 @@ KL divergence measures how well a distribution $p$ is fitted by a model distribu
 </KeyTakeaway>
 
 
-## 🕵️ Bayes' rule
+## Bayes' rule
 
 Let's review Bayes' rule—it's how you update your beliefs when you get new information. Here's a setup that we will try to understand very deeply in the next few chapters:
 
@@ -35,7 +35,7 @@ For example, let's say that <Math math="A =" /> 'the coin is $\textsf{fair}$' an
 Whenever I have to write this formula down, I never know what exactly is in the fraction on the right. That's because the point of the formula is $P(\textsf{fair} | \textsf{H})$ on the left-hand side and $P(\textsf{H} | \textsf{fair})$ on the right-hand side -- _the larger the probability of Heads under a hypothesis, the larger the posterior probability of the hypothesis once we flip them._
 */}
 
-## ➗ Divide and conquer
+## Divide and conquer
 
 Actually, I don't like the formula <EqRef id="bayes-formula" /> that much, since there's a different way to write it down that I find much more intuitive. 
 
@@ -71,7 +71,7 @@ In the concrete case of our detective, she increased her probability of fair coi
 
 {/*Bayes' theorem simply says we should do the simplest thing possible with the two relevant ratios -- multiply them -- to arrive at the posterior odds $P(\textsf{fair} | \textsf{H}) : P(\textsf{biased} | \textsf{H})$ .*/}
 
-## ✖️ Go forth and multiply
+## Go forth and multiply
 
 Let's see what happens when our detective keeps flipping over and over, updating her beliefs each time using Bayes' rule. 
 For example, if she gets $\{H, T, T, H, T\}$, here's what's happening:
@@ -95,7 +95,7 @@ This is a logarithmic viewpoint on how surprised you are when something happens.
 
 Notice how in the widget, I replaced ":" with "vs". This is because in the logarithmic world, it's no longer the ratio that's important, it's the difference. For example, on heads, $\textsf{fair}$ hypothesis is surprised by $1$ bit, while the $\textsf{biased}$ hypothesis is surprised by $2$ bits. The difference of the two suprises - 1 bit - is the most important takeaway from the flip. This difference is the "_bits of evidence_" that the flipped heads provide. This difference is what we are essentially adding up in the posterior log odds, and it ultimately translates into the posterior probability. 
 
-## 📊 Expected evidence <a id="expected-distinguishing-evidence"></a>
+## Expected evidence <a id="expected-distinguishing-evidence"></a>
 
 Remember, whenever our detective flip heads, she is getting $2 - 1 = 1$ bit of evidence that the coin is fair. Whenever she flips tails, she's getting $1 - 0.58 = 0.42$ bits of evidence that the coin is biased. 
 
@@ -117,7 +117,7 @@ Try it yourself below! I recommend checking edge cases like 50% vs 51% to get in
 
 <EvidenceAccumulationSimulator only_kl_mode={true} />
 
-## 📝 KL divergence <a id="definition-of-kl-divergence"></a>
+## KL divergence <a id="definition-of-kl-divergence"></a>
 
 
 KL divergence is just the general formula for expected evidence accumulation. Say you've got two distributions $p$ and $q$, where $p$ is what's really happening, but you only know it's either $p$ or $q$. 
@@ -139,7 +139,7 @@ Notice KL divergence is about the evidence, not your starting beliefs. It tells 
 
 
 
-## 🚀 What's next?
+## What's next?
 
 In the [next section](../02-crossentropy), we'll dig deeper into the KL formula and see how it connects to entropy and cross-entropy.
 

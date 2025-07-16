@@ -45,7 +45,7 @@ It may seem a bit underwhelming that we did all of this math just to compute the
 
 
 
-## 🥔 Why KL? <a id="mle"></a>
+## Why KL? <a id="mle"></a>
 
 I claim that minizing KL to find a model $q$ of data $p$ is a pretty good approach in general. Why?  
 
@@ -56,7 +56,7 @@ Visually, I like to think of it like this. First, imagine a "potato" of all poss
 ![KL divergence potato](04-mle/potato_mle.png)
 
 
-## ❌ Cross-entropy loss <a id="cross_entropy"></a>
+## Cross-entropy loss <a id="cross_entropy"></a>
 
 Let's write down our minimization formula, in its full glory: 
 <Math id="kl_new_model_close" displayMode={true} math = "q_{\textrm{new}} = \argmin_{q\in Q} D(p, q) = \argmin_{q\in Q} \sum_x p(x) \cdot \log \frac{p(x)}{q(x)}" />
@@ -171,7 +171,7 @@ If all $n$ events we are predicting are independent,<Footnote>They of course nev
 
 Ok, there's a huge problem with this score. Can you spot it?
 
-### 🎯 Cross-entropy score
+### Cross-entropy score
 
 The problem: we have no clue what the "true" probabilities $p = (p_1, \dots, p_n)$ are! <Footnote> We could go down a philosophical rabbit hole about whether "true" probability even is even a meaningful concept. But let's not. </Footnote> Hence, we can't compute the ideal KL score. All we know is what actually happened - the ground-truth row in the picture above. Technically speaking, we know an empirical distribution $\hat{p}$ where each $\hat{p}_i$ is either 0 or 1—the whole distribution is concentrated on the single list of outcomes we saw.
 
@@ -276,7 +276,7 @@ There's a single versatile principle that underlies all the examples. Algebraica
 In a sense, maximum likelihood is just a poor man's maximum a posteriori principle in which we crossed our fingers and assumed that the prior knowledge about different models $q$ got negligible due to a large number of data points. </Footnote>
 
 
-## 🚀 What's next? <a id="next-steps"></a>
+## What's next? <a id="next-steps"></a>
 
 In the [next chapter](05-max_entropy), we will see what happens if we minimize the _first_ parameter in $D(p, q)$. 
 
