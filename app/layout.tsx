@@ -25,6 +25,10 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
+  other: {
+    'http-equiv': 'refresh',
+    content: '0;url=https://bayesbitsbrains.github.io/'
+  }
 };
 
 export default function RootLayout({
@@ -34,6 +38,31 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${merriweather.variable} ${jetbrainsMono.variable}`}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Redirect to new site
+              (function() {
+                const currentPath = window.location.pathname;
+                const newBaseUrl = 'https://bayesbitsbrains.github.io';
+                
+                // Remove /problens-web prefix if present
+                const cleanPath = currentPath.replace(/^\/problens-web/, '');
+                const redirectUrl = newBaseUrl + cleanPath;
+                
+                // Show a brief message before redirecting
+                document.title = 'Redirecting to new site...';
+                
+                // Redirect after a short delay
+                setTimeout(function() {
+                  window.location.href = redirectUrl;
+                }, 1000);
+              })();
+            `,
+          }}
+        />
+      </head>
       <StrictMode>
         <body className="antialiased">
           <Page>{children}</Page>
