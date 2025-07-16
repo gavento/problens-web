@@ -151,7 +151,7 @@ Try building your own maximum entropy distribution on the interval $[0,1]$ by pl
 
 ### 🧐 Why? <a id = "intuition"></a>
 
-Let's build some intuition for this. Remember from [the previous chapter](03-minimizing) that the max-entropy principle is essentially about finding a distribution that is as close to uniform as possible, in the sense of minimizing KL divergence.
+Let's build some intuition for this. Remember from [the previous chapter](04-mle) that the max-entropy principle is essentially about finding a distribution that is as close to uniform as possible, in the sense of minimizing KL divergence.
 
 So, in what way are max-entropy distributions "close" to being uniform? Let's use the exponential distribution $p(x) \propto e^{-x}$ as an example. Say I independently sample two numbers from it, $x_1$ and $x_2$. Here's a little riddle: Is it more probable that I sample $x_1 = 10, x_2 = 20$ or that I sample $x_1' = 15, x_2' = 15$?
 
@@ -246,7 +246,7 @@ Let's go through the examples with this in mind. Please, do skip whatever doesn'
 Let's start with what happens if we don't have any constraints. 
 
 <Expand headline = "No Constraints">
-In the absence of any constraints, we have $p(x) \propto e^{0}$, which means the max entropy distribution is *uniform*. In other words, the maximum entropy principle is truly an extension of [the principle of indifference](03-minimizing#maximum-entropy-principle) that we discussed in the previous chapter.
+In the absence of any constraints, we have $p(x) \propto e^{0}$, which means the max entropy distribution is *uniform*. In other words, the maximum entropy principle is truly an extension of [the principle of indifference](04-mle#maximum-entropy-principle) that we discussed in the previous chapter.
 
 One painful fact to keep in mind is that the uniform distribution doesn't always exist. Concretely, there's no uniform distribution over all real numbers.
 </Expand>

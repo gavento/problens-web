@@ -10,6 +10,7 @@ import { Footnotes, FootnotesProvider } from "./content/Footnotes";
 import { EquationProvider } from "./content/EquationContext";
 import styles from "./Page.module.css";
 import ViewTracker from "./ViewTracker";
+import ChapterNavigation from "./ChapterNavigation";
 
 interface PageProps {
   children: ReactNode;
@@ -43,6 +44,7 @@ export async function singlePage(path: string) {
             {content}
             <Footnotes headerLevel={0} />
             <References />
+            <ChapterNavigation currentPath={path} />
           </article>
         </FootnotesProvider>
       </CitationsProvider>
