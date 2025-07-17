@@ -1,6 +1,8 @@
-# Academic website template
+# Bayes Bits & Brains
 
-A Next.js-based website for collaborative writing and editing of the Gradual Disempowerment content.
+This site is a mini-course in probability and information theory for machine learning. See it live at [bayesbitsbrains.github.io](https://bayesbitsbrains.github.io/).
+
+**⚠️ This repository is archived. Development has moved to <a href="https://github.com/bayesbitsbrains/bayesbitsbrains.github.io">bayesbitsbrains</a>.**
 
 ## Tech Stack
 
